@@ -229,7 +229,7 @@ export default function Trabalhos() {
         if (res.level_up) {
           setLevelUp(res.novo_nivel)
         }
-      } else if (res.mensagem && res.mensagem.includes('alugar uma casa')) {
+      } else if (res.mensagem && (res.mensagem.includes('alugar uma casa') || res.mensagem.includes('casa melhor') || res.mensagem.includes('Série B exige'))) {
         pushDialogo({
           tipo: 'dialogo',
           icone: '🏠',

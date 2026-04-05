@@ -212,12 +212,19 @@ func HandleTrabalhar(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// A partir da Série C (nível 18+), é obrigatório ter casa alugada
+	// A partir da Série B (nível 24+), é obrigatório ter casa média ou top
 	if jogador.Nivel >= 18 {
 		var tipoCasa string
 		db.Conn.QueryRow("SELECT COALESCE(tipo,'') FROM casas WHERE jogador_id=$1", req.JogadorID).Scan(&tipoCasa)
 		if tipoCasa == "" {
 			JsonResp(w, 200, TrabalharResponse{
 				Mensagem: "Você precisa alugar uma casa para trabalhar na Série C! Vá ao seu Perfil e escolha uma casa.",
+			})
+			return
+		}
+		if jogador.Nivel >= 24 && tipoCasa == "basica" {
+			JsonResp(w, 200, TrabalharResponse{
+				Mensagem: "A Série B exige uma casa melhor! Faça upgrade para Casa Média ou Casa Top no seu Perfil.",
 			})
 			return
 		}
@@ -3475,8 +3482,8 @@ func HandleWeeklyRanking(w http.ResponseWriter, r *http.Request) {
 
 var casasConfig = map[string]CasaConfig{
 	"basica": {"basica", "Casa Básica", 1200, 10, 5, 15},
-	"media":  {"media", "Casa Média", 2100, 20, 10, 30},
-	"top":    {"top", "Casa Top", 2700, 30, 15, 30},
+	"media":  {"media", "Casa Média", 15000, 20, 10, 30},
+	"top":    {"top", "Casa Top", 80000, 30, 15, 30},
 }
 
 var casasOrdem = map[string]int{"": 0, "basica": 1, "media": 2, "top": 3}
