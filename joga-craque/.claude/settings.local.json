@@ -1,0 +1,37 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(go build:*)",
+      "Bash(grep -n \"val-dinheiro\\\\|money-info\\\\|money\" templates/*.html)",
+      "Bash(for f:*)",
+      "Bash(do)",
+      "Bash(sed -i 's|<span class=\"\"money\"\">R\\\\$ <span id=\"\"val-dinheiro\"\">--</span></span>|<span class=\"\"money\"\">R$ <span id=\"\"val-dinheiro\"\">--</span></span>\\\\n                <span class=\"\"money\"\" style=\"\"color:#b8860b\"\">🪙 <span id=\"\"val-moedas\"\">0</span></span>|g' \"$f\")",
+      "Bash(done)",
+      "Bash(node -e \":*)",
+      "Bash(grep -c \"val-rank\" templates/*.html)",
+      "Bash(npm install:*)",
+      "Bash(ls:*)",
+      "Bash(npm run:*)",
+      "Bash(grep -l joga-craque /c/Projetos/sistema-f3/lp/joga-craque/static/dist/assets/*)",
+      "Bash(grep -o joga-craque[^'']* /c/Projetos/sistema-f3/lp/joga-craque/static/dist/assets/*.js)",
+      "Bash(grep:*)",
+      "Bash(go vet:*)",
+      "Bash(tasklist)",
+      "Bash(npx vite:*)",
+      "Bash(find /c/Projetos/sistema-f3/lp/joga-craque/frontend -name *.css -type f)",
+      "Bash(cat:*)",
+      "Bash(go run:*)",
+      "WebFetch(domain:phaser.io)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(mkdir -p \"C:\\\\Projetos\\\\sistema-f3\\\\lp\\\\joga-craque\\\\frontend\\\\public\\\\game\")",
+      "Bash(for i:*)",
+      "Bash(do curl:*)",
+      "Bash(echo \"candy$i.png OK\")",
+      "Bash(curl -sL \"https://raw.githubusercontent.com/fasih-nasir/candycrush/main/img/backgroun.jpg\" -o \"C:\\\\Projetos\\\\sistema-f3\\\\lp\\\\joga-craque\\\\frontend\\\\public\\\\game\\\\bg.jpg\")",
+      "Bash(cp:*)",
+      "Bash(cd:*)",
+      "Bash(pkill -f \"joga-craque\")"
+    ]
+  }
+}
