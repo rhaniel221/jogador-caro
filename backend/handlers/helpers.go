@@ -241,9 +241,9 @@ func listarBloqueadosHoje(jogadorID int) []string {
 var tierFatorEnergia = map[string]float64{
 	"Garoto": 0.10, "Base": 0.15, "Amador": 0.22,
 	"Série C": 0.28, "Série B": 0.32, "Série A": 0.38,
-	"Copa do Brasil": 0.42, "Libertadores": 0.48, "Europa": 0.55,
-	"Champions": 0.62, "Seleção": 0.70, "Copa do Mundo": 0.78,
-	"Ballon d'Or": 0.82, "Ídolo": 0.88, "Lenda": 0.95,
+	"Copinha Nacional": 0.42, "Continentão": 0.48, "Europa": 0.55,
+	"Liga dos Craques": 0.62, "Seleçoca": 0.70, "Mundialito": 0.78,
+	"Bola de Ouro": 0.82, "Ídolo": 0.88, "Lenda": 0.95,
 }
 
 func calcCustoEnergia(energiaBase, nivel int, tier string) int {
@@ -325,8 +325,8 @@ func calcFatorMaestria(vezes int) float64 {
 // Tiers ordenados por progressão
 var tierOrdem = []string{
 	"Garoto", "Base", "Amador", "Série C", "Série B", "Série A",
-	"Copa do Brasil", "Libertadores", "Europa", "Champions",
-	"Seleção", "Copa do Mundo", "Ballon d'Or", "Ídolo", "Lenda",
+	"Copinha Nacional", "Continentão", "Europa", "Liga dos Craques",
+	"Seleçoca", "Mundialito", "Bola de Ouro", "Ídolo", "Lenda",
 }
 
 func getTierDoJogador(nivel int) string {
@@ -336,19 +336,19 @@ func getTierDoJogador(nivel int) string {
 	case nivel >= 120:
 		return "Ídolo"
 	case nivel >= 100:
-		return "Ballon d'Or"
+		return "Bola de Ouro"
 	case nivel >= 85:
-		return "Copa do Mundo"
+		return "Mundialito"
 	case nivel >= 72:
-		return "Seleção"
+		return "Seleçoca"
 	case nivel >= 60:
-		return "Champions"
+		return "Liga dos Craques"
 	case nivel >= 50:
 		return "Europa"
 	case nivel >= 42:
-		return "Libertadores"
+		return "Continentão"
 	case nivel >= 36:
-		return "Copa do Brasil"
+		return "Copinha Nacional"
 	case nivel >= 30:
 		return "Série A"
 	case nivel >= 24:
@@ -882,6 +882,170 @@ func getMultiplicadorEvento(tipo string) float64 {
 		}
 	}
 	return mult
+}
+
+// ========================
+// SISTEMA DE FAMA — RANKS, PATROCÍNIOS, DECAIMENTO
+// ========================
+
+type FamaRankInfo struct {
+	Rank       string  `json:"rank"`
+	Min        int     `json:"min"`
+	Max        int     `json:"max"`
+	BonusXP    float64 `json:"bonus_xp"`
+	Patrocinio string  `json:"patrocinio"`
+	RendaHora  int     `json:"renda_hora"`
+	MoedasDia  int     `json:"moedas_dia"`
+}
+
+var famaRanks = []FamaRankInfo{
+	{"Desconhecido", 0, 499, 0, "", 0, 0},
+	{"Promessa", 500, 1999, 0.05, "Loja do Bairro", 30, 0},
+	{"Famoso", 2000, 4999, 0.10, "Raio Sports", 100, 0},
+	{"Estrela", 5000, 9999, 0.15, "Listrada Pro", 300, 0},
+	{"Ídolo", 10000, 19999, 0.20, "Touro Energy", 700, 1},
+	{"Lenda Viva", 20000, 999999999, 0.25, "Mega Sponsor", 1500, 3},
+}
+
+func GetFamaRank(fama int) FamaRankInfo {
+	for i := len(famaRanks) - 1; i >= 0; i-- {
+		if fama >= famaRanks[i].Min {
+			return famaRanks[i]
+		}
+	}
+	return famaRanks[0]
+}
+
+func GetAllFamaRanks() []FamaRankInfo {
+	return famaRanks
+}
+
+// Registra que o jogador fez PvP hoje (protege contra decaimento)
+func RegistrarPvpHoje(jogadorID int) {
+	hoje := hojeJogo()
+	db.Conn.Exec(`INSERT INTO fama_atividade (jogador_id, data, fez_pvp)
+		VALUES ($1, $2, TRUE)
+		ON CONFLICT (jogador_id, data) DO UPDATE SET fez_pvp = TRUE`,
+		jogadorID, hoje)
+}
+
+// Registra que o jogador logou hoje
+func RegistrarLoginHoje(jogadorID int) {
+	hoje := hojeJogo()
+	db.Conn.Exec(`INSERT INTO fama_atividade (jogador_id, data, logou)
+		VALUES ($1, $2, TRUE)
+		ON CONFLICT (jogador_id, data) DO UPDATE SET logou = TRUE`,
+		jogadorID, hoje)
+}
+
+// Aplica decaimento de fama para todos os jogadores que não jogaram ontem
+func AplicarDecaimentoFama() int {
+	ontem := ontemJogo()
+	// Pega todos os jogadores com fama > 0
+	rows, err := db.Conn.Query(`SELECT id, pontos_fama FROM jogadores WHERE pontos_fama > 0`)
+	if err != nil {
+		return 0
+	}
+	defer rows.Close()
+
+	afetados := 0
+	for rows.Next() {
+		var id, fama int
+		rows.Scan(&id, &fama)
+
+		// Verifica atividade de ontem
+		var fezPvp, logou bool
+		db.Conn.QueryRow(`SELECT COALESCE(fez_pvp, FALSE), COALESCE(logou, FALSE)
+			FROM fama_atividade WHERE jogador_id=$1 AND data=$2`, id, ontem).Scan(&fezPvp, &logou)
+
+		var perda int
+		if fezPvp {
+			// Fez PvP: sem decaimento
+			continue
+		} else if logou {
+			// Logou mas não fez PvP: -1% (mín 5, máx 100)
+			perda = fama / 100
+			if perda < 5 {
+				perda = 5
+			}
+			if perda > 100 {
+				perda = 100
+			}
+		} else {
+			// Não logou: -2% (mín 10, máx 200)
+			perda = fama * 2 / 100
+			if perda < 10 {
+				perda = 10
+			}
+			if perda > 200 {
+				perda = 200
+			}
+		}
+
+		novaFama := fama - perda
+		if novaFama < 0 {
+			novaFama = 0
+		}
+		db.Conn.Exec("UPDATE jogadores SET pontos_fama=$1 WHERE id=$2", novaFama, id)
+		afetados++
+	}
+	return afetados
+}
+
+// Coleta renda de patrocínio acumulada
+func ColetarPatrocinio(jogadorID int) (int, int, error) {
+	rank := GetFamaRank(0)
+	var fama int
+	db.Conn.QueryRow("SELECT pontos_fama FROM jogadores WHERE id=$1", jogadorID).Scan(&fama)
+	rank = GetFamaRank(fama)
+
+	if rank.RendaHora <= 0 {
+		return 0, 0, fmt.Errorf("sem patrocínio")
+	}
+
+	// Pega última coleta de patrocínio
+	var ultimaColetaEpoch int64
+	err := db.Conn.QueryRow(`SELECT COALESCE(EXTRACT(EPOCH FROM ultima_coleta_patrocinio)::BIGINT, 0)
+		FROM jogadores WHERE id=$1`, jogadorID).Scan(&ultimaColetaEpoch)
+	if err != nil {
+		return 0, 0, err
+	}
+
+	agora := time.Now().Unix()
+	if ultimaColetaEpoch == 0 {
+		// Primeira coleta: dá 1 hora de bônus
+		ultimaColetaEpoch = agora - 3600
+	}
+
+	diffSeg := agora - ultimaColetaEpoch
+	if diffSeg < 60 {
+		return 0, 0, fmt.Errorf("coletado recentemente")
+	}
+
+	// Cap em 12 horas
+	maxSeg := int64(12 * 3600)
+	if diffSeg > maxSeg {
+		diffSeg = maxSeg
+	}
+
+	horas := float64(diffSeg) / 3600.0
+	dinheiro := int(horas * float64(rank.RendaHora))
+	moedas := 0
+	if rank.MoedasDia > 0 {
+		// Moedas: 1 por dia completo acumulado (cap 12h)
+		if diffSeg >= 86400 {
+			moedas = rank.MoedasDia
+		}
+	}
+
+	if dinheiro <= 0 && moedas <= 0 {
+		return 0, 0, fmt.Errorf("nada acumulado")
+	}
+
+	db.Conn.Exec(`UPDATE jogadores SET dinheiro_mao = dinheiro_mao + $1, moedas = moedas + $2,
+		ultima_coleta_patrocinio = NOW() WHERE id=$3`, dinheiro, moedas, jogadorID)
+
+	return dinheiro, moedas, nil
 }
 
 // ========================

@@ -487,45 +487,45 @@ func seedCatalogos() {
 		{24, 600, 12, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16, "Mochila do Profissional", "Espaço de sobra para os itens do craque. Capacidade: 16 tipos", "mochila", "💼"},
 		{25, 2000, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 22, "Mochila do Craque", "A maior mochila do jogo. Capacidade: 22 tipos", "mochila", "🏅"},
 		// Equipamentos de tier alto — necessários para trabalhos Craque+
-		{35, 2500, 25, 0, 0, 1, 2, 0, 0, 0, 0, 0, 0, "Uniforme de Clube", "Uniforme oficial de clube profissional. Libera: Titular, Seleção Sub-23.", "equipamento", "🎽"},
+		{35, 2500, 25, 0, 0, 1, 2, 0, 0, 0, 0, 0, 0, "Uniforme de Clube", "Uniforme oficial de clube profissional. Libera: Titular, Seleçoca Sub-23.", "equipamento", "🎽"},
 		{36, 12000, 40, 0, 0, 2, 3, 0, 0, 0, 0, 0, 0, "Chuteira de Elite", "Chuteira das grandes ligas europeias. Libera: Liga Europeia.", "equipamento", "👟"},
-		{37, 50000, 60, 0, 0, 3, 4, 0, 0, 0, 0, 0, 0, "Chuteira Dourada", "Usada pelos maiores craques do mundo. Libera: Champions League.", "equipamento", "⭐"},
-		{38, 180000, 80, 0, 1, 3, 5, 0, 0, 0, 0, 0, 0, "Uniforme da Seleção", "O uniforme sagrado do país. Libera: Seleção Brasileira, Copa do Mundo.", "equipamento", "🇧🇷"},
+		{37, 50000, 60, 0, 0, 3, 4, 0, 0, 0, 0, 0, 0, "Chuteira Dourada", "Usada pelos maiores craques do mundo. Libera: Liga dos Craques.", "equipamento", "⭐"},
+		{38, 180000, 80, 0, 1, 3, 5, 0, 0, 0, 0, 0, 0, "Uniforme da Seleçoca", "O uniforme sagrado do país. Libera: Seleçoca, Mundialito.", "equipamento", "🇧🇷"},
 		// Level 1-10 (Garoto/Base) - Comum
 		{40, 10, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, "Munhequeira", "Acessório básico do jogador de rua", "equipamento", "🏋️"},
 		{41, 15, 3, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, "Faixa de Cabeça", "Estilo e velocidade", "equipamento", "🎀"},
 		{42, 25, 5, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, "Bola de Treino", "Melhora o domínio de bola", "equipamento", "⚽"},
 		// Level 1-10 - Raro (missão)
-		{43, 0, 5, 0, 2, 1, 0, 0, 0, 0, 0, 0, 0, "Chuteira Nike Street", "Lendária das ruas. +2 Força +1 Velocidade", "equipamento", "👟"},
+		{43, 0, 5, 0, 2, 1, 0, 0, 0, 0, 0, 0, 0, "Chuteira Raio Street", "Lendária das ruas. +2 Força +1 Velocidade", "equipamento", "👟"},
 		{44, 0, 8, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, "Kit Drible Mágico", "Domínio total. +2 Velocidade +2 Habilidade", "equipamento", "✨"},
 		// Level 10-20 (Amador) - Comum
 		{45, 50, 10, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, "Faixa de Capitão", "Liderança no campo. +2 Força", "equipamento", "©️"},
 		{46, 70, 12, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, "Tornozeleira Pro", "Agilidade profissional", "equipamento", "🦶"},
 		{47, 90, 15, 0, 0, 0, 2, 10, 0, 0, 0, 0, 0, "Caneleira Reforçada", "Proteção e habilidade", "equipamento", "🛡️"},
 		// Level 10-20 - Raro (missão)
-		{48, 0, 10, 0, 3, 2, 0, 0, 0, 0, 0, 0, 0, "Chuteira Adidas Copa", "A favorita dos craques. +3 Força +2 Velocidade", "equipamento", "👟"},
+		{48, 0, 10, 0, 3, 2, 0, 0, 0, 0, 0, 0, 0, "Chuteira Listrada Copa", "A favorita dos craques. +3 Força +2 Velocidade", "equipamento", "👟"},
 		{49, 0, 15, 0, 0, 3, 3, 0, 0, 0, 0, 0, 0, "Luva Predator", "Reflexos sobre-humanos. +3 Vel +3 Hab", "equipamento", "🧤"},
 		// Level 10-20 - Épico (missão)
-		{50, 0, 18, 0, 3, 3, 3, 0, 0, 0, 0, 0, 0, "Uniforme Seleção Sub-20", "Orgulho nacional. +3 em tudo", "equipamento", "🇧🇷"},
+		{50, 0, 18, 0, 3, 3, 3, 0, 0, 0, 0, 0, 0, "Uniforme Seleçoca Sub-20", "Orgulho nacional. +3 em tudo", "equipamento", "🇧🇷"},
 		// Level 20-35 (Profissional) - Comum
 		{51, 200, 20, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, "Suplemento Whey", "Força máxima no treino", "equipamento", "💊"},
 		{52, 300, 25, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, "Relógio GPS", "Controla sua velocidade em campo", "equipamento", "⌚"},
-		{53, 400, 28, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, "Bola Oficial FIFA", "Toque perfeito. +3 Habilidade", "equipamento", "⚽"},
+		{53, 400, 28, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, "Bola Oficial Pro", "Toque perfeito. +3 Habilidade", "equipamento", "⚽"},
 		// Level 20-35 - Raro (missão)
 		{54, 0, 22, 0, 4, 3, 0, 0, 0, 0, 0, 0, 0, "Chuteira Mercurial", "Velocidade mortal. +4 Força +3 Vel", "equipamento", "⚡"},
-		{55, 0, 28, 0, 0, 4, 4, 0, 0, 0, 0, 0, 0, "Kit Neymar Edition", "Drible e estilo. +4 Vel +4 Hab", "equipamento", "🌟"},
+		{55, 0, 28, 0, 0, 4, 4, 0, 0, 0, 0, 0, 0, "Kit Joga Bonito", "Drible e estilo. +4 Vel +4 Hab", "equipamento", "🌟"},
 		// Level 20-35 - Épico (missão)
 		{56, 0, 30, 0, 5, 4, 4, 0, 0, 0, 0, 0, 0, "Uniforme Real Madrid", "Galáctico. +5F +4V +4H", "equipamento", "⚪"},
 		// Level 35-50 (Craque/Elite) - Raro (missão)
 		{57, 0, 35, 0, 5, 5, 3, 0, 0, 0, 0, 0, 0, "Chuteira Phantom GT", "Precisão letal. +5F +5V +3H", "equipamento", "👻"},
-		{58, 0, 42, 0, 4, 6, 5, 0, 0, 0, 0, 0, 0, "Kit Messi Edition", "Magia pura. +4F +6V +5H", "equipamento", "🐐"},
+		{58, 0, 42, 0, 4, 6, 5, 0, 0, 0, 0, 0, 0, "Kit El Pibe", "Magia pura. +4F +6V +5H", "equipamento", "🐐"},
 		// Level 35-50 - Épico (missão)
 		{59, 0, 38, 0, 6, 5, 5, 0, 0, 0, 0, 0, 0, "Armadura do Capitão", "+6F +5V +5H", "equipamento", "🛡️"},
 		// Level 35-50 - Lendário (missão)
 		{60, 0, 45, 0, 7, 6, 6, 0, 0, 0, 0, 0, 0, "Chuteira CR7 Dourada", "A arma do GOAT. +7F +6V +6H", "equipamento", "👑"},
 		// Level 50+ - Lendário (missão)
 		{61, 0, 55, 0, 8, 7, 7, 0, 0, 0, 0, 0, 0, "Manto Sagrado", "Usado pelos imortais. +8F +7V +7H", "equipamento", "🦸"},
-		{62, 0, 70, 0, 10, 8, 8, 0, 0, 0, 0, 0, 0, "Kit Pelé Legend", "A lenda das lendas. +10F +8V +8H", "equipamento", "🏆"},
+		{62, 0, 70, 0, 10, 8, 8, 0, 0, 0, 0, 0, 0, "Kit Rei do Campo", "A lenda das lendas. +10F +8V +8H", "equipamento", "🏆"},
 		// === ITENS DE CLASSE (desbloqueiam trabalho top de cada tier) ===
 		// Garoto: bebidas já pede item 6 (Camisa R$15)
 		// Base: pelada já pede item 7 (Chuteira R$20)
@@ -535,13 +535,13 @@ func seedCatalogos() {
 		{102, 600, 18, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, "Contrato Série C", "Vínculo com clube da 3ª divisão", "equipamento", "📋"},
 		{103, 1500, 24, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, "Contrato Série B", "Vínculo com clube da 2ª divisão", "equipamento", "📋"},
 		{104, 3500, 30, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, "Contrato Série A", "Contrato profissional 1ª divisão", "equipamento", "📝"},
-		{105, 8000, 36, 0, 2, 1, 1, 0, 0, 0, 0, 0, 0, "Passe Copa do Brasil", "Inscrição na Copa do Brasil", "equipamento", "🏆"},
-		{106, 25000, 42, 0, 2, 2, 1, 0, 0, 0, 0, 0, 0, "Passe Libertadores", "Inscrição na Libertadores", "equipamento", "🌎"},
+		{105, 8000, 36, 0, 2, 1, 1, 0, 0, 0, 0, 0, 0, "Passe Copinha Nacional", "Inscrição na Copinha Nacional", "equipamento", "🏆"},
+		{106, 25000, 42, 0, 2, 2, 1, 0, 0, 0, 0, 0, 0, "Passe Continentão", "Inscrição no Continentão", "equipamento", "🌎"},
 		{107, 80000, 50, 0, 2, 2, 2, 0, 0, 0, 0, 0, 0, "Passaporte Europeu", "Documentação pra jogar na Europa", "equipamento", "🛂"},
-		{108, 250000, 60, 0, 3, 2, 2, 0, 0, 0, 0, 0, 0, "Passe Champions", "Inscrição na Champions League", "equipamento", "🌟"},
+		{108, 250000, 60, 0, 3, 2, 2, 0, 0, 0, 0, 0, 0, "Passe Liga dos Craques", "Inscrição na Liga dos Craques", "equipamento", "🌟"},
 		{109, 800000, 72, 0, 3, 3, 2, 0, 0, 0, 0, 0, 0, "Convocação Oficial", "Documento da CBF", "equipamento", "🇧🇷"},
-		{110, 2500000, 85, 0, 3, 3, 3, 0, 0, 0, 0, 0, 0, "Credencial FIFA", "Acesso à Copa do Mundo", "equipamento", "🏆"},
-		{111, 8000000, 100, 0, 4, 3, 3, 0, 0, 0, 0, 0, 0, "Convite Ballon d'Or", "Indicação à Bola de Ouro", "equipamento", "🥇"},
+		{110, 2500000, 85, 0, 3, 3, 3, 0, 0, 0, 0, 0, 0, "Credencial Mundial", "Acesso ao Mundialito", "equipamento", "🏆"},
+		{111, 8000000, 100, 0, 4, 3, 3, 0, 0, 0, 0, 0, 0, "Convite Bola de Ouro", "Indicação à Bola de Ouro", "equipamento", "🥇"},
 		{112, 20000000, 120, 0, 4, 4, 4, 0, 0, 0, 0, 0, 0, "Troféu de Ídolo", "Reconhecimento eterno", "equipamento", "🗿"},
 		// === CONSUMÍVEIS POR FAIXA — preço ~40% do trabalho top do tier ===
 		// Nível 1-9 (Garoto) — trabalhos pagam 2-25
@@ -660,43 +660,43 @@ func seedCatalogos() {
 		{"serie_b_acesso", "Série B", "Lutar pelo acesso", "🏆", 28, 5, 1200, 1800, 110, 103, 3},
 		// === SÉRIE A (nv 30-35) ===
 		{"serie_a_treino", "Série A", "Treinar no CT profissional", "🏟️", 30, 3, 800, 1200, 70, 8, 5},
-		{"serie_a_jogo", "Série A", "Jogar partida do Brasileirão", "⚽", 30, 4, 1200, 2000, 90, 8, 4},
+		{"serie_a_jogo", "Série A", "Jogar partida do Boleirão", "⚽", 30, 4, 1200, 2000, 90, 8, 4},
 		{"serie_a_classico", "Série A", "Jogar clássico regional", "🔥", 32, 5, 1800, 3000, 115, 8, 3},
 		{"serie_a_titulo", "Série A", "Disputar título brasileiro", "🏆", 34, 5, 2500, 4000, 135, 104, 3},
-		// === COPA DO BRASIL (nv 36-41) ===
-		{"copa_br_fase", "Copa do Brasil", "Jogar fase de grupos", "🏆", 36, 4, 2000, 3500, 100, 35, 4},
-		{"copa_br_quartas", "Copa do Brasil", "Quartas de final", "⚡", 38, 5, 3500, 5500, 130, 35, 3},
-		{"copa_br_semi", "Copa do Brasil", "Semifinal da Copa", "🔥", 39, 5, 5000, 8000, 160, 35, 3},
-		{"copa_br_final", "Copa do Brasil", "Final da Copa do Brasil", "🏆", 41, 5, 8000, 12000, 200, 105, 2},
-		// === LIBERTADORES (nv 42-49) ===
-		{"liberta_fase", "Libertadores", "Fase de grupos da Libertadores", "🌎", 42, 4, 5000, 8000, 120, 35, 4},
-		{"liberta_oitavas", "Libertadores", "Oitavas da Libertadores", "⚔️", 44, 5, 8000, 13000, 150, 35, 3},
-		{"liberta_semi", "Libertadores", "Semifinal da Libertadores", "🔥", 46, 5, 13000, 20000, 185, 35, 2},
-		{"liberta_final", "Libertadores", "Final da Libertadores", "🏆", 48, 5, 20000, 35000, 220, 106, 2},
+		// === COPINHA NACIONAL (nv 36-41) ===
+		{"copa_br_fase", "Copinha Nacional", "Jogar fase de grupos", "🏆", 36, 4, 2000, 3500, 100, 35, 4},
+		{"copa_br_quartas", "Copinha Nacional", "Quartas de final", "⚡", 38, 5, 3500, 5500, 130, 35, 3},
+		{"copa_br_semi", "Copinha Nacional", "Semifinal da Copinha", "🔥", 39, 5, 5000, 8000, 160, 35, 3},
+		{"copa_br_final", "Copinha Nacional", "Final da Copinha Nacional", "🏆", 41, 5, 8000, 12000, 200, 105, 2},
+		// === CONTINENTÃO (nv 42-49) ===
+		{"liberta_fase", "Continentão", "Fase de grupos do Continentão", "🌎", 42, 4, 5000, 8000, 120, 35, 4},
+		{"liberta_oitavas", "Continentão", "Oitavas do Continentão", "⚔️", 44, 5, 8000, 13000, 150, 35, 3},
+		{"liberta_semi", "Continentão", "Semifinal do Continentão", "🔥", 46, 5, 13000, 20000, 185, 35, 2},
+		{"liberta_final", "Continentão", "Final do Continentão", "🏆", 48, 5, 20000, 35000, 220, 106, 2},
 		// === EUROPA (nv 50-59) ===
 		{"europa_contrato", "Europa", "Assinar com clube europeu", "📝", 50, 4, 15000, 25000, 140, 36, 4},
 		{"europa_liga", "Europa", "Jogar liga nacional europeia", "🌍", 52, 4, 25000, 40000, 170, 36, 3},
 		{"europa_destaque", "Europa", "Melhor jogador do mês", "⭐", 55, 5, 40000, 65000, 200, 36, 3},
 		{"europa_mvp", "Europa", "MVP da temporada europeia", "🏅", 58, 5, 65000, 100000, 250, 107, 2},
-		// === CHAMPIONS (nv 60-71) ===
-		{"ucl_fase", "Champions", "Fase de grupos da Champions", "🌟", 60, 4, 50000, 80000, 180, 37, 3},
-		{"ucl_quartas", "Champions", "Quartas da Champions League", "⚡", 63, 5, 80000, 130000, 220, 37, 3},
-		{"ucl_semi", "Champions", "Semifinal da Champions", "🔥", 66, 5, 130000, 200000, 280, 37, 2},
-		{"ucl_final", "Champions", "Final da Champions League", "🏆", 69, 5, 200000, 350000, 350, 108, 2},
-		// === SELEÇÃO (nv 72-84) ===
-		{"selecao_conv", "Seleção", "Convocado pra Seleção", "🇧🇷", 72, 4, 150000, 250000, 250, 38, 3},
-		{"selecao_amistoso", "Seleção", "Amistoso internacional", "⚽", 74, 5, 250000, 400000, 300, 38, 3},
-		{"selecao_eliminatorias", "Seleção", "Eliminatórias da Copa", "🌎", 78, 5, 400000, 600000, 380, 38, 2},
-		{"selecao_titular", "Seleção", "Titular da Seleção Brasileira", "⭐", 82, 5, 600000, 1000000, 450, 109, 2},
-		// === COPA DO MUNDO (nv 85-99) ===
-		{"copa_fase", "Copa do Mundo", "Fase de grupos da Copa", "🏆", 85, 4, 500000, 800000, 350, 38, 3},
-		{"copa_oitavas", "Copa do Mundo", "Oitavas da Copa do Mundo", "⚔️", 88, 5, 800000, 1300000, 450, 38, 2},
-		{"copa_semi", "Copa do Mundo", "Semifinal da Copa do Mundo", "🔥", 92, 5, 1300000, 2000000, 550, 38, 2},
-		{"copa_final", "Copa do Mundo", "Final da Copa do Mundo", "🏆", 96, 5, 2000000, 3500000, 700, 110, 1},
-		// === BALLON D'OR (nv 100-119) ===
-		{"ballon_indicado", "Ballon d'Or", "Indicado à Bola de Ouro", "🥇", 100, 5, 2000000, 3500000, 600, 0, 2},
-		{"ballon_top3", "Ballon d'Or", "Top 3 do Ballon d'Or", "🏅", 105, 5, 3500000, 5500000, 750, 0, 2},
-		{"ballon_vencedor", "Ballon d'Or", "Vencer o Ballon d'Or", "🥇", 110, 5, 5500000, 8000000, 900, 111, 1},
+		// === LIGA DOS CRAQUES (nv 60-71) ===
+		{"ucl_fase", "Liga dos Craques", "Fase de grupos da Liga", "🌟", 60, 4, 50000, 80000, 180, 37, 3},
+		{"ucl_quartas", "Liga dos Craques", "Quartas da Liga dos Craques", "⚡", 63, 5, 80000, 130000, 220, 37, 3},
+		{"ucl_semi", "Liga dos Craques", "Semifinal da Liga", "🔥", 66, 5, 130000, 200000, 280, 37, 2},
+		{"ucl_final", "Liga dos Craques", "Final da Liga dos Craques", "🏆", 69, 5, 200000, 350000, 350, 108, 2},
+		// === SELEÇOCA (nv 72-84) ===
+		{"selecao_conv", "Seleçoca", "Convocado pra Seleçoca", "🇧🇷", 72, 4, 150000, 250000, 250, 38, 3},
+		{"selecao_amistoso", "Seleçoca", "Amistoso internacional", "⚽", 74, 5, 250000, 400000, 300, 38, 3},
+		{"selecao_eliminatorias", "Seleçoca", "Eliminatórias do Mundialito", "🌎", 78, 5, 400000, 600000, 380, 38, 2},
+		{"selecao_titular", "Seleçoca", "Titular da Seleçoca", "⭐", 82, 5, 600000, 1000000, 450, 109, 2},
+		// === MUNDIALITO (nv 85-99) ===
+		{"copa_fase", "Mundialito", "Fase de grupos do Mundialito", "🏆", 85, 4, 500000, 800000, 350, 38, 3},
+		{"copa_oitavas", "Mundialito", "Oitavas do Mundialito", "⚔️", 88, 5, 800000, 1300000, 450, 38, 2},
+		{"copa_semi", "Mundialito", "Semifinal do Mundialito", "🔥", 92, 5, 1300000, 2000000, 550, 38, 2},
+		{"copa_final", "Mundialito", "Final do Mundialito", "🏆", 96, 5, 2000000, 3500000, 700, 110, 1},
+		// === BOLA DE OURO (nv 100-119) ===
+		{"ballon_indicado", "Bola de Ouro", "Indicado à Bola de Ouro", "🥇", 100, 5, 2000000, 3500000, 600, 0, 2},
+		{"ballon_top3", "Bola de Ouro", "Top 3 da Bola de Ouro", "🏅", 105, 5, 3500000, 5500000, 750, 0, 2},
+		{"ballon_vencedor", "Bola de Ouro", "Vencer a Bola de Ouro", "🥇", 110, 5, 5500000, 8000000, 900, 111, 1},
 		// === ÍDOLO (nv 120-149) ===
 		{"idolo_estatua", "Ídolo", "Ganhar estátua no clube", "🗿", 120, 5, 800000, 1300000, 1000, 0, 1},
 		{"idolo_camisa", "Ídolo", "Camisa aposentada", "👕", 130, 5, 1000000, 1700000, 1200, 0, 1},
@@ -973,22 +973,22 @@ func seedCatalogos() {
 		{"pos_gk_serieb", "Santo da B", "Vença 20 desafios 1v1 como Goleiro", "🧤", "desafios_1v1", "", 20, 24, 29, 0, 60, 120, 0, 0},
 
 		// Série A (nivel 30-35)
-		{"pos_ata_seriea", "Artilheiro do Brasileirão", "Vença 120 batalhas como Atacante", "⚽", "vitorias", "", 120, 30, 35, 0, 80, 180, 0, 0},
+		{"pos_ata_seriea", "Artilheiro do Boleirão", "Vença 120 batalhas como Atacante", "⚽", "vitorias", "", 120, 30, 35, 0, 80, 180, 0, 0},
 		{"pos_def_seriea", "Melhor Zagueiro BR", "Vença 120 batalhas como Defensor", "🛡️", "vitorias", "", 120, 30, 35, 0, 80, 180, 0, 0},
-		{"pos_med_seriea", "Craque do Brasileirão", "Complete 180 trabalhos como Meia", "🎯", "trabalhos", "", 180, 30, 35, 0, 80, 180, 0, 0},
+		{"pos_med_seriea", "Craque do Boleirão", "Complete 180 trabalhos como Meia", "🎯", "trabalhos", "", 180, 30, 35, 0, 80, 180, 0, 0},
 		{"pos_gk_seriea", "Goleiro do Ano", "Vença 30 desafios 1v1 como Goleiro", "🧤", "desafios_1v1", "", 30, 30, 35, 0, 80, 180, 0, 0},
 
-		// Copa do Brasil (nivel 36-41)
-		{"pos_ata_copabr", "Matador da Copa", "Vença 160 batalhas como Atacante", "⚽", "vitorias", "", 160, 36, 41, 0, 100, 250, 0, 0},
-		{"pos_def_copabr", "Muro da Copa", "Vença 160 batalhas como Defensor", "🛡️", "vitorias", "", 160, 36, 41, 0, 100, 250, 0, 0},
-		{"pos_med_copabr", "Maestro da Copa", "Complete 240 trabalhos como Meia", "🎯", "trabalhos", "", 240, 36, 41, 0, 100, 250, 0, 0},
-		{"pos_gk_copabr", "Muralha da Copa", "Vença 40 desafios 1v1 como Goleiro", "🧤", "desafios_1v1", "", 40, 36, 41, 0, 100, 250, 0, 0},
+		// Copinha Nacional (nivel 36-41)
+		{"pos_ata_copabr", "Matador da Copinha", "Vença 160 batalhas como Atacante", "⚽", "vitorias", "", 160, 36, 41, 0, 100, 250, 0, 0},
+		{"pos_def_copabr", "Muro da Copinha", "Vença 160 batalhas como Defensor", "🛡️", "vitorias", "", 160, 36, 41, 0, 100, 250, 0, 0},
+		{"pos_med_copabr", "Maestro da Copinha", "Complete 240 trabalhos como Meia", "🎯", "trabalhos", "", 240, 36, 41, 0, 100, 250, 0, 0},
+		{"pos_gk_copabr", "Muralha da Copinha", "Vença 40 desafios 1v1 como Goleiro", "🧤", "desafios_1v1", "", 40, 36, 41, 0, 100, 250, 0, 0},
 
-		// Libertadores (nivel 42-49)
-		{"pos_ata_liberta", "Goleador da Liberta", "Vença 200 batalhas como Atacante", "⚽", "vitorias", "", 200, 42, 49, 0, 130, 350, 0, 0},
-		{"pos_def_liberta", "Xerife da América", "Vença 200 batalhas como Defensor", "🛡️", "vitorias", "", 200, 42, 49, 0, 130, 350, 0, 0},
-		{"pos_med_liberta", "Camisa 10 da América", "Complete 300 trabalhos como Meia", "🎯", "trabalhos", "", 300, 42, 49, 0, 130, 350, 0, 0},
-		{"pos_gk_liberta", "Paredão da América", "Vença 50 desafios 1v1 como Goleiro", "🧤", "desafios_1v1", "", 50, 42, 49, 0, 130, 350, 0, 0},
+		// Continentão (nivel 42-49)
+		{"pos_ata_liberta", "Goleador do Continentão", "Vença 200 batalhas como Atacante", "⚽", "vitorias", "", 200, 42, 49, 0, 130, 350, 0, 0},
+		{"pos_def_liberta", "Xerife do Continente", "Vença 200 batalhas como Defensor", "🛡️", "vitorias", "", 200, 42, 49, 0, 130, 350, 0, 0},
+		{"pos_med_liberta", "Camisa 10 do Continente", "Complete 300 trabalhos como Meia", "🎯", "trabalhos", "", 300, 42, 49, 0, 130, 350, 0, 0},
+		{"pos_gk_liberta", "Paredão do Continente", "Vença 50 desafios 1v1 como Goleiro", "🧤", "desafios_1v1", "", 50, 42, 49, 0, 130, 350, 0, 0},
 
 		// Europa (nivel 50-59)
 		{"pos_ata_europa", "Artilheiro Europeu", "Vença 250 batalhas como Atacante", "⚽", "vitorias", "", 250, 50, 59, 0, 170, 500, 0, 0},
@@ -996,25 +996,25 @@ func seedCatalogos() {
 		{"pos_med_europa", "Meia de Ouro EU", "Complete 380 trabalhos como Meia", "🎯", "trabalhos", "", 380, 50, 59, 0, 170, 500, 0, 0},
 		{"pos_gk_europa", "Goleiro de Ouro EU", "Vença 60 desafios 1v1 como Goleiro", "🧤", "desafios_1v1", "", 60, 50, 59, 0, 170, 500, 0, 0},
 
-		// Champions (nivel 60-71)
-		{"pos_ata_champions", "Rei da Champions", "Vença 320 batalhas como Atacante", "⚽", "vitorias", "", 320, 60, 71, 0, 220, 700, 0, 0},
-		{"pos_def_champions", "Muralha da Champions", "Vença 320 batalhas como Defensor", "🛡️", "vitorias", "", 320, 60, 71, 0, 220, 700, 0, 0},
-		{"pos_med_champions", "Craque da Champions", "Complete 480 trabalhos como Meia", "🎯", "trabalhos", "", 480, 60, 71, 0, 220, 700, 0, 0},
+		// Liga dos Craques (nivel 60-71)
+		{"pos_ata_champions", "Rei da Liga", "Vença 320 batalhas como Atacante", "⚽", "vitorias", "", 320, 60, 71, 0, 220, 700, 0, 0},
+		{"pos_def_champions", "Muralha da Liga", "Vença 320 batalhas como Defensor", "🛡️", "vitorias", "", 320, 60, 71, 0, 220, 700, 0, 0},
+		{"pos_med_champions", "Craque da Liga", "Complete 480 trabalhos como Meia", "🎯", "trabalhos", "", 480, 60, 71, 0, 220, 700, 0, 0},
 		{"pos_gk_champions", "Luva de Ouro", "Vença 75 desafios 1v1 como Goleiro", "🧤", "desafios_1v1", "", 75, 60, 71, 0, 220, 700, 0, 0},
 
-		// Seleção (nivel 72-84)
-		{"pos_ata_selecao", "Artilheiro da Seleção", "Vença 400 batalhas como Atacante", "⚽", "vitorias", "", 400, 72, 84, 0, 280, 1000, 0, 0},
-		{"pos_def_selecao", "Capitão da Seleção", "Vença 400 batalhas como Defensor", "🛡️", "vitorias", "", 400, 72, 84, 0, 280, 1000, 0, 0},
-		{"pos_med_selecao", "Camisa 10 da Seleção", "Complete 600 trabalhos como Meia", "🎯", "trabalhos", "", 600, 72, 84, 0, 280, 1000, 0, 0},
+		// Seleçoca (nivel 72-84)
+		{"pos_ata_selecao", "Artilheiro da Seleçoca", "Vença 400 batalhas como Atacante", "⚽", "vitorias", "", 400, 72, 84, 0, 280, 1000, 0, 0},
+		{"pos_def_selecao", "Capitão da Seleçoca", "Vença 400 batalhas como Defensor", "🛡️", "vitorias", "", 400, 72, 84, 0, 280, 1000, 0, 0},
+		{"pos_med_selecao", "Camisa 10 da Seleçoca", "Complete 600 trabalhos como Meia", "🎯", "trabalhos", "", 600, 72, 84, 0, 280, 1000, 0, 0},
 		{"pos_gk_selecao", "Santo do Gol", "Vença 90 desafios 1v1 como Goleiro", "🧤", "desafios_1v1", "", 90, 72, 84, 0, 280, 1000, 0, 0},
 
-		// Copa do Mundo (nivel 85-99)
+		// Mundialito (nivel 85-99)
 		{"pos_ata_copamund", "Artilheiro do Mundo", "Vença 500 batalhas como Atacante", "⚽", "vitorias", "", 500, 85, 99, 0, 350, 1500, 0, 0},
 		{"pos_def_copamund", "Melhor Zagueiro do Mundo", "Vença 500 batalhas como Defensor", "🛡️", "vitorias", "", 500, 85, 99, 0, 350, 1500, 0, 0},
 		{"pos_med_copamund", "Craque do Mundo", "Complete 750 trabalhos como Meia", "🎯", "trabalhos", "", 750, 85, 99, 0, 350, 1500, 0, 0},
 		{"pos_gk_copamund", "Goleiro do Mundo", "Vença 110 desafios 1v1 como Goleiro", "🧤", "desafios_1v1", "", 110, 85, 99, 0, 350, 1500, 0, 0},
 
-		// Ballon d'Or (nivel 100-119)
+		// Bola de Ouro (nivel 100-119)
 		{"pos_ata_ballondor", "Bola de Ouro", "Vença 650 batalhas como Atacante", "⚽", "vitorias", "", 650, 100, 119, 0, 450, 2000, 0, 0},
 		{"pos_def_ballondor", "Defensor de Ouro", "Vença 650 batalhas como Defensor", "🛡️", "vitorias", "", 650, 100, 119, 0, 450, 2000, 0, 0},
 		{"pos_med_ballondor", "Meia de Ouro", "Complete 950 trabalhos como Meia", "🎯", "trabalhos", "", 950, 100, 119, 0, 450, 2000, 0, 0},
@@ -1194,6 +1194,18 @@ func seedCatalogos() {
 
 	// Migração: pvp_streak em jogadores
 	Conn.Exec(`ALTER TABLE jogadores ADD COLUMN IF NOT EXISTS pvp_streak INT DEFAULT 0`)
+	Conn.Exec(`ALTER TABLE jogadores ADD COLUMN IF NOT EXISTS ultima_coleta_patrocinio TIMESTAMP DEFAULT NOW()`)
+
+	// ========================
+	// FAMA — atividade diária (para decaimento)
+	// ========================
+	Conn.Exec(`CREATE TABLE IF NOT EXISTS fama_atividade (
+		jogador_id INT REFERENCES jogadores(id),
+		data DATE NOT NULL,
+		fez_pvp BOOLEAN DEFAULT FALSE,
+		logou BOOLEAN DEFAULT FALSE,
+		PRIMARY KEY (jogador_id, data)
+	)`)
 
 	// ========================
 	// CASAS (passive progression)

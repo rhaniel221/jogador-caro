@@ -131,6 +131,8 @@ func HandleJogador(w http.ResponseWriter, r *http.Request) {
 			ErrResp(w, 500, "Erro ao buscar dados")
 			return
 		}
+		// Registra login diário (proteção contra decaimento de fama)
+		RegistrarLoginHoje(id)
 		jogador.ProximaEnergiaEm = regenerarEnergia(jogador)
 		jogador.ProximaVitalidadeEm = regenerarVitalidade(jogador)
 		jogador.ProximaSaudeEm = regenerarSaude(jogador)
@@ -266,6 +268,13 @@ func HandleTrabalhar(w http.ResponseWriter, r *http.Request) {
 	multDin := getMultiplicadorEvento("DINHEIRO_TRABALHO")
 	ganhoXP = int(float64(ganhoXP) * multXP)
 	ganho = int(float64(ganho) * multDin)
+
+	// Bônus de XP pelo rank de fama
+	famaRank := GetFamaRank(jogador.PontosFama)
+	if famaRank.BonusXP > 0 {
+		bonusFamaXP := int(float64(ganhoXP) * famaRank.BonusXP)
+		ganhoXP += bonusFamaXP
+	}
 
 	jogador.Energia -= custoEnergia
 	db.Conn.Exec("UPDATE jogadores SET energia_gasta_total = COALESCE(energia_gasta_total, 0) + $1 WHERE id=$2", custoEnergia, req.JogadorID)
@@ -804,6 +813,10 @@ func HandleCombate(w http.ResponseWriter, r *http.Request) {
 		// PVP streak: reset on loss
 		atacante.PvpStreak = 0
 	}
+
+	// Registra atividade PvP de ambos (proteção contra decaimento de fama)
+	RegistrarPvpHoje(atacante.ID)
+	RegistrarPvpHoje(defensor.ID)
 
 	// Level up check após XP de combate
 	levelUp := false
@@ -3766,5 +3779,106 @@ func HandleCombinedMissions(w http.ResponseWriter, r *http.Request) {
 	JsonResp(w, 200, map[string]interface{}{
 		"sucesso":  true,
 		"missoes":  lista,
+	})
+}
+
+// ========================
+// FAMA — STATUS & PATROCÍNIO
+// ========================
+
+// GET /api/fama/{jogador_id}
+func HandleFamaStatus(w http.ResponseWriter, r *http.Request) {
+	parts := strings.Split(r.URL.Path, "/")
+	jogadorID, err := strconv.Atoi(parts[len(parts)-1])
+	if err != nil {
+		ErrResp(w, 400, "ID inválido")
+		return
+	}
+
+	jogador, err := getJogador(jogadorID)
+	if err != nil {
+		ErrResp(w, 404, "Jogador não encontrado")
+		return
+	}
+
+	rank := GetFamaRank(jogador.PontosFama)
+
+	// Calcula patrocínio acumulado
+	var ultimaColetaEpoch int64
+	db.Conn.QueryRow(`SELECT COALESCE(EXTRACT(EPOCH FROM ultima_coleta_patrocinio)::BIGINT, 0)
+		FROM jogadores WHERE id=$1`, jogadorID).Scan(&ultimaColetaEpoch)
+
+	dinheiroAcumulado := 0
+	if rank.RendaHora > 0 && ultimaColetaEpoch > 0 {
+		agora := time.Now().Unix()
+		diffSeg := agora - ultimaColetaEpoch
+		if diffSeg > 12*3600 {
+			diffSeg = 12 * 3600
+		}
+		if diffSeg > 0 {
+			horas := float64(diffSeg) / 3600.0
+			dinheiroAcumulado = int(horas * float64(rank.RendaHora))
+		}
+	}
+
+	// Atividade de hoje
+	hoje := hojeJogo()
+	var fezPvpHoje, logouHoje bool
+	db.Conn.QueryRow(`SELECT COALESCE(fez_pvp, FALSE), COALESCE(logou, FALSE)
+		FROM fama_atividade WHERE jogador_id=$1 AND data=$2`, jogadorID, hoje).Scan(&fezPvpHoje, &logouHoje)
+
+	JsonResp(w, 200, map[string]interface{}{
+		"sucesso":              true,
+		"fama":                 jogador.PontosFama,
+		"rank":                 rank,
+		"ranks":                GetAllFamaRanks(),
+		"patrocinio_acumulado": dinheiroAcumulado,
+		"fez_pvp_hoje":         fezPvpHoje,
+		"protegido":            fezPvpHoje,
+	})
+}
+
+// POST /api/fama/coletar-patrocinio
+func HandleColetarPatrocinio(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		ErrResp(w, 405, "Método não permitido")
+		return
+	}
+
+	var req struct {
+		JogadorID int `json:"jogador_id"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		ErrResp(w, 400, "Dados inválidos")
+		return
+	}
+
+	dinheiro, moedas, err := ColetarPatrocinio(req.JogadorID)
+	if err != nil {
+		JsonResp(w, 200, map[string]interface{}{"sucesso": false, "mensagem": "Nada para coletar ainda."})
+		return
+	}
+
+	jogador, _ := getJogador(req.JogadorID)
+	msg := fmt.Sprintf("Patrocínio coletado! +R$ %d", dinheiro)
+	if moedas > 0 {
+		msg += fmt.Sprintf(" +%d moedas", moedas)
+	}
+
+	JsonResp(w, 200, map[string]interface{}{
+		"sucesso":  true,
+		"mensagem": msg,
+		"dinheiro": dinheiro,
+		"moedas":   moedas,
+		"jogador":  jogador,
+	})
+}
+
+// POST /api/fama/decaimento (chamado internamente ou via cron)
+func HandleFamaDecaimento(w http.ResponseWriter, r *http.Request) {
+	afetados := AplicarDecaimentoFama()
+	JsonResp(w, 200, map[string]interface{}{
+		"sucesso":  true,
+		"afetados": afetados,
 	})
 }

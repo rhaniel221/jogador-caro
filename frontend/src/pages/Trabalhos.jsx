@@ -14,13 +14,13 @@ import {
 
 const TIERS = [
   'Garoto', 'Base', 'Amador', 'Série C', 'Série B', 'Série A',
-  'Copa do Brasil', 'Libertadores', 'Europa', 'Champions',
-  'Seleção', 'Copa do Mundo', "Ballon d'Or", 'Ídolo', 'Lenda'
+  'Copinha Nacional', 'Continentão', 'Europa', 'Liga dos Craques',
+  'Seleçoca', 'Mundialito', 'Bola de Ouro', 'Ídolo', 'Lenda'
 ]
 const TIER_NIVEL_MIN = {
   Garoto: 1, Base: 5, Amador: 10, 'Série C': 18, 'Série B': 24, 'Série A': 30,
-  'Copa do Brasil': 36, Libertadores: 42, Europa: 50, Champions: 60,
-  'Seleção': 72, 'Copa do Mundo': 85, "Ballon d'Or": 100, 'Ídolo': 120, Lenda: 150
+  'Copinha Nacional': 36, Continentão: 42, Europa: 50, 'Liga dos Craques': 60,
+  'Seleçoca': 72, Mundialito: 85, 'Bola de Ouro': 100, 'Ídolo': 120, Lenda: 150
 }
 
 function getTierDoJogador(nivel) {

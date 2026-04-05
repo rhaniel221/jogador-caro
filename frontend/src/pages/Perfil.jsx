@@ -187,6 +187,9 @@ export default function Perfil() {
         <div className="pf-stat"><span className="pf-stat-icon">⚔️</span><span className="pf-stat-val">{jogador.vitorias}V/{jogador.derrotas}D</span><span className="pf-stat-lbl">{winRate}% Win</span></div>
       </div>
 
+      {/* === FAMA & PATROCÍNIO === */}
+      <FamaCard jogadorID={jogadorID} jogador={jogador} setJogador={setJogador} mostrarNotificacao={mostrarNotificacao} />
+
       {/* === CASA === */}
       <CasaCard jogadorID={jogadorID} jogador={jogador} setJogador={setJogador} mostrarNotificacao={mostrarNotificacao} setLevelUp={setLevelUp} />
 
@@ -203,6 +206,151 @@ export default function Perfil() {
       )}
 
       <CampinhoSection jogadorID={jogadorID} jogador={jogador} setJogador={setJogador} mostrarNotificacao={mostrarNotificacao} setLevelUp={setLevelUp} />
+    </div>
+  )
+}
+
+const RANK_CORES = {
+  'Desconhecido': '#888',
+  'Promessa': '#27ae60',
+  'Famoso': '#2980b9',
+  'Estrela': '#8e44ad',
+  'Ídolo': '#f39c12',
+  'Lenda Viva': '#e74c3c',
+}
+
+function FamaCard({ jogadorID, jogador, setJogador, mostrarNotificacao }) {
+  const [famaData, setFamaData] = useState(null)
+  const [loading, setLoading] = useState(false)
+
+  const carregar = useCallback(() => {
+    if (!jogadorID) return
+    API.get('/api/fama/' + jogadorID).then(setFamaData).catch(() => {})
+  }, [jogadorID])
+
+  useEffect(() => { carregar() }, [carregar])
+
+  if (!famaData || !jogador) return null
+
+  const rank = famaData.rank
+  const ranks = famaData.ranks || []
+  const fama = famaData.fama || 0
+  const corRank = RANK_CORES[rank.rank] || '#888'
+
+  // Progresso dentro do rank atual
+  const rangeRank = rank.max - rank.min + 1
+  const progressoRank = Math.min(100, Math.round(((fama - rank.min) / rangeRank) * 100))
+
+  // Próximo rank
+  const idxAtual = ranks.findIndex(r => r.rank === rank.rank)
+  const proximoRank = idxAtual < ranks.length - 1 ? ranks[idxAtual + 1] : null
+  const faltaProximo = proximoRank ? proximoRank.min - fama : 0
+
+  async function coletarPatrocinio() {
+    setLoading(true)
+    try {
+      const res = await API.post('/api/fama/coletar-patrocinio', { jogador_id: jogadorID })
+      if (res.sucesso) {
+        if (res.jogador) setJogador(res.jogador)
+        mostrarNotificacao(res.mensagem, 'sucesso')
+        carregar()
+      } else {
+        mostrarNotificacao(res.mensagem, 'erro')
+      }
+    } catch { mostrarNotificacao('Erro de conexão', 'erro') }
+    setLoading(false)
+  }
+
+  return (
+    <div className="pf-section">
+      <div className="pf-section-header"><h3>⭐ FAMA & PATROCÍNIO</h3></div>
+
+      {/* Rank atual */}
+      <div className="fama-rank-card" style={{ borderColor: corRank }}>
+        <div className="fama-rank-top">
+          <span className="fama-rank-nome" style={{ color: corRank }}>{rank.rank}</span>
+          <span className="fama-pontos">{fmt(fama)} Fama</span>
+        </div>
+
+        {/* Barra de progresso */}
+        <div className="fama-bar-container">
+          <div className="fama-bar">
+            <div className="fama-bar-fill" style={{ width: progressoRank + '%', background: corRank }} />
+          </div>
+          {proximoRank && (
+            <div className="fama-proximo">
+              Faltam <strong>{fmt(faltaProximo)}</strong> para <span style={{ color: RANK_CORES[proximoRank.rank] || '#888' }}>{proximoRank.rank}</span>
+            </div>
+          )}
+        </div>
+
+        {/* Bônus do rank */}
+        <div className="fama-bonus-grid">
+          {rank.bonus_xp > 0 && (
+            <div className="fama-bonus-item">
+              <span className="fama-bonus-icon">📊</span>
+              <span>+{Math.round(rank.bonus_xp * 100)}% XP</span>
+            </div>
+          )}
+          {rank.renda_hora > 0 && (
+            <div className="fama-bonus-item">
+              <span className="fama-bonus-icon">💰</span>
+              <span>R$ {fmt(rank.renda_hora)}/hora</span>
+            </div>
+          )}
+          {rank.moedas_dia > 0 && (
+            <div className="fama-bonus-item">
+              <span className="fama-bonus-icon">🪙</span>
+              <span>+{rank.moedas_dia} moeda/dia</span>
+            </div>
+          )}
+          {rank.bonus_xp === 0 && rank.renda_hora === 0 && (
+            <div className="fama-bonus-item" style={{ color: '#999' }}>
+              Alcance 500 fama para desbloquear bônus!
+            </div>
+          )}
+        </div>
+
+        {/* Patrocínio */}
+        {rank.patrocinio && (
+          <div className="fama-patrocinio">
+            <div className="fama-patrocinio-nome">🤝 Patrocínio: <strong>{rank.patrocinio}</strong></div>
+            {famaData.patrocinio_acumulado > 0 && (
+              <button className="btn-work btn-verde btn-small" onClick={coletarPatrocinio} disabled={loading}>
+                {loading ? '...' : `💰 Coletar R$ ${fmt(famaData.patrocinio_acumulado)}`}
+              </button>
+            )}
+            {!famaData.patrocinio_acumulado && (
+              <span style={{ fontSize: 11, color: '#888' }}>Acumulando renda...</span>
+            )}
+          </div>
+        )}
+
+        {/* Status de proteção */}
+        <div className="fama-protecao">
+          {famaData.protegido
+            ? <span style={{ color: 'var(--verde)' }}>🛡️ Protegido! Fez PvP hoje — sem decaimento.</span>
+            : <span style={{ color: '#c0392b' }}>⚠️ Faça PvP hoje para evitar perda de fama!</span>
+          }
+        </div>
+      </div>
+
+      {/* Ranks disponíveis */}
+      <div className="fama-ranks-lista">
+        {ranks.map(r => {
+          const ativo = r.rank === rank.rank
+          const cor = RANK_CORES[r.rank] || '#888'
+          const atingido = fama >= r.min
+          return (
+            <div key={r.rank} className={`fama-rank-pill${ativo ? ' fama-rank-ativo' : ''}${!atingido ? ' fama-rank-locked' : ''}`}
+              style={ativo ? { borderColor: cor, background: cor + '18' } : {}}>
+              <span className="fama-pill-nome" style={{ color: atingido ? cor : '#aaa' }}>{r.rank}</span>
+              <span className="fama-pill-min">{fmt(r.min)}+</span>
+              {r.bonus_xp > 0 && <span className="fama-pill-bonus">+{Math.round(r.bonus_xp * 100)}% XP</span>}
+            </div>
+          )
+        })}
+      </div>
     </div>
   )
 }

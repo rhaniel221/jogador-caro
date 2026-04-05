@@ -9,17 +9,17 @@ export function fmt(v) {
 const TIER_FATORES_ENERGIA = {
   Garoto: 0.10, Base: 0.15, Amador: 0.22,
   'Série C': 0.28, 'Série B': 0.32, 'Série A': 0.38,
-  'Copa do Brasil': 0.42, Libertadores: 0.48, Europa: 0.55,
-  Champions: 0.62, 'Seleção': 0.70, 'Copa do Mundo': 0.78,
-  "Ballon d'Or": 0.82, 'Ídolo': 0.88, Lenda: 0.95,
+  'Copinha Nacional': 0.42, Continentão: 0.48, Europa: 0.55,
+  'Liga dos Craques': 0.62, 'Seleçoca': 0.70, Mundialito: 0.78,
+  'Bola de Ouro': 0.82, 'Ídolo': 0.88, Lenda: 0.95,
 }
 
 const TIER_BONUS_ENERGIA = {
   Garoto: 0, Base: 10, Amador: 20,
   'Série C': 30, 'Série B': 38, 'Série A': 45,
-  'Copa do Brasil': 52, Libertadores: 60, Europa: 70,
-  Champions: 80, 'Seleção': 92, 'Copa do Mundo': 105,
-  "Ballon d'Or": 115, 'Ídolo': 130, Lenda: 150,
+  'Copinha Nacional': 52, Continentão: 60, Europa: 70,
+  'Liga dos Craques': 80, 'Seleçoca': 92, Mundialito: 105,
+  'Bola de Ouro': 115, 'Ídolo': 130, Lenda: 150,
 }
 
 export function energiaBonusPorTier(tier) {

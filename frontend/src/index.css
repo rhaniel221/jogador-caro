@@ -3691,6 +3691,127 @@ input, select, textarea {
 }
 
 /* =====================================================
+   FAMA & PATROCÍNIO (Perfil)
+   ===================================================== */
+.fama-rank-card {
+  background: var(--card-bg);
+  border: var(--borda);
+  border-radius: var(--radius);
+  padding: 16px;
+  box-shadow: var(--sombra);
+  border-left: 5px solid #888;
+}
+.fama-rank-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.fama-rank-nome {
+  font-family: var(--font-titulo);
+  font-size: 22px;
+  letter-spacing: 1px;
+}
+.fama-pontos {
+  font-weight: 900;
+  font-size: 15px;
+  color: var(--preto);
+}
+.fama-bar-container { margin-bottom: 12px; }
+.fama-bar {
+  height: 10px;
+  background: #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #bbb;
+}
+.fama-bar-fill {
+  height: 100%;
+  border-radius: 8px;
+  transition: width 0.5s ease;
+}
+.fama-proximo {
+  font-size: 11px;
+  color: #555;
+  margin-top: 4px;
+  font-weight: 700;
+}
+.fama-bonus-grid {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+.fama-bonus-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  font-weight: 900;
+  background: #fff;
+  padding: 4px 10px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+.fama-bonus-icon { font-size: 16px; }
+.fama-patrocinio {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: #f0f8ff;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid #b0d4f1;
+  margin-bottom: 10px;
+}
+.fama-patrocinio-nome {
+  font-size: 13px;
+  font-weight: 700;
+}
+.fama-protecao {
+  font-size: 12px;
+  font-weight: 700;
+  padding-top: 6px;
+}
+.fama-ranks-lista {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+.fama-rank-pill {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 6px 12px;
+  border: 2px solid #ddd;
+  border-radius: 10px;
+  background: #f8f8f8;
+  min-width: 80px;
+}
+.fama-rank-ativo {
+  box-shadow: 0 0 8px rgba(0,0,0,0.15);
+  border-width: 3px;
+}
+.fama-rank-locked { opacity: 0.45; }
+.fama-pill-nome {
+  font-family: var(--font-titulo);
+  font-size: 13px;
+  letter-spacing: 0.5px;
+}
+.fama-pill-min {
+  font-size: 10px;
+  color: #888;
+  font-weight: 700;
+}
+.fama-pill-bonus {
+  font-size: 10px;
+  font-weight: 900;
+  color: var(--verde);
+}
+
+/* =====================================================
    CAMPINHO (Perfil)
    ===================================================== */
 .campinho-section {
