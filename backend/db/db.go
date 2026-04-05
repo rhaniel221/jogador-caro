@@ -756,9 +756,9 @@ func seedCatalogos() {
 		{"carro_popular", "Carro Popular", "Um carro zero na garagem", "🚗", 15000, 100, true},
 		{"suv", "SUV Importado", "Estilo e poder na estrada", "🚙", 60000, 400, true},
 		{"superesportivo", "Superesportivo", "O carro dos campeões", "🏎️", 250000, 1500, true},
-		{"kitnet", "Kitnet no Bairro", "Saiu da casa dos pais", "🏠", 2000, 15, true},
-		{"apartamento", "Apartamento na Cidade", "Vista bonita e endereço chique", "🏢", 30000, 200, true},
-		{"mansao", "Mansão do Craque", "Piscina, churrasqueira e tudo mais", "🏰", 200000, 1200, true},
+		{"kitnet", "Kitnet no Bairro", "Saiu da casa dos pais", "🏠", 50000, 15, true},
+		{"apartamento", "Apartamento na Cidade", "Vista bonita e endereço chique", "🏢", 300000, 200, true},
+		{"mansao", "Mansão do Craque", "Piscina, churrasqueira e tudo mais", "🏰", 1500000, 1200, true},
 		{"personal", "Sessão com Personal", "Treino de elite por um dia", "💪", 500, 3, false},
 		{"coletiva", "Coletiva de Imprensa", "Apareça na mídia hoje", "🎤", 3000, 25, false},
 		{"empresario", "Contratar Empresário", "Ele gerencia sua imagem por um tempo", "🤝", 10000, 100, false},
@@ -767,7 +767,7 @@ func seedCatalogos() {
 		Conn.Exec(`INSERT INTO cat_itens_fama
 			(id, nome, descricao, preco, fama_ganha, icone, unico)
 			VALUES ($1,$2,$3,$4,$5,$6,$7)
-			ON CONFLICT (id) DO NOTHING`,
+			ON CONFLICT (id) DO UPDATE SET preco=$4, fama_ganha=$5`,
 			f.id, f.nome, f.descricao, f.preco, f.famaGanha, f.icone, f.unico)
 	}
 

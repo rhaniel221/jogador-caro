@@ -432,17 +432,20 @@ function CasaCard({ jogadorID, jogador, setJogador, mostrarNotificacao, setLevel
 
   useEffect(() => { carregar() }, [carregar])
 
-  // Auto-abrir modal quando chega no Amador sem casa
+  // Auto-abrir modal quando chega na Série C sem casa
+  const temCasaAtual = casa?.tipo && casa.tipo !== ''
+  const obrigatorio = jogador?.nivel >= 18 && !temCasaAtual
+
   useEffect(() => {
     if (!casa || !jogador) return
     const temCasa = casa.tipo && casa.tipo !== ''
-    if (jogador.nivel >= 10 && !temCasa) {
+    if (jogador.nivel >= 18 && !temCasa) {
       setShowModal(true)
     }
   }, [casa, jogador?.nivel])
 
-  // Só mostra a partir do Amador (nível 10+)
-  if (!jogador || jogador.nivel < 10) return null
+  // Só mostra a partir da Série C (nível 18+)
+  if (!jogador || jogador.nivel < 18) return null
   if (!casa) return null
 
   async function comprar(tipo) {
@@ -480,11 +483,15 @@ function CasaCard({ jogadorID, jogador, setJogador, mostrarNotificacao, setLevel
       {showModal && (
         <div className="modal-overlay">
           <div className="casa-modal" onClick={e => e.stopPropagation()}>
-            <button className="pm-close" onClick={() => setShowModal(false)}>✕</button>
+            {!obrigatorio && <button className="pm-close" onClick={() => setShowModal(false)}>✕</button>}
             <div className="casa-modal-header">
               <span className="casa-modal-icon">🏠</span>
-              <h2 className="casa-modal-title">Parabéns, Amador!</h2>
-              <p className="casa-modal-sub">Agora você pode alugar uma casa! Ela gera XP e energia passivamente, mesmo quando você não está jogando.</p>
+              <h2 className="casa-modal-title">{obrigatorio ? 'Hora de alugar sua casa!' : 'Parabéns, Série C!'}</h2>
+              <p className="casa-modal-sub">
+                {obrigatorio
+                  ? 'Para continuar trabalhando na Série C, você precisa alugar uma casa! Escolha a sua abaixo.'
+                  : 'Agora você pode alugar uma casa! Ela gera XP e energia passivamente, mesmo quando você não está jogando.'}
+              </p>
             </div>
             <div className="casa-modal-grid">
               {casas.map(c => {
@@ -507,7 +514,10 @@ function CasaCard({ jogadorID, jogador, setJogador, mostrarNotificacao, setLevel
                 )
               })}
             </div>
-            <p className="casa-modal-nota">💡 Não é obrigatório! Você pode fechar e alugar depois no Perfil.</p>
+            {obrigatorio
+              ? <p className="casa-modal-nota" style={{ color: '#e74c3c', fontWeight: 900 }}>⚠️ Obrigatório para trabalhar na Série C!</p>
+              : <p className="casa-modal-nota">💡 Você pode fechar e alugar depois no Perfil.</p>
+            }
           </div>
         </div>
       )}

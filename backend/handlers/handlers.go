@@ -209,6 +209,18 @@ func HandleTrabalhar(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// A partir da Série C (nível 18+), é obrigatório ter casa alugada
+	if jogador.Nivel >= 18 {
+		var tipoCasa string
+		db.Conn.QueryRow("SELECT COALESCE(tipo,'') FROM casas WHERE jogador_id=$1", req.JogadorID).Scan(&tipoCasa)
+		if tipoCasa == "" {
+			JsonResp(w, 200, TrabalharResponse{
+				Mensagem: "Você precisa alugar uma casa para trabalhar na Série C! Vá ao seu Perfil e escolha uma casa.",
+			})
+			return
+		}
+	}
+
 	if trabalho.RequereItem > 0 && !temItem(req.JogadorID, trabalho.RequereItem) {
 		item := findItemByID(trabalho.RequereItem)
 		itemNome := "item necessário"

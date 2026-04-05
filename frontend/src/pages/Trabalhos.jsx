@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useGame } from '../context/GameContext'
 import API from '../api'
 import {
@@ -159,6 +160,7 @@ function VariedadePanel({ diferentesHoje, config, tier }) {
 
 export default function Trabalhos() {
   const { jogador, setJogador, mostrarNotificacao, jogadorID, setLevelUp, pushDialogo } = useGame()
+  const navigate = useNavigate()
 
   const [trabalhos, setTrabalhos] = useState([])
   const [maestria, setMaestria] = useState({})
@@ -227,6 +229,13 @@ export default function Trabalhos() {
         if (res.level_up) {
           setLevelUp(res.novo_nivel)
         }
+      } else if (res.mensagem && res.mensagem.includes('alugar uma casa')) {
+        pushDialogo({
+          tipo: 'dialogo',
+          icone: '🏠',
+          texto: res.mensagem,
+        })
+        setTimeout(() => navigate('/inicio'), 300)
       } else {
         mostrarNotificacao(res.mensagem || 'Não foi possível trabalhar.', 'erro')
       }
