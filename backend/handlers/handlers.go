@@ -195,6 +195,9 @@ func HandleTrabalhar(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Regenera energia antes de calcular (corrige dessincronização com o frontend)
+	regenerarEnergia(jogador)
+
 	// Calcula TUDO no backend (anti-cheat)
 	custoEnergia := calcCustoEnergia(trabalho.Energia, jogador.Nivel, trabalho.Tier)
 	ganhoMin, ganhoMax, ganhoXP := calcRecompensaTrabalho(trabalho, jogador.Nivel)
@@ -339,12 +342,72 @@ func HandleTrabalhar(w http.ResponseWriter, r *http.Request) {
 		mensagem += fmt.Sprintf(" LEVEL UP! Agora você é nível %d!", novoNivel)
 	}
 
+	// Eventos aleatórios de trabalho (nível 10+)
+	evento, _ := GerarEventoTrabalho(jogador, ganho, ganhoXP)
+
 	JsonResp(w, 200, TrabalharResponse{
 		Sucesso: true, Mensagem: mensagem, Ganhou: ganho,
 		GanhouXP: ganhoXP, LevelUp: levelUp, NovoNivel: novoNivel, Jogador: jogador,
 		BonusMaestria: bonusMaestriaXP, BonusTier: trabalho.Tier,
 		BonusVariedadeXP: bonusVariedadeXP,
 		VezesHoje: vezesHoje, DiferentesHoje: diferentesHoje,
+		Evento: evento,
+	})
+}
+
+// POST /api/evento-trabalho/escolha
+func HandleEventoEscolha(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		ErrResp(w, 405, "Método não permitido")
+		return
+	}
+
+	var req struct {
+		JogadorID int    `json:"jogador_id"`
+		EventoID  string `json:"evento_id"`
+		OpcaoID   string `json:"opcao_id"`
+		GanhoDin  int    `json:"ganho_din"`
+		GanhoXP   int    `json:"ganho_xp"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		ErrResp(w, 400, "Dados inválidos")
+		return
+	}
+
+	jogador, err := getJogador(req.JogadorID)
+	if err != nil {
+		ErrResp(w, 404, "Jogador não encontrado")
+		return
+	}
+
+	resultado := AplicarEventoTrabalho(jogador, req.EventoID, req.OpcaoID, req.GanhoDin, req.GanhoXP)
+
+	// Level up check
+	levelUp := false
+	novoNivel := jogador.Nivel
+	for jogador.XP >= jogador.XPProximo {
+		jogador.XP -= jogador.XPProximo
+		jogador.Nivel++
+		jogador.XPProximo = calcularXPProximo(jogador.Nivel)
+		jogador.EnergiaMax = calcEnergiaMaxBase(jogador.Nivel)
+		jogador.Energia = jogador.EnergiaMax
+		jogador.Forca++
+		jogador.Velocidade++
+		jogador.Habilidade++
+		jogador.VitalidadeMax++
+		jogador.Vitalidade = jogador.VitalidadeMax
+		novoNivel = jogador.Nivel
+		levelUp = true
+	}
+
+	saveJogador(jogador)
+
+	JsonResp(w, 200, map[string]interface{}{
+		"sucesso":   true,
+		"resultado": resultado,
+		"jogador":   jogador,
+		"level_up":  levelUp,
+		"novo_nivel": novoNivel,
 	})
 }
 
@@ -718,6 +781,12 @@ func HandleCombate(w http.ResponseWriter, r *http.Request) {
 		ErrResp(w, 404, "Atacante não encontrado")
 		return
 	}
+
+	if atacante.Nivel < 10 {
+		JsonResp(w, 200, CombateResult{Sucesso: false, Mensagem: "O Estádio libera no nível 10! Continue trabalhando."})
+		return
+	}
+
 	defensor, err := getJogador(req.DefensorID)
 	if err != nil {
 		ErrResp(w, 404, "Defensor não encontrado")
@@ -2544,6 +2613,17 @@ func HandleDesafio1v1(w http.ResponseWriter, r *http.Request) {
 	}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		ErrResp(w, 400, "Dados inválidos")
+		return
+	}
+
+	// Verifica nível mínimo para 1v1
+	desafiante, err := getJogador(req.DesafianteID)
+	if err != nil {
+		ErrResp(w, 404, "Jogador não encontrado")
+		return
+	}
+	if desafiante.Nivel < 12 {
+		JsonResp(w, 200, Desafio1v1Response{Mensagem: "O Desafio 1v1 libera no nível 12! Continue evoluindo."})
 		return
 	}
 

@@ -30,6 +30,7 @@ func main() {
 	http.HandleFunc("/api/login/", handlers.Cors(handlers.HandleLogin))
 	http.HandleFunc("/api/jogador/", handlers.Cors(handlers.HandleJogador))
 	http.HandleFunc("/api/trabalhar", handlers.Cors(handlers.HandleTrabalhar))
+	http.HandleFunc("/api/evento-trabalho/escolha", handlers.Cors(handlers.HandleEventoEscolha))
 	http.HandleFunc("/api/inventario/", handlers.Cors(handlers.HandleInventario))
 	http.HandleFunc("/api/comprar", handlers.Cors(handlers.HandleComprar))
 	http.HandleFunc("/api/usar-item", handlers.Cors(handlers.HandleUsarItem))

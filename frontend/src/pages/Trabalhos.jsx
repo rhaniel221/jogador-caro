@@ -168,6 +168,9 @@ export default function Trabalhos() {
   const [loading, setLoading] = useState(null)
   const showAllTiers = false
   const [hoje, setHoje] = useState({ trabalhos_hoje: {}, diferentes_hoje: 0, config: {} })
+  const [eventoPendente, setEventoPendente] = useState(null)
+  const [eventoLoading, setEventoLoading] = useState(false)
+  const [eventoResultado, setEventoResultado] = useState(null)
 
   useEffect(() => {
     API.get('/api/trabalhos').then(setTrabalhos).catch(() => {})
@@ -229,6 +232,10 @@ export default function Trabalhos() {
         if (res.level_up) {
           setLevelUp(res.novo_nivel)
         }
+        // Evento aleatório?
+        if (res.evento) {
+          setEventoPendente({ ...res.evento, ganho_din: res.ganhou, ganho_xp: res.ganhou_xp })
+        }
       } else if (res.mensagem && (res.mensagem.includes('alugar uma casa') || res.mensagem.includes('casa melhor') || res.mensagem.includes('Série B exige'))) {
         pushDialogo({
           tipo: 'dialogo',
@@ -244,6 +251,34 @@ export default function Trabalhos() {
     }
 
     setLoading(null)
+  }
+
+  async function handleEscolhaEvento(opcaoID) {
+    if (!eventoPendente || eventoLoading) return
+    setEventoLoading(true)
+    try {
+      const res = await API.post('/api/evento-trabalho/escolha', {
+        jogador_id: jogadorID,
+        evento_id: eventoPendente.id,
+        opcao_id: opcaoID,
+        ganho_din: eventoPendente.ganho_din,
+        ganho_xp: eventoPendente.ganho_xp,
+      })
+      if (res.sucesso) {
+        setJogador(res.jogador)
+        setEventoResultado(res.resultado)
+        if (res.level_up) setLevelUp(res.novo_nivel)
+      }
+    } catch {
+      mostrarNotificacao('Erro de conexão', 'erro')
+      setEventoPendente(null)
+    }
+    setEventoLoading(false)
+  }
+
+  function fecharEvento() {
+    setEventoPendente(null)
+    setEventoResultado(null)
   }
 
   const tierTrabalhos = trabalhos.filter(t => t.tier === tierAtivo)
@@ -325,6 +360,53 @@ export default function Trabalhos() {
       <p className="footer-note">
         💡 Suba de nível para desbloquear tiers melhores! Tier Amador fica sempre disponível.
       </p>
+
+      {/* Modal de Evento Aleatório */}
+      {eventoPendente && (
+        <div className="modal-overlay">
+          <div className="evento-modal">
+            {!eventoResultado ? (
+              <>
+                <div className="evento-icone">{eventoPendente.icone}</div>
+                <h3 className="evento-titulo">{eventoPendente.titulo}</h3>
+                <p className="evento-desc">{eventoPendente.descricao}</p>
+                <div className="evento-opcoes">
+                  {eventoPendente.opcoes.map(op => (
+                    <button
+                      key={op.id}
+                      className="evento-opcao-btn"
+                      onClick={() => handleEscolhaEvento(op.id)}
+                      disabled={eventoLoading}
+                    >
+                      <span className="evento-op-icone">{op.icone}</span>
+                      <span className="evento-op-texto">{op.texto}</span>
+                    </button>
+                  ))}
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="evento-icone">{eventoResultado.sucesso ? '✅' : '❌'}</div>
+                <h3 className="evento-titulo">{eventoResultado.sucesso ? 'Deu bom!' : 'Deu ruim...'}</h3>
+                <p className="evento-desc">{eventoResultado.texto}</p>
+                <div className="evento-resultados">
+                  {eventoResultado.bonus_xp > 0 && <span className="evento-res-item evento-res-bom">+{eventoResultado.bonus_xp} XP</span>}
+                  {eventoResultado.bonus_din > 0 && <span className="evento-res-item evento-res-bom">+R$ {fmt(eventoResultado.bonus_din)}</span>}
+                  {eventoResultado.bonus_din < 0 && <span className="evento-res-item evento-res-ruim">R$ {fmt(eventoResultado.bonus_din)}</span>}
+                  {eventoResultado.bonus_fama > 0 && <span className="evento-res-item evento-res-bom">+{eventoResultado.bonus_fama} Fama</span>}
+                  {eventoResultado.perda_fama > 0 && <span className="evento-res-item evento-res-ruim">-{eventoResultado.perda_fama} Fama</span>}
+                  {eventoResultado.bonus_energia > 0 && <span className="evento-res-item evento-res-bom">+{eventoResultado.bonus_energia} Energia</span>}
+                  {eventoResultado.bonus_energia < 0 && <span className="evento-res-item evento-res-ruim">{eventoResultado.bonus_energia} Energia</span>}
+                  {eventoResultado.perda_saude > 0 && <span className="evento-res-item evento-res-ruim">-{eventoResultado.perda_saude} Saúde</span>}
+                </div>
+                <button className="btn-work btn-verde" onClick={fecharEvento} style={{ marginTop: 14, width: '100%' }}>
+                  Continuar
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </>
   )
 }

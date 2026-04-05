@@ -133,20 +133,48 @@ type CombateResult struct {
 }
 
 type TrabalharResponse struct {
-	Sucesso               bool         `json:"sucesso"`
-	Mensagem              string       `json:"mensagem"`
-	Ganhou                int          `json:"ganhou"`
-	GanhouXP              int          `json:"ganhou_xp"`
-	LevelUp               bool         `json:"level_up"`
-	NovoNivel             int          `json:"novo_nivel"`
-	Jogador               *JogadorData `json:"jogador"`
-	BonusMaestria         int          `json:"bonus_maestria"`
-	BonusTier             string       `json:"bonus_tier"`
-	BonusVariedadeXP      int          `json:"bonus_variedade_xp"`
-	VezesHoje             int          `json:"vezes_hoje"`
-	DiferentesHoje        int          `json:"diferentes_hoje"`
-	BloqueadoLimite       bool         `json:"bloqueado_limite"`
-	FaltaItem             *Item        `json:"falta_item,omitempty"`
+	Sucesso               bool            `json:"sucesso"`
+	Mensagem              string          `json:"mensagem"`
+	Ganhou                int             `json:"ganhou"`
+	GanhouXP              int             `json:"ganhou_xp"`
+	LevelUp               bool            `json:"level_up"`
+	NovoNivel             int             `json:"novo_nivel"`
+	Jogador               *JogadorData    `json:"jogador"`
+	BonusMaestria         int             `json:"bonus_maestria"`
+	BonusTier             string          `json:"bonus_tier"`
+	BonusVariedadeXP      int             `json:"bonus_variedade_xp"`
+	VezesHoje             int             `json:"vezes_hoje"`
+	DiferentesHoje        int             `json:"diferentes_hoje"`
+	BloqueadoLimite       bool            `json:"bloqueado_limite"`
+	FaltaItem             *Item           `json:"falta_item,omitempty"`
+	Evento                *EventoTrabalho `json:"evento,omitempty"`
+}
+
+type EventoTrabalho struct {
+	ID          string              `json:"id"`
+	Titulo      string              `json:"titulo"`
+	Descricao   string              `json:"descricao"`
+	Icone       string              `json:"icone"`
+	Opcoes      []OpcaoEvento       `json:"opcoes"`
+	Resultado   *ResultadoEvento    `json:"resultado,omitempty"`
+}
+
+type OpcaoEvento struct {
+	ID        string `json:"id"`
+	Texto     string `json:"texto"`
+	Icone     string `json:"icone"`
+}
+
+type ResultadoEvento struct {
+	OpcaoID      string `json:"opcao_id"`
+	Texto        string `json:"texto"`
+	BonusDin     int    `json:"bonus_din"`
+	BonusXP      int    `json:"bonus_xp"`
+	BonusFama    int    `json:"bonus_fama"`
+	BonusEnergia int    `json:"bonus_energia"`
+	PerdaSaude   int    `json:"perda_saude"`
+	PerdaFama    int    `json:"perda_fama"`
+	Sucesso      bool   `json:"sucesso"`
 }
 
 type ConfigProgressao struct {

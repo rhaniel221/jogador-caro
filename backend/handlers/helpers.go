@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
+	"math/rand"
 	"net/http"
 	"time"
 
@@ -1051,6 +1052,333 @@ func ColetarPatrocinio(jogadorID int) (int, int, error) {
 // ========================
 // MISSÕES COMBINADAS — helpers
 // ========================
+
+// ========================
+// EVENTOS ALEATÓRIOS DE TRABALHO
+// ========================
+
+type eventoTemplate struct {
+	id       string
+	titulo   string
+	desc     string
+	icone    string
+	op1ID    string
+	op1Texto string
+	op1Icone string
+	op2ID    string
+	op2Texto string
+	op2Icone string
+}
+
+var eventosTrabalho = []eventoTemplate{
+	{
+		"olheiro", "Um olheiro te viu jogando!",
+		"Um cara de terno está anotando tudo. O que você faz?", "🕵️",
+		"impressionar", "Mandar um drible impossível", "🔥",
+		"seguro", "Jogar seguro e consistente", "🛡️",
+	},
+	{
+		"treta", "Treta no vestiário!",
+		"Dois jogadores estão quase se pegando. O que você faz?", "😤",
+		"apartar", "Apartar a briga", "🤝",
+		"louco", "Meter o louco junto", "💥",
+	},
+	{
+		"chuva", "Chuva torrencial no campo!",
+		"O campo virou um lamaçal. O que você faz?", "🌧️",
+		"lama", "Jogar na chuva mesmo!", "💪",
+		"esperar", "Esperar passar a chuva", "☂️",
+	},
+	{
+		"empresario", "Empresário com proposta suspeita...",
+		"Ele promete muito dinheiro, mas algo parece errado.", "🤵",
+		"aceitar", "Aceitar a proposta", "💰",
+		"recusar", "Recusar com firmeza", "✋",
+	},
+	{
+		"torcida", "Torcida invade o treino!",
+		"Os fãs estão pedindo autógrafos e fotos.", "📸",
+		"autografo", "Dar autógrafos e tirar fotos", "✍️",
+		"focar", "Focar no treino e ignorar", "🎯",
+	},
+	{
+		"lesao_leve", "Pisou errado no treino!",
+		"Uma torção no tornozelo. Continua ou para?", "🤕",
+		"continuar", "Continuar jogando no sacrifício", "🔥",
+		"parar", "Parar e se cuidar", "🏥",
+	},
+	{
+		"reporter", "Reporter quer entrevista exclusiva!",
+		"A câmera está ligada. O que você faz?", "🎤",
+		"entrevista", "Dar a entrevista bombástica", "📺",
+		"humilde", "Ser humilde e discreto", "😌",
+	},
+	{
+		"gato_campo", "Um gato invadiu o campo!",
+		"O jogo parou. Todo mundo tá olhando.", "🐱",
+		"pegar", "Pegar o gato e virar herói", "😻",
+		"chutar", "Chutar a bola pro gato brincar", "⚽",
+	},
+	{
+		"patrao", "O presidente do clube te chamou!",
+		"Ele quer conversar na sala dele. Parece sério.", "🏢",
+		"negociar", "Pedir aumento de salário", "💰",
+		"agradecer", "Agradecer pela oportunidade", "🙏",
+	},
+	{
+		"rival", "Encontrou seu rival no caminho!",
+		"Aquele jogador que sempre te provoca.", "😈",
+		"provocar", "Provocar de volta", "🗣️",
+		"classe", "Ignorar com classe", "😎",
+	},
+	{
+		"sonho", "Sonhou que fazia o gol do título!",
+		"Acordou motivadão. A energia está diferente hoje.", "💭",
+		"treinar_dobro", "Treinar o dobro", "💪",
+		"relaxar", "Aproveitar a motivação com calma", "😊",
+	},
+	{
+		"apostador", "Um cara oferece grana pra você perder!",
+		"'É só errar um gol...' ele sussurra.", "🎰",
+		"aceitar_aposta", "Aceitar e fazer corpo mole", "💸",
+		"denunciar", "Denunciar pra diretoria", "🚨",
+	},
+}
+
+func GerarEventoTrabalho(jogador *JogadorData, ganhoDin, ganhoXP int) (*EventoTrabalho, *ResultadoEvento) {
+	if jogador.Nivel < 10 {
+		return nil, nil
+	}
+	// 30% de chance
+	if rand.Intn(100) >= 30 {
+		return nil, nil
+	}
+
+	tmpl := eventosTrabalho[rand.Intn(len(eventosTrabalho))]
+	evento := &EventoTrabalho{
+		ID:        tmpl.id,
+		Titulo:    tmpl.titulo,
+		Descricao: tmpl.desc,
+		Icone:     tmpl.icone,
+		Opcoes: []OpcaoEvento{
+			{ID: tmpl.op1ID, Texto: tmpl.op1Texto, Icone: tmpl.op1Icone},
+			{ID: tmpl.op2ID, Texto: tmpl.op2Texto, Icone: tmpl.op2Icone},
+		},
+	}
+
+	// Escolhe aleatoriamente a opção que o jogador "escolheria" — na verdade resolve server-side com uma escolha aleatória
+	// Mas vamos deixar o frontend escolher! O evento retorna pendente.
+	return evento, nil
+}
+
+// Aplica resultado do evento baseado na escolha do jogador
+func AplicarEventoTrabalho(jogador *JogadorData, eventoID, opcaoID string, ganhoDin, ganhoXP int) *ResultadoEvento {
+	resultado := &ResultadoEvento{OpcaoID: opcaoID, Sucesso: true}
+
+	switch eventoID {
+	case "olheiro":
+		if opcaoID == "impressionar" {
+			// 60% sucesso: +80% XP, 40% falha: -30% dinheiro
+			if rand.Intn(100) < 60 {
+				bonus := int(float64(ganhoXP) * 0.8)
+				resultado.BonusXP = bonus
+				resultado.Texto = "O olheiro ficou impressionado! Seu nome está na lista dos craques!"
+			} else {
+				perda := int(float64(ganhoDin) * 0.3)
+				resultado.BonusDin = -perda
+				resultado.Texto = "Errou o drible e caiu de cara... O olheiro foi embora."
+				resultado.Sucesso = false
+			}
+		} else {
+			resultado.BonusXP = int(float64(ganhoXP) * 0.15)
+			resultado.Texto = "Jogou bem e seguro. O olheiro anotou seu nome."
+		}
+
+	case "treta":
+		if opcaoID == "apartar" {
+			resultado.BonusFama = 3 + rand.Intn(5)
+			resultado.BonusXP = int(float64(ganhoXP) * 0.2)
+			resultado.Texto = "Você acalmou todo mundo! Respeito no vestiário."
+		} else {
+			resultado.BonusDin = int(float64(ganhoDin) * 0.5)
+			resultado.PerdaSaude = 3 + rand.Intn(5)
+			resultado.Texto = "Porrada! Ganhou moral mas saiu machucado."
+		}
+
+	case "chuva":
+		if opcaoID == "lama" {
+			resultado.BonusXP = int(float64(ganhoXP) * 0.5)
+			resultado.BonusEnergia = -(2 + rand.Intn(3))
+			resultado.Texto = "Jogou na lama como guerreiro! Treino insano!"
+		} else {
+			resultado.BonusDin = -int(float64(ganhoDin) * 0.3)
+			resultado.Texto = "Esperou a chuva mas perdeu tempo. Rendeu menos."
+		}
+
+	case "empresario":
+		if opcaoID == "aceitar" {
+			resultado.BonusDin = int(float64(ganhoDin) * 2)
+			resultado.PerdaFama = 5 + rand.Intn(8)
+			resultado.Texto = "Dinheiro fácil! Mas as fofocas já começaram..."
+		} else {
+			resultado.BonusFama = 5 + rand.Intn(5)
+			if rand.Intn(100) < 40 {
+				resultado.BonusDin = int(float64(ganhoDin) * 0.5)
+				resultado.Texto = "Recusou com classe! E o presidente te deu um bônus por honestidade!"
+			} else {
+				resultado.Texto = "Recusou com firmeza. Sua reputação cresceu!"
+			}
+		}
+
+	case "torcida":
+		if opcaoID == "autografo" {
+			resultado.BonusFama = 3 + rand.Intn(5)
+			resultado.BonusEnergia = 2 + rand.Intn(3)
+			resultado.Texto = "Os fãs te amam! A energia da torcida te motivou!"
+		} else {
+			resultado.BonusXP = int(float64(ganhoXP) * 0.25)
+			resultado.Texto = "Focou no treino. A disciplina compensa!"
+		}
+
+	case "lesao_leve":
+		if opcaoID == "continuar" {
+			if rand.Intn(100) < 50 {
+				resultado.BonusXP = int(float64(ganhoXP) * 0.6)
+				resultado.BonusFama = 2
+				resultado.Texto = "Jogou no sacrifício e brilhou! Que raça!"
+			} else {
+				resultado.PerdaSaude = 5 + rand.Intn(8)
+				resultado.Texto = "Forçou demais e piorou a lesão..."
+				resultado.Sucesso = false
+			}
+		} else {
+			resultado.BonusEnergia = 3
+			resultado.Texto = "Descansou e voltou melhor. Inteligente!"
+		}
+
+	case "reporter":
+		if opcaoID == "entrevista" {
+			if rand.Intn(100) < 60 {
+				resultado.BonusFama = 5 + rand.Intn(8)
+				resultado.Texto = "Entrevista bombou nas redes! Você é tendência!"
+			} else {
+				resultado.PerdaFama = 3 + rand.Intn(5)
+				resultado.Texto = "Falou demais e a fala saiu errada... Viralizou do jeito ruim."
+				resultado.Sucesso = false
+			}
+		} else {
+			resultado.BonusFama = 2
+			resultado.BonusXP = int(float64(ganhoXP) * 0.1)
+			resultado.Texto = "Resposta humilde e certeira. Boa imagem!"
+		}
+
+	case "gato_campo":
+		if opcaoID == "pegar" {
+			resultado.BonusFama = 4 + rand.Intn(4)
+			resultado.Texto = "Pegou o gato! A torcida gritou seu nome! O gato ronronou."
+		} else {
+			resultado.BonusXP = int(float64(ganhoXP) * 0.15)
+			resultado.Texto = "O gato adorou a bola! Momento fofo viralizou."
+			resultado.BonusFama = 2
+		}
+
+	case "patrao":
+		if opcaoID == "negociar" {
+			if rand.Intn(100) < 45 {
+				resultado.BonusDin = int(float64(ganhoDin) * 1.5)
+				resultado.Texto = "Negociação aprovada! Salário aumentou!"
+			} else {
+				resultado.PerdaFama = 2
+				resultado.Texto = "O presidente não gostou da audácia. Clima pesou..."
+				resultado.Sucesso = false
+			}
+		} else {
+			resultado.BonusFama = 3
+			resultado.BonusXP = int(float64(ganhoXP) * 0.15)
+			resultado.Texto = "Humildade conquista! O presidente te respeita mais."
+		}
+
+	case "rival":
+		if opcaoID == "provocar" {
+			if rand.Intn(100) < 50 {
+				resultado.BonusXP = int(float64(ganhoXP) * 0.4)
+				resultado.BonusFama = 3
+				resultado.Texto = "A provocação virou motivação! Jogou demais depois!"
+			} else {
+				resultado.PerdaFama = 3
+				resultado.PerdaSaude = 2
+				resultado.Texto = "A treta esquentou e saiu empurrão..."
+				resultado.Sucesso = false
+			}
+		} else {
+			resultado.BonusFama = 4
+			resultado.Texto = "Ignorou com estilo. A torcida aplaudiu a maturidade!"
+		}
+
+	case "sonho":
+		if opcaoID == "treinar_dobro" {
+			resultado.BonusXP = int(float64(ganhoXP) * 0.6)
+			resultado.BonusEnergia = -(3 + rand.Intn(3))
+			resultado.Texto = "Treinou como nunca! Exaustor mas evoluiu muito!"
+		} else {
+			resultado.BonusXP = int(float64(ganhoXP) * 0.2)
+			resultado.BonusEnergia = 2
+			resultado.Texto = "Aproveitou a motivação com equilíbrio. Dia perfeito!"
+		}
+
+	case "apostador":
+		if opcaoID == "aceitar_aposta" {
+			resultado.BonusDin = int(float64(ganhoDin) * 3)
+			resultado.PerdaFama = 10 + rand.Intn(10)
+			resultado.PerdaSaude = 2
+			resultado.Texto = "Dinheiro sujo no bolso... Mas e se descobrirem?"
+		} else {
+			resultado.BonusFama = 8 + rand.Intn(5)
+			resultado.BonusXP = int(float64(ganhoXP) * 0.3)
+			resultado.Texto = "Denunciou! O clube te premiou pela honestidade!"
+		}
+	}
+
+	// Aplica no jogador
+	if resultado.BonusDin != 0 {
+		jogador.DinheiroMao += resultado.BonusDin
+		if jogador.DinheiroMao < 0 {
+			jogador.DinheiroMao = 0
+		}
+	}
+	if resultado.BonusXP != 0 {
+		jogador.XP += resultado.BonusXP
+	}
+	if resultado.BonusFama != 0 {
+		jogador.PontosFama += resultado.BonusFama
+		if jogador.PontosFama < 0 {
+			jogador.PontosFama = 0
+		}
+	}
+	if resultado.PerdaFama != 0 {
+		jogador.PontosFama -= resultado.PerdaFama
+		if jogador.PontosFama < 0 {
+			jogador.PontosFama = 0
+		}
+	}
+	if resultado.BonusEnergia != 0 {
+		jogador.Energia += resultado.BonusEnergia
+		if jogador.Energia < 0 {
+			jogador.Energia = 0
+		}
+		if jogador.Energia > jogador.EnergiaMax {
+			jogador.Energia = jogador.EnergiaMax
+		}
+	}
+	if resultado.PerdaSaude != 0 {
+		jogador.Saude -= resultado.PerdaSaude
+		if jogador.Saude < 0 {
+			jogador.Saude = 0
+		}
+	}
+
+	return resultado
+}
 
 func updateCombinedProgress(jogadorID int, tipo string, quantidade int) {
 	hoje := hojeJogo()
