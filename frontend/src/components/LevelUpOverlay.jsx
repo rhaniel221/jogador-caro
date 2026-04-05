@@ -41,6 +41,9 @@ const DESBLOQUEIOS = {
   12: [
     { icon: '🥅', text: 'Desafio 1v1 desbloqueado! Cobranças de pênalti!' },
   ],
+  15: [
+    { icon: '🧩', text: 'MiniGame desbloqueado! Jogue Match-3 e ganhe moedas!' },
+  ],
 }
 
 export default function LevelUpOverlay() {

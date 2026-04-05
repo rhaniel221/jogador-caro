@@ -1149,8 +1149,8 @@ func GerarEventoTrabalho(jogador *JogadorData, ganhoDin, ganhoXP int) (*EventoTr
 	if jogador.Nivel < 10 {
 		return nil, nil
 	}
-	// 30% de chance
-	if rand.Intn(100) >= 30 {
+	// 20% de chance
+	if rand.Intn(100) >= 20 {
 		return nil, nil
 	}
 

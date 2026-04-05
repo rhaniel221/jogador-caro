@@ -10,6 +10,14 @@ const PIECES = ['⚽', '👟', '🏆', '🟨', '🧤']
 export default function MiniGame() {
   const { jogador, setJogador, mostrarNotificacao, jogadorID, setLevelUp } = useGame()
   const navigate = useNavigate()
+
+  if (!jogador || jogador.nivel < 15) return (
+    <div style={{ textAlign: 'center', padding: 40 }}>
+      <div style={{ fontSize: 60 }}>🔒</div>
+      <h2 style={{ fontFamily: 'var(--font-titulo)', marginTop: 10 }}>MiniGame bloqueado</h2>
+      <p style={{ fontWeight: 700, color: '#555' }}>Alcance o nível 15 para desbloquear o Match-3!</p>
+    </div>
+  )
   const gameRef = useRef(null)
   const containerRef = useRef(null)
 

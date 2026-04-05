@@ -8,7 +8,7 @@ const links = [
   { to: '/missoes', label: 'Missões', tid: 'nav-missoes' },
   { to: '/estadio', label: 'Estádio', tid: 'nav-estadio', minLevel: 10 },
   { to: '/desafio', label: 'Desafio 1v1', tid: 'nav-desafio', minLevel: 12 },
-  { to: '/minigame', label: 'MiniGame', tid: 'nav-minigame' },
+  { to: '/minigame', label: 'MiniGame', tid: 'nav-minigame', minLevel: 15 },
   { to: '/torneio', label: 'Torneio', tid: 'nav-torneio' },
   { to: '/top-craques', label: 'Top Craques', tid: 'nav-top' },
   { to: '/loja', label: 'Loja', tid: 'nav-loja' },

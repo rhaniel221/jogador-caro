@@ -2904,6 +2904,11 @@ func HandleMinigameResultado(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if jogador.Nivel < 15 {
+		JsonResp(w, 200, map[string]interface{}{"sucesso": false, "mensagem": "O MiniGame libera no nível 15!"})
+		return
+	}
+
 	// Anti-cheat: cap score máximo (30 moves × max ~150pts por move = ~4500)
 	if req.Score > 5000 {
 		req.Score = 5000
