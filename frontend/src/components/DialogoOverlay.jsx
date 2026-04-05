@@ -53,7 +53,7 @@ export default function DialogoOverlay() {
             <button className="btn-work" onClick={fecharDialogo}>Fechar</button>
             <button
               className="btn-work btn-verde"
-              onClick={() => { fecharDialogo(); navigate('/inventario') }}
+              onClick={() => { fecharDialogo(); navigate('/loja?item=' + (item?.id || '')) }}
             >
               🛒 Ir para Loja
             </button>

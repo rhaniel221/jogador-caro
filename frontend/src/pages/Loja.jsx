@@ -1,14 +1,18 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useGame } from '../context/GameContext'
+import { useSearchParams } from 'react-router-dom'
 import API from '../api'
 import { fmt, itemStats } from '../utils'
 
 export default function Loja() {
   const { jogador, setJogador, jogadorID, mostrarNotificacao } = useGame()
+  const [searchParams, setSearchParams] = useSearchParams()
   const [itensLoja, setItensLoja] = useState([])
   const [lojaPremium, setLojaPremium] = useState([])
   const [itensFama, setItensFama] = useState([])
   const [tab, setTab] = useState('energia')
+  const highlightItemId = searchParams.get('item') ? parseInt(searchParams.get('item')) : null
+  const highlightRef = useRef(null)
 
   useEffect(() => {
     Promise.all([
@@ -17,6 +21,28 @@ export default function Loja() {
       API.get('/api/itens-fama')
     ]).then(([c, p, f]) => { setItensLoja(c); setLojaPremium(p); setItensFama(f) }).catch(() => {})
   }, [])
+
+  // Auto-seleciona a tab certa quando vem com ?item=
+  useEffect(() => {
+    if (!highlightItemId || !itensLoja.length) return
+    const item = itensLoja.find(i => i.id === highlightItemId)
+    if (item) {
+      if (item.tipo === 'equipamento') setTab('equip')
+      else if (item.tipo === 'mochila') setTab('mochila')
+      else if (item.tipo === 'consumivel') {
+        if (item.recupera_energia > 0 && item.recupera_saude > 0) setTab('combo')
+        else if (item.recupera_saude > 0) setTab('saude')
+        else setTab('energia')
+      }
+    }
+  }, [highlightItemId, itensLoja])
+
+  // Scroll até o item destacado
+  useEffect(() => {
+    if (highlightRef.current) {
+      highlightRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }
+  })
 
   async function comprar(id) {
     const res = await API.post('/api/comprar', { jogador_id: jogadorID, item_id: id })
@@ -55,9 +81,11 @@ export default function Loja() {
     const bloqueado = item.nivel_min > nivel
     const rar = item.raridade || 'comum'
     const stats = itemStats(item)
+    const isHighlight = highlightItemId === item.id
     return (
-      <div key={item.id} className={`shop-item${bloqueado ? ' shop-item-bloqueado' : ''}`}
-        style={rar !== 'comum' ? { borderColor: rarCor[rar] } : {}}>
+      <div key={item.id} ref={isHighlight ? highlightRef : null}
+        className={`shop-item${bloqueado ? ' shop-item-bloqueado' : ''}${isHighlight ? ' shop-item-highlight' : ''}`}
+        style={rar !== 'comum' ? { borderColor: isHighlight ? '#f1c40f' : rarCor[rar] } : isHighlight ? { borderColor: '#f1c40f' } : {}}>
         <div className="s-icone">{item.icone}</div>
         <div className="s-nome">{item.nome}</div>
         {rar !== 'comum' && <div className="s-raridade" style={{ color: rarCor[rar] }}>{rar.toUpperCase()}</div>}

@@ -1088,6 +1088,15 @@ body::before {
     transform: translateY(-3px);
     box-shadow: 6px 6px 0 var(--preto);
 }
+.shop-item-highlight {
+    border-color: #f1c40f !important;
+    box-shadow: 0 0 12px 4px rgba(241, 200, 15, 0.5), var(--sombra);
+    animation: highlight-pulse 1.5s ease-in-out 3;
+}
+@keyframes highlight-pulse {
+    0%, 100% { box-shadow: 0 0 12px 4px rgba(241, 200, 15, 0.5), var(--sombra); }
+    50% { box-shadow: 0 0 20px 8px rgba(241, 200, 15, 0.8), var(--sombra); }
+}
 .shop-item-bloqueado { opacity: 0.55; filter: grayscale(0.5); }
 .shop-item-bloqueado:hover { transform: none; box-shadow: var(--sombra); }
 .s-desc-lock { color: #c0392b; font-weight: 900; }
