@@ -370,6 +370,17 @@ body::before {
     position: relative;
     z-index: 1;
 }
+.page-transition {
+    transition: opacity 0.15s ease, transform 0.15s ease;
+}
+.page-enter {
+    opacity: 1;
+    transform: translateY(0);
+}
+.page-exit {
+    opacity: 0;
+    transform: translateY(8px);
+}
 
 .page-title {
     color: var(--preto);
