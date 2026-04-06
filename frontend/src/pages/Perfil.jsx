@@ -187,14 +187,20 @@ export default function Perfil() {
         <div className="pf-stat"><span className="pf-stat-icon">⚔️</span><span className="pf-stat-val">{jogador.vitorias}V/{jogador.derrotas}D</span><span className="pf-stat-lbl">{winRate}% Win</span></div>
       </div>
 
-      {/* === CENTRAL DE TRATAMENTO === */}
-      <TratamentoSection jogadorID={jogadorID} jogador={jogador} setJogador={setJogador} mostrarNotificacao={mostrarNotificacao} />
+      {/* === PATRIMÔNIO === */}
+      <PatrimonioSection jogadorID={jogadorID} />
+
+      {/* === CASA === */}
+      <CasaCard jogadorID={jogadorID} jogador={jogador} setJogador={setJogador} mostrarNotificacao={mostrarNotificacao} setLevelUp={setLevelUp} />
+
+      {/* === CAMPINHO === */}
+      <CampinhoSection jogadorID={jogadorID} jogador={jogador} setJogador={setJogador} mostrarNotificacao={mostrarNotificacao} setLevelUp={setLevelUp} />
 
       {/* === FAMA & PATROCÍNIO === */}
       <FamaCard jogadorID={jogadorID} jogador={jogador} setJogador={setJogador} mostrarNotificacao={mostrarNotificacao} />
 
-      {/* === CASA === */}
-      <CasaCard jogadorID={jogadorID} jogador={jogador} setJogador={setJogador} mostrarNotificacao={mostrarNotificacao} setLevelUp={setLevelUp} />
+      {/* === CENTRAL DE RECUPERAÇÃO === */}
+      <TratamentoSection jogadorID={jogadorID} jogador={jogador} setJogador={setJogador} mostrarNotificacao={mostrarNotificacao} />
 
       {/* === TÍTULOS === */}
       {jogador.titulos && (
@@ -207,11 +213,6 @@ export default function Perfil() {
           </div>
         </div>
       )}
-
-      {/* === PATRIMÔNIO === */}
-      <PatrimonioSection jogadorID={jogadorID} />
-
-      <CampinhoSection jogadorID={jogadorID} jogador={jogador} setJogador={setJogador} mostrarNotificacao={mostrarNotificacao} setLevelUp={setLevelUp} />
     </div>
   )
 }
