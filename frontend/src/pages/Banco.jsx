@@ -82,14 +82,14 @@ export default function Banco() {
             <div className="bank-balance-value mao">R$ {fmt(jogador.dinheiro_mao)}</div>
             <small style={{ color: '#5a7a4a', fontSize: '10px' }}>Pode ser roubado em combates</small>
           </div>
-          <div className="bank-balance-item" style={{ borderLeft: '1px solid #1a2214', borderRight: '1px solid #1a2214', padding: '0 40px' }}>
+          <div className="bank-balance-item">
             <h3>🏦 No Banco</h3>
             <div className="bank-balance-value conta">R$ {fmt(jogador.dinheiro_banco)}</div>
             <small style={{ color: '#5a7a4a', fontSize: '10px' }}>Seguro! Nao pode ser roubado</small>
           </div>
           <div className="bank-balance-item">
             <h3>💰 Total</h3>
-            <div className="bank-balance-value" style={{ color: '#ffd700' }}>R$ {fmt(jogador.dinheiro_mao + jogador.dinheiro_banco)}</div>
+            <div className="bank-balance-value" style={{ color: 'var(--verde)' }}>R$ {fmt(jogador.dinheiro_mao + jogador.dinheiro_banco)}</div>
             <small style={{ color: '#5a7a4a', fontSize: '10px' }}>Patrimonio total</small>
           </div>
         </div>

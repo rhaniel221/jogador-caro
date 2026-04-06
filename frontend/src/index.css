@@ -5255,13 +5255,25 @@ input, select, textarea {
   .shop-item .btn-work { width: 100%; }
 
   /* ===== BANCO ===== */
+  .bank-balances {
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+    padding-bottom: 14px;
+    margin-bottom: 14px;
+  }
+  .bank-balance-item { padding: 6px 0 !important; border: none !important; }
+  .bank-balance-value { font-size: 22px; }
   .bank-actions {
     flex-direction: column;
     gap: 10px;
   }
   .bank-action { padding: 14px; }
   .bank-action h4 { font-size: 13px; }
-  .bank-balance-item { padding: 10px; }
+  .boleto-banco-section { padding: 12px; }
+  .boleto-recibo-header { font-size: 10px; padding: 8px 10px; }
+  .boleto-linha { padding: 6px 10px; font-size: 12px; }
+  .boleto-total { font-size: 14px; }
 
   /* ===== TOP CRAQUES ===== */
   .leaderboard-table { font-size: 10px; }
