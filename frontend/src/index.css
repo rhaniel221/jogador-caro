@@ -3673,6 +3673,37 @@ input, select, textarea {
 .pm-inv-qtd { font-size: 10px; color: #888; }
 
 /* Ações */
+/* Patrimônio no modal */
+.pm-pat-section { padding: 0 20px 10px; }
+.pm-pat-title {
+  font-family: var(--font-titulo);
+  font-size: 15px;
+  color: var(--preto);
+  margin-bottom: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.pm-pat-grupo { margin-bottom: 8px; }
+.pm-pat-cat {
+  font-size: 10px;
+  font-weight: 900;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 3px;
+}
+.pm-pat-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 8px;
+  background: var(--card-bg);
+  border-radius: 6px;
+  margin-bottom: 3px;
+}
+
 .pm-acoes { padding: 14px 20px 20px; }
 .pm-acao-btn { width: 100%; font-size: 14px; padding: 10px; }
 .pm-status-tag {

@@ -114,11 +114,23 @@ type PerfilPublico struct {
 	Velocidade          int              `json:"velocidade"`
 	Habilidade          int              `json:"habilidade"`
 	Titulo              string           `json:"titulo"`
+	Titulos             string           `json:"titulos"`
 	CodigoAmigo         string           `json:"codigo_amigo"`
 	InventarioPublico   bool             `json:"inventario_publico"`
 	Inventario          []InventarioItem `json:"inventario,omitempty"`
+	Patrimonio          []PatrimonioItem `json:"patrimonio,omitempty"`
+	PatrimonioTotal     int              `json:"patrimonio_total"`
 	EhAmigo             bool             `json:"eh_amigo"`
 	SolicitacaoPendente bool             `json:"solicitacao_pendente"`
+}
+
+type PatrimonioItem struct {
+	ID        string `json:"id"`
+	Nome      string `json:"nome"`
+	Icone     string `json:"icone"`
+	Categoria string `json:"categoria"`
+	Preco     int    `json:"preco"`
+	Qtd       int    `json:"quantidade"`
 }
 
 type CombateResult struct {

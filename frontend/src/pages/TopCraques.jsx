@@ -3,9 +3,28 @@ import { useGame } from '../context/GameContext'
 import API from '../api'
 import { fmt, gerarDescricaoItem } from '../utils'
 
+const ELO_TIERS = [
+  { min: 150, id: 'desafiante', nome: 'Desafiante' },
+  { min: 120, id: 'grao-mestre', nome: 'Grão-Mestre' },
+  { min: 100, id: 'mestre', nome: 'Mestre' },
+  { min: 80, id: 'diamante', nome: 'Diamante' },
+  { min: 60, id: 'esmeralda', nome: 'Esmeralda' },
+  { min: 45, id: 'platina', nome: 'Platina' },
+  { min: 30, id: 'ouro', nome: 'Ouro' },
+  { min: 18, id: 'prata', nome: 'Prata' },
+  { min: 8, id: 'bronze', nome: 'Bronze' },
+  { min: 0, id: 'ferro', nome: 'Ferro' },
+]
+function getElo(nivel) {
+  return ELO_TIERS.find(t => nivel >= t.min) || ELO_TIERS[ELO_TIERS.length - 1]
+}
+
+const CAT_NOME = { moto: 'Motos', carro: 'Carros', apartamento: 'Imóveis' }
+
 function PerfilModal({ jogadorID, targetID, onClose, getAvatar }) {
   const [perfil, setPerfil] = useState(null)
   const [loading, setLoading] = useState(true)
+  const modalRef = React.useRef(null)
 
   useEffect(() => {
     if (!targetID) return
@@ -14,6 +33,12 @@ function PerfilModal({ jogadorID, targetID, onClose, getAvatar }) {
       .then(res => { setPerfil(res.perfil || res); setLoading(false) })
       .catch(() => setLoading(false))
   }, [targetID, jogadorID])
+
+  // Scroll pro topo quando abre
+  useEffect(() => {
+    if (modalRef.current) modalRef.current.scrollTop = 0
+    window.scrollTo(0, 0)
+  }, [targetID])
 
   if (loading) return (
     <div className="modal-overlay" onClick={onClose}>
@@ -28,6 +53,16 @@ function PerfilModal({ jogadorID, targetID, onClose, getAvatar }) {
   const winRate = perfil.vitorias + perfil.derrotas > 0
     ? Math.round((perfil.vitorias / (perfil.vitorias + perfil.derrotas)) * 100) : 0
   const poder = perfil.forca + perfil.velocidade + perfil.habilidade
+  const elo = getElo(perfil.nivel)
+
+  // Agrupar patrimônio por categoria
+  const patGrupos = {}
+  if (perfil.patrimonio) {
+    perfil.patrimonio.forEach(p => {
+      if (!patGrupos[p.categoria]) patGrupos[p.categoria] = []
+      patGrupos[p.categoria].push(p)
+    })
+  }
 
   async function adicionarAmigo() {
     const res = await API.post('/api/amizade/solicitar', { jogador_id: jogadorID, amigo_id: targetID })
@@ -36,16 +71,31 @@ function PerfilModal({ jogadorID, targetID, onClose, getAvatar }) {
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="pm-card" onClick={e => e.stopPropagation()}>
+      <div className="pm-card" ref={modalRef} onClick={e => e.stopPropagation()}>
         <button className="pm-close" onClick={onClose}>✕</button>
 
-        {/* Banner topo */}
-        <div className="pm-banner">
+        {/* Banner topo com moldura de elo */}
+        <div className={`pm-banner pf-elo-${elo.id}`}>
           <div className="pm-banner-glow" />
-          <div className="pm-avatar-big">{getAvatar(perfil.avatar)}</div>
+          <div className="pf-avatar-frame" style={{ width: 100, height: 100, margin: '0 auto 8px' }}>
+            <img src={`/elos/${elo.id}.png`} alt={elo.nome} className="pf-elo-img"
+              onError={e => { e.target.style.display = 'none' }} />
+            <div className="pf-avatar" style={{ fontSize: 44, width: 64, height: 64 }}>{getAvatar(perfil.avatar)}</div>
+          </div>
           <div className="pm-nome-big">{perfil.nome}</div>
-          <div className="pm-rank-badge">{perfil.rank || 'Peladeiro'}</div>
+          <div style={{ display: 'flex', gap: 6, justifyContent: 'center', flexWrap: 'wrap', marginTop: 4 }}>
+            <span className="pm-rank-badge">{perfil.rank || 'Peladeiro'}</span>
+            <span className={`pf-elo-tag pf-elo-tag-${elo.id}`} style={{ position: 'static', transform: 'none' }}>{elo.nome}</span>
+          </div>
           {perfil.titulo && <div className="pm-titulo-tag">{perfil.titulo}</div>}
+          {perfil.titulos && (
+            <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', justifyContent: 'center', marginTop: 6 }}>
+              {perfil.titulos.split(',').filter(Boolean).map((t, i) => (
+                <span key={i} className={`pf-hero-titulo-badge${t === perfil.titulo ? ' pf-hero-titulo-ativo' : ''}`}
+                  style={{ fontSize: 9 }}>{t}</span>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Stats principais */}
@@ -94,6 +144,28 @@ function PerfilModal({ jogadorID, targetID, onClose, getAvatar }) {
           </div>
           <div className="pm-poder-total">Poder Total: <strong>{poder}</strong></div>
         </div>
+
+        {/* Patrimônio */}
+        {perfil.patrimonio && perfil.patrimonio.length > 0 && (
+          <div className="pm-pat-section">
+            <div className="pm-pat-title">🏆 Patrimônio <span style={{ fontSize: 11, color: '#888' }}>R$ {fmt(perfil.patrimonio_total)}</span></div>
+            {['moto', 'carro', 'apartamento'].map(cat => {
+              const itens = patGrupos[cat]
+              if (!itens) return null
+              return (
+                <div key={cat} className="pm-pat-grupo">
+                  <div className="pm-pat-cat">{CAT_NOME[cat]}</div>
+                  {itens.map(p => (
+                    <div key={p.id} className="pm-pat-item">
+                      <span>{p.icone} {p.nome}{p.quantidade > 1 ? ` x${p.quantidade}` : ''}</span>
+                      <span style={{ color: 'var(--verde)', fontWeight: 900 }}>R$ {fmt(p.preco)}</span>
+                    </div>
+                  ))}
+                </div>
+              )
+            })}
+          </div>
+        )}
 
         {/* Código de amigo */}
         <div className="pm-code-box">

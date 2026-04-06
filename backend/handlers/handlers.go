@@ -3266,15 +3266,33 @@ func HandlePerfilPublico(w http.ResponseWriter, r *http.Request) {
 	var p PerfilPublico
 	err = db.Conn.QueryRow(`
 		SELECT id, nome, nivel, avatar, pontos_fama, vitorias, derrotas,
-		       forca, velocidade, habilidade, titulo, codigo_amigo, inventario_publico
+		       forca, velocidade, habilidade, titulo, COALESCE(titulos,''), codigo_amigo, inventario_publico
 		FROM jogadores WHERE id=$1`, targetID).Scan(
 		&p.ID, &p.Nome, &p.Nivel, &p.Avatar, &p.PontosFama, &p.Vitorias, &p.Derrotas,
-		&p.Forca, &p.Velocidade, &p.Habilidade, &p.Titulo, &p.CodigoAmigo, &p.InventarioPublico)
+		&p.Forca, &p.Velocidade, &p.Habilidade, &p.Titulo, &p.Titulos, &p.CodigoAmigo, &p.InventarioPublico)
 	if err != nil {
 		ErrResp(w, 404, "Jogador não encontrado")
 		return
 	}
 	p.Rank = getRank(p.Nivel)
+
+	// Patrimônio (itens de fama comprados)
+	patRows, patErr := db.Conn.Query(`
+		SELECT f.id, f.nome, f.icone, COALESCE(f.categoria,''), f.preco, c.quantidade
+		FROM fama_compras c
+		JOIN cat_itens_fama f ON f.id = c.item_id
+		WHERE c.jogador_id = $1 AND c.quantidade > 0
+		ORDER BY f.categoria, f.preco DESC
+	`, targetID)
+	if patErr == nil {
+		defer patRows.Close()
+		for patRows.Next() {
+			var pi PatrimonioItem
+			patRows.Scan(&pi.ID, &pi.Nome, &pi.Icone, &pi.Categoria, &pi.Preco, &pi.Qtd)
+			p.PatrimonioTotal += pi.Preco * pi.Qtd
+			p.Patrimonio = append(p.Patrimonio, pi)
+		}
+	}
 
 	viewerStr := r.URL.Query().Get("viewer")
 	viewerID, _ := strconv.Atoi(viewerStr)
