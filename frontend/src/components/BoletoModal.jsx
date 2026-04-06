@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react'
 import { useGame } from '../context/GameContext'
+import { useNavigate } from 'react-router-dom'
 import API from '../api'
 import { fmt } from '../utils'
 
 export default function BoletoModal() {
-  const { jogador, jogadorID, setJogador, mostrarNotificacao } = useGame()
+  const { jogador, jogadorID } = useGame()
+  const navigate = useNavigate()
   const [boleto, setBoleto] = useState(null)
-  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     if (!jogadorID || !jogador || jogador.nivel < 18) return
@@ -17,23 +18,6 @@ export default function BoletoModal() {
       .catch(() => {})
   }, [jogadorID, jogador?.nivel])
 
-  async function pagar() {
-    setLoading(true)
-    try {
-      const res = await API.post('/api/boletos/pagar', { jogador_id: jogadorID })
-      if (res.sucesso) {
-        setJogador(res.jogador)
-        mostrarNotificacao(res.mensagem, 'sucesso')
-        setBoleto(null)
-      } else {
-        mostrarNotificacao(res.mensagem, 'erro')
-      }
-    } catch {
-      mostrarNotificacao('Erro de conexao', 'erro')
-    }
-    setLoading(false)
-  }
-
   if (!boleto) return null
 
   return (
@@ -41,41 +25,36 @@ export default function BoletoModal() {
       <div className="boleto-modal">
         <div className="boleto-header">
           <div className="boleto-titulo">BOLETOS CHEGARAM!</div>
-          <div className="boleto-sub">Suas contas do mes venceram. Pague para continuar!</div>
+          <div className="boleto-sub">
+            {boleto.dias_atraso > 0
+              ? `${boleto.dias_atraso} dia${boleto.dias_atraso > 1 ? 's' : ''} em atraso! Juros correndo...`
+              : 'Suas contas venceram. Va ao banco pagar!'}
+          </div>
         </div>
 
-        <div className="boleto-recibo">
-          <div className="boleto-recibo-header">
-            <span>RECIBO DE PAGAMENTO</span>
-            <span>Nivel {boleto.nivel}</span>
+        <div className="boleto-resumo">
+          <div className="boleto-resumo-linha">
+            <span>Contas do periodo</span>
+            <span>R$ {fmt(boleto.valor_base)}</span>
           </div>
-          <div className="boleto-linha boleto-linha-header">
-            <span>Descricao</span>
-            <span>Valor</span>
-          </div>
-          {(boleto.itens || []).map((item, i) => (
-            <div key={i} className="boleto-linha">
-              <span>{item.icone} {item.nome}</span>
-              <span>R$ {fmt(item.valor)}</span>
+          {boleto.juros > 0 && (
+            <div className="boleto-resumo-linha boleto-juros">
+              <span>Juros ({boleto.dias_atraso}d x 5%)</span>
+              <span>+ R$ {fmt(boleto.juros)}</span>
             </div>
-          ))}
-          <div className="boleto-linha boleto-total">
+          )}
+          <div className="boleto-resumo-linha boleto-resumo-total">
             <span>TOTAL</span>
             <span>R$ {fmt(boleto.total)}</span>
           </div>
         </div>
 
-        <div className="boleto-saldo">
-          Na mao: R$ {fmt(jogador?.dinheiro_mao || 0)} | Banco: R$ {fmt(jogador?.dinheiro_banco || 0)}
-        </div>
-
         <button
           className="btn-work btn-verde"
-          onClick={pagar}
-          disabled={loading}
-          style={{ width: '100%', fontSize: 16, padding: '14px 0' }}
+          onClick={() => { setBoleto(null); navigate('/banco') }}
+          style={{ width: 'calc(100% - 32px)', margin: '0 16px 16px', fontSize: 16, padding: '14px 0' }}
         >
-          {loading ? 'Pagando...' : `Pagar R$ ${fmt(boleto.total)}`}
+          Ir ao Banco Pagar
         </button>
       </div>
     </div>

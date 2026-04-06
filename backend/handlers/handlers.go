@@ -4360,7 +4360,6 @@ func HandleBoletoVerificar(w http.ResponseWriter, r *http.Request) {
 
 	// A cada 2 dias reais (48 horas)
 	if diff.Hours() < 48 {
-		// Ainda não venceu
 		restanteSeg := int((48*time.Hour - diff).Seconds())
 		JsonResp(w, 200, map[string]interface{}{
 			"tem_boleto":   false,
@@ -4369,13 +4368,28 @@ func HandleBoletoVerificar(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	total, itens := calcBoleto(jogador.Nivel)
+	valorBase, itens := calcBoleto(jogador.Nivel)
+
+	// Juros: 5% por dia de atraso (após as 48h)
+	horasAtraso := diff.Hours() - 48
+	diasAtraso := int(horasAtraso / 24)
+	if diasAtraso < 0 {
+		diasAtraso = 0
+	}
+	juros := 0
+	if diasAtraso > 0 {
+		juros = int(float64(valorBase) * 0.05 * float64(diasAtraso))
+	}
+	totalComJuros := valorBase + juros
 
 	JsonResp(w, 200, map[string]interface{}{
-		"tem_boleto": true,
-		"total":      total,
-		"itens":      itens,
-		"nivel":      jogador.Nivel,
+		"tem_boleto":   true,
+		"valor_base":   valorBase,
+		"juros":        juros,
+		"dias_atraso":  diasAtraso,
+		"total":        totalComJuros,
+		"itens":        itens,
+		"nivel":        jogador.Nivel,
 	})
 }
 
@@ -4396,12 +4410,38 @@ func HandleBoletoPagar(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	total, _ := calcBoleto(jogador.Nivel)
+	// Verifica se realmente tem boleto pendente
+	var ultimoBoleto time.Time
+	err = db.Conn.QueryRow(`SELECT ultimo_boleto FROM boletos WHERE jogador_id=$1`, req.JogadorID).Scan(&ultimoBoleto)
+	if err != nil {
+		ErrResp(w, 400, "Sem boleto pendente")
+		return
+	}
+	agora := time.Now()
+	diff := agora.Sub(ultimoBoleto)
+	if diff.Hours() < 48 {
+		ErrResp(w, 400, "Sem boleto pendente")
+		return
+	}
+
+	valorBase, _ := calcBoleto(jogador.Nivel)
+
+	// Juros: 5% por dia de atraso
+	horasAtraso := diff.Hours() - 48
+	diasAtraso := int(horasAtraso / 24)
+	if diasAtraso < 0 {
+		diasAtraso = 0
+	}
+	juros := 0
+	if diasAtraso > 0 {
+		juros = int(float64(valorBase) * 0.05 * float64(diasAtraso))
+	}
+	total := valorBase + juros
 
 	// Pode pagar do dinheiro na mão OU banco
 	dinheiroDisponivel := jogador.DinheiroMao + jogador.DinheiroBanco
 	if dinheiroDisponivel < total {
-		ErrResp(w, 400, fmt.Sprintf("Dinheiro insuficiente! Precisa de R$ %d", total))
+		ErrResp(w, 400, fmt.Sprintf("Dinheiro insuficiente! Precisa de R$ %d (base R$ %d + juros R$ %d)", total, valorBase, juros))
 		return
 	}
 
@@ -4419,9 +4459,67 @@ func HandleBoletoPagar(w http.ResponseWriter, r *http.Request) {
 	// Atualiza timestamp do último boleto
 	db.Conn.Exec(`UPDATE boletos SET ultimo_boleto=NOW(), boletos_pagos=boletos_pagos+1 WHERE jogador_id=$1`, req.JogadorID)
 
+	// Registra no histórico
+	db.Conn.Exec(`INSERT INTO boletos_historico (jogador_id, valor_base, juros, valor_total, dias_atraso) VALUES ($1,$2,$3,$4,$5)`,
+		req.JogadorID, valorBase, juros, total, diasAtraso)
+
+	msg := fmt.Sprintf("Boleto pago! R$ %d debitado.", total)
+	if juros > 0 {
+		msg = fmt.Sprintf("Boleto pago com juros! R$ %d (base R$ %d + juros R$ %d)", total, valorBase, juros)
+	}
+
 	JsonResp(w, 200, map[string]interface{}{
 		"sucesso":  true,
-		"mensagem": fmt.Sprintf("Boleto pago! R$ %d debitado.", total),
+		"mensagem": msg,
 		"jogador":  jogador,
+	})
+}
+
+// GET /api/boletos/historico/{jogador_id}
+func HandleBoletoHistorico(w http.ResponseWriter, r *http.Request) {
+	parts := strings.Split(r.URL.Path, "/")
+	idStr := parts[len(parts)-1]
+	jogadorID, _ := strconv.Atoi(idStr)
+	if jogadorID <= 0 {
+		ErrResp(w, 400, "ID inválido")
+		return
+	}
+
+	rows, err := db.Conn.Query(`
+		SELECT valor_base, juros, valor_total, dias_atraso, pago_em
+		FROM boletos_historico
+		WHERE jogador_id=$1
+		ORDER BY pago_em DESC
+		LIMIT 20
+	`, jogadorID)
+	if err != nil {
+		JsonResp(w, 200, map[string]interface{}{"historico": []interface{}{}})
+		return
+	}
+	defer rows.Close()
+
+	type HistItem struct {
+		ValorBase  int    `json:"valor_base"`
+		Juros      int    `json:"juros"`
+		ValorTotal int    `json:"valor_total"`
+		DiasAtraso int    `json:"dias_atraso"`
+		PagoEm     string `json:"pago_em"`
+	}
+	hist := []HistItem{}
+	for rows.Next() {
+		var h HistItem
+		var pagoEm time.Time
+		rows.Scan(&h.ValorBase, &h.Juros, &h.ValorTotal, &h.DiasAtraso, &pagoEm)
+		h.PagoEm = pagoEm.Format("02/01/2006 15:04")
+		hist = append(hist, h)
+	}
+
+	// Total de boletos pagos
+	var totalPagos int
+	db.Conn.QueryRow(`SELECT COALESCE(boletos_pagos,0) FROM boletos WHERE jogador_id=$1`, jogadorID).Scan(&totalPagos)
+
+	JsonResp(w, 200, map[string]interface{}{
+		"historico":    hist,
+		"total_pagos":  totalPagos,
 	})
 }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useGame } from '../context/GameContext'
 import API from '../api'
 import { fmt } from '../utils'
@@ -7,10 +7,28 @@ export default function Banco() {
   const { jogador, setJogador, jogadorID, mostrarNotificacao } = useGame()
   const [valDep, setValDep] = useState('')
   const [valSac, setValSac] = useState('')
+  const [boleto, setBoleto] = useState(null)
+  const [historico, setHistorico] = useState([])
+  const [totalPagos, setTotalPagos] = useState(0)
+  const [loadingBoleto, setLoadingBoleto] = useState(false)
+
+  useEffect(() => {
+    if (!jogadorID || !jogador) return
+    if (jogador.nivel >= 18) {
+      API.get('/api/boletos/verificar/' + jogadorID).then(res => {
+        if (res.tem_boleto) setBoleto(res)
+        else setBoleto(null)
+      }).catch(() => {})
+      API.get('/api/boletos/historico/' + jogadorID).then(res => {
+        setHistorico(res.historico || [])
+        setTotalPagos(res.total_pagos || 0)
+      }).catch(() => {})
+    }
+  }, [jogadorID, jogador?.nivel])
 
   async function depositar() {
     const valor = parseInt(valDep)
-    if (!valor || valor <= 0) { mostrarNotificacao('Digite um valor válido!', 'erro'); return }
+    if (!valor || valor <= 0) { mostrarNotificacao('Digite um valor valido!', 'erro'); return }
     try {
       const res = await API.post('/api/depositar', { jogador_id: jogadorID, valor })
       if (res.sucesso) { setJogador(res.jogador); setValDep(''); mostrarNotificacao(res.mensagem, 'sucesso') }
@@ -20,7 +38,7 @@ export default function Banco() {
 
   async function sacar() {
     const valor = parseInt(valSac)
-    if (!valor || valor <= 0) { mostrarNotificacao('Digite um valor válido!', 'erro'); return }
+    if (!valor || valor <= 0) { mostrarNotificacao('Digite um valor valido!', 'erro'); return }
     try {
       const res = await API.post('/api/sacar', { jogador_id: jogadorID, valor })
       if (res.sucesso) { setJogador(res.jogador); setValSac(''); mostrarNotificacao(res.mensagem, 'sucesso') }
@@ -28,29 +46,51 @@ export default function Banco() {
     } catch (e) { mostrarNotificacao('Erro ao sacar.', 'erro') }
   }
 
+  async function pagarBoleto() {
+    setLoadingBoleto(true)
+    try {
+      const res = await API.post('/api/boletos/pagar', { jogador_id: jogadorID })
+      if (res.sucesso) {
+        setJogador(res.jogador)
+        mostrarNotificacao(res.mensagem, 'sucesso')
+        setBoleto(null)
+        // Recarrega historico
+        API.get('/api/boletos/historico/' + jogadorID).then(r => {
+          setHistorico(r.historico || [])
+          setTotalPagos(r.total_pagos || 0)
+        }).catch(() => {})
+      } else {
+        mostrarNotificacao(res.mensagem, 'erro')
+      }
+    } catch {
+      mostrarNotificacao('Erro ao pagar boleto.', 'erro')
+    }
+    setLoadingBoleto(false)
+  }
+
   if (!jogador) return null
 
   return (
     <>
       <h2 className="page-title">🏦 BANCO</h2>
-      <p className="subtitle">Guarde seu dinheiro com segurança. Taxa de 10% no depósito. Dinheiro no banco fica seguro de roubos!</p>
+      <p className="subtitle">Guarde seu dinheiro com seguranca. Taxa de 10% no deposito. Dinheiro no banco fica seguro de roubos!</p>
 
       <div className="bank-container" data-tutorial="banco-area">
         <div className="bank-balances">
           <div className="bank-balance-item">
-            <h3>💵 Na Mão</h3>
+            <h3>💵 Na Mao</h3>
             <div className="bank-balance-value mao">R$ {fmt(jogador.dinheiro_mao)}</div>
             <small style={{ color: '#5a7a4a', fontSize: '10px' }}>Pode ser roubado em combates</small>
           </div>
           <div className="bank-balance-item" style={{ borderLeft: '1px solid #1a2214', borderRight: '1px solid #1a2214', padding: '0 40px' }}>
             <h3>🏦 No Banco</h3>
             <div className="bank-balance-value conta">R$ {fmt(jogador.dinheiro_banco)}</div>
-            <small style={{ color: '#5a7a4a', fontSize: '10px' }}>Seguro! Não pode ser roubado</small>
+            <small style={{ color: '#5a7a4a', fontSize: '10px' }}>Seguro! Nao pode ser roubado</small>
           </div>
           <div className="bank-balance-item">
             <h3>💰 Total</h3>
             <div className="bank-balance-value" style={{ color: '#ffd700' }}>R$ {fmt(jogador.dinheiro_mao + jogador.dinheiro_banco)}</div>
-            <small style={{ color: '#5a7a4a', fontSize: '10px' }}>Patrimônio total</small>
+            <small style={{ color: '#5a7a4a', fontSize: '10px' }}>Patrimonio total</small>
           </div>
         </div>
 
@@ -86,13 +126,104 @@ export default function Banco() {
         </div>
       </div>
 
+      {/* === BOLETO PENDENTE === */}
+      {boleto && (
+        <div className="boleto-banco-section">
+          <div className="boleto-banco-header">
+            <h3>📄 BOLETO PENDENTE</h3>
+            {boleto.dias_atraso > 0 && (
+              <span className="boleto-atraso-badge">
+                {boleto.dias_atraso} dia{boleto.dias_atraso > 1 ? 's' : ''} em atraso!
+              </span>
+            )}
+          </div>
+
+          <div className="boleto-recibo">
+            <div className="boleto-recibo-header">
+              <span>RECIBO DE PAGAMENTO</span>
+              <span>Nivel {boleto.nivel}</span>
+            </div>
+            <div className="boleto-linha boleto-linha-header">
+              <span>Descricao</span>
+              <span>Valor</span>
+            </div>
+            {(boleto.itens || []).map((item, i) => (
+              <div key={i} className="boleto-linha">
+                <span>{item.icone} {item.nome}</span>
+                <span>R$ {fmt(item.valor)}</span>
+              </div>
+            ))}
+            {boleto.juros > 0 && (
+              <div className="boleto-linha boleto-juros">
+                <span>📈 Juros de atraso ({boleto.dias_atraso}d x 5%)</span>
+                <span>+ R$ {fmt(boleto.juros)}</span>
+              </div>
+            )}
+            <div className="boleto-linha boleto-total">
+              <span>TOTAL A PAGAR</span>
+              <span>R$ {fmt(boleto.total)}</span>
+            </div>
+          </div>
+
+          {boleto.dias_atraso > 0 && (
+            <div className="boleto-aviso-juros">
+              Juros de 5% ao dia! Pague logo para evitar mais cobranças.
+            </div>
+          )}
+
+          <button
+            className="btn-work btn-verde"
+            style={{ width: '100%', fontSize: 16, padding: '14px 0' }}
+            onClick={pagarBoleto}
+            disabled={loadingBoleto}
+          >
+            {loadingBoleto ? 'Pagando...' : `Pagar R$ ${fmt(boleto.total)}`}
+          </button>
+        </div>
+      )}
+
+      {/* === HISTORICO DE BOLETOS === */}
+      {jogador.nivel >= 18 && (
+        <div className="section-box" style={{ marginTop: 15 }}>
+          <h3>📋 Historico de Boletos {totalPagos > 0 && <span style={{ fontSize: 12, color: '#888', fontWeight: 700 }}>({totalPagos} pagos)</span>}</h3>
+
+          {historico.length === 0 ? (
+            <p style={{ fontSize: 12, color: '#888', padding: '10px 0' }}>
+              {boleto ? 'Nenhum boleto pago ainda. Pague o boleto pendente acima!' : 'Nenhum boleto registrado ainda.'}
+            </p>
+          ) : (
+            <div className="boleto-hist-lista">
+              {historico.map((h, i) => (
+                <div key={i} className={`boleto-hist-item${h.juros > 0 ? ' boleto-hist-juros' : ''}`}>
+                  <div className="boleto-hist-data">{h.pago_em}</div>
+                  <div className="boleto-hist-valores">
+                    <span>R$ {fmt(h.valor_total)}</span>
+                    {h.juros > 0 && (
+                      <span className="boleto-hist-juros-tag">
+                        +R${fmt(h.juros)} juros ({h.dias_atraso}d)
+                      </span>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
       <div className="section-box" style={{ marginTop: '15px' }}>
         <h3>💡 Dicas</h3>
         <div style={{ fontSize: '12px', color: '#5a7a4a', lineHeight: 1.8 }}>
-          <p>• O banco cobra 10% de taxa no depósito para cobrir serviços financeiros.</p>
-          <p>• O saque não tem taxas — seu dinheiro está sempre disponível.</p>
-          <p>• Dinheiro no banco NÃO pode ser roubado em combates no estádio.</p>
-          <p>• Guarde o máximo possível se estiver sendo atacado com frequência!</p>
+          <p>• O banco cobra 10% de taxa no deposito para cobrir servicos financeiros.</p>
+          <p>• O saque nao tem taxas — seu dinheiro esta sempre disponivel.</p>
+          <p>• Dinheiro no banco NAO pode ser roubado em combates no estadio.</p>
+          <p>• Guarde o maximo possivel se estiver sendo atacado com frequencia!</p>
+          {jogador.nivel >= 18 && (
+            <>
+              <p>• A cada 2 dias chegam boletos (aluguel, energia, agua, internet, condominio).</p>
+              <p>• Boletos em atraso geram juros de 5% ao dia! Pague em dia.</p>
+            </>
+          )}
         </div>
       </div>
     </>

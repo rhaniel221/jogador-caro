@@ -4597,14 +4597,14 @@ input, select, textarea {
 .pat-valor { font-size: 12px; font-weight: 900; color: var(--verde); margin-top: 2px; }
 
 /* =====================================================
-   BOLETO MODAL
+   BOLETO MODAL (notificação popup)
    ===================================================== */
 .boleto-modal {
   background: var(--card-bg);
   border: var(--borda);
   border-radius: var(--radius);
   box-shadow: var(--sombra-lg);
-  max-width: 420px;
+  max-width: 400px;
   width: 90%;
   padding: 0;
   overflow: hidden;
@@ -4626,12 +4626,73 @@ input, select, textarea {
   color: rgba(255,255,255,0.8);
   margin-top: 4px;
 }
-.boleto-recibo {
+.boleto-resumo {
   margin: 16px;
+  border: 2px solid #ddd;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #fff;
+}
+.boleto-resumo-linha {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  border-top: 1px solid #eee;
+}
+.boleto-resumo-linha:first-child { border-top: none; }
+.boleto-juros {
+  color: var(--vermelho);
+  background: #fff0f0;
+}
+.boleto-resumo-total {
+  font-size: 16px;
+  font-weight: 900;
+  color: var(--preto);
+  background: #f0f0f0;
+  border-top: 2px solid var(--preto);
+}
+
+/* =====================================================
+   BOLETO NO BANCO
+   ===================================================== */
+.boleto-banco-section {
+  margin-top: 15px;
+  background: var(--card-bg);
+  border: 3px solid var(--vermelho);
+  border-radius: var(--radius);
+  padding: 16px;
+  box-shadow: var(--sombra);
+  animation: tut-pulse 2s ease-in-out infinite;
+}
+.boleto-banco-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.boleto-banco-header h3 {
+  font-family: var(--font-titulo);
+  font-size: 18px;
+  color: var(--vermelho);
+  margin: 0;
+}
+.boleto-atraso-badge {
+  font-size: 11px;
+  font-weight: 900;
+  color: #fff;
+  background: var(--vermelho);
+  padding: 3px 10px;
+  border-radius: 20px;
+  animation: tut-pulse 1s ease-in-out infinite;
+}
+.boleto-recibo {
   border: 2px dashed #aaa;
   border-radius: 10px;
   overflow: hidden;
   background: #fff;
+  margin-bottom: 12px;
 }
 .boleto-recibo-header {
   display: flex;
@@ -4660,6 +4721,10 @@ input, select, textarea {
   border-top: none;
   background: #f8f8f8;
 }
+.boleto-linha.boleto-juros {
+  color: var(--vermelho);
+  background: #fff0f0;
+}
 .boleto-total {
   background: #fff8e1;
   font-size: 15px;
@@ -4667,16 +4732,55 @@ input, select, textarea {
   color: var(--vermelho);
   border-top: 2px solid var(--preto);
 }
-.boleto-saldo {
+.boleto-aviso-juros {
+  background: #fff0f0;
+  border: 2px solid var(--vermelho);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 900;
+  color: var(--vermelho);
   text-align: center;
+  margin-bottom: 12px;
+}
+
+/* Historico de boletos */
+.boleto-hist-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 10px;
+}
+.boleto-hist-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: var(--card-bg);
+  border: 2px solid var(--verde);
+  border-radius: 8px;
   font-size: 12px;
   font-weight: 700;
-  color: #556;
-  padding: 0 16px 12px;
 }
-.boleto-modal .btn-work {
-  margin: 0 16px 16px;
-  width: calc(100% - 32px) !important;
+.boleto-hist-item.boleto-hist-juros {
+  border-color: var(--laranja);
+}
+.boleto-hist-data {
+  color: #556;
+}
+.boleto-hist-valores {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 900;
+  color: var(--preto);
+}
+.boleto-hist-juros-tag {
+  font-size: 10px;
+  color: var(--vermelho);
+  background: #fff0f0;
+  padding: 2px 6px;
+  border-radius: 6px;
 }
 
 /* =====================================================

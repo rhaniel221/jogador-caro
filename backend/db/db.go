@@ -1291,6 +1291,15 @@ func seedCatalogos() {
 		ultimo_boleto TIMESTAMP DEFAULT NOW(),
 		boletos_pagos INT DEFAULT 0
 	)`)
+	Conn.Exec(`CREATE TABLE IF NOT EXISTS boletos_historico (
+		id SERIAL PRIMARY KEY,
+		jogador_id INT REFERENCES jogadores(id),
+		valor_base INT DEFAULT 0,
+		juros INT DEFAULT 0,
+		valor_total INT DEFAULT 0,
+		dias_atraso INT DEFAULT 0,
+		pago_em TIMESTAMP DEFAULT NOW()
+	)`)
 
 	// ========================
 	// MISSÕES COMBINADAS

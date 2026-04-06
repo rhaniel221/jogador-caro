@@ -95,6 +95,7 @@ func main() {
 	http.HandleFunc("/api/fama/", handlers.Cors(handlers.HandleFamaStatus))
 	http.HandleFunc("/api/patrimonio/", handlers.Cors(handlers.HandlePatrimonio))
 	http.HandleFunc("/api/boletos/pagar", handlers.Cors(handlers.HandleBoletoPagar))
+	http.HandleFunc("/api/boletos/historico/", handlers.Cors(handlers.HandleBoletoHistorico))
 	http.HandleFunc("/api/boletos/verificar/", handlers.Cors(handlers.HandleBoletoVerificar))
 
 	// Cron: decaimento de fama diário (roda às 08:05 horário SP)
