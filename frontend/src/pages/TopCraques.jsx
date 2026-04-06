@@ -112,6 +112,14 @@ function PerfilModal({ jogadorID, targetID, onClose, getAvatar }) {
           </div>
 
           <div className="pm-nome-big">{perfil.nome}</div>
+          {perfil.clube_nome && (
+            <div className="pm-clube-row">
+              <span className="pm-clube-badge" style={{ background: `linear-gradient(135deg, ${perfil.clube_cor1 || '#555'}, ${perfil.clube_cor2 || '#333'})` }}>
+                {perfil.clube_icone} {perfil.clube_nome}
+              </span>
+              {perfil.numero_camisa > 0 && <span className="pm-camisa-num">#{perfil.numero_camisa}</span>}
+            </div>
+          )}
           <div className="pm-badges-row">
             <span className="pm-rank-badge">{perfil.rank || 'Peladeiro'}</span>
             <span className={`pm-elo-badge pm-elo-badge-${elo.id}`}>{elo.nome}</span>

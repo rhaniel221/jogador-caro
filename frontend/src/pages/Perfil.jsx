@@ -49,6 +49,7 @@ export default function Perfil() {
   const [inventario, setInventario] = useState([])
   const [itensFama, setItensFama] = useState([])
   const [tasks, setTasks] = useState([])
+  const [clube, setClube] = useState(null)
 
   const carregarDados = async () => {
     if (!jogadorID) return
@@ -68,6 +69,7 @@ export default function Perfil() {
 
   useEffect(() => {
     carregarDados()
+    if (jogadorID) API.get('/api/clube/atual/' + jogadorID).then(setClube).catch(() => {})
   }, [jogadorID])
 
   async function selecionarAvatar(id) {
@@ -195,6 +197,14 @@ export default function Perfil() {
                 {GK:'🧤 Goleiro', DEF:'🛡️ Defensor', MED:'🎯 Meia', ATA:'⚽ Atacante'}[jogador.posicao] || jogador.posicao
               }</span>}
             </div>
+            {clube && clube.tem_clube && (
+              <div className="pf-clube-row">
+                <span className="pf-clube-badge" style={{ background: `linear-gradient(135deg, ${clube.cor1}, ${clube.cor2})` }}>
+                  {clube.icone} {clube.nome}
+                </span>
+                {clube.camisa > 0 && <span className="pf-camisa-badge">#{clube.camisa}</span>}
+              </div>
+            )}
             <div className="pf-level-row">
               <span className="pf-level-chip">LVL {jogador.nivel}</span>
               <span className="pf-xp-text">{jogador.xp}/{jogador.xp_proximo} XP</span>

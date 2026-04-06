@@ -98,6 +98,7 @@ func main() {
 	http.HandleFunc("/api/cdb/resgatar", handlers.Cors(handlers.HandleCDBResgatar))
 	http.HandleFunc("/api/cdb/", handlers.Cors(handlers.HandleCDB))
 	http.HandleFunc("/api/clube/escolher", handlers.Cors(handlers.HandleEscolherClube))
+	http.HandleFunc("/api/clube/atual/", handlers.Cors(handlers.HandleClubeAtual))
 	http.HandleFunc("/api/clubes/disponiveis/", handlers.Cors(handlers.HandleClubesDisponiveis))
 	http.HandleFunc("/api/camisa/escolher", handlers.Cors(handlers.HandleEscolherCamisa))
 	http.HandleFunc("/api/camisas/disponiveis/", handlers.Cors(handlers.HandleCamisasDisponiveis))

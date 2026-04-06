@@ -3294,6 +3294,14 @@ func HandlePerfilPublico(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	// Clube atual
+	var clubeID int
+	db.Conn.QueryRow("SELECT COALESCE(clube_id,0) FROM jogadores WHERE id=$1", targetID).Scan(&clubeID)
+	if clubeID > 0 {
+		db.Conn.QueryRow("SELECT nome, icone, cor1, cor2 FROM clubes WHERE id=$1", clubeID).Scan(&p.ClubeNome, &p.ClubeIcone, &p.ClubeCor1, &p.ClubeCor2)
+		db.Conn.QueryRow("SELECT COALESCE(numero_camisa,0) FROM jogador_clube WHERE jogador_id=$1", targetID).Scan(&p.NumeroCamisa)
+	}
+
 	viewerStr := r.URL.Query().Get("viewer")
 	viewerID, _ := strconv.Atoi(viewerStr)
 
@@ -4712,6 +4720,46 @@ func HandleCDBResgatar(w http.ResponseWriter, r *http.Request) {
 		"mensagem":   msg,
 		"jogador":    jogador,
 		"rendimento": rendimento,
+	})
+}
+
+// GET /api/clube/atual/{jogador_id}
+func HandleClubeAtual(w http.ResponseWriter, r *http.Request) {
+	parts := strings.Split(r.URL.Path, "/")
+	idStr := parts[len(parts)-1]
+	jogadorID, _ := strconv.Atoi(idStr)
+	if jogadorID <= 0 {
+		JsonResp(w, 200, map[string]interface{}{"tem_clube": false})
+		return
+	}
+
+	var clubeID int
+	db.Conn.QueryRow("SELECT COALESCE(clube_id,0) FROM jogadores WHERE id=$1", jogadorID).Scan(&clubeID)
+	if clubeID <= 0 {
+		JsonResp(w, 200, map[string]interface{}{"tem_clube": false})
+		return
+	}
+
+	var nome, mascote, cor1, cor2, tier, icone string
+	err := db.Conn.QueryRow("SELECT nome, mascote, cor1, cor2, tier, icone FROM clubes WHERE id=$1", clubeID).Scan(&nome, &mascote, &cor1, &cor2, &tier, &icone)
+	if err != nil {
+		JsonResp(w, 200, map[string]interface{}{"tem_clube": false})
+		return
+	}
+
+	var camisa int
+	db.Conn.QueryRow("SELECT COALESCE(numero_camisa,0) FROM jogador_clube WHERE jogador_id=$1", jogadorID).Scan(&camisa)
+
+	JsonResp(w, 200, map[string]interface{}{
+		"tem_clube": true,
+		"clube_id":  clubeID,
+		"nome":      nome,
+		"mascote":   mascote,
+		"cor1":      cor1,
+		"cor2":      cor2,
+		"tier":      tier,
+		"icone":     icone,
+		"camisa":    camisa,
 	})
 }
 

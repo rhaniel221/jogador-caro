@@ -122,6 +122,11 @@ type PerfilPublico struct {
 	Inventario          []InventarioItem `json:"inventario,omitempty"`
 	Patrimonio          []PatrimonioItem `json:"patrimonio,omitempty"`
 	PatrimonioTotal     int              `json:"patrimonio_total"`
+	ClubeNome           string           `json:"clube_nome,omitempty"`
+	ClubeIcone          string           `json:"clube_icone,omitempty"`
+	ClubeCor1           string           `json:"clube_cor1,omitempty"`
+	ClubeCor2           string           `json:"clube_cor2,omitempty"`
+	NumeroCamisa        int              `json:"numero_camisa"`
 	EhAmigo             bool             `json:"eh_amigo"`
 	SolicitacaoPendente bool             `json:"solicitacao_pendente"`
 }
