@@ -249,37 +249,37 @@ const TRATAMENTOS = [
   {
     id: 'meditacao', nome: 'Meditação', icone: '🧘',
     desc: 'Foco mental e vitalidade renovada.',
-    custoBase: 10000, custoNivel: 500,
+    custoBase: 8000, custoNivel: 400,
     ganhos: (n) => `+${5 + Math.floor(n/5)} Saúde · +${20 + Math.floor(n/4)} Vitalidade`,
   },
   {
     id: 'nutricao', nome: 'Nutricionista', icone: '🥗',
     desc: 'Dieta equilibrada para o corpo.',
-    custoBase: 15000, custoNivel: 800,
+    custoBase: 12000, custoNivel: 640,
     ganhos: (n) => `+${8 + Math.floor(n/4)} Saúde · +${12 + Math.floor(n/5)} Vitalidade · +${3 + Math.floor(n/15)} Energia`,
   },
   {
     id: 'psicologo', nome: 'Psicólogo', icone: '🧠',
     desc: 'Sessão de terapia para renovar a mente.',
-    custoBase: 20000, custoNivel: 1000,
+    custoBase: 16000, custoNivel: 800,
     ganhos: (n) => `+${20 + Math.floor(n/2)} Saúde · +${10 + Math.floor(n/5)} Vitalidade`,
   },
   {
     id: 'academia', nome: 'Academia', icone: '🏋️',
     desc: 'Treino pesado: recupera saúde, força e vitalidade.',
-    custoBase: 25000, custoNivel: 1200,
+    custoBase: 20000, custoNivel: 960,
     ganhos: (n) => `+${10 + Math.floor(n/3)} Saúde · +1 Força · +${15 + Math.floor(n/5)} Vitalidade`,
   },
   {
     id: 'fisioterapia', nome: 'Fisioterapia', icone: '💆',
     desc: 'Recuperação corporal completa.',
-    custoBase: 35000, custoNivel: 1500,
+    custoBase: 28000, custoNivel: 1200,
     ganhos: (n) => `+${15 + Math.floor(n/3)} Saúde · +${20 + Math.floor(n/4)} Vitalidade · +${5 + Math.floor(n/10)} Energia`,
   },
   {
     id: 'spa', nome: 'Day Spa', icone: '🧖',
     desc: 'Relaxamento total: corpo e mente.',
-    custoBase: 50000, custoNivel: 2000,
+    custoBase: 40000, custoNivel: 1600,
     ganhos: (n) => `+${25 + Math.floor(n/2)} Saúde · +${25 + Math.floor(n/3)} Vitalidade · +${8 + Math.floor(n/8)} Energia`,
   },
 ]
