@@ -4301,8 +4301,8 @@ func calcBoleto(nivel int) (total int, itens []map[string]interface{}) {
 	ganhoPorTrabalho := ganhoBase * fator
 	// ~8 trabalhos por dia, 2 dias = 16 trabalhos
 	ganho2Dias := ganhoPorTrabalho * 16
-	// Boleto = 30% disso
-	totalBoleto := int(ganho2Dias * 0.30)
+	// Boleto = 39% disso (30% base + 30% de aumento)
+	totalBoleto := int(ganho2Dias * 0.39)
 
 	// Divide em categorias proporcionais
 	aluguel := int(float64(totalBoleto) * 0.40)
