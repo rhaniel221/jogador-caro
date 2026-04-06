@@ -84,6 +84,7 @@ func createTables() {
 		`ALTER TABLE jogadores ADD COLUMN IF NOT EXISTS streak_consecutiva INT DEFAULT 0`,
 		`ALTER TABLE jogadores ADD CONSTRAINT jogadores_nome_unique UNIQUE (nome)`,
 		`ALTER TABLE cat_itens ADD COLUMN IF NOT EXISTS cooldown_minutos INT DEFAULT 0`,
+		`ALTER TABLE cat_itens ADD COLUMN IF NOT EXISTS preco_moedas INT DEFAULT 0`,
 	} {
 		Conn.Exec(m)
 	}
@@ -614,6 +615,28 @@ func seedCatalogos() {
 	for _, e := range energyItems {
 		Conn.Exec(`UPDATE cat_itens SET recupera_energia=$1, cooldown_minutos=$2 WHERE id=$3`,
 			e.recuperaEnergia, e.cooldown, e.id)
+	}
+
+	// Itens de saúde (recupera_saude > 0) custam moedas, não dinheiro
+	saudeMoedas := map[int]int{
+		// Saúde pura
+		5: 1, 64: 1,       // Garoto/Base: 1 moeda
+		71: 2,              // Amador: 2 moedas
+		74: 3,              // Série C/B: 3 moedas
+		77: 5,              // Série A/Copa: 5 moedas
+		80: 8,              // Europa/Champions: 8 moedas
+		83: 12,             // Seleção/Lenda: 12 moedas
+		// Combo (energia + saúde)
+		72: 2,              // Amador combo: 2 moedas
+		75: 4,              // Série C/B combo: 4 moedas
+		78: 6,              // Série A/Copa combo: 6 moedas
+		81: 10,             // Europa combo: 10 moedas
+		84: 15,             // Lenda combo: 15 moedas
+		// Antigos (primeira seção, sobrescritos mas por segurança)
+		73: 3,
+	}
+	for id, moedas := range saudeMoedas {
+		Conn.Exec(`UPDATE cat_itens SET preco_moedas=$1, preco=0 WHERE id=$2`, moedas, id)
 	}
 
 	// Update rarities for new items

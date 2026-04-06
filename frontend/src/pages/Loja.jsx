@@ -63,7 +63,7 @@ export default function Loja() {
   const nivel = jogador?.nivel || 1
 
   const visivel = (item) => {
-    if (item.preco <= 0) return false
+    if (item.preco <= 0 && (item.preco_moedas || 0) <= 0) return false
     if (item.nivel_max > 0 && nivel > item.nivel_max) return false
     return true
   }
@@ -108,10 +108,10 @@ export default function Loja() {
           </div>
         )}
 
-        <div className="s-preco">R$ {fmt(item.preco)}</div>
+        <div className="s-preco">{item.preco_moedas > 0 ? `🪙 ${item.preco_moedas} moedas` : `R$ ${fmt(item.preco)}`}</div>
         {bloqueado
           ? <button className="btn-work btn-small" disabled>🔒 Nível {item.nivel_min}</button>
-          : <button className="btn-work btn-small btn-verde" onClick={() => comprar(item.id)}>Comprar</button>
+          : <button className={`btn-work btn-small ${item.preco_moedas > 0 ? 'shop-btn-premium' : 'btn-verde'}`} onClick={() => comprar(item.id)}>Comprar</button>
         }
       </div>
     )

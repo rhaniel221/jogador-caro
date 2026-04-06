@@ -518,15 +518,25 @@ func HandleComprar(w http.ResponseWriter, r *http.Request) {
 		})
 		return
 	}
-	if jogador.DinheiroMao < item.Preco {
-		JsonResp(w, 200, map[string]interface{}{
-			"sucesso":  false,
-			"mensagem": fmt.Sprintf("Dinheiro insuficiente! Você tem R$ %d mas precisa de R$ %d.", jogador.DinheiroMao, item.Preco),
-		})
-		return
+	if item.PrecoMoedas > 0 {
+		if jogador.Moedas < item.PrecoMoedas {
+			JsonResp(w, 200, map[string]interface{}{
+				"sucesso":  false,
+				"mensagem": fmt.Sprintf("Moedas insuficientes! Você tem %d mas precisa de %d moedas.", jogador.Moedas, item.PrecoMoedas),
+			})
+			return
+		}
+		jogador.Moedas -= item.PrecoMoedas
+	} else {
+		if jogador.DinheiroMao < item.Preco {
+			JsonResp(w, 200, map[string]interface{}{
+				"sucesso":  false,
+				"mensagem": fmt.Sprintf("Dinheiro insuficiente! Você tem R$ %d mas precisa de R$ %d.", jogador.DinheiroMao, item.Preco),
+			})
+			return
+		}
+		jogador.DinheiroMao -= item.Preco
 	}
-
-	jogador.DinheiroMao -= item.Preco
 	db.Conn.Exec(`
 		INSERT INTO inventario (jogador_id, item_id, quantidade, equipado)
 		VALUES ($1, $2, 1, false)
@@ -1015,7 +1025,7 @@ func HandleJogadores(w http.ResponseWriter, r *http.Request) {
 }
 
 func HandleItens(w http.ResponseWriter, r *http.Request) {
-	rows, err := db.Conn.Query(`SELECT id, nome, descricao, preco, tipo, icone, COALESCE(raridade, 'comum'), nivel_min, nivel_max,
+	rows, err := db.Conn.Query(`SELECT id, nome, descricao, preco, COALESCE(preco_moedas, 0), tipo, icone, COALESCE(raridade, 'comum'), nivel_min, nivel_max,
 		bonus_forca, bonus_velocidade, bonus_habilidade, bonus_saude_max, bonus_energia_max,
 		bonus_vit_max, recupera_energia, recupera_saude, slots_mochila, cooldown_minutos FROM cat_itens ORDER BY preco`)
 	if err != nil {
@@ -1026,7 +1036,7 @@ func HandleItens(w http.ResponseWriter, r *http.Request) {
 	itens := []Item{}
 	for rows.Next() {
 		var item Item
-		rows.Scan(&item.ID, &item.Nome, &item.Descricao, &item.Preco, &item.Tipo, &item.Icone,
+		rows.Scan(&item.ID, &item.Nome, &item.Descricao, &item.Preco, &item.PrecoMoedas, &item.Tipo, &item.Icone,
 			&item.Raridade, &item.NivelMin, &item.NivelMax, &item.BonusForca, &item.BonusVelocidade,
 			&item.BonusHabilidade, &item.BonusSaudeMax, &item.BonusEnergiaMax,
 			&item.BonusVitMax, &item.RecuperaEnergia, &item.RecuperaSaude, &item.SlotsMochila,
@@ -3693,9 +3703,9 @@ func HandleWeeklyRanking(w http.ResponseWriter, r *http.Request) {
 // ========================
 
 var casasConfig = map[string]CasaConfig{
-	"basica": {"basica", "Casa Básica", 1200, 10, 5, 15},
-	"media":  {"media", "Casa Média", 15000, 20, 10, 30},
-	"top":    {"top", "Casa Top", 80000, 30, 15, 30},
+	"basica": {Tipo: "basica", Nome: "Casa Básica", PrecoMoedas: 5, XPHora: 10, EnQuant: 5, EnIntMin: 15},
+	"media":  {Tipo: "media", Nome: "Casa Média", PrecoMoedas: 15, XPHora: 20, EnQuant: 10, EnIntMin: 30},
+	"top":    {Tipo: "top", Nome: "Casa Top", PrecoMoedas: 40, XPHora: 30, EnQuant: 15, EnIntMin: 30},
 }
 
 var casasOrdem = map[string]int{"": 0, "basica": 1, "media": 2, "top": 3}
@@ -3809,8 +3819,8 @@ func HandleCasaComprar(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if jogador.DinheiroMao < cfg.Preco {
-		JsonResp(w, 200, map[string]interface{}{"sucesso": false, "mensagem": fmt.Sprintf("Dinheiro insuficiente! Precisa de R$ %d.", cfg.Preco)})
+	if jogador.Moedas < cfg.PrecoMoedas {
+		JsonResp(w, 200, map[string]interface{}{"sucesso": false, "mensagem": fmt.Sprintf("Moedas insuficientes! Precisa de %d moedas.", cfg.PrecoMoedas)})
 		return
 	}
 
@@ -3822,7 +3832,7 @@ func HandleCasaComprar(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	jogador.DinheiroMao -= cfg.Preco
+	jogador.Moedas -= cfg.PrecoMoedas
 	saveJogador(jogador)
 
 	db.Conn.Exec(`INSERT INTO casas (jogador_id, tipo, ultima_coleta)

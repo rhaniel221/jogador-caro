@@ -796,7 +796,7 @@ function CasaCard({ jogadorID, jogador, setJogador, mostrarNotificacao, setLevel
                       <span>⚡ +{c.energia_quant} energia a cada {c.energia_intervalo_min}min</span>
                       <span className="casa-modal-bonus">{det.bonus}</span>
                     </div>
-                    <div className="casa-modal-preco">R$ {c.preco}</div>
+                    <div className="casa-modal-preco">🪙 {c.preco_moedas} moedas</div>
                     <button className="btn-work btn-verde" onClick={() => comprar(c.tipo)} disabled={loading} style={{ width: '100%' }}>
                       Alugar
                     </button>

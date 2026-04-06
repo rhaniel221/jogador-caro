@@ -163,11 +163,11 @@ func getRank(nivel int) string {
 
 func findItemByID(id int) *Item {
 	var item Item
-	err := db.Conn.QueryRow(`SELECT id, nome, descricao, preco, tipo, icone, COALESCE(raridade, 'comum'), nivel_min, nivel_max,
+	err := db.Conn.QueryRow(`SELECT id, nome, descricao, preco, COALESCE(preco_moedas, 0), tipo, icone, COALESCE(raridade, 'comum'), nivel_min, nivel_max,
 		bonus_forca, bonus_velocidade, bonus_habilidade, bonus_saude_max, bonus_energia_max,
 		bonus_vit_max, recupera_energia, recupera_saude, slots_mochila, cooldown_minutos
 		FROM cat_itens WHERE id=$1`, id).Scan(
-		&item.ID, &item.Nome, &item.Descricao, &item.Preco, &item.Tipo, &item.Icone,
+		&item.ID, &item.Nome, &item.Descricao, &item.Preco, &item.PrecoMoedas, &item.Tipo, &item.Icone,
 		&item.Raridade, &item.NivelMin, &item.NivelMax, &item.BonusForca, &item.BonusVelocidade,
 		&item.BonusHabilidade, &item.BonusSaudeMax, &item.BonusEnergiaMax,
 		&item.BonusVitMax, &item.RecuperaEnergia, &item.RecuperaSaude, &item.SlotsMochila,

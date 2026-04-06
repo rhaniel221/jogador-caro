@@ -9,6 +9,7 @@ type Item struct {
 	Nome             string `json:"nome"`
 	Descricao        string `json:"descricao"`
 	Preco            int    `json:"preco"`
+	PrecoMoedas      int    `json:"preco_moedas"`
 	Tipo             string `json:"tipo"` // consumivel, equipamento, mochila
 	Icone            string `json:"icone"`
 	Raridade         string `json:"raridade"` // comum, raro, epico, lendario
@@ -439,12 +440,13 @@ type Casa struct {
 }
 
 type CasaConfig struct {
-	Tipo     string `json:"tipo"`
-	Nome     string `json:"nome"`
-	Preco    int    `json:"preco"`
-	XPHora   int    `json:"xp_hora"`
-	EnQuant  int    `json:"energia_quant"`
-	EnIntMin int    `json:"energia_intervalo_min"`
+	Tipo        string `json:"tipo"`
+	Nome        string `json:"nome"`
+	Preco       int    `json:"preco"`
+	PrecoMoedas int    `json:"preco_moedas"`
+	XPHora      int    `json:"xp_hora"`
+	EnQuant     int    `json:"energia_quant"`
+	EnIntMin    int    `json:"energia_intervalo_min"`
 }
 
 // ========================
