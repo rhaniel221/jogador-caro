@@ -161,7 +161,15 @@ export default function Perfil() {
     <div className="pf" data-tutorial="perfil-area">
 
       {/* === CARD DO JOGADOR === */}
-      <div className={`pf-hero pf-borda-${bordaTier}`}>
+      <div className={`pf-moldura pf-elo-${bordaTier}`}>
+        <div className="pf-moldura-glow" />
+        <div className="pf-moldura-shimmer" />
+        <div className="pf-moldura-canto pf-canto-tl" />
+        <div className="pf-moldura-canto pf-canto-tr" />
+        <div className="pf-moldura-canto pf-canto-bl" />
+        <div className="pf-moldura-canto pf-canto-br" />
+        <div className="pf-moldura-elo-tag">{TIER_NOMES[bordaTier]}</div>
+      <div className="pf-hero">
         <div className="pf-hero-inner">
         <div className="pf-hero-bg" />
         <div className="pf-hero-content">
@@ -184,7 +192,6 @@ export default function Perfil() {
             {jogador.titulo && <div className="pf-titulo">{jogador.titulo}</div>}
             <div className="pf-rank-row">
               <span className="pf-rank">{jogador.rank || 'Peladeiro'}</span>
-              <span className={`pf-tier-badge pf-tier-${bordaTier}`}>{TIER_NOMES[bordaTier]}</span>
               {jogador.posicao && <span className="pf-pos-badge">{
                 {GK:'🧤 Goleiro', DEF:'🛡️ Defensor', MED:'🎯 Meia', ATA:'⚽ Atacante'}[jogador.posicao] || jogador.posicao
               }</span>}
@@ -209,6 +216,7 @@ export default function Perfil() {
         )}
         </div>{/* fecha pf-hero-inner */}
       </div>
+      </div>{/* fecha pf-moldura */}
 
       {/* === STATS GRID === */}
       <div className="pf-stats">
