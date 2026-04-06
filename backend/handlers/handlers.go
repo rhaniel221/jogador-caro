@@ -1318,32 +1318,32 @@ func HandleTratamento(w http.ResponseWriter, r *http.Request) {
 	n := jogador.Nivel
 	tratamentos := map[string]TratamentoInfo{
 		"meditacao": {
-			Custo: 10000 + 500*n, Saude: 5 + n/5,
+			Custo: 8000 + 400*n, Saude: 5 + n/5,
 			Vitalidade: 20 + n/4,
 			Mensagem: "Meditação profunda! Mente limpa, vitalidade renovada!",
 		},
 		"nutricao": {
-			Custo: 15000 + 800*n, Saude: 8 + n/4,
+			Custo: 12000 + 640*n, Saude: 8 + n/4,
 			Vitalidade: 12 + n/5, Energia: 3 + n/15,
 			Mensagem: "Dieta balanceada! Seu corpo agradece!",
 		},
 		"psicologo": {
-			Custo: 20000 + 1000*n, Saude: 20 + n/2,
+			Custo: 16000 + 800*n, Saude: 20 + n/2,
 			Vitalidade: 10 + n/5,
 			Mensagem: "Sessão de terapia! Mente renovada, saúde restaurada!",
 		},
 		"academia": {
-			Custo: 25000 + 1200*n, Saude: 10 + n/3,
+			Custo: 20000 + 960*n, Saude: 10 + n/3,
 			Forca: 1, Vitalidade: 15 + n/5,
 			Mensagem: "Malhou pesado! Saúde, força e vitalidade recuperadas!",
 		},
 		"fisioterapia": {
-			Custo: 35000 + 1500*n, Saude: 15 + n/3,
+			Custo: 28000 + 1200*n, Saude: 15 + n/3,
 			Vitalidade: 20 + n/4, Energia: 5 + n/10,
 			Mensagem: "Fisioterapia completa! Corpo recuperado e pronto pra jogar!",
 		},
 		"spa": {
-			Custo: 50000 + 2000*n, Saude: 25 + n/2,
+			Custo: 40000 + 1600*n, Saude: 25 + n/2,
 			Vitalidade: 25 + n/3, Energia: 8 + n/8,
 			Mensagem: "Dia de spa completo! Relaxou e renovou todas as energias!",
 		},
