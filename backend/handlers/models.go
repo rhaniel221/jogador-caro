@@ -214,13 +214,15 @@ type ItemPremium struct {
 
 
 type ItemFama struct {
-	ID        string `json:"id"`
-	Nome      string `json:"nome"`
-	Descricao string `json:"descricao"`
-	Preco     int    `json:"preco"`
-	FamaGanha int    `json:"fama_ganha"`
-	Icone     string `json:"icone"`
-	Unico     bool   `json:"unico"`
+	ID           string `json:"id"`
+	Nome         string `json:"nome"`
+	Descricao    string `json:"descricao"`
+	Preco        int    `json:"preco"`
+	FamaGanha    int    `json:"fama_ganha"`
+	Icone        string `json:"icone"`
+	Categoria    string `json:"categoria"`
+	LimiteCompra int    `json:"limite_compra"`
+	Comprado     int    `json:"comprado"`
 }
 
 

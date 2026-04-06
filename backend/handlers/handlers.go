@@ -1548,8 +1548,8 @@ func HandleGastarFama(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var itemFamaVal ItemFama
-	err := db.Conn.QueryRow(`SELECT id, nome, descricao, preco, fama_ganha, icone, unico FROM cat_itens_fama WHERE id=$1`, req.ItemID).Scan(
-		&itemFamaVal.ID, &itemFamaVal.Nome, &itemFamaVal.Descricao, &itemFamaVal.Preco, &itemFamaVal.FamaGanha, &itemFamaVal.Icone, &itemFamaVal.Unico)
+	err := db.Conn.QueryRow(`SELECT id, nome, descricao, preco, fama_ganha, icone, COALESCE(categoria,''), COALESCE(limite_compra,1) FROM cat_itens_fama WHERE id=$1`, req.ItemID).Scan(
+		&itemFamaVal.ID, &itemFamaVal.Nome, &itemFamaVal.Descricao, &itemFamaVal.Preco, &itemFamaVal.FamaGanha, &itemFamaVal.Icone, &itemFamaVal.Categoria, &itemFamaVal.LimiteCompra)
 	if err != nil {
 		ErrResp(w, 400, "Item de fama não encontrado")
 		return
@@ -1560,23 +1560,37 @@ func HandleGastarFama(w http.ResponseWriter, r *http.Request) {
 		ErrResp(w, 404, "Jogador não encontrado")
 		return
 	}
-	if item.Unico && strings.Contains(jogador.ItensFama, item.ID) {
-		JsonResp(w, 200, map[string]any{"sucesso": false, "mensagem": "Você já possui este item!"})
+
+	// Checar limite de compra
+	var jaComprou int
+	db.Conn.QueryRow("SELECT COALESCE(quantidade,0) FROM fama_compras WHERE jogador_id=$1 AND item_id=$2", req.JogadorID, item.ID).Scan(&jaComprou)
+	if jaComprou >= item.LimiteCompra {
+		JsonResp(w, 200, map[string]any{"sucesso": false, "mensagem": fmt.Sprintf("Limite atingido! Você já tem %d/%d deste item.", jaComprou, item.LimiteCompra)})
 		return
 	}
+
 	if jogador.DinheiroMao < item.Preco {
 		JsonResp(w, 200, map[string]any{"sucesso": false, "mensagem": fmt.Sprintf("Você precisa de R$ %d na mão!", item.Preco)})
 		return
 	}
 	jogador.DinheiroMao -= item.Preco
 	jogador.PontosFama += item.FamaGanha
-	if item.Unico {
+
+	// Registrar compra
+	db.Conn.Exec(`INSERT INTO fama_compras (jogador_id, item_id, quantidade)
+		VALUES ($1, $2, 1)
+		ON CONFLICT (jogador_id, item_id) DO UPDATE SET quantidade = fama_compras.quantidade + 1`,
+		req.JogadorID, item.ID)
+
+	// Manter ItensFama para compatibilidade
+	if !strings.Contains(jogador.ItensFama, item.ID) {
 		if jogador.ItensFama == "" {
 			jogador.ItensFama = item.ID
 		} else {
 			jogador.ItensFama += "," + item.ID
 		}
 	}
+
 	saveJogador(jogador)
 	JsonResp(w, 200, map[string]any{
 		"sucesso":  true,
@@ -1728,7 +1742,13 @@ func HandleForuns(w http.ResponseWriter, r *http.Request) {
 }
 
 func HandleItensFama(w http.ResponseWriter, r *http.Request) {
-	rows, err := db.Conn.Query(`SELECT id, nome, descricao, preco, fama_ganha, icone, unico FROM cat_itens_fama ORDER BY preco`)
+	// Aceita ?jogador_id=X para retornar quantidade comprada
+	jogadorID := 0
+	if q := r.URL.Query().Get("jogador_id"); q != "" {
+		jogadorID, _ = strconv.Atoi(q)
+	}
+
+	rows, err := db.Conn.Query(`SELECT id, nome, descricao, preco, fama_ganha, icone, COALESCE(categoria,''), COALESCE(limite_compra,1) FROM cat_itens_fama ORDER BY categoria, preco`)
 	if err != nil {
 		ErrResp(w, 500, "Erro ao buscar itens fama")
 		return
@@ -1737,7 +1757,10 @@ func HandleItensFama(w http.ResponseWriter, r *http.Request) {
 	itens := []ItemFama{}
 	for rows.Next() {
 		var item ItemFama
-		rows.Scan(&item.ID, &item.Nome, &item.Descricao, &item.Preco, &item.FamaGanha, &item.Icone, &item.Unico)
+		rows.Scan(&item.ID, &item.Nome, &item.Descricao, &item.Preco, &item.FamaGanha, &item.Icone, &item.Categoria, &item.LimiteCompra)
+		if jogadorID > 0 {
+			db.Conn.QueryRow("SELECT COALESCE(quantidade,0) FROM fama_compras WHERE jogador_id=$1 AND item_id=$2", jogadorID, item.ID).Scan(&item.Comprado)
+		}
 		itens = append(itens, item)
 	}
 	JsonResp(w, 200, itens)

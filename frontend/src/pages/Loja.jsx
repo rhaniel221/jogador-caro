@@ -14,13 +14,19 @@ export default function Loja() {
   const highlightItemId = searchParams.get('item') ? parseInt(searchParams.get('item')) : null
   const highlightRef = useRef(null)
 
+  const carregarFama = () => {
+    if (!jogadorID) return
+    API.get('/api/itens-fama?jogador_id=' + jogadorID).then(setItensFama).catch(() => {})
+  }
+
   useEffect(() => {
     Promise.all([
       API.get('/api/itens'),
       API.get('/api/loja-premium'),
-      API.get('/api/itens-fama')
-    ]).then(([c, p, f]) => { setItensLoja(c); setLojaPremium(p); setItensFama(f) }).catch(() => {})
+    ]).then(([c, p]) => { setItensLoja(c); setLojaPremium(p) }).catch(() => {})
   }, [])
+
+  useEffect(() => { carregarFama() }, [jogadorID])
 
   // Auto-seleciona a tab certa quando vem com ?item=
   useEffect(() => {
@@ -56,7 +62,7 @@ export default function Loja() {
   }
   async function comprarFama(id) {
     const res = await API.post('/api/gastar-fama', { jogador_id: jogadorID, item_id: id })
-    if (res.sucesso) { setJogador(res.jogador); mostrarNotificacao(res.mensagem, 'sucesso') }
+    if (res.sucesso) { setJogador(res.jogador); mostrarNotificacao(res.mensagem, 'sucesso'); carregarFama() }
     else mostrarNotificacao(res.mensagem, 'erro')
   }
 
@@ -163,19 +169,49 @@ export default function Loja() {
       {tab === 'equip' && renderGrid(equipamentos)}
       {tab === 'mochila' && renderGrid(mochilas)}
 
-      {tab === 'fama' && (
-        <div className="shop-grid">
-          {itensFama.map(item => (
-            <div key={item.id} className="shop-item">
-              <div className="s-icone">{item.icone}</div>
-              <div className="s-nome">{item.nome}</div>
-              <div className="s-desc">+{item.fama_ganha} Fama</div>
-              <div className="s-preco">R$ {fmt(item.preco)}</div>
-              <button className="btn-work btn-small btn-verde" onClick={() => comprarFama(item.id)}>Comprar</button>
+      {tab === 'fama' && (() => {
+        const categorias = [
+          { id: 'moto', nome: '🏍️ MOTOS', limite: 2 },
+          { id: 'carro', nome: '🚗 CARROS', limite: 2 },
+          { id: 'apartamento', nome: '🏢 APARTAMENTOS', limite: 1 },
+        ]
+        return categorias.map(cat => {
+          const itens = itensFama.filter(i => i.categoria === cat.id)
+          if (!itens.length) return null
+          return (
+            <div key={cat.id} style={{ marginBottom: 16 }}>
+              <div style={{
+                fontFamily: 'var(--font-titulo)', fontSize: 15, color: 'var(--preto)',
+                marginBottom: 8, paddingBottom: 4, borderBottom: 'var(--borda)'
+              }}>
+                {cat.nome} <span style={{ fontSize: 11, color: '#888', fontWeight: 700 }}>(máx {cat.limite} cada)</span>
+              </div>
+              <div className="shop-grid">
+                {itens.map(item => {
+                  const esgotado = item.comprado >= item.limite_compra
+                  return (
+                    <div key={item.id} className={`shop-item${esgotado ? ' shop-item-bloqueado' : ''}`}>
+                      <div className="s-icone">{item.icone}</div>
+                      <div className="s-nome">{item.nome}</div>
+                      <div className="s-desc">+{item.fama_ganha} Fama</div>
+                      <div className="s-preco">R$ {fmt(item.preco)}</div>
+                      {item.comprado > 0 && (
+                        <div style={{ fontSize: 10, fontWeight: 900, color: esgotado ? '#e74c3c' : 'var(--verde)' }}>
+                          {item.comprado}/{item.limite_compra} comprado{item.comprado > 1 ? 's' : ''}
+                        </div>
+                      )}
+                      {esgotado
+                        ? <button className="btn-work btn-small" disabled>Limite atingido</button>
+                        : <button className="btn-work btn-small btn-verde" onClick={() => comprarFama(item.id)}>Comprar</button>
+                      }
+                    </div>
+                  )
+                })}
+              </div>
             </div>
-          ))}
-        </div>
-      )}
+          )
+        })
+      })()}
 
       {/* === SEÇÃO MOEDAS === */}
       <div style={{

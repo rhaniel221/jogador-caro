@@ -184,7 +184,17 @@ func createTables() {
 		preco INT DEFAULT 0,
 		fama_ganha INT DEFAULT 0,
 		icone VARCHAR(20) DEFAULT '',
-		unico BOOLEAN DEFAULT false
+		unico BOOLEAN DEFAULT false,
+		categoria VARCHAR(30) DEFAULT '',
+		limite_compra INT DEFAULT 1
+	)`)
+	Conn.Exec(`ALTER TABLE cat_itens_fama ADD COLUMN IF NOT EXISTS categoria VARCHAR(30) DEFAULT ''`)
+	Conn.Exec(`ALTER TABLE cat_itens_fama ADD COLUMN IF NOT EXISTS limite_compra INT DEFAULT 1`)
+	Conn.Exec(`CREATE TABLE IF NOT EXISTS fama_compras (
+		jogador_id INT REFERENCES jogadores(id),
+		item_id VARCHAR(50),
+		quantidade INT DEFAULT 1,
+		PRIMARY KEY (jogador_id, item_id)
 	)`)
 
 	Conn.Exec(`CREATE TABLE IF NOT EXISTS cat_tasks_diarias (
@@ -775,31 +785,40 @@ func seedCatalogos() {
 			p.id, p.nome, p.descricao, p.preco, p.tipo, p.icone, p.avatarID, p.tituloVal, p.mochilaSlots)
 	}
 
-	// Seed cat_itens_fama
+	// Seed cat_itens_fama — apenas itens de luxo (motos, carros, apartamentos)
 	type famaSeed struct {
-		id, nome, descricao, icone string
-		preco, famaGanha int
-		unico bool
+		id, nome, descricao, icone, categoria string
+		preco, famaGanha, limite              int
 	}
 	fama := []famaSeed{
-		{"bicicleta", "Bicicleta do Craque", "Chega estiloso no treino", "🚲", 800, 5, true},
-		{"moto", "Moto Esportiva", "Toda esquina te respeita", "🏍️", 5000, 40, true},
-		{"carro_popular", "Carro Popular", "Um carro zero na garagem", "🚗", 15000, 100, true},
-		{"suv", "SUV Importado", "Estilo e poder na estrada", "🚙", 60000, 400, true},
-		{"superesportivo", "Superesportivo", "O carro dos campeões", "🏎️", 250000, 1500, true},
-		{"kitnet", "Kitnet no Bairro", "Saiu da casa dos pais", "🏠", 50000, 15, true},
-		{"apartamento", "Apartamento na Cidade", "Vista bonita e endereço chique", "🏢", 300000, 200, true},
-		{"mansao", "Mansão do Craque", "Piscina, churrasqueira e tudo mais", "🏰", 1500000, 1200, true},
-		{"personal", "Sessão com Personal", "Treino de elite por um dia", "💪", 500, 3, false},
-		{"coletiva", "Coletiva de Imprensa", "Apareça na mídia hoje", "🎤", 3000, 25, false},
-		{"empresario", "Contratar Empresário", "Ele gerencia sua imagem por um tempo", "🤝", 10000, 100, false},
+		// Motos (limite 2 por modelo)
+		{"moto_cg", "CG 160", "A moto do trabalhador", "🏍️", "moto", 5000, 30, 2},
+		{"moto_fazer", "Fazer 250", "Estilo e velocidade nas ruas", "🏍️", "moto", 15000, 80, 2},
+		{"moto_cb500", "CB 500", "Moto de respeito", "🏍️", "moto", 40000, 200, 2},
+		{"moto_bmw", "BMW S1000", "Supermáquina alemã", "🏍️", "moto", 120000, 600, 2},
+		{"moto_ducati", "Ducati Panigale", "A moto dos sonhos", "🏍️", "moto", 350000, 1500, 2},
+		// Carros (limite 2 por modelo)
+		{"carro_uno", "Uno Mille", "O primeiro carro do craque", "🚗", "carro", 8000, 40, 2},
+		{"carro_civic", "Civic Si", "Conforto e potência", "🚗", "carro", 35000, 150, 2},
+		{"carro_hilux", "Hilux SW4", "Pra quem manda no bairro", "🚙", "carro", 80000, 400, 2},
+		{"carro_bmw", "BMW M3", "Luxo europeu na garagem", "🚗", "carro", 200000, 900, 2},
+		{"carro_ferrari", "Ferrari 488", "O carro dos campeões", "🏎️", "carro", 500000, 2000, 2},
+		{"carro_bugatti", "Bugatti Chiron", "Hipercar lendário", "🏎️", "carro", 1500000, 5000, 2},
+		// Apartamentos (limite 1 por modelo)
+		{"apto_kitnet", "Kitnet no Bairro", "Saiu da casa dos pais", "🏠", "apartamento", 50000, 100, 1},
+		{"apto_2quartos", "Apartamento 2 Quartos", "Confortável e funcional", "🏢", "apartamento", 150000, 350, 1},
+		{"apto_cobertura", "Cobertura Duplex", "Vista panorâmica da cidade", "🏢", "apartamento", 500000, 1200, 1},
+		{"apto_penthouse", "Penthouse de Luxo", "O topo do mundo", "🏢", "apartamento", 1500000, 3500, 1},
+		{"apto_mansao", "Mansão do Craque", "Piscina, churrasqueira e tudo mais", "🏰", "apartamento", 5000000, 10000, 1},
 	}
+	// Limpar itens antigos que não existem mais
+	Conn.Exec(`DELETE FROM cat_itens_fama WHERE id NOT IN ('moto_cg','moto_fazer','moto_cb500','moto_bmw','moto_ducati','carro_uno','carro_civic','carro_hilux','carro_bmw','carro_ferrari','carro_bugatti','apto_kitnet','apto_2quartos','apto_cobertura','apto_penthouse','apto_mansao')`)
 	for _, f := range fama {
 		Conn.Exec(`INSERT INTO cat_itens_fama
-			(id, nome, descricao, preco, fama_ganha, icone, unico)
-			VALUES ($1,$2,$3,$4,$5,$6,$7)
-			ON CONFLICT (id) DO UPDATE SET preco=$4, fama_ganha=$5`,
-			f.id, f.nome, f.descricao, f.preco, f.famaGanha, f.icone, f.unico)
+			(id, nome, descricao, preco, fama_ganha, icone, unico, categoria, limite_compra)
+			VALUES ($1,$2,$3,$4,$5,$6,false,$7,$8)
+			ON CONFLICT (id) DO UPDATE SET preco=$4, fama_ganha=$5, categoria=$7, limite_compra=$8`,
+			f.id, f.nome, f.descricao, f.preco, f.famaGanha, f.icone, f.categoria, f.limite)
 	}
 
 	// Seed cat_tasks_diarias
