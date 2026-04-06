@@ -281,8 +281,7 @@ function TratamentoSection({ jogadorID, jogador, setJogador, mostrarNotificacao 
 
   if (!jogador) return null
 
-  const vitalidadeBaixa = jogador.vitalidade < 30
-  const saudeBaixa = jogador.saude < jogador.saude_max * 0.5
+  const saudeBaixa = jogador.saude < 30
 
   return (
     <div className="pf-section">
@@ -290,12 +289,12 @@ function TratamentoSection({ jogadorID, jogador, setJogador, mostrarNotificacao 
         <h3>🏥 CENTRAL DE TRATAMENTO</h3>
       </div>
 
-      {vitalidadeBaixa && (
+      {saudeBaixa && (
         <div style={{
           background: '#3a1515', border: '1px solid #e74c3c', borderRadius: 8,
           padding: '10px 14px', marginBottom: 12, fontSize: 12, color: '#ff6b6b', fontWeight: 700
         }}>
-          ⚠️ Vitalidade abaixo de 30! Você não pode trabalhar. Faça um tratamento para se recuperar!
+          ⚠️ Saúde abaixo de 30! Você não pode trabalhar. Faça um tratamento para se recuperar!
         </div>
       )}
 
@@ -303,12 +302,12 @@ function TratamentoSection({ jogadorID, jogador, setJogador, mostrarNotificacao 
         <div style={{
           background: '#1a2a14', borderRadius: 6, padding: '6px 12px', fontSize: 12, fontWeight: 700
         }}>
-          ❤️ Saúde: <span style={{ color: saudeBaixa ? '#e74c3c' : '#4caf50' }}>{jogador.saude}/{jogador.saude_max}</span>
+          ❤️ Saúde: <span style={{ color: saudeBaixa ? '#e74c3c' : '#4caf50' }}>{jogador.saude}/100</span>
         </div>
         <div style={{
           background: '#1a2a14', borderRadius: 6, padding: '6px 12px', fontSize: 12, fontWeight: 700
         }}>
-          💚 Vitalidade: <span style={{ color: vitalidadeBaixa ? '#e74c3c' : '#4caf50' }}>{jogador.vitalidade}/{jogador.vitalidade_max}</span>
+          💚 Vitalidade: <span style={{ color: jogador.vitalidade < 3 ? '#e74c3c' : '#4caf50' }}>{jogador.vitalidade}/{jogador.vitalidade_max}</span>
         </div>
       </div>
 

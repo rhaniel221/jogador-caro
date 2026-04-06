@@ -198,9 +198,9 @@ func HandleTrabalhar(w http.ResponseWriter, r *http.Request) {
 	// Regenera energia antes de calcular (corrige dessincronização com o frontend)
 	regenerarEnergia(jogador)
 
-	// Bloqueio por vitalidade baixa (mínimo 30 para trabalhar)
-	if jogador.Vitalidade < 30 {
-		JsonResp(w, 200, TrabalharResponse{Mensagem: fmt.Sprintf("Vitalidade muito baixa! (%d/30) Vá ao Perfil e faça tratamentos para se recuperar.", jogador.Vitalidade)})
+	// Bloqueio por saúde baixa (mínimo 30 para trabalhar)
+	if jogador.Saude < 30 {
+		JsonResp(w, 200, TrabalharResponse{Mensagem: fmt.Sprintf("Saúde muito baixa! (%d/30) Vá ao Perfil e faça tratamentos para se recuperar.", jogador.Saude)})
 		return
 	}
 
@@ -758,7 +758,8 @@ func HandleEquipar(w http.ResponseWriter, r *http.Request) {
 	jogador.Forca = clampInt(jogador.Forca+item.BonusForca*mult, 1, 9999)
 	jogador.Velocidade = clampInt(jogador.Velocidade+item.BonusVelocidade*mult, 1, 9999)
 	jogador.Habilidade = clampInt(jogador.Habilidade+item.BonusHabilidade*mult, 1, 9999)
-	jogador.SaudeMax = clampInt(jogador.SaudeMax+item.BonusSaudeMax*mult, 10, 9999)
+	// SaudeMax fixo em 100 para todos — itens não alteram mais
+	jogador.SaudeMax = 100
 	jogador.EnergiaMax = clampInt(jogador.EnergiaMax+item.BonusEnergiaMax*mult, 5, 9999)
 	jogador.VitalidadeMax = clampInt(jogador.VitalidadeMax+item.BonusVitMax*mult, 1, 99)
 
@@ -1263,7 +1264,8 @@ func HandleRecuperarVitalidade(w http.ResponseWriter, r *http.Request) {
 	}
 	jogador.DinheiroMao -= custo
 	jogador.Vitalidade = jogador.VitalidadeMax
-	jogador.Saude = jogador.SaudeMax
+	jogador.SaudeMax = 100
+	jogador.Saude = 100
 	saveJogador(jogador)
 	JsonResp(w, 200, map[string]interface{}{
 		"sucesso":  true,
@@ -1351,9 +1353,10 @@ func HandleTratamento(w http.ResponseWriter, r *http.Request) {
 	}
 
 	jogador.DinheiroMao -= t.Custo
+	jogador.SaudeMax = 100
 	jogador.Saude += t.Saude
-	if jogador.Saude > jogador.SaudeMax {
-		jogador.Saude = jogador.SaudeMax
+	if jogador.Saude > 100 {
+		jogador.Saude = 100
 	}
 	jogador.Vitalidade += t.Vitalidade
 	if jogador.Vitalidade > jogador.VitalidadeMax {

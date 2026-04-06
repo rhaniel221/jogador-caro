@@ -291,14 +291,14 @@ export default function Trabalhos() {
         Faça trabalhos para ganhar dinheiro e XP. Maestria alta reduz o rendimento — varie seus trabalhos!
       </p>
 
-      {jogador && jogador.vitalidade < 30 && (
+      {jogador && jogador.saude < 30 && (
         <div style={{
           background: '#3a1515', border: '2px solid #e74c3c', borderRadius: 10,
           padding: '14px 18px', marginBottom: 14, textAlign: 'center'
         }}>
           <div style={{ fontSize: 28 }}>⚠️</div>
           <div style={{ color: '#ff6b6b', fontWeight: 900, fontSize: 14, marginTop: 4 }}>
-            Vitalidade muito baixa! ({jogador.vitalidade}/30)
+            Saúde muito baixa! ({jogador.saude}/30)
           </div>
           <div style={{ color: '#cc9999', fontSize: 12, marginTop: 4 }}>
             Vá ao <strong style={{ color: '#ffd700' }}>Perfil → Central de Tratamento</strong> para se recuperar antes de trabalhar.

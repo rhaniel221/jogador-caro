@@ -184,7 +184,7 @@ export default function Estadio() {
               ['⚡ Velocidade', jogador.velocidade],
               ['🎯 Habilidade', jogador.habilidade],
               ['💚 Vitalidade', `${jogador.vitalidade}/${jogador.vitalidade_max}`],
-              ['❤️ Saúde', `${jogador.saude}/${jogador.saude_max}`],
+              ['❤️ Saúde', `${jogador.saude}/100`],
               ['🏆 Vitórias', jogador.vitorias],
               ['💀 Derrotas', jogador.derrotas],
               ['⭐ Fama', jogador.pontos_fama],
