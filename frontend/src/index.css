@@ -3309,182 +3309,50 @@ input, select, textarea {
 .pf-code strong { color: #fff; letter-spacing: 1.5px; font-size: 13px; }
 
 /* =====================================================
-   MOLDURA DE ELO — ESTILO LOL (frame no avatar)
+   MOLDURA DE ELO — IMAGEM CUSTOM (/elos/{tier}.png)
    ===================================================== */
-
-/* Borda do card por elo */
-.pf-hero[class*="pf-elo-"] {
-  --elo1: #8a8a8a; --elo2: #666; --elo3: #aaa;
-  border-color: var(--elo1);
-  box-shadow: var(--sombra), 0 0 12px var(--elo1);
-}
 
 /* Frame container ao redor do avatar */
 .pf-avatar-frame {
-  --elo1: #8a8a8a; --elo2: #666; --elo3: #aaa;
   position: relative;
-  width: 120px;
-  height: 120px;
+  width: 130px;
+  height: 130px;
   flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
 }
+
+/* Imagem da moldura — cobre tudo, avatar fica por cima */
+.pf-elo-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  z-index: 3;
+  pointer-events: none;
+  filter: drop-shadow(0 0 6px rgba(255,255,255,0.3));
+}
+
+/* Avatar centralizado dentro da moldura */
 .pf-avatar-frame .pf-avatar {
   position: relative;
   z-index: 2;
   font-size: 52px;
-  width: 80px;
-  height: 80px;
+  width: 76px;
+  height: 76px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: radial-gradient(circle, rgba(0,0,0,0.3), rgba(0,0,0,0.6));
+  background: radial-gradient(circle, rgba(0,20,60,0.4), rgba(0,10,40,0.7));
   border-radius: 50%;
 }
 
-/* Anel principal — borda grossa com gradiente */
-.pf-frame-ring {
+/* Tag do elo embaixo */
+.pf-elo-tag {
   position: absolute;
-  inset: 10px;
-  border-radius: 50%;
-  border: 5px solid var(--elo1);
-  background: transparent;
-  box-shadow:
-    0 0 10px var(--elo1),
-    0 0 20px var(--elo2),
-    inset 0 0 8px var(--elo1);
-  z-index: 1;
-}
-
-/* Glow atras do frame */
-.pf-frame-glow {
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  background: radial-gradient(circle, var(--elo1) 0%, transparent 70%);
-  opacity: 0.4;
-  filter: blur(10px);
-  z-index: 0;
-  animation: frameGlowPulse 2.5s ease-in-out infinite alternate;
-}
-@keyframes frameGlowPulse {
-  from { opacity: 0.3; transform: scale(0.95); }
-  to { opacity: 0.6; transform: scale(1.1); }
-}
-
-/* Asas laterais — estilo LoL */
-.pf-frame-wing {
-  position: absolute;
-  top: 50%;
-  width: 30px;
-  height: 50px;
-  z-index: 3;
-  transform: translateY(-50%);
-}
-.pf-frame-wing::before,
-.pf-frame-wing::after {
-  content: '';
-  position: absolute;
-  background: linear-gradient(180deg, var(--elo3), var(--elo1), var(--elo2));
-}
-/* Asa esquerda */
-.pf-wing-l {
-  left: -6px;
-}
-.pf-wing-l::before {
-  width: 4px;
-  height: 100%;
-  border-radius: 4px 0 0 4px;
-  box-shadow: -2px 0 8px var(--elo1);
-  right: 0;
-}
-.pf-wing-l::after {
-  width: 20px;
-  height: 3px;
-  top: 12px;
-  right: 0;
-  border-radius: 4px;
-  transform: rotate(-30deg);
-  transform-origin: right center;
-  box-shadow: 0 0 6px var(--elo1);
-}
-/* Asa direita */
-.pf-wing-r {
-  right: -6px;
-}
-.pf-wing-r::before {
-  width: 4px;
-  height: 100%;
-  border-radius: 0 4px 4px 0;
-  box-shadow: 2px 0 8px var(--elo1);
-  left: 0;
-}
-.pf-wing-r::after {
-  width: 20px;
-  height: 3px;
-  top: 12px;
-  left: 0;
-  border-radius: 4px;
-  transform: rotate(30deg);
-  transform-origin: left center;
-  box-shadow: 0 0 6px var(--elo1);
-}
-
-/* Crista no topo */
-.pf-frame-crown {
-  position: absolute;
-  top: -2px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 4;
-  width: 0;
-  height: 0;
-  border-left: 10px solid transparent;
-  border-right: 10px solid transparent;
-  border-bottom: 16px solid var(--elo1);
-  filter: drop-shadow(0 -4px 6px var(--elo1));
-}
-.pf-frame-crown::after {
-  content: '';
-  position: absolute;
-  top: 6px;
-  left: -5px;
-  width: 0;
-  height: 0;
-  border-left: 5px solid transparent;
-  border-right: 5px solid transparent;
-  border-bottom: 8px solid var(--elo3);
-}
-
-/* Shimmer girando no anel */
-.pf-frame-shimmer {
-  position: absolute;
-  inset: 8px;
-  border-radius: 50%;
-  overflow: hidden;
-  z-index: 3;
-  pointer-events: none;
-}
-.pf-frame-shimmer::before {
-  content: '';
-  position: absolute;
-  top: -100%;
-  left: -100%;
-  width: 300%;
-  height: 300%;
-  background: conic-gradient(from 0deg, transparent 0%, transparent 40%, rgba(255,255,255,0.5) 50%, transparent 60%, transparent 100%);
-  animation: frameShimmerSpin 3s linear infinite;
-}
-@keyframes frameShimmerSpin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-/* Tag do elo embaixo do avatar */
-.pf-frame-elo-tag {
-  position: absolute;
-  bottom: 2px;
+  bottom: 0px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 5;
@@ -3494,117 +3362,44 @@ input, select, textarea {
   text-transform: uppercase;
   padding: 1px 10px;
   border-radius: 4px;
-  background: linear-gradient(180deg, var(--elo1), var(--elo2));
   color: #fff;
-  border: 1px solid var(--elo3);
-  box-shadow: 0 0 6px var(--elo1);
-  text-shadow: 1px 1px 1px rgba(0,0,0,0.6);
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
   white-space: nowrap;
+  background: rgba(0,0,0,0.6);
+  border: 1px solid rgba(255,255,255,0.2);
 }
 
-/* ===== CORES POR ELO ===== */
-
-.pf-elo-ferro { --elo1: #8a8a8a; --elo2: #555; --elo3: #bbb; }
-.pf-frame-ferro { --elo1: #8a8a8a; --elo2: #555; --elo3: #bbb; }
-.pf-elo-ferro { box-shadow: var(--sombra); }
-.pf-frame-ferro .pf-frame-glow { opacity: 0.15; }
-.pf-frame-ferro .pf-frame-shimmer::before { opacity: 0.2; }
-
-.pf-elo-bronze { --elo1: #cd7f32; --elo2: #8b4513; --elo3: #f4a942; border-color: #cd7f32; }
-.pf-frame-bronze { --elo1: #cd7f32; --elo2: #8b4513; --elo3: #f4a942; }
-
-.pf-elo-prata { --elo1: #c0c0c0; --elo2: #888; --elo3: #f0f0f0; border-color: #c0c0c0; }
-.pf-frame-prata { --elo1: #c0c0c0; --elo2: #888; --elo3: #f0f0f0; }
-.pf-frame-prata .pf-frame-elo-tag { color: #333; text-shadow: none; }
-
-.pf-elo-ouro { --elo1: #ffd700; --elo2: #b8860b; --elo3: #fff176; border-color: #ffd700; }
-.pf-frame-ouro { --elo1: #ffd700; --elo2: #b8860b; --elo3: #fff176; }
-.pf-frame-ouro .pf-frame-ring { border-width: 6px; }
-.pf-frame-ouro .pf-frame-glow { opacity: 0.5; }
-
-.pf-elo-platina { --elo1: #40e0d0; --elo2: #008b8b; --elo3: #afeeee; border-color: #40e0d0; }
-.pf-frame-platina { --elo1: #40e0d0; --elo2: #008b8b; --elo3: #afeeee; }
-.pf-frame-platina .pf-frame-ring { border-width: 6px; }
-.pf-frame-platina .pf-frame-wing { width: 35px; height: 55px; }
-
-.pf-elo-esmeralda { --elo1: #50c878; --elo2: #1a7a3a; --elo3: #90ee90; border-color: #50c878; }
-.pf-frame-esmeralda { --elo1: #50c878; --elo2: #1a7a3a; --elo3: #90ee90; }
-.pf-frame-esmeralda .pf-frame-ring { border-width: 6px; }
-.pf-frame-esmeralda .pf-frame-wing { width: 38px; height: 58px; }
-.pf-frame-esmeralda .pf-frame-glow { opacity: 0.55; }
-
-.pf-elo-diamante { --elo1: #b9f2ff; --elo2: #4a90d9; --elo3: #fff; border-color: #b9f2ff; }
-.pf-frame-diamante { --elo1: #b9f2ff; --elo2: #4a90d9; --elo3: #fff; }
-.pf-frame-diamante .pf-frame-ring { border-width: 7px; box-shadow: 0 0 14px #b9f2ff, 0 0 28px #87ceeb66, inset 0 0 10px #b9f2ff; }
-.pf-frame-diamante .pf-frame-wing { width: 40px; height: 60px; }
-.pf-frame-diamante .pf-frame-glow { opacity: 0.65; filter: blur(14px); }
-.pf-frame-diamante .pf-frame-shimmer::before { animation-duration: 2s; }
-.pf-frame-diamante .pf-frame-crown { border-bottom-width: 20px; border-left-width: 12px; border-right-width: 12px; }
-
-.pf-elo-mestre { --elo1: #ff4444; --elo2: #8b0000; --elo3: #ff8888; border-color: #ff4444; }
-.pf-frame-mestre { --elo1: #ff4444; --elo2: #8b0000; --elo3: #ff8888; }
-.pf-frame-mestre .pf-frame-ring { border-width: 7px; box-shadow: 0 0 16px #ff4444, 0 0 32px #ff444444, inset 0 0 10px #ff4444; }
-.pf-frame-mestre .pf-frame-wing { width: 42px; height: 65px; }
-.pf-frame-mestre .pf-frame-glow { opacity: 0.7; filter: blur(16px); animation-duration: 1.5s; }
-.pf-frame-mestre .pf-frame-shimmer::before { animation-duration: 1.8s; }
-.pf-frame-mestre .pf-frame-crown { border-bottom-width: 22px; border-left-width: 13px; border-right-width: 13px; filter: drop-shadow(0 -6px 10px #ff4444); }
-
-.pf-elo-grao-mestre { --elo1: #a855f7; --elo2: #5b21b6; --elo3: #e9d5ff; border-color: #a855f7; }
-.pf-frame-grao-mestre { --elo1: #a855f7; --elo2: #5b21b6; --elo3: #e9d5ff; }
-.pf-frame-grao-mestre .pf-frame-ring { border-width: 8px; box-shadow: 0 0 18px #a855f7, 0 0 36px #a855f744, inset 0 0 12px #a855f7; }
-.pf-frame-grao-mestre .pf-frame-wing { width: 45px; height: 70px; }
-.pf-frame-grao-mestre .pf-frame-glow { opacity: 0.8; filter: blur(18px); animation-duration: 1.2s; }
-.pf-frame-grao-mestre .pf-frame-shimmer::before { animation-duration: 1.5s; }
-.pf-frame-grao-mestre .pf-frame-crown { border-bottom-width: 24px; border-left-width: 14px; border-right-width: 14px; filter: drop-shadow(0 -8px 12px #a855f7); }
-
-/* Desafiante — rainbow */
-.pf-elo-desafiante { border-color: #ffd700; box-shadow: var(--sombra), 0 0 16px #ffd700, 0 0 32px #ff880044; border-width: 4px; }
-.pf-frame-desafiante { --elo1: #ffd700; --elo2: #ff4444; --elo3: #fff; }
-.pf-frame-desafiante .pf-frame-ring {
-  border-width: 8px;
-  border-color: transparent;
-  background: linear-gradient(#0a1a3a, #0a1a3a) padding-box, linear-gradient(135deg, #ff4444, #ff8800, #ffd700, #44ff44, #4488ff, #dd44ff) border-box;
-  background-size: 100% 100%, 600% 600%;
-  animation: desafianteRing 3s linear infinite;
-  box-shadow: 0 0 20px #ffd700, 0 0 40px #ff880044, inset 0 0 14px #ffd70066;
-}
-@keyframes desafianteRing {
-  0% { background-position: 0 0, 0% 50%; }
-  100% { background-position: 0 0, 300% 50%; }
-}
-.pf-frame-desafiante .pf-frame-wing { width: 48px; height: 75px; }
-.pf-frame-desafiante .pf-frame-wing::before {
-  background: linear-gradient(180deg, #ffd700, #ff8800, #ff4444);
-}
-.pf-frame-desafiante .pf-frame-wing::after {
-  background: linear-gradient(90deg, #ffd700, #fff);
-}
-.pf-frame-desafiante .pf-frame-glow {
-  background: radial-gradient(circle, #ffd700 0%, #ff8800 30%, transparent 70%);
-  opacity: 0.9;
-  filter: blur(18px);
-  animation-duration: 1s;
-}
-.pf-frame-desafiante .pf-frame-crown {
-  border-bottom: 26px solid #ffd700;
-  border-left-width: 15px;
-  border-right-width: 15px;
-  filter: drop-shadow(0 -10px 16px #ffd700);
-}
-.pf-frame-desafiante .pf-frame-shimmer::before { animation-duration: 1.2s; }
-.pf-frame-desafiante .pf-frame-elo-tag {
+/* Cores da tag por elo */
+.pf-elo-tag-ferro { background: #6a6a6a; }
+.pf-elo-tag-bronze { background: #8b4513; }
+.pf-elo-tag-prata { background: #888; color: #eee; }
+.pf-elo-tag-ouro { background: #b8860b; }
+.pf-elo-tag-platina { background: #008b8b; }
+.pf-elo-tag-esmeralda { background: #1a7a3a; }
+.pf-elo-tag-diamante { background: #4a90d9; }
+.pf-elo-tag-mestre { background: #8b0000; }
+.pf-elo-tag-grao-mestre { background: #5b21b6; }
+.pf-elo-tag-desafiante {
   background: linear-gradient(90deg, #ff4444, #ff8800, #ffd700, #44ff44, #4488ff, #dd44ff);
   background-size: 300% 100%;
-  animation: tierRainbowBg 2s linear infinite;
-  font-size: 10px;
-  padding: 2px 14px;
-  border-color: #ffd700;
-  box-shadow: 0 0 12px #ffd700, 0 0 24px #ff880044;
+  animation: eloTagRainbow 2s linear infinite;
 }
-@keyframes tierRainbowBg {
+@keyframes eloTagRainbow {
   0% { background-position: 0% 50%; }
   100% { background-position: 300% 50%; }
 }
+
+/* Borda do card por elo */
+.pf-elo-ferro { border-color: #8a8a8a; }
+.pf-elo-bronze { border-color: #cd7f32; }
+.pf-elo-prata { border-color: #c0c0c0; }
+.pf-elo-ouro { border-color: #ffd700; box-shadow: var(--sombra), 0 0 8px #ffd70055; }
+.pf-elo-platina { border-color: #40e0d0; box-shadow: var(--sombra), 0 0 8px #40e0d055; }
+.pf-elo-esmeralda { border-color: #50c878; box-shadow: var(--sombra), 0 0 10px #50c87855; }
+.pf-elo-diamante { border-color: #b9f2ff; box-shadow: var(--sombra), 0 0 12px #b9f2ff55; }
+.pf-elo-mestre { border-color: #ff4444; box-shadow: var(--sombra), 0 0 12px #ff444455; }
+.pf-elo-grao-mestre { border-color: #a855f7; box-shadow: var(--sombra), 0 0 14px #a855f755; }
+.pf-elo-desafiante { border-color: #ffd700; box-shadow: var(--sombra), 0 0 16px #ffd700, 0 0 32px #ff880044; }
 
 /* Títulos dentro do hero */
 .pf-hero-titulos {

@@ -165,15 +165,15 @@ export default function Perfil() {
         <div className="pf-hero-inner">
         <div className="pf-hero-bg" />
         <div className="pf-hero-content">
-          <div className={`pf-avatar-frame pf-frame-${bordaTier}`}>
-            <div className="pf-frame-glow" />
-            <div className="pf-frame-ring" />
-            <div className="pf-frame-wing pf-wing-l" />
-            <div className="pf-frame-wing pf-wing-r" />
-            <div className="pf-frame-crown" />
-            <div className="pf-frame-shimmer" />
+          <div className="pf-avatar-frame">
+            <img
+              src={`/elos/${bordaTier}.png`}
+              alt={TIER_NOMES[bordaTier]}
+              className="pf-elo-img"
+              onError={e => { e.target.style.display = 'none' }}
+            />
             <div className="pf-avatar">{getAvatar(jogador.avatar)}</div>
-            <div className="pf-frame-elo-tag">{TIER_NOMES[bordaTier]}</div>
+            <div className={`pf-elo-tag pf-elo-tag-${bordaTier}`}>{TIER_NOMES[bordaTier]}</div>
           </div>
           <div className="pf-avatar-selector">
             {avatares.filter(a => a.tipo === 'comum').map(a => (
