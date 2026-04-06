@@ -24,7 +24,7 @@ const CAT_NOME = { moto: 'Motos', carro: 'Carros', apartamento: 'Imóveis' }
 function PerfilModal({ jogadorID, targetID, onClose, getAvatar }) {
   const [perfil, setPerfil] = useState(null)
   const [loading, setLoading] = useState(true)
-  const overlayRef = React.useRef(null)
+  const cardRef = React.useRef(null)
 
   useEffect(() => {
     if (!targetID) return
@@ -34,10 +34,10 @@ function PerfilModal({ jogadorID, targetID, onClose, getAvatar }) {
       .catch(() => setLoading(false))
   }, [targetID, jogadorID])
 
-  // Scroll overlay pro topo quando abre
+  // Scroll card pro topo quando carrega
   useEffect(() => {
-    if (overlayRef.current) overlayRef.current.scrollTop = 0
-  }, [targetID, loading])
+    if (!loading && cardRef.current) cardRef.current.scrollTop = 0
+  }, [loading])
 
   if (loading) return (
     <div className="modal-overlay" onClick={onClose}>
@@ -69,8 +69,8 @@ function PerfilModal({ jogadorID, targetID, onClose, getAvatar }) {
   }
 
   return (
-    <div className="modal-overlay" ref={overlayRef} onClick={onClose}>
-      <div className="pm-card" onClick={e => e.stopPropagation()}>
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="pm-card" ref={cardRef} onClick={e => e.stopPropagation()}>
         <button className="pm-close" onClick={onClose}>✕</button>
 
         {/* Banner topo com moldura de elo */}
