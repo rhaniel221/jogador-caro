@@ -37,7 +37,8 @@
       "Bash(node:*)",
       "Bash(PGPASSWORD=PIjMraVbxuxVunoytDDRAYnhbCsCxyhy psql:*)",
       "Bash(brew list:*)",
-      "Bash(find /c/Projetos/jogador-caro -type f \\\\\\(-name *minigame* -o -name *match3* -o -name *game* \\\\\\) -not -path */node_modules/* -not -path */.git/*)"
+      "Bash(find /c/Projetos/jogador-caro -type f \\\\\\(-name *minigame* -o -name *match3* -o -name *game* \\\\\\) -not -path */node_modules/* -not -path */.git/*)",
+      "Bash(git:*)"
     ]
   }
 }

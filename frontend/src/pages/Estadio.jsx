@@ -6,13 +6,6 @@ import { fmt } from '../utils'
 export default function Estadio() {
   const { jogador, setJogador, jogadorID, mostrarNotificacao } = useGame()
 
-  if (!jogador || jogador.nivel < 10) return (
-    <div style={{ textAlign: 'center', padding: 40 }}>
-      <div style={{ fontSize: 60 }}>🔒</div>
-      <h2 style={{ fontFamily: 'var(--font-titulo)', marginTop: 10 }}>Estádio bloqueado</h2>
-      <p style={{ fontWeight: 700, color: '#555' }}>Alcance o nível 10 para desbloquear o PvP!</p>
-    </div>
-  )
   const [oponentes, setOponentes] = useState([])
   const [historico, setHistorico] = useState([])
   const [combateModal, setCombateModal] = useState(null)
@@ -22,6 +15,14 @@ export default function Estadio() {
     carregarOponentes()
     carregarHistorico()
   }, [jogadorID])
+
+  if (!jogador || jogador.nivel < 10) return (
+    <div style={{ textAlign: 'center', padding: 40 }}>
+      <div style={{ fontSize: 60 }}>🔒</div>
+      <h2 style={{ fontFamily: 'var(--font-titulo)', marginTop: 10 }}>Estádio bloqueado</h2>
+      <p style={{ fontWeight: 700, color: '#555' }}>Alcance o nível 10 para desbloquear o PvP!</p>
+    </div>
+  )
 
   async function carregarOponentes() {
     if (!jogadorID) return

@@ -132,13 +132,6 @@ function TelaAcao({ titulo, subtitulo, modo, onFinalizar, onCancelar, loading })
 export default function Desafio1v1() {
   const { jogador, setJogador, mostrarNotificacao, jogadorID, setLevelUp } = useGame()
 
-  if (!jogador || jogador.nivel < 12) return (
-    <div style={{ textAlign: 'center', padding: 40 }}>
-      <div style={{ fontSize: 60 }}>🔒</div>
-      <h2 style={{ fontFamily: 'var(--font-titulo)', marginTop: 10 }}>Desafio 1v1 bloqueado</h2>
-      <p style={{ fontWeight: 700, color: '#555' }}>Alcance o nível 12 para desbloquear os pênaltis!</p>
-    </div>
-  )
   const [oponentes, setOponentes] = useState([])
   const [desafios, setDesafios] = useState([])
   const [modo, setModo] = useState('lista')
@@ -147,6 +140,14 @@ export default function Desafio1v1() {
   const [resultado, setResultado] = useState(null)
   const [loading, setLoading] = useState(false)
   const [enviado, setEnviado] = useState(false)
+
+  if (!jogador || jogador.nivel < 12) return (
+    <div style={{ textAlign: 'center', padding: 40 }}>
+      <div style={{ fontSize: 60 }}>🔒</div>
+      <h2 style={{ fontFamily: 'var(--font-titulo)', marginTop: 10 }}>Desafio 1v1 bloqueado</h2>
+      <p style={{ fontWeight: 700, color: '#555' }}>Alcance o nível 12 para desbloquear os pênaltis!</p>
+    </div>
+  )
 
   function carregar() {
     if (!jogadorID) return
