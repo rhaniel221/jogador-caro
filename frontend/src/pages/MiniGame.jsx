@@ -29,6 +29,7 @@ export default function MiniGame() {
   const [podeJogar, setPodeJogar] = useState(null)
   const [cooldownSeg, setCooldownSeg] = useState(0)
   const [showRewards, setShowRewards] = useState(false)
+  const [ranking, setRanking] = useState([])
 
   useEffect(() => {
     if (!jogadorID) return
@@ -38,6 +39,7 @@ export default function MiniGame() {
         if (!res.pode_jogar && res.restante_seg > 0) setCooldownSeg(res.restante_seg)
       })
       .catch(() => setPodeJogar(false))
+    API.get('/api/minigame/ranking').then(setRanking).catch(() => {})
   }, [jogadorID])
 
   // Timer de countdown
@@ -111,6 +113,30 @@ export default function MiniGame() {
 
   useEffect(() => () => { if (gameRef.current) { gameRef.current.destroy(true); gameRef.current = null } }, [])
 
+  const rankingSection = ranking.length > 0 && (
+    <div className="pf-section" style={{ marginTop: 14 }}>
+      <div className="pf-section-header"><h3>🏆 RANKING MINIGAME</h3></div>
+      <div className="ranking-lista">
+        {ranking.map(r => {
+          const isMe = r.jogador_id === jogadorID
+          return (
+            <div key={r.jogador_id} className={`ranking-row${isMe ? ' ranking-row-me' : ''}`}
+              style={isMe ? { background: 'var(--card-bg2)', borderColor: 'var(--amarelo)' } : {}}>
+              <span style={{ fontFamily: 'var(--font-titulo)', fontSize: 18, width: 30, textAlign: 'center', color: r.posicao <= 3 ? 'var(--amarelo)' : '#888' }}>
+                {r.posicao <= 3 ? ['🥇','🥈','🥉'][r.posicao-1] : `${r.posicao}°`}
+              </span>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontWeight: 900, fontSize: 13, color: 'var(--preto)' }}>{r.nome}</div>
+                <div style={{ fontSize: 10, color: '#888', fontWeight: 700 }}>Nv.{r.nivel} · {r.jogadas} jogadas · Combo x{r.max_combo}</div>
+              </div>
+              <span style={{ fontFamily: 'var(--font-titulo)', fontSize: 20, color: 'var(--azul)' }}>{r.score}</span>
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+
   // BLOQUEADO
   if (podeJogar === false && estado === 'menu') {
     const h = Math.floor(cooldownSeg / 3600)
@@ -127,6 +153,7 @@ export default function MiniGame() {
           </div>
           <p>Próxima partida disponível em breve.</p>
         </div>
+        {rankingSection}
       </>
     )
   }
@@ -245,6 +272,7 @@ export default function MiniGame() {
         </div>
         <button className="btn-work btn-verde mg-start-btn" onClick={iniciar}>⚽ JOGAR!</button>
       </div>
+      {rankingSection}
     </>
   )
 }

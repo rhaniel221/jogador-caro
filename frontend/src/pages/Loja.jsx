@@ -30,8 +30,8 @@ export default function Loja() {
       if (item.tipo === 'equipamento') setTab('equip')
       else if (item.tipo === 'mochila') setTab('mochila')
       else if (item.tipo === 'consumivel') {
-        if (item.recupera_energia > 0 && item.recupera_saude > 0) setTab('combo')
-        else if (item.recupera_saude > 0) setTab('saude')
+        if (item.recupera_energia > 0 && (item.preco_moedas || 0) > 0) setTab('combo')
+        else if ((item.preco_moedas || 0) > 0) setTab('saude')
         else setTab('energia')
       }
     }
@@ -69,9 +69,11 @@ export default function Loja() {
   }
 
   const consumiveis = itensLoja.filter(i => i.tipo === 'consumivel' && visivel(i))
-  const energiaItems = consumiveis.filter(i => i.recupera_energia > 0 && !i.recupera_saude)
-  const saudeItems = consumiveis.filter(i => i.recupera_saude > 0 && !i.recupera_energia)
-  const comboItems = consumiveis.filter(i => i.recupera_energia > 0 && i.recupera_saude > 0)
+  const isDinheiro = (i) => !i.preco_moedas || i.preco_moedas <= 0
+  const isMoedas = (i) => i.preco_moedas > 0
+  const energiaItems = consumiveis.filter(i => i.recupera_energia > 0 && !i.recupera_saude && isDinheiro(i))
+  const saudeItemsMoedas = consumiveis.filter(i => i.recupera_saude > 0 && !i.recupera_energia && isMoedas(i))
+  const comboItemsMoedas = consumiveis.filter(i => i.recupera_energia > 0 && i.recupera_saude > 0 && isMoedas(i))
   const equipamentos = itensLoja.filter(i => i.tipo === 'equipamento' && visivel(i))
   const mochilas = itensLoja.filter(i => i.tipo === 'mochila' && visivel(i))
 
@@ -122,32 +124,42 @@ export default function Loja() {
     return <div className="shop-grid">{itens.map(renderItem)}</div>
   }
 
-  const TABS = [
+  const TABS_DINHEIRO = [
     { id: 'energia', label: '⚡ Energia', count: energiaItems.length },
-    { id: 'saude', label: '❤️ Saúde', count: saudeItems.length },
-    { id: 'combo', label: '💪 Combo', count: comboItems.length },
     { id: 'equip', label: '⚙️ Equipamentos', count: equipamentos.length },
     { id: 'mochila', label: '🎒 Mochilas', count: mochilas.length },
     { id: 'fama', label: '⭐ Fama', count: itensFama.length },
+  ]
+
+  const TABS_MOEDAS = [
+    { id: 'saude', label: '❤️ Saúde', count: saudeItemsMoedas.length },
+    { id: 'combo', label: '💪 Combo', count: comboItemsMoedas.length },
     { id: 'premium', label: '🪙 Premium', count: lojaPremium.length },
   ]
 
   return (
     <>
       <h2 className="page-title" data-tutorial="shop-area">🛒 LOJA</h2>
-      <p className="subtitle">Nível {nivel} — Itens da sua faixa</p>
+      <p className="subtitle">Nível {nivel} — R$ {fmt(jogador?.dinheiro_mao || 0)} · 🪙 {jogador?.moedas || 0} moedas</p>
 
-      <div className="tabs" style={{ marginBottom: 16 }}>
-        {TABS.filter(t => t.count > 0 || t.id === 'premium' || t.id === 'fama').map(t => (
-          <div key={t.id} className={`tab${tab === t.id ? ' active' : ''}`} onClick={() => setTab(t.id)}>
-            {t.label}
-          </div>
-        ))}
+      {/* === SEÇÃO DINHEIRO === */}
+      <div style={{
+        background: 'var(--card-bg)', border: 'var(--borda)', borderRadius: 'var(--radius)',
+        padding: '10px 14px 4px', marginBottom: 6, boxShadow: 'var(--sombra)'
+      }}>
+        <div style={{ fontFamily: 'var(--font-titulo)', fontSize: 15, color: 'var(--preto)', marginBottom: 8 }}>
+          💰 COMPRAR COM DINHEIRO
+        </div>
+        <div className="tabs" style={{ marginBottom: 10 }}>
+          {TABS_DINHEIRO.filter(t => t.count > 0 || t.id === 'fama').map(t => (
+            <div key={t.id} className={`tab${tab === t.id ? ' active' : ''}`} onClick={() => setTab(t.id)}>
+              {t.label}
+            </div>
+          ))}
+        </div>
       </div>
 
       {tab === 'energia' && renderGrid(energiaItems)}
-      {tab === 'saude' && renderGrid(saudeItems)}
-      {tab === 'combo' && renderGrid(comboItems)}
       {tab === 'equip' && renderGrid(equipamentos)}
       {tab === 'mochila' && renderGrid(mochilas)}
 
@@ -164,6 +176,26 @@ export default function Loja() {
           ))}
         </div>
       )}
+
+      {/* === SEÇÃO MOEDAS === */}
+      <div style={{
+        background: 'linear-gradient(135deg, #fff8e1, #fff3cd)', border: '3px solid #d4a017', borderRadius: 'var(--radius)',
+        padding: '10px 14px 4px', marginTop: 16, marginBottom: 6, boxShadow: 'var(--sombra)'
+      }}>
+        <div style={{ fontFamily: 'var(--font-titulo)', fontSize: 15, color: '#8b6914', marginBottom: 8 }}>
+          🪙 COMPRAR COM MOEDAS
+        </div>
+        <div className="tabs" style={{ marginBottom: 10 }}>
+          {TABS_MOEDAS.filter(t => t.count > 0 || t.id === 'premium').map(t => (
+            <div key={t.id} className={`tab${tab === t.id ? ' active' : ''}`} onClick={() => setTab(t.id)}>
+              {t.label}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {tab === 'saude' && renderGrid(saudeItemsMoedas)}
+      {tab === 'combo' && renderGrid(comboItemsMoedas)}
 
       {tab === 'premium' && (
         <div className="shop-grid">

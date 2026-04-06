@@ -68,6 +68,7 @@ func main() {
 	http.HandleFunc("/api/quests/resgatar", handlers.Cors(handlers.HandleResgatarQuest))
 	http.HandleFunc("/api/quests/", handlers.Cors(handlers.HandleQuests))
 	http.HandleFunc("/api/minigame/resultado", handlers.Cors(handlers.HandleMinigameResultado))
+	http.HandleFunc("/api/minigame/ranking", handlers.Cors(handlers.HandleMinigameRanking))
 	http.HandleFunc("/api/minigame/status/", handlers.Cors(handlers.HandleMinigameStatus))
 	http.HandleFunc("/api/desafio-1v1/responder", handlers.Cors(handlers.HandleResponderDesafio1v1))
 	http.HandleFunc("/api/desafio-1v1", handlers.Cors(handlers.HandleDesafio1v1))

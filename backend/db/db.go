@@ -249,6 +249,14 @@ func createTables() {
 	Conn.Exec(`ALTER TABLE jogadores ADD COLUMN IF NOT EXISTS energia_gasta_total INT DEFAULT 0`)
 	Conn.Exec(`ALTER TABLE jogadores ADD COLUMN IF NOT EXISTS minigame_hoje DATE`)
 	Conn.Exec(`ALTER TABLE jogadores ADD COLUMN IF NOT EXISTS ultimo_minigame TIMESTAMP`)
+
+	Conn.Exec(`CREATE TABLE IF NOT EXISTS minigame_recordes (
+		jogador_id INT PRIMARY KEY REFERENCES jogadores(id),
+		score INT DEFAULT 0,
+		max_combo INT DEFAULT 0,
+		jogadas INT DEFAULT 1,
+		atualizado_em TIMESTAMP DEFAULT NOW()
+	)`)
 	Conn.Exec(`ALTER TABLE jogadores ADD COLUMN IF NOT EXISTS ultimo_periodo_desafio VARCHAR(20) DEFAULT ''`)
 	Conn.Exec(`ALTER TABLE desafios_1v1 ADD COLUMN IF NOT EXISTS periodo VARCHAR(20) DEFAULT ''`)
 

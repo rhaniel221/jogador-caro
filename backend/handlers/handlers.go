@@ -3129,6 +3129,16 @@ func HandleMinigameResultado(w http.ResponseWriter, r *http.Request) {
 	saveJogador(jogador)
 	db.Conn.Exec("UPDATE jogadores SET ultimo_minigame=NOW() WHERE id=$1", req.JogadorID)
 
+	// Salvar recorde do minigame (all-time high score)
+	db.Conn.Exec(`INSERT INTO minigame_recordes (jogador_id, score, max_combo)
+		VALUES ($1, $2, $3)
+		ON CONFLICT (jogador_id) DO UPDATE SET
+			score = GREATEST(minigame_recordes.score, EXCLUDED.score),
+			max_combo = GREATEST(minigame_recordes.max_combo, EXCLUDED.max_combo),
+			jogadas = minigame_recordes.jogadas + 1,
+			atualizado_em = NOW()`,
+		req.JogadorID, req.Score, req.MaxCombo)
+
 	// Skill missions: combo and score
 	if req.MaxCombo > 0 {
 		updateSkillProgress(req.JogadorID, "COMBO_MATCH3", req.MaxCombo)
@@ -3165,6 +3175,50 @@ func HandleMinigameStatus(w http.ResponseWriter, r *http.Request) {
 
 	pode, restante := statusMinigame(jogadorID)
 	JsonResp(w, 200, map[string]any{"pode_jogar": pode, "restante_seg": restante})
+}
+
+// GET /api/minigame/ranking
+func HandleMinigameRanking(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "GET" {
+		ErrResp(w, 405, "Método não permitido")
+		return
+	}
+	rows, err := db.Conn.Query(`
+		SELECT mr.jogador_id, j.nome, j.nivel, j.avatar, mr.score, mr.max_combo, mr.jogadas
+		FROM minigame_recordes mr
+		JOIN jogadores j ON j.id = mr.jogador_id
+		WHERE mr.score > 0
+		ORDER BY mr.score DESC
+		LIMIT 20`)
+	if err != nil {
+		ErrResp(w, 500, "Erro ao buscar ranking")
+		return
+	}
+	defer rows.Close()
+
+	type RankEntry struct {
+		Posicao   int    `json:"posicao"`
+		JogadorID int    `json:"jogador_id"`
+		Nome      string `json:"nome"`
+		Nivel     int    `json:"nivel"`
+		Avatar    int    `json:"avatar"`
+		Score     int    `json:"score"`
+		MaxCombo  int    `json:"max_combo"`
+		Jogadas   int    `json:"jogadas"`
+	}
+	var lista []RankEntry
+	pos := 1
+	for rows.Next() {
+		var e RankEntry
+		rows.Scan(&e.JogadorID, &e.Nome, &e.Nivel, &e.Avatar, &e.Score, &e.MaxCombo, &e.Jogadas)
+		e.Posicao = pos
+		pos++
+		lista = append(lista, e)
+	}
+	if lista == nil {
+		lista = []RankEntry{}
+	}
+	JsonResp(w, 200, lista)
 }
 
 // ========================
