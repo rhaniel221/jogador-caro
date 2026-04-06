@@ -4658,11 +4658,10 @@ input, select, textarea {
 .boleto-banco-section {
   margin-top: 15px;
   background: var(--card-bg);
-  border: 3px solid var(--vermelho);
+  border: var(--borda);
   border-radius: var(--radius);
   padding: 16px;
   box-shadow: var(--sombra);
-  animation: tut-pulse 2s ease-in-out infinite;
 }
 .boleto-banco-header {
   display: flex;
@@ -4683,10 +4682,9 @@ input, select, textarea {
   background: var(--vermelho);
   padding: 3px 10px;
   border-radius: 20px;
-  animation: tut-pulse 1s ease-in-out infinite;
 }
 .boleto-recibo {
-  border: 2px dashed #aaa;
+  border: 2px solid #ccc;
   border-radius: 10px;
   overflow: hidden;
   background: #fff;
@@ -4696,12 +4694,13 @@ input, select, textarea {
   display: flex;
   justify-content: space-between;
   padding: 10px 14px;
-  background: var(--preto);
-  color: #fff;
+  background: var(--card-bg2);
+  color: var(--preto);
   font-size: 11px;
   font-weight: 900;
   text-transform: uppercase;
   letter-spacing: 1px;
+  border-bottom: 2px solid #ccc;
 }
 .boleto-linha {
   display: flex;
@@ -4728,7 +4727,7 @@ input, select, textarea {
   font-size: 15px;
   font-weight: 900;
   color: var(--vermelho);
-  border-top: 2px solid var(--preto);
+  border-top: 2px solid #ccc;
 }
 .boleto-aviso-juros {
   background: #fff0f0;
