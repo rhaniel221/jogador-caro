@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import ReactDOM from 'react-dom'
 import { useGame } from '../context/GameContext'
 import API from '../api'
 import { fmt, gerarDescricaoItem } from '../utils'
@@ -41,16 +42,24 @@ function PerfilModal({ jogadorID, targetID, onClose, getAvatar }) {
 
   // Trava scroll do fundo quando modal abre
   useEffect(() => {
+    const el = document.querySelector('.game-container')
+    if (el) el.style.overflow = 'hidden'
     document.body.style.overflow = 'hidden'
-    return () => { document.body.style.overflow = '' }
+    document.documentElement.style.overflow = 'hidden'
+    return () => {
+      if (el) el.style.overflow = ''
+      document.body.style.overflow = ''
+      document.documentElement.style.overflow = ''
+    }
   }, [])
 
-  if (loading) return (
+  if (loading) return ReactDOM.createPortal(
     <div className="modal-overlay" onClick={onClose}>
       <div className="pm-card" onClick={e => e.stopPropagation()}>
         <div style={{ textAlign: 'center', padding: 40, fontWeight: 900 }}>Carregando...</div>
       </div>
-    </div>
+    </div>,
+    document.body
   )
 
   if (!perfil) return null
@@ -74,7 +83,7 @@ function PerfilModal({ jogadorID, targetID, onClose, getAvatar }) {
     if (res.sucesso) setPerfil(p => ({ ...p, solicitacao_pendente: true }))
   }
 
-  return (
+  return ReactDOM.createPortal(
     <div className="modal-overlay" onClick={onClose}>
       <div className="pm-card" ref={cardRef} onClick={e => e.stopPropagation()}>
         <button className="pm-close" onClick={onClose}>✕</button>
@@ -204,7 +213,8 @@ function PerfilModal({ jogadorID, targetID, onClose, getAvatar }) {
           {perfil.eh_amigo && <div className="pm-status-tag pm-status-amigo">✅ Amigos</div>}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   )
 }
 
