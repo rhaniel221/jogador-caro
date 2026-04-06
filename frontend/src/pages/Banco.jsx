@@ -16,7 +16,7 @@ export default function Banco() {
   const [loadingCdb, setLoadingCdb] = useState(false)
 
   function carregarBoletos() {
-    if (!jogadorID || !jogador || jogador.nivel < 18) return
+    if (!jogadorID || !jogador || jogador.nivel < 20) return
     API.get('/api/boletos/verificar/' + jogadorID).then(res => {
       if (res && res.tem_boleto) setBoleto(res)
       else setBoleto(null)
@@ -294,7 +294,7 @@ export default function Banco() {
       </div>
 
       {/* === HISTORICO DE BOLETOS === */}
-      {jogador.nivel >= 18 && (
+      {jogador.nivel >= 20 && (
         <div className="section-box" style={{ marginTop: 15 }}>
           <h3>📋 Historico de Boletos {totalPagos > 0 && <span style={{ fontSize: 12, color: '#888', fontWeight: 700 }}>({totalPagos} pagos)</span>}</h3>
 
@@ -332,7 +332,7 @@ export default function Banco() {
           <p>• CDB rende 2% a cada 6 horas (8% ao dia!) — investimento minimo R$ 1.000.</p>
           <p>• Resgate CDB apos 12h para garantir o lucro. Antes disso recebe so o valor investido.</p>
           <p>• Maximo 5 investimentos CDB ativos ao mesmo tempo.</p>
-          {jogador.nivel >= 18 && (
+          {jogador.nivel >= 20 && (
             <>
               <p>• A cada 2 dias chegam boletos (aluguel, energia, agua, internet, condominio).</p>
               <p>• Boletos em atraso geram juros de 5% ao dia! Pague em dia.</p>

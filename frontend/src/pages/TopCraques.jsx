@@ -5,15 +5,15 @@ import API from '../api'
 import { fmt, gerarDescricaoItem } from '../utils'
 
 const ELO_TIERS = [
-  { min: 150, id: 'desafiante', nome: 'Desafiante' },
-  { min: 120, id: 'grao-mestre', nome: 'Grão-Mestre' },
-  { min: 100, id: 'mestre', nome: 'Mestre' },
-  { min: 80, id: 'diamante', nome: 'Diamante' },
-  { min: 60, id: 'esmeralda', nome: 'Esmeralda' },
-  { min: 45, id: 'platina', nome: 'Platina' },
+  { min: 190, id: 'desafiante', nome: 'Desafiante' },
+  { min: 160, id: 'grao-mestre', nome: 'Grão-Mestre' },
+  { min: 135, id: 'mestre', nome: 'Mestre' },
+  { min: 100, id: 'diamante', nome: 'Diamante' },
+  { min: 72, id: 'esmeralda', nome: 'Esmeralda' },
+  { min: 50, id: 'platina', nome: 'Platina' },
   { min: 30, id: 'ouro', nome: 'Ouro' },
-  { min: 18, id: 'prata', nome: 'Prata' },
-  { min: 8, id: 'bronze', nome: 'Bronze' },
+  { min: 20, id: 'prata', nome: 'Prata' },
+  { min: 10, id: 'bronze', nome: 'Bronze' },
   { min: 0, id: 'ferro', nome: 'Ferro' },
 ]
 function getElo(nivel) {

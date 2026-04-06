@@ -684,74 +684,75 @@ func seedCatalogos() {
 		{"lavajato", "Base", "Trabalhar no lava-jato", "🚗", 5, 3, 25, 40, 12, 0, 10},
 		{"pelada", "Base", "Jogar pelada organizada", "⚽", 5, 3, 20, 35, 12, 7, 10},
 		{"escolinha", "Base", "Monitor de escolinha de futebol", "🧒", 6, 7, 35, 55, 14, 100, 8},
-		// === AMADOR (nv 10-17) ===
+		// === AMADOR (nv 10-19) ===
 		{"campinho", "Amador", "Treinar no campinho do bairro", "🏃", 10, 2, 40, 65, 16, 7, 8},
 		{"arbitro", "Amador", "Árbitro de pelada", "🟨", 10, 2, 50, 80, 16, 0, 8},
 		{"treino", "Amador", "Ajudar no treino do time local", "🎯", 10, 3, 80, 120, 30, 7, 6},
-		{"captador", "Amador", "Captador de jovens talentos", "🔍", 13, 7, 100, 150, 33, 101, 6},
-		// === SÉRIE C (nv 18-23) ===
-		{"serie_c_treino", "Série C", "Treinar no CT do clube", "🏟️", 18, 3, 150, 250, 35, 8, 6},
-		{"serie_c_jogo", "Série C", "Jogar partida da Série C", "⚽", 18, 4, 250, 400, 50, 8, 5},
-		{"serie_c_gol", "Série C", "Marcar gol na Série C", "🥅", 20, 4, 350, 550, 65, 8, 4},
-		{"serie_c_destaque", "Série C", "Ser destaque da rodada", "⭐", 22, 8, 500, 800, 80, 102, 3},
-		// === SÉRIE B (nv 24-29) ===
-		{"serie_b_treino", "Série B", "Treinar com time da Série B", "🏋️", 24, 3, 400, 650, 55, 8, 6},
-		{"serie_b_jogo", "Série B", "Jogar partida da Série B", "⚽", 24, 4, 600, 1000, 75, 8, 5},
-		{"serie_b_artilheiro", "Série B", "Artilheiro da rodada", "🎯", 26, 5, 900, 1400, 95, 8, 4},
-		{"serie_b_acesso", "Série B", "Lutar pelo acesso", "🏆", 28, 9, 1200, 1800, 110, 103, 3},
-		// === SÉRIE A (nv 30-35) ===
-		{"serie_a_treino", "Série A", "Treinar no CT profissional", "🏟️", 30, 3, 800, 1200, 70, 8, 5},
-		{"serie_a_jogo", "Série A", "Jogar partida do Boleirão", "⚽", 30, 4, 1200, 2000, 90, 8, 4},
-		{"serie_a_classico", "Série A", "Jogar clássico regional", "🔥", 32, 5, 1800, 3000, 115, 8, 3},
-		{"serie_a_titulo", "Série A", "Disputar título brasileiro", "🏆", 34, 9, 2500, 4000, 135, 104, 3},
-		// === COPINHA NACIONAL (nv 36-41) ===
-		{"copa_br_fase", "Copinha Nacional", "Jogar fase de grupos", "🏆", 36, 4, 2000, 3500, 100, 35, 4},
-		{"copa_br_quartas", "Copinha Nacional", "Quartas de final", "⚡", 38, 5, 3500, 5500, 130, 35, 3},
-		{"copa_br_semi", "Copinha Nacional", "Semifinal da Copinha", "🔥", 39, 5, 5000, 8000, 160, 35, 3},
-		{"copa_br_final", "Copinha Nacional", "Final da Copinha Nacional", "🏆", 41, 9, 8000, 12000, 200, 105, 2},
-		// === CONTINENTÃO (nv 42-49) ===
-		{"liberta_fase", "Continentão", "Fase de grupos do Continentão", "🌎", 42, 4, 5000, 8000, 120, 35, 4},
-		{"liberta_oitavas", "Continentão", "Oitavas do Continentão", "⚔️", 44, 5, 8000, 13000, 150, 35, 3},
-		{"liberta_semi", "Continentão", "Semifinal do Continentão", "🔥", 46, 5, 13000, 20000, 185, 35, 2},
-		{"liberta_final", "Continentão", "Final do Continentão", "🏆", 48, 9, 20000, 35000, 220, 106, 2},
-		// === EUROPA (nv 50-59) ===
-		{"europa_contrato", "Europa", "Assinar com clube europeu", "📝", 50, 4, 15000, 25000, 140, 36, 4},
-		{"europa_liga", "Europa", "Jogar liga nacional europeia", "🌍", 52, 4, 25000, 40000, 170, 36, 3},
-		{"europa_destaque", "Europa", "Melhor jogador do mês", "⭐", 55, 5, 40000, 65000, 200, 36, 3},
-		{"europa_mvp", "Europa", "MVP da temporada europeia", "🏅", 58, 9, 65000, 100000, 250, 107, 2},
-		// === LIGA DOS CRAQUES (nv 60-71) ===
-		{"ucl_fase", "Liga dos Craques", "Fase de grupos da Liga", "🌟", 60, 4, 50000, 80000, 180, 37, 3},
-		{"ucl_quartas", "Liga dos Craques", "Quartas da Liga dos Craques", "⚡", 63, 5, 80000, 130000, 220, 37, 3},
-		{"ucl_semi", "Liga dos Craques", "Semifinal da Liga", "🔥", 66, 5, 130000, 200000, 280, 37, 2},
-		{"ucl_final", "Liga dos Craques", "Final da Liga dos Craques", "🏆", 69, 9, 200000, 350000, 350, 108, 2},
-		// === SELEÇOCA (nv 72-84) ===
-		{"selecao_conv", "Seleçoca", "Convocado pra Seleçoca", "🇧🇷", 72, 4, 150000, 250000, 250, 38, 3},
-		{"selecao_amistoso", "Seleçoca", "Amistoso internacional", "⚽", 74, 5, 250000, 400000, 300, 38, 3},
-		{"selecao_eliminatorias", "Seleçoca", "Eliminatórias do Mundialito", "🌎", 78, 5, 400000, 600000, 380, 38, 2},
-		{"selecao_titular", "Seleçoca", "Titular da Seleçoca", "⭐", 82, 9, 600000, 1000000, 450, 109, 2},
-		// === MUNDIALITO (nv 85-99) ===
-		{"copa_fase", "Mundialito", "Fase de grupos do Mundialito", "🏆", 85, 4, 500000, 800000, 350, 38, 3},
-		{"copa_oitavas", "Mundialito", "Oitavas do Mundialito", "⚔️", 88, 5, 800000, 1300000, 450, 38, 2},
-		{"copa_semi", "Mundialito", "Semifinal do Mundialito", "🔥", 92, 5, 1300000, 2000000, 550, 38, 2},
-		{"copa_final", "Mundialito", "Final do Mundialito", "🏆", 96, 9, 2000000, 3500000, 700, 110, 1},
-		// === BOLA DE OURO (nv 100-119) ===
-		{"ballon_indicado", "Bola de Ouro", "Indicado à Bola de Ouro", "🥇", 100, 5, 2000000, 3500000, 600, 0, 2},
-		{"ballon_top3", "Bola de Ouro", "Top 3 da Bola de Ouro", "🏅", 105, 5, 3500000, 5500000, 750, 0, 2},
-		{"ballon_vencedor", "Bola de Ouro", "Vencer a Bola de Ouro", "🥇", 110, 9, 5500000, 8000000, 900, 111, 1},
-		// === ÍDOLO (nv 120-149) ===
-		{"idolo_estatua", "Ídolo", "Ganhar estátua no clube", "🗿", 120, 5, 800000, 1300000, 1000, 0, 1},
-		{"idolo_camisa", "Ídolo", "Camisa aposentada", "👕", 130, 5, 1000000, 1700000, 1200, 0, 1},
-		{"idolo_hino", "Ídolo", "Torcida canta seu nome", "🎵", 140, 9, 1500000, 2500000, 1400, 112, 1},
-		// === LENDA (nv 150+) ===
-		{"hall_fama", "Lenda", "Entrar no Hall da Fama", "👑", 150, 5, 2000000, 3500000, 2000, 0, 1},
-		{"lenda_embaixador", "Lenda", "Embaixador do futebol mundial", "🌍", 175, 5, 3000000, 5000000, 3000, 0, 1},
-		{"lenda_imortal", "Lenda", "O Imortal do Futebol", "✨", 200, 9, 5000000, 8000000, 5000, 0, 1},
+		{"captador", "Amador", "Captador de jovens talentos", "🔍", 15, 7, 100, 150, 33, 101, 6},
+		// === SÉRIE C (nv 20-29) ===
+		{"serie_c_treino", "Série C", "Treinar no CT do clube", "🏟️", 20, 3, 150, 250, 35, 8, 6},
+		{"serie_c_jogo", "Série C", "Jogar partida da Série C", "⚽", 20, 4, 250, 400, 50, 8, 5},
+		{"serie_c_gol", "Série C", "Marcar gol na Série C", "🥅", 24, 4, 350, 550, 65, 8, 4},
+		{"serie_c_destaque", "Série C", "Ser destaque da rodada", "⭐", 27, 8, 500, 800, 80, 102, 3},
+		// === SÉRIE B (nv 30-39) ===
+		{"serie_b_treino", "Série B", "Treinar com time da Série B", "🏋️", 30, 3, 400, 650, 55, 8, 6},
+		{"serie_b_jogo", "Série B", "Jogar partida da Série B", "⚽", 30, 4, 600, 1000, 75, 8, 5},
+		{"serie_b_artilheiro", "Série B", "Artilheiro da rodada", "🎯", 34, 5, 900, 1400, 95, 8, 4},
+		{"serie_b_acesso", "Série B", "Lutar pelo acesso", "🏆", 37, 9, 1200, 1800, 110, 103, 3},
+		// === SÉRIE A (nv 40-49) ===
+		{"serie_a_treino", "Série A", "Treinar no CT profissional", "🏟️", 40, 3, 800, 1200, 70, 8, 5},
+		{"serie_a_jogo", "Série A", "Jogar partida do Boleirão", "⚽", 40, 4, 1200, 2000, 90, 8, 4},
+		{"serie_a_classico", "Série A", "Jogar clássico regional", "🔥", 44, 5, 1800, 3000, 115, 8, 3},
+		{"serie_a_titulo", "Série A", "Disputar título brasileiro", "🏆", 47, 9, 2500, 4000, 135, 104, 3},
+		// === COPINHA NACIONAL (nv 50-59) ===
+		{"copa_br_fase", "Copinha Nacional", "Jogar fase de grupos", "🏆", 50, 4, 2000, 3500, 100, 35, 4},
+		{"copa_br_quartas", "Copinha Nacional", "Quartas de final", "⚡", 52, 5, 3500, 5500, 130, 35, 3},
+		{"copa_br_semi", "Copinha Nacional", "Semifinal da Copinha", "🔥", 55, 5, 5000, 8000, 160, 35, 3},
+		{"copa_br_final", "Copinha Nacional", "Final da Copinha Nacional", "🏆", 58, 9, 8000, 12000, 200, 105, 2},
+		// === CONTINENTÃO (nv 60-71) ===
+		{"liberta_fase", "Continentão", "Fase de grupos do Continentão", "🌎", 60, 4, 5000, 8000, 120, 35, 4},
+		{"liberta_oitavas", "Continentão", "Oitavas do Continentão", "⚔️", 63, 5, 8000, 13000, 150, 35, 3},
+		{"liberta_semi", "Continentão", "Semifinal do Continentão", "🔥", 66, 5, 13000, 20000, 185, 35, 2},
+		{"liberta_final", "Continentão", "Final do Continentão", "🏆", 69, 9, 20000, 35000, 220, 106, 2},
+		// === EUROPA (nv 72-84) ===
+		{"europa_contrato", "Europa", "Assinar com clube europeu", "📝", 72, 4, 15000, 25000, 140, 36, 4},
+		{"europa_liga", "Europa", "Jogar liga nacional europeia", "🌍", 75, 4, 25000, 40000, 170, 36, 3},
+		{"europa_destaque", "Europa", "Melhor jogador do mês", "⭐", 78, 5, 40000, 65000, 200, 36, 3},
+		{"europa_mvp", "Europa", "MVP da temporada europeia", "🏅", 82, 9, 65000, 100000, 250, 107, 2},
+		// === LIGA DOS CRAQUES (nv 85-99) ===
+		{"ucl_fase", "Liga dos Craques", "Fase de grupos da Liga", "🌟", 85, 4, 50000, 80000, 180, 37, 3},
+		{"ucl_quartas", "Liga dos Craques", "Quartas da Liga dos Craques", "⚡", 88, 5, 80000, 130000, 220, 37, 3},
+		{"ucl_semi", "Liga dos Craques", "Semifinal da Liga", "🔥", 92, 5, 130000, 200000, 280, 37, 2},
+		{"ucl_final", "Liga dos Craques", "Final da Liga dos Craques", "🏆", 97, 9, 200000, 350000, 350, 108, 2},
+		// === SELEÇOCA (nv 100-114) ===
+		{"selecao_conv", "Seleçoca", "Convocado pra Seleçoca", "🇧🇷", 100, 4, 150000, 250000, 250, 38, 3},
+		{"selecao_amistoso", "Seleçoca", "Amistoso internacional", "⚽", 103, 5, 250000, 400000, 300, 38, 3},
+		{"selecao_eliminatorias", "Seleçoca", "Eliminatórias do Mundialito", "🌎", 108, 5, 400000, 600000, 380, 38, 2},
+		{"selecao_titular", "Seleçoca", "Titular da Seleçoca", "⭐", 112, 9, 600000, 1000000, 450, 109, 2},
+		// === MUNDIALITO (nv 115-134) ===
+		{"copa_fase", "Mundialito", "Fase de grupos do Mundialito", "🏆", 115, 4, 500000, 800000, 350, 38, 3},
+		{"copa_oitavas", "Mundialito", "Oitavas do Mundialito", "⚔️", 120, 5, 800000, 1300000, 450, 38, 2},
+		{"copa_semi", "Mundialito", "Semifinal do Mundialito", "🔥", 126, 5, 1300000, 2000000, 550, 38, 2},
+		{"copa_final", "Mundialito", "Final do Mundialito", "🏆", 132, 9, 2000000, 3500000, 700, 110, 1},
+		// === BOLA DE OURO (nv 135-159) ===
+		{"ballon_indicado", "Bola de Ouro", "Indicado à Bola de Ouro", "🥇", 135, 5, 2000000, 3500000, 600, 0, 2},
+		{"ballon_top3", "Bola de Ouro", "Top 3 da Bola de Ouro", "🏅", 142, 5, 3500000, 5500000, 750, 0, 2},
+		{"ballon_vencedor", "Bola de Ouro", "Vencer a Bola de Ouro", "🥇", 152, 9, 5500000, 8000000, 900, 111, 1},
+		// === ÍDOLO (nv 160-189) ===
+		{"idolo_estatua", "Ídolo", "Ganhar estátua no clube", "🗿", 160, 5, 800000, 1300000, 1000, 0, 1},
+		{"idolo_camisa", "Ídolo", "Camisa aposentada", "👕", 172, 5, 1000000, 1700000, 1200, 0, 1},
+		{"idolo_hino", "Ídolo", "Torcida canta seu nome", "🎵", 185, 9, 1500000, 2500000, 1400, 112, 1},
+		// === LENDA (nv 190+) ===
+		{"hall_fama", "Lenda", "Entrar no Hall da Fama", "👑", 190, 5, 2000000, 3500000, 2000, 0, 1},
+		{"lenda_embaixador", "Lenda", "Embaixador do futebol mundial", "🌍", 210, 5, 3000000, 5000000, 3000, 0, 1},
+		{"lenda_imortal", "Lenda", "O Imortal do Futebol", "✨", 230, 9, 5000000, 8000000, 5000, 0, 1},
 	}
 	for _, t := range trabalhos {
 		Conn.Exec(`INSERT INTO cat_trabalhos
 			(id, nome, tier, nivel_min, energia, ganho_min, ganho_max, ganho_xp, requer_item, icone, limite_diario)
 			VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)
 			ON CONFLICT (id) DO UPDATE SET
+				nivel_min=EXCLUDED.nivel_min,
 				energia=EXCLUDED.energia,
 				ganho_min=EXCLUDED.ganho_min,
 				ganho_max=EXCLUDED.ganho_max,
@@ -1313,6 +1314,27 @@ func seedCatalogos() {
 		pago_em TIMESTAMP DEFAULT NOW()
 	)`)
 
+	Conn.Exec(`CREATE TABLE IF NOT EXISTS clubes (
+		id SERIAL PRIMARY KEY,
+		nome VARCHAR(100) NOT NULL,
+		mascote VARCHAR(50) DEFAULT '',
+		cor1 VARCHAR(30) DEFAULT '',
+		cor2 VARCHAR(30) DEFAULT '',
+		tier VARCHAR(50) NOT NULL,
+		icone VARCHAR(20) DEFAULT ''
+	)`)
+
+	Conn.Exec(`CREATE TABLE IF NOT EXISTS jogador_clube (
+		jogador_id INT PRIMARY KEY REFERENCES jogadores(id),
+		clube_id INT DEFAULT 0,
+		numero_camisa INT DEFAULT 0,
+		tier VARCHAR(50) DEFAULT '',
+		entrou_em TIMESTAMP DEFAULT NOW()
+	)`)
+
+	Conn.Exec(`ALTER TABLE jogadores ADD COLUMN IF NOT EXISTS clube_id INT DEFAULT 0`)
+	Conn.Exec(`ALTER TABLE jogadores ADD COLUMN IF NOT EXISTS numero_camisa INT DEFAULT 0`)
+
 	// ========================
 	// MISSÕES COMBINADAS
 	// ========================
@@ -1365,5 +1387,66 @@ func seedCatalogos() {
 			VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)
 			ON CONFLICT DO NOTHING`,
 			cm.id, cm.nome, cm.desc, cm.icone, cm.t1, cm.a1, cm.t2, cm.a2, cm.t3, cm.a3, cm.xp, cm.din, cm.moedas)
+	}
+
+	// Seed clubes
+	type clubeSeed struct {
+		nome, mascote, cor1, cor2, tier, icone string
+	}
+	clubesSeed := []clubeSeed{
+		// Série C
+		{"Ferroviário do Brejo", "Locomotiva", "#cc0000", "#222", "Série C", "🚂"},
+		{"Operário Bola Murcha", "Martelo", "#0055aa", "#fff", "Série C", "🔨"},
+		{"Juventude da Várzea", "Piaba", "#228b22", "#ffd700", "Série C", "🐟"},
+		// Série B
+		{"Galo Cego FC", "Galo Vendado", "#222", "#fff", "Série B", "🐓"},
+		{"Estrela do Mangue", "Caranguejo", "#ff6600", "#0066cc", "Série B", "🦀"},
+		{"Trovão Esporte Clube", "Raio", "#6a0dad", "#ffd700", "Série B", "⚡"},
+		// Série A
+		{"Leões da Serra", "Leão", "#cc0000", "#ffd700", "Série A", "🦁"},
+		{"Tubarões FC", "Tubarão", "#003366", "#c0c0c0", "Série A", "🦈"},
+		{"Fênix Esporte Clube", "Fênix", "#ff4500", "#ff0000", "Série A", "🔥"},
+		// Copinha Nacional
+		{"Dragões do Norte", "Dragão", "#004d00", "#ffd700", "Copinha Nacional", "🐉"},
+		{"Falcões da Capital", "Falcão", "#222", "#cc0000", "Copinha Nacional", "🦅"},
+		{"Piranhas FC", "Piranha", "#cc0000", "#222", "Copinha Nacional", "🐡"},
+		// Continentão
+		{"Panteras do Plata", "Pantera", "#222", "#c0c0c0", "Continentão", "🐆"},
+		{"Condores Andinos", "Condor", "#fff", "#0055aa", "Continentão", "🦅"},
+		{"Jaguares do Rio", "Jaguar", "#ffd700", "#228b22", "Continentão", "🐆"},
+		// Europa
+		{"FC Corvo de Milão", "Corvo", "#222", "#0055aa", "Europa", "🐦‍⬛"},
+		{"Real Linhares", "Coroa", "#fff", "#ffd700", "Europa", "👑"},
+		{"Lobos de Munique", "Lobo", "#cc0000", "#fff", "Europa", "🐺"},
+		// Liga dos Craques
+		{"Olimpo FC", "Águia Dourada", "#ffd700", "#fff", "Liga dos Craques", "🦅"},
+		{"Titanes Futebol", "Titã", "#0044aa", "#c0c0c0", "Liga dos Craques", "⚔️"},
+		{"Imperium Esporte", "Coroa Imperial", "#6a0dad", "#ffd700", "Liga dos Craques", "👑"},
+		// Seleçoca
+		{"Seleçoca Canarinho", "Canário", "#ffd700", "#228b22", "Seleçoca", "🐦"},
+		{"Seleçoca Fúria", "Onça", "#ffd700", "#0055aa", "Seleçoca", "🐆"},
+		{"Seleçoca Garra", "Arara", "#228b22", "#ffd700", "Seleçoca", "🦜"},
+		// Mundialito
+		{"All Stars Mundial", "Estrela", "#ffd700", "#222", "Mundialito", "⭐"},
+		{"Constelação FC", "Constelação", "#000033", "#c0c0c0", "Mundialito", "🌟"},
+		{"Galáxia Futebol", "Planeta", "#6a0dad", "#ffd700", "Mundialito", "🪐"},
+		// Bola de Ouro
+		{"Deuses do Gramado", "Raio", "#ffd700", "#fff", "Bola de Ouro", "⚡"},
+		{"Eterno FC", "Infinito", "#222", "#ffd700", "Bola de Ouro", "♾️"},
+		{"Supremo Esporte", "Diamante", "#0055aa", "#87ceeb", "Bola de Ouro", "💎"},
+		// Ídolo
+		{"Panteão dos Craques", "Estátua", "#c0c0c0", "#ffd700", "Ídolo", "🗿"},
+		{"Lendários FC", "Fogo Sagrado", "#cc0000", "#ffd700", "Ídolo", "🔥"},
+		{"Imortais Esporte", "Fênix Eterna", "#fff", "#cc0000", "Ídolo", "🏛️"},
+		// Lenda
+		{"FC Eternidade", "Coroa Celestial", "#ffd700", "#ffd700", "Lenda", "👑"},
+		{"Mitologia Futebol", "Dragão Dourado", "#ffd700", "#222", "Lenda", "🐲"},
+		{"Transcendência EC", "Aura", "#fff", "#ffd700", "Lenda", "✨"},
+	}
+	for _, c := range clubesSeed {
+		Conn.Exec(`INSERT INTO clubes (nome, mascote, cor1, cor2, tier, icone)
+			VALUES ($1,$2,$3,$4,$5,$6)
+			ON CONFLICT DO NOTHING`,
+			c.nome, c.mascote, c.cor1, c.cor2, c.tier, c.icone)
 	}
 }

@@ -75,6 +75,8 @@ type JogadorData struct {
 	Titulos                    string `json:"titulos"`
 	Rank                       string `json:"rank"`
 	PvpStreak                  int    `json:"pvp_streak"`
+	ClubeID                    int    `json:"clube_id"`
+	NumeroCamisa               int    `json:"numero_camisa"`
 	ProximaEnergiaEm           int64  `json:"proxima_energia_em"`
 	ProximaVitalidadeEm        int64  `json:"proxima_vitalidade_em"`
 	ProximaSaudeEm             int64  `json:"proxima_saude_em"`

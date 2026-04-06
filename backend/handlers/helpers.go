@@ -334,29 +334,29 @@ var tierOrdem = []string{
 
 func getTierDoJogador(nivel int) string {
 	switch {
-	case nivel >= 150:
+	case nivel >= 190:
 		return "Lenda"
-	case nivel >= 120:
+	case nivel >= 160:
 		return "Ídolo"
-	case nivel >= 100:
+	case nivel >= 135:
 		return "Bola de Ouro"
-	case nivel >= 85:
+	case nivel >= 115:
 		return "Mundialito"
-	case nivel >= 72:
+	case nivel >= 100:
 		return "Seleçoca"
-	case nivel >= 60:
+	case nivel >= 85:
 		return "Liga dos Craques"
-	case nivel >= 50:
+	case nivel >= 72:
 		return "Europa"
-	case nivel >= 42:
+	case nivel >= 60:
 		return "Continentão"
-	case nivel >= 36:
+	case nivel >= 50:
 		return "Copinha Nacional"
-	case nivel >= 30:
+	case nivel >= 40:
 		return "Série A"
-	case nivel >= 24:
+	case nivel >= 30:
 		return "Série B"
-	case nivel >= 18:
+	case nivel >= 20:
 		return "Série C"
 	case nivel >= 10:
 		return "Amador"
@@ -430,13 +430,15 @@ func getJogador(id int) (*JogadorData, error) {
 		       saude, saude_max, forca, velocidade, habilidade, dinheiro_mao, dinheiro_banco,
 		       pontos_fama, vitorias, derrotas, avatar, capacidade_mochila,
 		       moedas, cooldown_premium, titulo, avatares_premium, itens_fama, tutorial_step,
-		       codigo_amigo, inventario_publico, posicao, titulos, COALESCE(pvp_streak, 0)
+		       codigo_amigo, inventario_publico, posicao, titulos, COALESCE(pvp_streak, 0),
+		       COALESCE(clube_id,0), COALESCE(numero_camisa,0)
 		FROM jogadores WHERE id = $1`, id).Scan(
 		&j.ID, &j.Nome, &j.Nivel, &j.XP, &j.XPProximo, &j.Energia, &j.EnergiaMax,
 		&j.Vitalidade, &j.VitalidadeMax, &j.Saude, &j.SaudeMax, &j.Forca, &j.Velocidade,
 		&j.Habilidade, &j.DinheiroMao, &j.DinheiroBanco, &j.PontosFama, &j.Vitorias, &j.Derrotas, &j.Avatar,
 		&j.CapacidadeMochila, &j.Moedas, &j.CooldownPremium, &j.Titulo, &j.AvataresPremium, &j.ItensFama, &j.TutorialStep,
-		&j.CodigoAmigo, &j.InventarioPublico, &j.Posicao, &j.Titulos, &j.PvpStreak)
+		&j.CodigoAmigo, &j.InventarioPublico, &j.Posicao, &j.Titulos, &j.PvpStreak,
+		&j.ClubeID, &j.NumeroCamisa)
 	if err != nil {
 		return nil, err
 	}
@@ -457,13 +459,15 @@ func saveJogador(j *JogadorData) error {
 		habilidade=$12, dinheiro_mao=$13, dinheiro_banco=$14, pontos_fama=$15,
 		vitorias=$16, derrotas=$17, avatar=$18, capacidade_mochila=$19,
 		moedas=$20, cooldown_premium=$21, titulo=$22, avatares_premium=$23, itens_fama=$24, tutorial_step=$25,
-		codigo_amigo=$26, inventario_publico=$27, posicao=$28, titulos=$29, pvp_streak=$30, ultima_atualizacao=NOW()
-		WHERE id=$31`,
+		codigo_amigo=$26, inventario_publico=$27, posicao=$28, titulos=$29, pvp_streak=$30,
+		clube_id=$31, numero_camisa=$32, ultima_atualizacao=NOW()
+		WHERE id=$33`,
 		j.Nivel, j.XP, j.XPProximo, j.Energia, j.EnergiaMax, j.Vitalidade, j.VitalidadeMax,
 		j.Saude, j.SaudeMax, j.Forca, j.Velocidade, j.Habilidade, j.DinheiroMao, j.DinheiroBanco,
 		j.PontosFama, j.Vitorias, j.Derrotas, j.Avatar, j.CapacidadeMochila,
 		j.Moedas, j.CooldownPremium, j.Titulo, j.AvataresPremium, j.ItensFama, j.TutorialStep,
-		j.CodigoAmigo, j.InventarioPublico, j.Posicao, j.Titulos, j.PvpStreak, j.ID)
+		j.CodigoAmigo, j.InventarioPublico, j.Posicao, j.Titulos, j.PvpStreak,
+		j.ClubeID, j.NumeroCamisa, j.ID)
 	return err
 }
 

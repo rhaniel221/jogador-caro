@@ -18,9 +18,9 @@ const TIERS = [
   'Seleçoca', 'Mundialito', 'Bola de Ouro', 'Ídolo', 'Lenda'
 ]
 const TIER_NIVEL_MIN = {
-  Garoto: 1, Base: 5, Amador: 10, 'Série C': 18, 'Série B': 24, 'Série A': 30,
-  'Copinha Nacional': 36, Continentão: 42, Europa: 50, 'Liga dos Craques': 60,
-  'Seleçoca': 72, Mundialito: 85, 'Bola de Ouro': 100, 'Ídolo': 120, Lenda: 150
+  Garoto: 1, Base: 5, Amador: 10, 'Série C': 20, 'Série B': 30, 'Série A': 40,
+  'Copinha Nacional': 50, Continentão: 60, Europa: 72, 'Liga dos Craques': 85,
+  'Seleçoca': 100, Mundialito: 115, 'Bola de Ouro': 135, 'Ídolo': 160, Lenda: 190
 }
 
 function getTierDoJogador(nivel) {

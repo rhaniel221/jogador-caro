@@ -4288,29 +4288,29 @@ func calcBoleto(nivel int) (total int, itens []map[string]interface{}) {
 		ganhoBase = 35
 	case nivel < 10:
 		ganhoBase = 60
-	case nivel < 18:
+	case nivel < 20:
 		ganhoBase = 120
-	case nivel < 24:
-		ganhoBase = 200
 	case nivel < 30:
+		ganhoBase = 200
+	case nivel < 40:
 		ganhoBase = 350
-	case nivel < 36:
-		ganhoBase = 500
-	case nivel < 42:
-		ganhoBase = 700
 	case nivel < 50:
-		ganhoBase = 1000
+		ganhoBase = 500
 	case nivel < 60:
-		ganhoBase = 1400
+		ganhoBase = 700
 	case nivel < 72:
-		ganhoBase = 2000
+		ganhoBase = 1000
 	case nivel < 85:
-		ganhoBase = 3000
+		ganhoBase = 1400
 	case nivel < 100:
+		ganhoBase = 2000
+	case nivel < 115:
+		ganhoBase = 3000
+	case nivel < 135:
 		ganhoBase = 4500
-	case nivel < 120:
+	case nivel < 160:
 		ganhoBase = 6000
-	case nivel < 150:
+	case nivel < 190:
 		ganhoBase = 8000
 	default:
 		ganhoBase = 12000
@@ -4712,6 +4712,239 @@ func HandleCDBResgatar(w http.ResponseWriter, r *http.Request) {
 		"mensagem":   msg,
 		"jogador":    jogador,
 		"rendimento": rendimento,
+	})
+}
+
+// GET /api/clubes/disponiveis/{jogador_id}
+func HandleClubesDisponiveis(w http.ResponseWriter, r *http.Request) {
+	parts := strings.Split(r.URL.Path, "/")
+	idStr := parts[len(parts)-1]
+	jogadorID, _ := strconv.Atoi(idStr)
+	if jogadorID <= 0 {
+		ErrResp(w, 400, "ID inválido")
+		return
+	}
+
+	jogador, err := getJogador(jogadorID)
+	if err != nil {
+		ErrResp(w, 404, "Jogador não encontrado")
+		return
+	}
+
+	tier := getTierDoJogador(jogador.Nivel)
+
+	// Só oferece clubes da Série C em diante
+	tiersComClube := []string{"Série C", "Série B", "Série A", "Copinha Nacional", "Continentão", "Europa", "Liga dos Craques", "Seleçoca", "Mundialito", "Bola de Ouro", "Ídolo", "Lenda"}
+	temClube := false
+	for _, t := range tiersComClube {
+		if tier == t {
+			temClube = true
+			break
+		}
+	}
+	if !temClube {
+		JsonResp(w, 200, map[string]interface{}{"disponivel": false, "motivo": "Clubes disponíveis a partir da Série C"})
+		return
+	}
+
+	// Verifica se já tem clube neste tier
+	var clubeAtualTier string
+	db.Conn.QueryRow("SELECT COALESCE(tier,'') FROM jogador_clube WHERE jogador_id=$1", jogadorID).Scan(&clubeAtualTier)
+	if clubeAtualTier == tier {
+		JsonResp(w, 200, map[string]interface{}{"disponivel": false, "motivo": "Já escolheu clube neste tier"})
+		return
+	}
+
+	type ClubeResp struct {
+		ID      int    `json:"id"`
+		Nome    string `json:"nome"`
+		Mascote string `json:"mascote"`
+		Cor1    string `json:"cor1"`
+		Cor2    string `json:"cor2"`
+		Icone   string `json:"icone"`
+	}
+	rows, err := db.Conn.Query("SELECT id, nome, mascote, cor1, cor2, icone FROM clubes WHERE tier=$1 ORDER BY id", tier)
+	if err != nil {
+		ErrResp(w, 500, "Erro ao buscar clubes")
+		return
+	}
+	defer rows.Close()
+	clubes := []ClubeResp{}
+	for rows.Next() {
+		var c ClubeResp
+		rows.Scan(&c.ID, &c.Nome, &c.Mascote, &c.Cor1, &c.Cor2, &c.Icone)
+		clubes = append(clubes, c)
+	}
+
+	JsonResp(w, 200, map[string]interface{}{
+		"disponivel": true,
+		"tier":       tier,
+		"clubes":     clubes,
+	})
+}
+
+// POST /api/clube/escolher
+func HandleEscolherClube(w http.ResponseWriter, r *http.Request) {
+	var req struct {
+		JogadorID int `json:"jogador_id"`
+		ClubeID   int `json:"clube_id"`
+	}
+	json.NewDecoder(r.Body).Decode(&req)
+
+	jogador, err := getJogador(req.JogadorID)
+	if err != nil {
+		ErrResp(w, 404, "Jogador não encontrado")
+		return
+	}
+
+	// Validar que o clube pertence ao tier do jogador
+	tier := getTierDoJogador(jogador.Nivel)
+	var clubeNome, clubeTier, clubeIcone string
+	err = db.Conn.QueryRow("SELECT nome, tier, icone FROM clubes WHERE id=$1", req.ClubeID).Scan(&clubeNome, &clubeTier, &clubeIcone)
+	if err != nil {
+		ErrResp(w, 400, "Clube não encontrado")
+		return
+	}
+	if clubeTier != tier {
+		ErrResp(w, 400, "Este clube não pertence ao seu tier atual")
+		return
+	}
+
+	jogador.ClubeID = req.ClubeID
+	saveJogador(jogador)
+
+	db.Conn.Exec(`INSERT INTO jogador_clube (jogador_id, clube_id, tier)
+		VALUES ($1, $2, $3)
+		ON CONFLICT (jogador_id) DO UPDATE SET clube_id=$2, tier=$3, entrou_em=NOW()`,
+		req.JogadorID, req.ClubeID, tier)
+
+	JsonResp(w, 200, map[string]interface{}{
+		"sucesso":  true,
+		"mensagem": fmt.Sprintf("Bem-vindo ao %s %s!", clubeIcone, clubeNome),
+		"jogador":  jogador,
+	})
+}
+
+// GET /api/camisas/disponiveis/{jogador_id}
+func HandleCamisasDisponiveis(w http.ResponseWriter, r *http.Request) {
+	parts := strings.Split(r.URL.Path, "/")
+	idStr := parts[len(parts)-1]
+	jogadorID, _ := strconv.Atoi(idStr)
+	if jogadorID <= 0 {
+		ErrResp(w, 400, "ID inválido")
+		return
+	}
+
+	jogador, err := getJogador(jogadorID)
+	if err != nil {
+		ErrResp(w, 404, "Jogador não encontrado")
+		return
+	}
+
+	// Só disponível da Série B (nv 30+)
+	if jogador.Nivel < 30 {
+		JsonResp(w, 200, map[string]interface{}{"disponivel": false})
+		return
+	}
+
+	pos := jogador.Posicao
+	fama := jogador.PontosFama
+
+	type Camisa struct {
+		Numero     int    `json:"numero"`
+		Raridade   string `json:"raridade"`
+		Disponivel bool   `json:"disponivel"`
+		FamaMin    int    `json:"fama_min"`
+	}
+
+	// Define all shirts with rarity and fama requirements
+	todas := []struct {
+		num       int
+		rar       string
+		fama      int
+		bloqueadas []string
+	}{
+		{1, "incomum", 500, []string{"MED", "ATA"}},
+		{2, "comum", 0, []string{}},
+		{3, "comum", 0, []string{}},
+		{4, "comum", 0, []string{}},
+		{5, "incomum", 1000, []string{}},
+		{6, "incomum", 1000, []string{}},
+		{7, "rara", 5000, []string{"GK", "DEF"}},
+		{8, "rara", 3000, []string{"GK"}},
+		{9, "rara", 8000, []string{"GK", "DEF"}},
+		{10, "lendaria", 15000, []string{"GK", "DEF"}},
+		{11, "rara", 6000, []string{"GK", "DEF"}},
+		{12, "comum", 0, []string{}},
+		{13, "comum", 0, []string{}},
+		{14, "comum", 0, []string{}},
+		{15, "comum", 0, []string{}},
+		{16, "comum", 0, []string{}},
+		{17, "comum", 0, []string{}},
+		{18, "comum", 0, []string{}},
+		{19, "comum", 0, []string{}},
+		{20, "comum", 0, []string{}},
+		{21, "comum", 0, []string{}},
+		{22, "comum", 0, []string{"MED", "ATA"}},
+		{23, "comum", 0, []string{}},
+	}
+
+	camisas := []Camisa{}
+	for _, t := range todas {
+		bloqueada := false
+		for _, bp := range t.bloqueadas {
+			if bp == pos {
+				bloqueada = true
+				break
+			}
+		}
+		if bloqueada {
+			continue
+		}
+		camisas = append(camisas, Camisa{
+			Numero:     t.num,
+			Raridade:   t.rar,
+			Disponivel: fama >= t.fama,
+			FamaMin:    t.fama,
+		})
+	}
+
+	JsonResp(w, 200, map[string]interface{}{
+		"disponivel": true,
+		"camisas":    camisas,
+		"posicao":    pos,
+		"fama":       fama,
+	})
+}
+
+// POST /api/camisa/escolher
+func HandleEscolherCamisa(w http.ResponseWriter, r *http.Request) {
+	var req struct {
+		JogadorID int `json:"jogador_id"`
+		Numero    int `json:"numero"`
+	}
+	json.NewDecoder(r.Body).Decode(&req)
+
+	jogador, err := getJogador(req.JogadorID)
+	if err != nil {
+		ErrResp(w, 404, "Jogador não encontrado")
+		return
+	}
+
+	if jogador.Nivel < 30 {
+		ErrResp(w, 400, "Camisas disponíveis a partir da Série B (nível 30)")
+		return
+	}
+
+	jogador.NumeroCamisa = req.Numero
+	saveJogador(jogador)
+
+	db.Conn.Exec("UPDATE jogador_clube SET numero_camisa=$1 WHERE jogador_id=$2", req.Numero, req.JogadorID)
+
+	JsonResp(w, 200, map[string]interface{}{
+		"sucesso":  true,
+		"mensagem": fmt.Sprintf("Camisa %d escolhida!", req.Numero),
+		"jogador":  jogador,
 	})
 }
 
