@@ -39,6 +39,12 @@ function PerfilModal({ jogadorID, targetID, onClose, getAvatar }) {
     if (!loading && cardRef.current) cardRef.current.scrollTop = 0
   }, [loading])
 
+  // Trava scroll do fundo quando modal abre
+  useEffect(() => {
+    document.body.style.overflow = 'hidden'
+    return () => { document.body.style.overflow = '' }
+  }, [])
+
   if (loading) return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="pm-card" onClick={e => e.stopPropagation()}>
