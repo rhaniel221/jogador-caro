@@ -247,10 +247,11 @@ export default function Loja() {
                 <div className="s-nome">{item.nome}</div>
                 <div className="s-preco">🪙 {item.preco} moedas</div>
                 <button className="btn-work btn-small shop-btn-premium" onClick={() => comprarPremium(item.id)}>Comprar</button>
-            </div>
-          ))}
-        </div>
-      )}
+              </div>
+            ))}
+          </div>
+        )}
+      </>}
     </>
   )
 }
