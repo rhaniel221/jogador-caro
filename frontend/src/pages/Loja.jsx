@@ -143,6 +143,9 @@ export default function Loja() {
     { id: 'premium', label: '🪙 Premium', count: lojaPremium.length },
   ]
 
+  const isDinheiroTab = ['energia', 'equip', 'mochila', 'fama'].includes(tab)
+  const isMoedasTab = ['saude', 'combo', 'premium'].includes(tab)
+
   return (
     <>
       <h2 className="page-title" data-tutorial="shop-area">🛒 LOJA</h2>
@@ -165,53 +168,55 @@ export default function Loja() {
         </div>
       </div>
 
-      {tab === 'energia' && renderGrid(energiaItems)}
-      {tab === 'equip' && renderGrid(equipamentos)}
-      {tab === 'mochila' && renderGrid(mochilas)}
+      {isDinheiroTab && <>
+        {tab === 'energia' && renderGrid(energiaItems)}
+        {tab === 'equip' && renderGrid(equipamentos)}
+        {tab === 'mochila' && renderGrid(mochilas)}
 
-      {tab === 'fama' && (() => {
-        const categorias = [
-          { id: 'moto', nome: '🏍️ MOTOS', limite: 2 },
-          { id: 'carro', nome: '🚗 CARROS', limite: 2 },
-          { id: 'apartamento', nome: '🏢 APARTAMENTOS', limite: 1 },
-        ]
-        return categorias.map(cat => {
-          const itens = itensFama.filter(i => i.categoria === cat.id)
-          if (!itens.length) return null
-          return (
-            <div key={cat.id} style={{ marginBottom: 16 }}>
-              <div style={{
-                fontFamily: 'var(--font-titulo)', fontSize: 15, color: 'var(--preto)',
-                marginBottom: 8, paddingBottom: 4, borderBottom: 'var(--borda)'
-              }}>
-                {cat.nome} <span style={{ fontSize: 11, color: '#888', fontWeight: 700 }}>(máx {cat.limite} cada)</span>
+        {tab === 'fama' && (() => {
+          const categorias = [
+            { id: 'moto', nome: '🏍️ MOTOS', limite: 2 },
+            { id: 'carro', nome: '🚗 CARROS', limite: 2 },
+            { id: 'apartamento', nome: '🏢 APARTAMENTOS', limite: 1 },
+          ]
+          return categorias.map(cat => {
+            const itens = itensFama.filter(i => i.categoria === cat.id)
+            if (!itens.length) return null
+            return (
+              <div key={cat.id} style={{ marginBottom: 16 }}>
+                <div style={{
+                  fontFamily: 'var(--font-titulo)', fontSize: 15, color: 'var(--preto)',
+                  marginBottom: 8, paddingBottom: 4, borderBottom: 'var(--borda)'
+                }}>
+                  {cat.nome} <span style={{ fontSize: 11, color: '#888', fontWeight: 700 }}>(máx {cat.limite} cada)</span>
+                </div>
+                <div className="shop-grid">
+                  {itens.map(item => {
+                    const esgotado = item.comprado >= item.limite_compra
+                    return (
+                      <div key={item.id} className={`shop-item${esgotado ? ' shop-item-bloqueado' : ''}`}>
+                        <div className="s-icone">{item.icone}</div>
+                        <div className="s-nome">{item.nome}</div>
+                        <div className="s-desc">+{item.fama_ganha} Fama</div>
+                        <div className="s-preco">R$ {fmt(item.preco)}</div>
+                        {item.comprado > 0 && (
+                          <div style={{ fontSize: 10, fontWeight: 900, color: esgotado ? '#e74c3c' : 'var(--verde)' }}>
+                            {item.comprado}/{item.limite_compra} comprado{item.comprado > 1 ? 's' : ''}
+                          </div>
+                        )}
+                        {esgotado
+                          ? <button className="btn-work btn-small" disabled>Limite atingido</button>
+                          : <button className="btn-work btn-small btn-verde" onClick={() => comprarFama(item.id)}>Comprar</button>
+                        }
+                      </div>
+                    )
+                  })}
+                </div>
               </div>
-              <div className="shop-grid">
-                {itens.map(item => {
-                  const esgotado = item.comprado >= item.limite_compra
-                  return (
-                    <div key={item.id} className={`shop-item${esgotado ? ' shop-item-bloqueado' : ''}`}>
-                      <div className="s-icone">{item.icone}</div>
-                      <div className="s-nome">{item.nome}</div>
-                      <div className="s-desc">+{item.fama_ganha} Fama</div>
-                      <div className="s-preco">R$ {fmt(item.preco)}</div>
-                      {item.comprado > 0 && (
-                        <div style={{ fontSize: 10, fontWeight: 900, color: esgotado ? '#e74c3c' : 'var(--verde)' }}>
-                          {item.comprado}/{item.limite_compra} comprado{item.comprado > 1 ? 's' : ''}
-                        </div>
-                      )}
-                      {esgotado
-                        ? <button className="btn-work btn-small" disabled>Limite atingido</button>
-                        : <button className="btn-work btn-small btn-verde" onClick={() => comprarFama(item.id)}>Comprar</button>
-                      }
-                    </div>
-                  )
-                })}
-              </div>
-            </div>
-          )
-        })
-      })()}
+            )
+          })
+        })()}
+      </>}
 
       {/* === SEÇÃO MOEDAS === */}
       <div style={{
@@ -230,17 +235,18 @@ export default function Loja() {
         </div>
       </div>
 
-      {tab === 'saude' && renderGrid(saudeItemsMoedas)}
-      {tab === 'combo' && renderGrid(comboItemsMoedas)}
+      {isMoedasTab && <>
+        {tab === 'saude' && renderGrid(saudeItemsMoedas)}
+        {tab === 'combo' && renderGrid(comboItemsMoedas)}
 
-      {tab === 'premium' && (
-        <div className="shop-grid">
-          {lojaPremium.map(item => (
-            <div key={item.id} className="shop-item shop-item-premium">
-              <div className="s-icone">{item.icone}</div>
-              <div className="s-nome">{item.nome}</div>
-              <div className="s-preco">🪙 {item.preco} moedas</div>
-              <button className="btn-work btn-small shop-btn-premium" onClick={() => comprarPremium(item.id)}>Comprar</button>
+        {tab === 'premium' && (
+          <div className="shop-grid">
+            {lojaPremium.map(item => (
+              <div key={item.id} className="shop-item shop-item-premium">
+                <div className="s-icone">{item.icone}</div>
+                <div className="s-nome">{item.nome}</div>
+                <div className="s-preco">🪙 {item.preco} moedas</div>
+                <button className="btn-work btn-small shop-btn-premium" onClick={() => comprarPremium(item.id)}>Comprar</button>
             </div>
           ))}
         </div>
