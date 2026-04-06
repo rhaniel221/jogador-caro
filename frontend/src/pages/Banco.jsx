@@ -12,18 +12,20 @@ export default function Banco() {
   const [totalPagos, setTotalPagos] = useState(0)
   const [loadingBoleto, setLoadingBoleto] = useState(false)
 
+  function carregarBoletos() {
+    if (!jogadorID || !jogador || jogador.nivel < 18) return
+    API.get('/api/boletos/verificar/' + jogadorID).then(res => {
+      if (res && res.tem_boleto) setBoleto(res)
+      else setBoleto(null)
+    }).catch(() => setBoleto(null))
+    API.get('/api/boletos/historico/' + jogadorID).then(res => {
+      setHistorico((res && res.historico) || [])
+      setTotalPagos((res && res.total_pagos) || 0)
+    }).catch(() => {})
+  }
+
   useEffect(() => {
-    if (!jogadorID || !jogador) return
-    if (jogador.nivel >= 18) {
-      API.get('/api/boletos/verificar/' + jogadorID).then(res => {
-        if (res.tem_boleto) setBoleto(res)
-        else setBoleto(null)
-      }).catch(() => {})
-      API.get('/api/boletos/historico/' + jogadorID).then(res => {
-        setHistorico(res.historico || [])
-        setTotalPagos(res.total_pagos || 0)
-      }).catch(() => {})
-    }
+    carregarBoletos()
   }, [jogadorID, jogador?.nivel])
 
   async function depositar() {
@@ -54,11 +56,7 @@ export default function Banco() {
         setJogador(res.jogador)
         mostrarNotificacao(res.mensagem, 'sucesso')
         setBoleto(null)
-        // Recarrega historico
-        API.get('/api/boletos/historico/' + jogadorID).then(r => {
-          setHistorico(r.historico || [])
-          setTotalPagos(r.total_pagos || 0)
-        }).catch(() => {})
+        carregarBoletos()
       } else {
         mostrarNotificacao(res.mensagem, 'erro')
       }
