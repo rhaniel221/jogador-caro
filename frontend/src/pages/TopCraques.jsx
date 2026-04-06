@@ -24,7 +24,7 @@ const CAT_NOME = { moto: 'Motos', carro: 'Carros', apartamento: 'Imóveis' }
 function PerfilModal({ jogadorID, targetID, onClose, getAvatar }) {
   const [perfil, setPerfil] = useState(null)
   const [loading, setLoading] = useState(true)
-  const modalRef = React.useRef(null)
+  const overlayRef = React.useRef(null)
 
   useEffect(() => {
     if (!targetID) return
@@ -34,11 +34,10 @@ function PerfilModal({ jogadorID, targetID, onClose, getAvatar }) {
       .catch(() => setLoading(false))
   }, [targetID, jogadorID])
 
-  // Scroll pro topo quando abre
+  // Scroll overlay pro topo quando abre
   useEffect(() => {
-    if (modalRef.current) modalRef.current.scrollTop = 0
-    window.scrollTo(0, 0)
-  }, [targetID])
+    if (overlayRef.current) overlayRef.current.scrollTop = 0
+  }, [targetID, loading])
 
   if (loading) return (
     <div className="modal-overlay" onClick={onClose}>
@@ -70,8 +69,8 @@ function PerfilModal({ jogadorID, targetID, onClose, getAvatar }) {
   }
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="pm-card" ref={modalRef} onClick={e => e.stopPropagation()}>
+    <div className="modal-overlay" ref={overlayRef} onClick={onClose}>
+      <div className="pm-card" onClick={e => e.stopPropagation()}>
         <button className="pm-close" onClick={onClose}>✕</button>
 
         {/* Banner topo com moldura de elo */}
@@ -284,13 +283,16 @@ export default function TopCraques() {
             {lista.map((j, i) => {
               const medalha = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i + 1}`
               const isMeu = j.id === jogadorID
+              const jElo = getElo(j.nivel)
               return (
                 <div key={j.id} className={`ranking-row${isMeu ? ' ranking-meu' : ''}`}
                   onClick={() => !isMeu && setPerfilTarget(j.id)}>
                   <span className="ranking-pos">{medalha}</span>
+                  <img src={`/elos/${jElo.id}.png`} alt={jElo.nome} className="ranking-elo-img"
+                    onError={e => { e.target.style.display = 'none' }} />
                   <div className="ranking-info">
                     <strong>{j.nome} {isMeu && <span style={{ color: 'var(--amarelo)', fontSize: 10 }}>(você)</span>}</strong>
-                    <span className="ranking-sub">Nv.{j.nivel} · ⭐{j.pontos_fama} · {j.vitorias}V/{j.derrotas}D</span>
+                    <span className="ranking-sub">Nv.{j.nivel} · {jElo.nome} · ⭐{j.pontos_fama} · {j.vitorias}V/{j.derrotas}D</span>
                   </div>
                   <span className="ranking-valor">
                     {modo === 'fama' ? `⭐${j.pontos_fama}` :
