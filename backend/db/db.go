@@ -1389,64 +1389,146 @@ func seedCatalogos() {
 			cm.id, cm.nome, cm.desc, cm.icone, cm.t1, cm.a1, cm.t2, cm.a2, cm.t3, cm.a3, cm.xp, cm.din, cm.moedas)
 	}
 
-	// Seed clubes
+	// Seed clubes — limpa e recria tudo
+	Conn.Exec(`DELETE FROM clubes`)
 	type clubeSeed struct {
 		nome, mascote, cor1, cor2, tier, icone string
 	}
 	clubesSeed := []clubeSeed{
-		// Série C
+		// === SÉRIE C — 20 clubes regionais/pequenos ===
 		{"Ferroviário do Brejo", "Locomotiva", "#cc0000", "#222", "Série C", "🚂"},
 		{"Operário Bola Murcha", "Martelo", "#0055aa", "#fff", "Série C", "🔨"},
 		{"Juventude da Várzea", "Piaba", "#228b22", "#ffd700", "Série C", "🐟"},
-		// Série B
+		{"Carcará FC", "Carcará", "#cc5500", "#fff", "Série C", "🦅"},
+		{"Boto Rosa EC", "Boto", "#ff69b4", "#222", "Série C", "🐬"},
+		{"Capivara Futebol", "Capivara", "#8b4513", "#ffd700", "Série C", "🦫"},
+		{"Jacaré do Pantanal", "Jacaré", "#006400", "#222", "Série C", "🐊"},
+		{"Peixe Boi FC", "Peixe-Boi", "#4682b4", "#c0c0c0", "Série C", "🐋"},
+		{"Tatu Bola EC", "Tatu", "#d2691e", "#333", "Série C", "⚽"},
+		{"Onça Pintada FC", "Onça", "#ffa500", "#222", "Série C", "🐆"},
+		{"Arara Azul EC", "Arara", "#1e90ff", "#ffd700", "Série C", "🦜"},
+		{"Tucano da Serra", "Tucano", "#ff4500", "#222", "Série C", "🐦"},
+		{"Piranha do São Francisco", "Piranha", "#cc0000", "#fff", "Série C", "🐡"},
+		{"Mandacaru FC", "Cacto", "#228b22", "#fff", "Série C", "🌵"},
+		{"Baião de Dois EC", "Panela", "#ff8c00", "#8b0000", "Série C", "🍲"},
+		{"Lampião Futebol", "Lamparina", "#ffd700", "#8b0000", "Série C", "🔥"},
+		{"Cangaceiro FC", "Chapéu", "#8b4513", "#ffd700", "Série C", "🤠"},
+		{"Maracatu EC", "Tambor", "#6a0dad", "#ffd700", "Série C", "🥁"},
+		{"Sertanejo FC", "Violão", "#d2691e", "#ffd700", "Série C", "🎸"},
+		{"Açaí Esporte", "Tigela", "#4b0082", "#fff", "Série C", "🫐"},
+
+		// === SÉRIE B — 20 clubes em crescimento ===
 		{"Galo Cego FC", "Galo Vendado", "#222", "#fff", "Série B", "🐓"},
 		{"Estrela do Mangue", "Caranguejo", "#ff6600", "#0066cc", "Série B", "🦀"},
 		{"Trovão Esporte Clube", "Raio", "#6a0dad", "#ffd700", "Série B", "⚡"},
-		// Série A
-		{"Leões da Serra", "Leão", "#cc0000", "#ffd700", "Série A", "🦁"},
-		{"Tubarões FC", "Tubarão", "#003366", "#c0c0c0", "Série A", "🦈"},
-		{"Fênix Esporte Clube", "Fênix", "#ff4500", "#ff0000", "Série A", "🔥"},
-		// Copinha Nacional
+		{"Tubarão Branco FC", "Tubarão", "#003366", "#c0c0c0", "Série B", "🦈"},
+		{"Águia Negra EC", "Águia", "#222", "#ffd700", "Série B", "🦅"},
+		{"Lobo Guará FC", "Lobo", "#cc0000", "#222", "Série B", "🐺"},
+		{"Tigre do Vale", "Tigre", "#ff8c00", "#222", "Série B", "🐯"},
+		{"Gavião Real EC", "Gavião", "#333", "#cc0000", "Série B", "🦅"},
+		{"Cobra Coral FC", "Cobra", "#cc0000", "#222", "Série B", "🐍"},
+		{"Touro Bravo EC", "Touro", "#8b0000", "#ffd700", "Série B", "🐂"},
+		{"Falcão Peregrino", "Falcão", "#4169e1", "#fff", "Série B", "🦅"},
+		{"Pantera Negra FC", "Pantera", "#222", "#6a0dad", "Série B", "🐆"},
+		{"Búfalo do Norte", "Búfalo", "#333", "#cc0000", "Série B", "🦬"},
+		{"Cervo EC", "Cervo", "#8b4513", "#fff", "Série B", "🦌"},
+		{"Coruja Atlética", "Coruja", "#4b0082", "#ffd700", "Série B", "🦉"},
+		{"Raposa Dourada FC", "Raposa", "#ff8c00", "#fff", "Série B", "🦊"},
+		{"Leão do Sertão", "Leão", "#ffa500", "#222", "Série B", "🦁"},
+		{"Javali FC", "Javali", "#556b2f", "#fff", "Série B", "🐗"},
+		{"Fênix do Sul", "Fênix", "#ff4500", "#ffd700", "Série B", "🔥"},
+		{"Pelicano EC", "Pelicano", "#fff", "#0055aa", "Série B", "🐦"},
+
+		// === SÉRIE A — 20 grandes clubes nacionais (os mais famosos!) ===
+		{"Flamingos FC", "Flamingo", "#cc0000", "#222", "Série A", "🦩"},
+		{"Verdão Palmares", "Porco", "#006400", "#fff", "Série A", "🐷"},
+		{"Peixão Santástico", "Peixe", "#222", "#fff", "Série A", "🐟"},
+		{"Timão Corinthiano", "Mosqueteiro", "#222", "#fff", "Série A", "⚔️"},
+		{"Tricolor Paulistta", "São Paulo", "#cc0000", "#fff", "Série A", "🔴"},
+		{"Galo Minerão", "Galo", "#222", "#fff", "Série A", "🐓"},
+		{"Cruzeirão da Toca", "Raposa", "#0055aa", "#fff", "Série A", "🦊"},
+		{"Grêmio Imortal", "Mosqueteiro", "#0055aa", "#222", "Série A", "⚔️"},
+		{"Colorado Gaúcho", "Colorado", "#cc0000", "#fff", "Série A", "🔴"},
+		{"Furacão Atleticano", "Furacão", "#cc0000", "#222", "Série A", "🌪️"},
+		{"Coxa Branca FC", "Coxa", "#006400", "#fff", "Série A", "💚"},
+		{"Botafoguense EC", "Estrela", "#222", "#fff", "Série A", "⭐"},
+		{"Vascaíno da Gama", "Almirante", "#222", "#cc0000", "Série A", "⚓"},
+		{"Leão Baiano", "Leão", "#cc0000", "#0055aa", "Série A", "🦁"},
+		{"Esquadrão de Aço", "Bahia", "#0055aa", "#cc0000", "Série A", "🛡️"},
+		{"Dragão Goiano", "Dragão", "#cc0000", "#222", "Série A", "🐉"},
+		{"Coelho Mineiro", "Coelho", "#cc0000", "#fff", "Série A", "🐰"},
+		{"Leão Cearense", "Leão", "#006400", "#fff", "Série A", "🦁"},
+		{"Tricolor Pernambucano", "Náutico", "#cc0000", "#fff", "Série A", "🚢"},
+		{"Rubro-Negro Candango", "Águia", "#cc0000", "#222", "Série A", "🦅"},
+
+		// === COPINHA NACIONAL — 10 clubes ===
 		{"Dragões do Norte", "Dragão", "#004d00", "#ffd700", "Copinha Nacional", "🐉"},
 		{"Falcões da Capital", "Falcão", "#222", "#cc0000", "Copinha Nacional", "🦅"},
 		{"Piranhas FC", "Piranha", "#cc0000", "#222", "Copinha Nacional", "🐡"},
-		// Continentão
+		{"Imperador FC", "Coroa", "#ffd700", "#cc0000", "Copinha Nacional", "👑"},
+		{"Relâmpago EC", "Raio", "#ffd700", "#0055aa", "Copinha Nacional", "⚡"},
+		{"Titãs do Cerrado", "Titã", "#8b0000", "#ffd700", "Copinha Nacional", "💪"},
+		{"Gladiadores FC", "Espada", "#c0c0c0", "#cc0000", "Copinha Nacional", "⚔️"},
+		{"Furacão do Litoral", "Furacão", "#0055aa", "#fff", "Copinha Nacional", "🌪️"},
+		{"Samurais FC", "Katana", "#222", "#cc0000", "Copinha Nacional", "⛩️"},
+		{"Vikings do Sul", "Viking", "#003366", "#ffd700", "Copinha Nacional", "🛡️"},
+
+		// === CONTINENTÃO — 8 clubes ===
 		{"Panteras do Plata", "Pantera", "#222", "#c0c0c0", "Continentão", "🐆"},
 		{"Condores Andinos", "Condor", "#fff", "#0055aa", "Continentão", "🦅"},
 		{"Jaguares do Rio", "Jaguar", "#ffd700", "#228b22", "Continentão", "🐆"},
-		// Europa
+		{"Boca de Ferro FC", "Dentes", "#0055aa", "#ffd700", "Continentão", "😬"},
+		{"River Prateado", "Rio", "#fff", "#cc0000", "Continentão", "🌊"},
+		{"Nacional Celeste", "Celeste", "#87ceeb", "#fff", "Continentão", "💙"},
+		{"Peñarol Dourado", "Sol", "#ffd700", "#222", "Continentão", "☀️"},
+		{"Olimpia Guarani", "Olimpia", "#222", "#fff", "Continentão", "🏛️"},
+
+		// === EUROPA — 8 clubes ===
 		{"FC Corvo de Milão", "Corvo", "#222", "#0055aa", "Europa", "🐦‍⬛"},
 		{"Real Linhares", "Coroa", "#fff", "#ffd700", "Europa", "👑"},
 		{"Lobos de Munique", "Lobo", "#cc0000", "#fff", "Europa", "🐺"},
-		// Liga dos Craques
+		{"Leões de Londres", "Leão", "#0055aa", "#fff", "Europa", "🦁"},
+		{"Dragões de Lisboa", "Dragão", "#cc0000", "#006400", "Europa", "🐉"},
+		{"Águias de Paris", "Águia", "#003366", "#cc0000", "Europa", "🦅"},
+		{"Touro de Turim", "Touro", "#222", "#fff", "Europa", "🐂"},
+		{"Ajax de Amsterdã", "Herói", "#cc0000", "#fff", "Europa", "⚡"},
+
+		// === LIGA DOS CRAQUES — 6 clubes ===
 		{"Olimpo FC", "Águia Dourada", "#ffd700", "#fff", "Liga dos Craques", "🦅"},
 		{"Titanes Futebol", "Titã", "#0044aa", "#c0c0c0", "Liga dos Craques", "⚔️"},
-		{"Imperium Esporte", "Coroa Imperial", "#6a0dad", "#ffd700", "Liga dos Craques", "👑"},
-		// Seleçoca
+		{"Imperium Esporte", "Imperador", "#6a0dad", "#ffd700", "Liga dos Craques", "👑"},
+		{"Supremacia FC", "Diamante", "#222", "#87ceeb", "Liga dos Craques", "💎"},
+		{"Celestial EC", "Anjo", "#fff", "#ffd700", "Liga dos Craques", "😇"},
+		{"Soberano Futebol", "Trono", "#8b0000", "#ffd700", "Liga dos Craques", "🏆"},
+
+		// === SELEÇOCA — 3 clubes ===
 		{"Seleçoca Canarinho", "Canário", "#ffd700", "#228b22", "Seleçoca", "🐦"},
 		{"Seleçoca Fúria", "Onça", "#ffd700", "#0055aa", "Seleçoca", "🐆"},
 		{"Seleçoca Garra", "Arara", "#228b22", "#ffd700", "Seleçoca", "🦜"},
-		// Mundialito
+
+		// === MUNDIALITO — 3 clubes ===
 		{"All Stars Mundial", "Estrela", "#ffd700", "#222", "Mundialito", "⭐"},
 		{"Constelação FC", "Constelação", "#000033", "#c0c0c0", "Mundialito", "🌟"},
 		{"Galáxia Futebol", "Planeta", "#6a0dad", "#ffd700", "Mundialito", "🪐"},
-		// Bola de Ouro
+
+		// === BOLA DE OURO — 3 clubes ===
 		{"Deuses do Gramado", "Raio", "#ffd700", "#fff", "Bola de Ouro", "⚡"},
 		{"Eterno FC", "Infinito", "#222", "#ffd700", "Bola de Ouro", "♾️"},
 		{"Supremo Esporte", "Diamante", "#0055aa", "#87ceeb", "Bola de Ouro", "💎"},
-		// Ídolo
+
+		// === ÍDOLO — 3 clubes ===
 		{"Panteão dos Craques", "Estátua", "#c0c0c0", "#ffd700", "Ídolo", "🗿"},
 		{"Lendários FC", "Fogo Sagrado", "#cc0000", "#ffd700", "Ídolo", "🔥"},
 		{"Imortais Esporte", "Fênix Eterna", "#fff", "#cc0000", "Ídolo", "🏛️"},
-		// Lenda
+
+		// === LENDA — 3 clubes ===
 		{"FC Eternidade", "Coroa Celestial", "#ffd700", "#ffd700", "Lenda", "👑"},
 		{"Mitologia Futebol", "Dragão Dourado", "#ffd700", "#222", "Lenda", "🐲"},
 		{"Transcendência EC", "Aura", "#fff", "#ffd700", "Lenda", "✨"},
 	}
 	for _, c := range clubesSeed {
 		Conn.Exec(`INSERT INTO clubes (nome, mascote, cor1, cor2, tier, icone)
-			VALUES ($1,$2,$3,$4,$5,$6)
-			ON CONFLICT DO NOTHING`,
+			VALUES ($1,$2,$3,$4,$5,$6)`,
 			c.nome, c.mascote, c.cor1, c.cor2, c.tier, c.icone)
 	}
 }

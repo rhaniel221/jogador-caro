@@ -4811,7 +4811,7 @@ func HandleClubesDisponiveis(w http.ResponseWriter, r *http.Request) {
 		Cor2    string `json:"cor2"`
 		Icone   string `json:"icone"`
 	}
-	rows, err := db.Conn.Query("SELECT id, nome, mascote, cor1, cor2, icone FROM clubes WHERE tier=$1 ORDER BY id", tier)
+	rows, err := db.Conn.Query("SELECT id, nome, mascote, cor1, cor2, icone FROM clubes WHERE tier=$1 ORDER BY RANDOM() LIMIT 3", tier)
 	if err != nil {
 		ErrResp(w, 500, "Erro ao buscar clubes")
 		return
