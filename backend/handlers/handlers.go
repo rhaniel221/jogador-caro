@@ -4611,8 +4611,9 @@ func HandleCDBInvestir(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if jogador.DinheiroBanco < req.Valor {
-		ErrResp(w, 400, "Saldo no banco insuficiente!")
+	totalDisponivel := jogador.DinheiroBanco + jogador.DinheiroMao
+	if totalDisponivel < req.Valor {
+		ErrResp(w, 400, fmt.Sprintf("Dinheiro insuficiente! Tem R$ %d (banco + mao)", totalDisponivel))
 		return
 	}
 
@@ -4624,7 +4625,14 @@ func HandleCDBInvestir(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	jogador.DinheiroBanco -= req.Valor
+	// Desconta: primeiro do banco, depois da mão
+	if jogador.DinheiroBanco >= req.Valor {
+		jogador.DinheiroBanco -= req.Valor
+	} else {
+		restante := req.Valor - jogador.DinheiroBanco
+		jogador.DinheiroBanco = 0
+		jogador.DinheiroMao -= restante
+	}
 	saveJogador(jogador)
 
 	db.Conn.Exec(`INSERT INTO cdb_investimentos (jogador_id, valor) VALUES ($1, $2)`, req.JogadorID, req.Valor)
