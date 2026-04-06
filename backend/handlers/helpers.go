@@ -122,24 +122,24 @@ func calcEnergiaMaxBase(nivel int) int {
 }
 
 func calcularXPProximo(nivel int) int {
-	// Curva piecewise calibrada por faixa:
-	// Nível  1 →  12  |  5 →  60  | 10 → 170   (fácil)
-	// Nível 11 → 228  | 15 → 480  | 20 → 880   (médio)
-	// Nível 21 → 1302 | 30 → 3150 | 50 → 8250  (médio-alto)
-	// Nível 51 → 15555 | 75 → 33875 | 100 → 59000 (desafiador)
+	// Curva rebalanceada — ~15 dias intensivos até L40
+	// Nível  1 →  15  |  5 →  75  | 10 → 200   (inicio rápido)
+	// Nível 11 → 583  | 15 → 975  | 20 → 1600  (progressão firme)
+	// Nível 21 → 3276 | 30 → 6300 | 40 → 10800 (desafiador)
+	// Nível 50 → 16500 | 75 → 55875 | 100 → 101500 (endgame pesado)
 	n := nivel
 	switch {
 	case n <= 10:
 		if n == 1 {
-			return 12
+			return 15
 		}
-		return n*n + n*7
+		return n*n + n*10
 	case n <= 20:
-		return n*n*2 + n*8
+		return n*n*3 + n*20
 	case n <= 50:
-		return n*n*3 + n*12
+		return n*n*6 + n*30
 	default:
-		return n*n*5 + n*80 - 500
+		return n*n*10 + n*150 - 800
 	}
 }
 
@@ -276,24 +276,26 @@ func calcCustoEnergia(energiaBase, nivel int, tier string) int {
 
 func calcRecompensaTrabalho(trabalho *Trabalho, nivel int) (ganhoMin, ganhoMax, ganhoXP int) {
 	lvl := float64(nivel)
-	fatorMin := 1.0 + lvl*0.035
-	fatorMax := 1.0 + lvl*0.040
-	bonusXP := int(lvl * 0.6)
+	// Dinheiro: crescimento reduzido (~30% menos que antes)
+	fatorMin := 1.0 + lvl*0.022
+	fatorMax := 1.0 + lvl*0.025
+	// XP bonus por nível: mais contido
+	bonusXP := int(lvl * 0.4)
 
 	if nivel >= 30 {
-		fatorMin += 0.08
-		fatorMax += 0.10
-		bonusXP += 3
+		fatorMin += 0.05
+		fatorMax += 0.06
+		bonusXP += 2
 	}
 	if nivel >= 60 {
-		fatorMin += 0.15
-		fatorMax += 0.18
-		bonusXP += 6
+		fatorMin += 0.10
+		fatorMax += 0.12
+		bonusXP += 4
 	}
 	if nivel >= 90 {
-		fatorMin += 0.20
-		fatorMax += 0.25
-		bonusXP += 10
+		fatorMin += 0.15
+		fatorMax += 0.18
+		bonusXP += 8
 	}
 
 	ganhoMin = int(float64(trabalho.GanhoMin)*fatorMin + 0.5)

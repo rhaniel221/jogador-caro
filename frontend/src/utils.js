@@ -61,28 +61,28 @@ export function calcularRecompensaTrabalho(trabalho, nivel) {
   const ganhoMaxBase = Number(trabalho.ganho_max || 0)
   const xpBase = Number(trabalho.ganho_xp || 0)
 
-  // Crescimento suave e equilibrado
-  let fatorMin = 1 + (lvl * 0.035)
-  let fatorMax = 1 + (lvl * 0.040)
-  let bonusXp = Math.floor(lvl * 0.6)
+  // Crescimento contido — economia balanceada
+  let fatorMin = 1 + (lvl * 0.022)
+  let fatorMax = 1 + (lvl * 0.025)
+  let bonusXp = Math.floor(lvl * 0.4)
 
   // Reforço em níveis mais altos
   if (lvl >= 30) {
-    fatorMin += 0.08
-    fatorMax += 0.10
-    bonusXp += 3
+    fatorMin += 0.05
+    fatorMax += 0.06
+    bonusXp += 2
   }
 
   if (lvl >= 60) {
-    fatorMin += 0.15
-    fatorMax += 0.18
-    bonusXp += 6
+    fatorMin += 0.10
+    fatorMax += 0.12
+    bonusXp += 4
   }
 
   if (lvl >= 90) {
-    fatorMin += 0.20
-    fatorMax += 0.25
-    bonusXp += 10
+    fatorMin += 0.15
+    fatorMax += 0.18
+    bonusXp += 8
   }
 
   return {
