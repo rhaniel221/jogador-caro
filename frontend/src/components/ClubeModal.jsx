@@ -11,8 +11,13 @@ export default function ClubeModal() {
 
   useEffect(() => {
     if (!jogadorID || !jogador || jogador.nivel < 20) return
-    // Checa se já dispensou nesta sessão
-    const key = 'clube_check_' + jogadorID + '_' + jogador.nivel
+    if (dismissed) return
+
+    // Se já tem clube, não precisa mostrar
+    if (jogador.clube_id && jogador.clube_id > 0) return
+
+    // Checa sessionStorage só pra quem dispensou nesta sessão
+    const key = 'clube_dismissed_' + jogadorID
     if (sessionStorage.getItem(key)) return
 
     API.get('/api/clubes/disponiveis/' + jogadorID)
@@ -22,7 +27,7 @@ export default function ClubeModal() {
         }
       })
       .catch(() => {})
-  }, [jogadorID, jogador?.nivel])
+  }, [jogadorID, jogador?.nivel, jogador?.clube_id, dismissed])
 
   async function escolher(clubeID) {
     setLoading(true)
@@ -31,7 +36,8 @@ export default function ClubeModal() {
       if (res.sucesso) {
         setJogador(res.jogador)
         mostrarNotificacao(res.mensagem, 'sucesso')
-        fechar()
+        setDados(null)
+        setDismissed(true)
       } else {
         mostrarNotificacao(res.mensagem, 'erro')
       }
@@ -40,7 +46,7 @@ export default function ClubeModal() {
   }
 
   function fechar() {
-    const key = 'clube_check_' + jogadorID + '_' + jogador.nivel
+    const key = 'clube_dismissed_' + jogadorID
     sessionStorage.setItem(key, '1')
     setDados(null)
     setDismissed(true)
@@ -63,11 +69,13 @@ export default function ClubeModal() {
               <div className="clube-card-icon" style={{ background: `linear-gradient(135deg, ${c.cor1}, ${c.cor2})` }}>
                 <span>{c.icone}</span>
               </div>
-              <div className="clube-card-nome">{c.nome}</div>
-              <div className="clube-card-mascote">{c.mascote}</div>
-              <div className="clube-card-cores">
-                <span className="clube-cor" style={{ background: c.cor1 }} />
-                <span className="clube-cor" style={{ background: c.cor2 }} />
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div className="clube-card-nome">{c.nome}</div>
+                <div className="clube-card-mascote">{c.mascote}</div>
+                <div className="clube-card-cores">
+                  <span className="clube-cor" style={{ background: c.cor1 }} />
+                  <span className="clube-cor" style={{ background: c.cor2 }} />
+                </div>
               </div>
               <button className="btn-work btn-verde btn-small" disabled={loading}>
                 {loading ? '...' : 'Escolher'}
