@@ -40,7 +40,8 @@
       "Bash(find /c/Projetos/jogador-caro -type f \\\\\\(-name *minigame* -o -name *match3* -o -name *game* \\\\\\) -not -path */node_modules/* -not -path */.git/*)",
       "Bash(git:*)",
       "Bash(curl:*)",
-      "WebFetch(domain:jogador-caro.up.railway.app)"
+      "WebFetch(domain:jogador-caro.up.railway.app)",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(f''''mao={d[\"\"dinheiro_mao\"\"]} banco={d[\"\"dinheiro_banco\"\"]} nivel={d[\"\"nivel\"\"]}''''\\)\")"
     ]
   }
 }
