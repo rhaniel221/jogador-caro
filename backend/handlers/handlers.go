@@ -4524,6 +4524,171 @@ func HandleBoletoHistorico(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// ========================
+// CDB — Investimento bancário
+// ========================
+
+// Taxa CDB: 2% a cada 6 horas (8% ao dia)
+const cdbTaxaPorHora = 0.02 / 6.0 // ~0.333% por hora
+const cdbMinimoResgate = 12         // horas mínimas pra resgatar com lucro
+
+// GET /api/cdb/{jogador_id}
+func HandleCDB(w http.ResponseWriter, r *http.Request) {
+	parts := strings.Split(r.URL.Path, "/")
+	idStr := parts[len(parts)-1]
+	jogadorID, _ := strconv.Atoi(idStr)
+	if jogadorID <= 0 {
+		ErrResp(w, 400, "ID inválido")
+		return
+	}
+
+	rows, err := db.Conn.Query(`
+		SELECT id, valor, criado_em FROM cdb_investimentos
+		WHERE jogador_id=$1 AND resgatado=false
+		ORDER BY criado_em DESC
+	`, jogadorID)
+	if err != nil {
+		JsonResp(w, 200, map[string]interface{}{"investimentos": []interface{}{}})
+		return
+	}
+	defer rows.Close()
+
+	type CDBItem struct {
+		ID           int    `json:"id"`
+		Valor        int    `json:"valor"`
+		CriadoEm     string `json:"criado_em"`
+		HorasAtivas  int    `json:"horas_ativas"`
+		Rendimento   int    `json:"rendimento"`
+		TotalResgate int    `json:"total_resgate"`
+		PodeResgatar bool   `json:"pode_resgatar"`
+	}
+
+	agora := time.Now()
+	itens := []CDBItem{}
+	totalInvestido := 0
+	totalRendimento := 0
+
+	for rows.Next() {
+		var c CDBItem
+		var criadoEm time.Time
+		rows.Scan(&c.ID, &c.Valor, &criadoEm)
+		c.CriadoEm = criadoEm.Format("02/01 15:04")
+
+		horas := agora.Sub(criadoEm).Hours()
+		c.HorasAtivas = int(horas)
+		c.Rendimento = int(float64(c.Valor) * cdbTaxaPorHora * horas)
+		c.TotalResgate = c.Valor + c.Rendimento
+		c.PodeResgatar = horas >= float64(cdbMinimoResgate)
+
+		totalInvestido += c.Valor
+		totalRendimento += c.Rendimento
+		itens = append(itens, c)
+	}
+
+	JsonResp(w, 200, map[string]interface{}{
+		"investimentos":    itens,
+		"total_investido":  totalInvestido,
+		"total_rendimento": totalRendimento,
+	})
+}
+
+// POST /api/cdb/investir
+func HandleCDBInvestir(w http.ResponseWriter, r *http.Request) {
+	var req struct {
+		JogadorID int `json:"jogador_id"`
+		Valor     int `json:"valor"`
+	}
+	json.NewDecoder(r.Body).Decode(&req)
+
+	if req.Valor < 1000 {
+		ErrResp(w, 400, "Investimento mínimo: R$ 1.000")
+		return
+	}
+
+	jogador, err := getJogador(req.JogadorID)
+	if err != nil {
+		ErrResp(w, 404, "Jogador não encontrado")
+		return
+	}
+
+	if jogador.DinheiroBanco < req.Valor {
+		ErrResp(w, 400, "Saldo no banco insuficiente!")
+		return
+	}
+
+	// Limite: máximo 5 investimentos ativos
+	var ativos int
+	db.Conn.QueryRow(`SELECT COUNT(*) FROM cdb_investimentos WHERE jogador_id=$1 AND resgatado=false`, req.JogadorID).Scan(&ativos)
+	if ativos >= 5 {
+		ErrResp(w, 400, "Limite de 5 investimentos ativos! Resgate um antes.")
+		return
+	}
+
+	jogador.DinheiroBanco -= req.Valor
+	saveJogador(jogador)
+
+	db.Conn.Exec(`INSERT INTO cdb_investimentos (jogador_id, valor) VALUES ($1, $2)`, req.JogadorID, req.Valor)
+
+	JsonResp(w, 200, map[string]interface{}{
+		"sucesso":  true,
+		"mensagem": fmt.Sprintf("Investido R$ %d no CDB! Rendimento de 2%% a cada 6h.", req.Valor),
+		"jogador":  jogador,
+	})
+}
+
+// POST /api/cdb/resgatar
+func HandleCDBResgatar(w http.ResponseWriter, r *http.Request) {
+	var req struct {
+		JogadorID      int `json:"jogador_id"`
+		InvestimentoID int `json:"investimento_id"`
+	}
+	json.NewDecoder(r.Body).Decode(&req)
+
+	jogador, err := getJogador(req.JogadorID)
+	if err != nil {
+		ErrResp(w, 404, "Jogador não encontrado")
+		return
+	}
+
+	var valor int
+	var criadoEm time.Time
+	err = db.Conn.QueryRow(`
+		SELECT valor, criado_em FROM cdb_investimentos
+		WHERE id=$1 AND jogador_id=$2 AND resgatado=false
+	`, req.InvestimentoID, req.JogadorID).Scan(&valor, &criadoEm)
+	if err != nil {
+		ErrResp(w, 400, "Investimento não encontrado")
+		return
+	}
+
+	horas := time.Now().Sub(criadoEm).Hours()
+	rendimento := 0
+	if horas >= float64(cdbMinimoResgate) {
+		rendimento = int(float64(valor) * cdbTaxaPorHora * horas)
+	}
+	// Se resgatar antes de 12h, recebe só o valor base (sem lucro)
+
+	totalResgate := valor + rendimento
+	jogador.DinheiroBanco += totalResgate
+	saveJogador(jogador)
+
+	db.Conn.Exec(`UPDATE cdb_investimentos SET resgatado=true, resgatado_em=NOW() WHERE id=$1`, req.InvestimentoID)
+
+	msg := fmt.Sprintf("Resgatado R$ %d", totalResgate)
+	if rendimento > 0 {
+		msg = fmt.Sprintf("Resgatado R$ %d (R$ %d investido + R$ %d de lucro!)", totalResgate, valor, rendimento)
+	} else {
+		msg = fmt.Sprintf("Resgatado R$ %d (sem lucro — mínimo 12h para render)", valor)
+	}
+
+	JsonResp(w, 200, map[string]interface{}{
+		"sucesso":    true,
+		"mensagem":   msg,
+		"jogador":    jogador,
+		"rendimento": rendimento,
+	})
+}
+
 // POST /api/admin/disparar-boletos — força boleto pendente pra todos (teste)
 func HandleAdminDispararBoletos(w http.ResponseWriter, r *http.Request) {
 	// Insere registro pra todos que têm nível >= 18 e não têm registro

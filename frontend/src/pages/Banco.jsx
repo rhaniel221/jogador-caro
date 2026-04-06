@@ -11,6 +11,9 @@ export default function Banco() {
   const [historico, setHistorico] = useState([])
   const [totalPagos, setTotalPagos] = useState(0)
   const [loadingBoleto, setLoadingBoleto] = useState(false)
+  const [cdb, setCdb] = useState(null)
+  const [valCdb, setValCdb] = useState('')
+  const [loadingCdb, setLoadingCdb] = useState(false)
 
   function carregarBoletos() {
     if (!jogadorID || !jogador || jogador.nivel < 18) return
@@ -24,9 +27,22 @@ export default function Banco() {
     }).catch(() => {})
   }
 
+  function carregarCDB() {
+    if (!jogadorID) return
+    API.get('/api/cdb/' + jogadorID).then(res => setCdb(res)).catch(() => setCdb(null))
+  }
+
   useEffect(() => {
     carregarBoletos()
+    carregarCDB()
   }, [jogadorID, jogador?.nivel])
+
+  // Atualiza rendimentos do CDB a cada 30s
+  useEffect(() => {
+    if (!jogadorID) return
+    const t = setInterval(carregarCDB, 30000)
+    return () => clearInterval(t)
+  }, [jogadorID])
 
   async function depositar() {
     const valor = parseInt(valDep)
@@ -64,6 +80,39 @@ export default function Banco() {
       mostrarNotificacao('Erro ao pagar boleto.', 'erro')
     }
     setLoadingBoleto(false)
+  }
+
+  async function investirCDB() {
+    const valor = parseInt(valCdb)
+    if (!valor || valor < 1000) { mostrarNotificacao('Minimo R$ 1.000 para investir!', 'erro'); return }
+    setLoadingCdb(true)
+    try {
+      const res = await API.post('/api/cdb/investir', { jogador_id: jogadorID, valor })
+      if (res.sucesso) {
+        setJogador(res.jogador)
+        mostrarNotificacao(res.mensagem, 'sucesso')
+        setValCdb('')
+        carregarCDB()
+      } else {
+        mostrarNotificacao(res.mensagem, 'erro')
+      }
+    } catch { mostrarNotificacao('Erro ao investir.', 'erro') }
+    setLoadingCdb(false)
+  }
+
+  async function resgatarCDB(investimentoID) {
+    setLoadingCdb(true)
+    try {
+      const res = await API.post('/api/cdb/resgatar', { jogador_id: jogadorID, investimento_id: investimentoID })
+      if (res.sucesso) {
+        setJogador(res.jogador)
+        mostrarNotificacao(res.mensagem, res.rendimento > 0 ? 'sucesso' : 'erro')
+        carregarCDB()
+      } else {
+        mostrarNotificacao(res.mensagem, 'erro')
+      }
+    } catch { mostrarNotificacao('Erro ao resgatar.', 'erro') }
+    setLoadingCdb(false)
   }
 
   if (!jogador) return null
@@ -180,6 +229,70 @@ export default function Banco() {
         </div>
       )}
 
+      {/* === CDB INVESTIMENTOS === */}
+      <div className="section-box" style={{ marginTop: 15 }}>
+        <h3>📈 CDB — INVESTIMENTO</h3>
+        <p style={{ fontSize: 12, fontWeight: 700, color: '#556', marginBottom: 12 }}>
+          Rende 2% a cada 6h (8% ao dia!). Minimo R$ 1.000. Resgate apos 12h para lucrar.
+        </p>
+
+        <div className="cdb-investir-row">
+          <input
+            type="number"
+            placeholder="Valor a investir..."
+            value={valCdb}
+            onChange={e => setValCdb(e.target.value)}
+            onKeyDown={e => e.key === 'Enter' && investirCDB()}
+            className="cdb-input"
+          />
+          <button className="btn-work btn-verde" onClick={investirCDB} disabled={loadingCdb}>
+            {loadingCdb ? '...' : 'Investir'}
+          </button>
+        </div>
+
+        {cdb && cdb.total_investido > 0 && (
+          <div className="cdb-resumo">
+            <div className="cdb-resumo-item">
+              <span>Investido</span>
+              <strong>R$ {fmt(cdb.total_investido)}</strong>
+            </div>
+            <div className="cdb-resumo-item cdb-lucro">
+              <span>Rendimento</span>
+              <strong>+ R$ {fmt(cdb.total_rendimento)}</strong>
+            </div>
+          </div>
+        )}
+
+        {cdb && cdb.investimentos && cdb.investimentos.length > 0 ? (
+          <div className="cdb-lista">
+            {cdb.investimentos.map(inv => (
+              <div key={inv.id} className="cdb-card">
+                <div className="cdb-card-info">
+                  <div className="cdb-card-valor">R$ {fmt(inv.valor)}</div>
+                  <div className="cdb-card-detalhe">
+                    {inv.horas_ativas}h ativo · +R$ {fmt(inv.rendimento)} lucro
+                  </div>
+                  <div className="cdb-card-detalhe">
+                    Resgate: <strong>R$ {fmt(inv.total_resgate)}</strong>
+                  </div>
+                </div>
+                <div className="cdb-card-action">
+                  {inv.pode_resgatar ? (
+                    <button className="btn-work btn-verde btn-small" onClick={() => resgatarCDB(inv.id)} disabled={loadingCdb}>
+                      Resgatar
+                    </button>
+                  ) : (
+                    <span className="cdb-card-aguarde">Min 12h</span>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p style={{ fontSize: 12, color: '#888', padding: '8px 0' }}>Nenhum investimento ativo. Invista acima!</p>
+        )}
+      </div>
+
       {/* === HISTORICO DE BOLETOS === */}
       {jogador.nivel >= 18 && (
         <div className="section-box" style={{ marginTop: 15 }}>
@@ -216,6 +329,9 @@ export default function Banco() {
           <p>• O saque nao tem taxas — seu dinheiro esta sempre disponivel.</p>
           <p>• Dinheiro no banco NAO pode ser roubado em combates no estadio.</p>
           <p>• Guarde o maximo possivel se estiver sendo atacado com frequencia!</p>
+          <p>• CDB rende 2% a cada 6 horas (8% ao dia!) — investimento minimo R$ 1.000.</p>
+          <p>• Resgate CDB apos 12h para garantir o lucro. Antes disso recebe so o valor investido.</p>
+          <p>• Maximo 5 investimentos CDB ativos ao mesmo tempo.</p>
           {jogador.nivel >= 18 && (
             <>
               <p>• A cada 2 dias chegam boletos (aluguel, energia, agua, internet, condominio).</p>

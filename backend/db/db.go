@@ -1291,6 +1291,18 @@ func seedCatalogos() {
 		ultimo_boleto TIMESTAMP DEFAULT NOW(),
 		boletos_pagos INT DEFAULT 0
 	)`)
+	// ========================
+	// CDB (investimento bancário)
+	// ========================
+	Conn.Exec(`CREATE TABLE IF NOT EXISTS cdb_investimentos (
+		id SERIAL PRIMARY KEY,
+		jogador_id INT REFERENCES jogadores(id),
+		valor INT NOT NULL,
+		criado_em TIMESTAMP DEFAULT NOW(),
+		resgatado BOOLEAN DEFAULT FALSE,
+		resgatado_em TIMESTAMP
+	)`)
+
 	Conn.Exec(`CREATE TABLE IF NOT EXISTS boletos_historico (
 		id SERIAL PRIMARY KEY,
 		jogador_id INT REFERENCES jogadores(id),

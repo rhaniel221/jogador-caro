@@ -4781,6 +4781,92 @@ input, select, textarea {
 }
 
 /* =====================================================
+   CDB — INVESTIMENTO
+   ===================================================== */
+.cdb-investir-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.cdb-input {
+  flex: 1;
+  padding: 10px 14px;
+  background: #fff;
+  border: var(--borda);
+  color: var(--preto);
+  font-size: 15px;
+  font-weight: 900;
+  border-radius: 10px;
+  font-family: var(--font-corpo);
+}
+.cdb-input:focus {
+  outline: none;
+  border-color: var(--verde);
+  box-shadow: 0 0 0 3px rgba(0,184,72,0.2);
+}
+.cdb-resumo {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+.cdb-resumo-item {
+  flex: 1;
+  background: var(--card-bg2);
+  border: var(--borda);
+  border-radius: var(--radius);
+  padding: 10px 14px;
+  text-align: center;
+  box-shadow: var(--sombra);
+}
+.cdb-resumo-item span {
+  display: block;
+  font-size: 10px;
+  font-weight: 900;
+  color: #556;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.cdb-resumo-item strong {
+  font-family: var(--font-titulo);
+  font-size: 20px;
+  color: var(--preto);
+}
+.cdb-lucro strong { color: var(--verde); }
+.cdb-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.cdb-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fff;
+  border: 2px solid var(--verde);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+}
+.cdb-card-valor {
+  font-family: var(--font-titulo);
+  font-size: 18px;
+  color: var(--preto);
+}
+.cdb-card-detalhe {
+  font-size: 11px;
+  font-weight: 700;
+  color: #556;
+}
+.cdb-card-detalhe strong { color: var(--verde); }
+.cdb-card-aguarde {
+  font-size: 11px;
+  font-weight: 900;
+  color: #888;
+  background: #f0f0f0;
+  padding: 4px 10px;
+  border-radius: 8px;
+}
+
+/* =====================================================
    DESAFIO 1v1 — PÊNALTIS
    ===================================================== */
 
