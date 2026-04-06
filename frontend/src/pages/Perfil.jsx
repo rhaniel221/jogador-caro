@@ -175,6 +175,16 @@ export default function Perfil() {
             <div className="pf-code">Código: <strong>{jogador.codigo_amigo}</strong></div>
           </div>
         </div>
+        {jogador.titulos && (
+          <div className="pf-hero-titulos">
+            <div className="pf-hero-titulos-label">🏅 Títulos</div>
+            <div className="pf-hero-titulos-list">
+              {jogador.titulos.split(',').filter(Boolean).map((t, i) => (
+                <span key={i} className={`pf-hero-titulo-badge${t === jogador.titulo ? ' pf-hero-titulo-ativo' : ''}`}>{t}</span>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* === STATS GRID === */}
@@ -202,17 +212,6 @@ export default function Perfil() {
       {/* === CENTRAL DE RECUPERAÇÃO === */}
       <TratamentoSection jogadorID={jogadorID} jogador={jogador} setJogador={setJogador} mostrarNotificacao={mostrarNotificacao} />
 
-      {/* === TÍTULOS === */}
-      {jogador.titulos && (
-        <div className="pf-section">
-          <div className="pf-section-header"><h3>🏅 TÍTULOS CONQUISTADOS</h3></div>
-          <div className="pf-titulos">
-            {jogador.titulos.split(',').filter(Boolean).map((t, i) => (
-              <span key={i} className={`pf-titulo-badge${t === jogador.titulo ? ' pf-titulo-ativo' : ''}`}>{t}</span>
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   )
 }

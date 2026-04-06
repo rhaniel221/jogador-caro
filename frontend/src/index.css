@@ -3300,6 +3300,42 @@ input, select, textarea {
 .pf-code { font-size: 11px; color: rgba(255,255,255,0.7); margin-top: 6px; }
 .pf-code strong { color: #fff; letter-spacing: 1.5px; font-size: 13px; }
 
+/* Títulos dentro do hero */
+.pf-hero-titulos {
+  position: relative; z-index: 1;
+  padding: 0 20px 16px;
+  border-top: 1px solid rgba(255,255,255,0.15);
+  margin-top: 0;
+}
+.pf-hero-titulos-label {
+  font-size: 11px;
+  font-weight: 900;
+  color: rgba(255,255,255,0.7);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 10px 0 6px;
+}
+.pf-hero-titulos-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.pf-hero-titulo-badge {
+  font-size: 11px;
+  font-weight: 900;
+  padding: 3px 10px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.15);
+  color: rgba(255,255,255,0.8);
+  border: 1px solid rgba(255,255,255,0.2);
+}
+.pf-hero-titulo-ativo {
+  background: var(--amarelo);
+  color: var(--preto);
+  border-color: var(--amarelo);
+  box-shadow: 0 0 8px rgba(255,200,0,0.4);
+}
+
 /* Stats grid */
 .pf-stats {
   display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
