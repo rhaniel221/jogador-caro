@@ -208,6 +208,9 @@ export default function Perfil() {
         </div>
       )}
 
+      {/* === PATRIMÔNIO === */}
+      <PatrimonioSection jogadorID={jogadorID} />
+
       <CampinhoSection jogadorID={jogadorID} jogador={jogador} setJogador={setJogador} mostrarNotificacao={mostrarNotificacao} setLevelUp={setLevelUp} />
     </div>
   )
@@ -674,6 +677,59 @@ function CampinhoSection({ jogadorID, jogador, setJogador, mostrarNotificacao, s
           🏆 Campinho completo! Seu estádio é lendário!
         </div>
       )}
+    </div>
+  )
+}
+
+const CAT_ICONE = { moto: '🏍️', carro: '🚗', apartamento: '🏢' }
+const CAT_NOME = { moto: 'MOTOS', carro: 'CARROS', apartamento: 'IMÓVEIS' }
+
+function PatrimonioSection({ jogadorID }) {
+  const [dados, setDados] = useState(null)
+
+  useEffect(() => {
+    if (!jogadorID) return
+    API.get('/api/patrimonio/' + jogadorID).then(setDados).catch(() => {})
+  }, [jogadorID])
+
+  if (!dados || !dados.itens || dados.itens.length === 0) return null
+
+  // Agrupar por categoria
+  const grupos = {}
+  dados.itens.forEach(item => {
+    const cat = item.categoria || 'outro'
+    if (!grupos[cat]) grupos[cat] = []
+    grupos[cat].push(item)
+  })
+
+  return (
+    <div className="pf-section">
+      <div className="pf-section-header">
+        <h3>🏆 MEU PATRIMÔNIO</h3>
+        <span className="pf-section-badge">R$ {fmt(dados.valor_total)}</span>
+      </div>
+
+      {['moto', 'carro', 'apartamento'].map(cat => {
+        const itens = grupos[cat]
+        if (!itens || itens.length === 0) return null
+        return (
+          <div key={cat} className="pat-grupo">
+            <div className="pat-grupo-titulo">{CAT_ICONE[cat]} {CAT_NOME[cat]}</div>
+            <div className="pat-grid">
+              {itens.map(item => (
+                <div key={item.id} className="pat-card">
+                  <div className="pat-icone">{item.icone}</div>
+                  <div className="pat-info">
+                    <div className="pat-nome">{item.nome}{item.quantidade > 1 ? ` x${item.quantidade}` : ''}</div>
+                    <div className="pat-desc">{item.descricao}</div>
+                    <div className="pat-valor">R$ {fmt(item.preco)}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )
+      })}
     </div>
   )
 }

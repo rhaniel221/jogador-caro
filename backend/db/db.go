@@ -1284,6 +1284,15 @@ func seedCatalogos() {
 	Conn.Exec(`DELETE FROM eventos WHERE fim < NOW()`)
 
 	// ========================
+	// BOLETOS (contas periódicas a cada 2 dias reais)
+	// ========================
+	Conn.Exec(`CREATE TABLE IF NOT EXISTS boletos (
+		jogador_id INT PRIMARY KEY REFERENCES jogadores(id),
+		ultimo_boleto TIMESTAMP DEFAULT NOW(),
+		boletos_pagos INT DEFAULT 0
+	)`)
+
+	// ========================
 	// MISSÕES COMBINADAS
 	// ========================
 	Conn.Exec(`CREATE TABLE IF NOT EXISTS combined_missions (

@@ -4189,3 +4189,239 @@ func HandleFamaDecaimento(w http.ResponseWriter, r *http.Request) {
 		"afetados": afetados,
 	})
 }
+
+// ========================
+// PATRIMÔNIO (itens de fama comprados pelo jogador)
+// ========================
+
+// GET /api/patrimonio/{jogador_id}
+func HandlePatrimonio(w http.ResponseWriter, r *http.Request) {
+	parts := strings.Split(r.URL.Path, "/")
+	idStr := parts[len(parts)-1]
+	jogadorID, _ := strconv.Atoi(idStr)
+	if jogadorID <= 0 {
+		ErrResp(w, 400, "ID inválido")
+		return
+	}
+
+	rows, err := db.Conn.Query(`
+		SELECT f.id, f.nome, f.descricao, f.preco, f.fama_ganha, f.icone, COALESCE(f.categoria,''), c.quantidade
+		FROM fama_compras c
+		JOIN cat_itens_fama f ON f.id = c.item_id
+		WHERE c.jogador_id = $1 AND c.quantidade > 0
+		ORDER BY f.categoria, f.preco DESC
+	`, jogadorID)
+	if err != nil {
+		JsonResp(w, 200, map[string]interface{}{"itens": []interface{}{}})
+		return
+	}
+	defer rows.Close()
+
+	type PatItem struct {
+		ID        string `json:"id"`
+		Nome      string `json:"nome"`
+		Descricao string `json:"descricao"`
+		Preco     int    `json:"preco"`
+		Fama      int    `json:"fama"`
+		Icone     string `json:"icone"`
+		Categoria string `json:"categoria"`
+		Qtd       int    `json:"quantidade"`
+	}
+	itens := []PatItem{}
+	valorTotal := 0
+	for rows.Next() {
+		var p PatItem
+		rows.Scan(&p.ID, &p.Nome, &p.Descricao, &p.Preco, &p.Fama, &p.Icone, &p.Categoria, &p.Qtd)
+		valorTotal += p.Preco * p.Qtd
+		itens = append(itens, p)
+	}
+
+	JsonResp(w, 200, map[string]interface{}{
+		"itens":       itens,
+		"valor_total": valorTotal,
+	})
+}
+
+// ========================
+// BOLETOS (contas periódicas)
+// ========================
+
+// calcBoleto calcula o valor do boleto baseado no nível do jogador
+// 30% do ganho médio de ~8 sessões de trabalho no tier atual
+func calcBoleto(nivel int) (total int, itens []map[string]interface{}) {
+	// Ganho base por sessão de trabalho no nível atual (média)
+	// Usando os mesmos fatores de calcRecompensaTrabalho com base genérica
+	lvl := float64(nivel)
+	fator := 1.0 + lvl*0.023 // média entre min e max
+	if nivel >= 30 {
+		fator += 0.055
+	}
+	if nivel >= 60 {
+		fator += 0.11
+	}
+	if nivel >= 90 {
+		fator += 0.165
+	}
+
+	// Base de ganho por trabalho no tier correspondente
+	var ganhoBase float64
+	switch {
+	case nivel < 5:
+		ganhoBase = 35
+	case nivel < 10:
+		ganhoBase = 60
+	case nivel < 18:
+		ganhoBase = 120
+	case nivel < 24:
+		ganhoBase = 200
+	case nivel < 30:
+		ganhoBase = 350
+	case nivel < 36:
+		ganhoBase = 500
+	case nivel < 42:
+		ganhoBase = 700
+	case nivel < 50:
+		ganhoBase = 1000
+	case nivel < 60:
+		ganhoBase = 1400
+	case nivel < 72:
+		ganhoBase = 2000
+	case nivel < 85:
+		ganhoBase = 3000
+	case nivel < 100:
+		ganhoBase = 4500
+	case nivel < 120:
+		ganhoBase = 6000
+	case nivel < 150:
+		ganhoBase = 8000
+	default:
+		ganhoBase = 12000
+	}
+
+	ganhoPorTrabalho := ganhoBase * fator
+	// ~8 trabalhos por dia, 2 dias = 16 trabalhos
+	ganho2Dias := ganhoPorTrabalho * 16
+	// Boleto = 30% disso
+	totalBoleto := int(ganho2Dias * 0.30)
+
+	// Divide em categorias proporcionais
+	aluguel := int(float64(totalBoleto) * 0.40)
+	energia := int(float64(totalBoleto) * 0.18)
+	agua := int(float64(totalBoleto) * 0.12)
+	internet := int(float64(totalBoleto) * 0.15)
+	condominio := int(float64(totalBoleto) * 0.15)
+
+	itens = []map[string]interface{}{
+		{"nome": "Aluguel", "icone": "🏠", "valor": aluguel},
+		{"nome": "Energia Elétrica", "icone": "💡", "valor": energia},
+		{"nome": "Água", "icone": "🚿", "valor": agua},
+		{"nome": "Internet", "icone": "📡", "valor": internet},
+		{"nome": "Condomínio", "icone": "🏢", "valor": condominio},
+	}
+
+	total = aluguel + energia + agua + internet + condominio
+	return
+}
+
+// GET /api/boletos/verificar/{jogador_id}
+func HandleBoletoVerificar(w http.ResponseWriter, r *http.Request) {
+	parts := strings.Split(r.URL.Path, "/")
+	idStr := parts[len(parts)-1]
+	jogadorID, _ := strconv.Atoi(idStr)
+	if jogadorID <= 0 {
+		ErrResp(w, 400, "ID inválido")
+		return
+	}
+
+	jogador, err := getJogador(jogadorID)
+	if err != nil {
+		ErrResp(w, 404, "Jogador não encontrado")
+		return
+	}
+
+	// Só cobra boleto a partir do nível 18 (quando tem casa)
+	if jogador.Nivel < 18 {
+		JsonResp(w, 200, map[string]interface{}{"tem_boleto": false})
+		return
+	}
+
+	// Garante que existe registro na tabela boletos
+	db.Conn.Exec(`INSERT INTO boletos (jogador_id) VALUES ($1) ON CONFLICT DO NOTHING`, jogadorID)
+
+	var ultimoBoleto time.Time
+	err = db.Conn.QueryRow(`SELECT ultimo_boleto FROM boletos WHERE jogador_id=$1`, jogadorID).Scan(&ultimoBoleto)
+	if err != nil {
+		JsonResp(w, 200, map[string]interface{}{"tem_boleto": false})
+		return
+	}
+
+	agora := time.Now()
+	diff := agora.Sub(ultimoBoleto)
+
+	// A cada 2 dias reais (48 horas)
+	if diff.Hours() < 48 {
+		// Ainda não venceu
+		restanteSeg := int((48*time.Hour - diff).Seconds())
+		JsonResp(w, 200, map[string]interface{}{
+			"tem_boleto":   false,
+			"restante_seg": restanteSeg,
+		})
+		return
+	}
+
+	total, itens := calcBoleto(jogador.Nivel)
+
+	JsonResp(w, 200, map[string]interface{}{
+		"tem_boleto": true,
+		"total":      total,
+		"itens":      itens,
+		"nivel":      jogador.Nivel,
+	})
+}
+
+// POST /api/boletos/pagar
+func HandleBoletoPagar(w http.ResponseWriter, r *http.Request) {
+	var req struct {
+		JogadorID int `json:"jogador_id"`
+	}
+	json.NewDecoder(r.Body).Decode(&req)
+	if req.JogadorID <= 0 {
+		ErrResp(w, 400, "ID inválido")
+		return
+	}
+
+	jogador, err := getJogador(req.JogadorID)
+	if err != nil {
+		ErrResp(w, 404, "Jogador não encontrado")
+		return
+	}
+
+	total, _ := calcBoleto(jogador.Nivel)
+
+	// Pode pagar do dinheiro na mão OU banco
+	dinheiroDisponivel := jogador.DinheiroMao + jogador.DinheiroBanco
+	if dinheiroDisponivel < total {
+		ErrResp(w, 400, fmt.Sprintf("Dinheiro insuficiente! Precisa de R$ %d", total))
+		return
+	}
+
+	// Paga primeiro da mão, depois do banco
+	if jogador.DinheiroMao >= total {
+		jogador.DinheiroMao -= total
+	} else {
+		restante := total - jogador.DinheiroMao
+		jogador.DinheiroMao = 0
+		jogador.DinheiroBanco -= restante
+	}
+
+	saveJogador(jogador)
+
+	// Atualiza timestamp do último boleto
+	db.Conn.Exec(`UPDATE boletos SET ultimo_boleto=NOW(), boletos_pagos=boletos_pagos+1 WHERE jogador_id=$1`, req.JogadorID)
+
+	JsonResp(w, 200, map[string]interface{}{
+		"sucesso":  true,
+		"mensagem": fmt.Sprintf("Boleto pago! R$ %d debitado.", total),
+		"jogador":  jogador,
+	})
+}
