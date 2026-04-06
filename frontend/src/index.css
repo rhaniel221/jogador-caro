@@ -3300,6 +3300,105 @@ input, select, textarea {
 .pf-code { font-size: 11px; color: rgba(255,255,255,0.7); margin-top: 6px; }
 .pf-code strong { color: #fff; letter-spacing: 1.5px; font-size: 13px; }
 
+/* =====================================================
+   BORDAS DE STATUS (tier por nível)
+   ===================================================== */
+@keyframes bordaGlow {
+  0%, 100% { box-shadow: 0 0 8px var(--borda-cor), var(--sombra); }
+  50% { box-shadow: 0 0 20px var(--borda-cor), 0 0 40px var(--borda-cor2), var(--sombra); }
+}
+@keyframes bordaRainbow {
+  0% { border-color: #ff4444; box-shadow: 0 0 15px #ff4444, 0 0 30px #ff444466; }
+  16% { border-color: #ff8800; box-shadow: 0 0 15px #ff8800, 0 0 30px #ff880066; }
+  33% { border-color: #ffdd00; box-shadow: 0 0 15px #ffdd00, 0 0 30px #ffdd0066; }
+  50% { border-color: #44ff44; box-shadow: 0 0 15px #44ff44, 0 0 30px #44ff4466; }
+  66% { border-color: #4488ff; box-shadow: 0 0 15px #4488ff, 0 0 30px #4488ff66; }
+  83% { border-color: #dd44ff; box-shadow: 0 0 15px #dd44ff, 0 0 30px #dd44ff66; }
+  100% { border-color: #ff4444; box-shadow: 0 0 15px #ff4444, 0 0 30px #ff444466; }
+}
+
+.pf-borda-ferro {
+  --borda-cor: #8a8a8a; --borda-cor2: #8a8a8a44;
+  border-color: #8a8a8a;
+}
+.pf-borda-bronze {
+  --borda-cor: #cd7f32; --borda-cor2: #cd7f3244;
+  border-color: #cd7f32;
+  animation: bordaGlow 3s ease-in-out infinite;
+}
+.pf-borda-prata {
+  --borda-cor: #c0c0c0; --borda-cor2: #c0c0c044;
+  border-color: #c0c0c0;
+  animation: bordaGlow 2.5s ease-in-out infinite;
+}
+.pf-borda-ouro {
+  --borda-cor: #ffd700; --borda-cor2: #ffd70055;
+  border-color: #ffd700;
+  animation: bordaGlow 2s ease-in-out infinite;
+}
+.pf-borda-platina {
+  --borda-cor: #40e0d0; --borda-cor2: #40e0d055;
+  border-color: #40e0d0;
+  animation: bordaGlow 1.8s ease-in-out infinite;
+}
+.pf-borda-esmeralda {
+  --borda-cor: #50c878; --borda-cor2: #50c87855;
+  border-color: #50c878;
+  animation: bordaGlow 1.6s ease-in-out infinite;
+}
+.pf-borda-diamante {
+  --borda-cor: #b9f2ff; --borda-cor2: #b9f2ff66;
+  border-color: #b9f2ff;
+  animation: bordaGlow 1.4s ease-in-out infinite;
+}
+.pf-borda-mestre {
+  --borda-cor: #ff6b6b; --borda-cor2: #ff6b6b55;
+  border-color: #ff6b6b;
+  border-width: 4px;
+  animation: bordaGlow 1.2s ease-in-out infinite;
+}
+.pf-borda-grao-mestre {
+  --borda-cor: #a855f7; --borda-cor2: #a855f766;
+  border-color: #a855f7;
+  border-width: 4px;
+  animation: bordaGlow 1s ease-in-out infinite;
+}
+.pf-borda-desafiante {
+  border-width: 4px;
+  animation: bordaRainbow 3s linear infinite;
+}
+
+/* Tier badge no card */
+.pf-tier-badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 900;
+  padding: 2px 8px;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.pf-tier-ferro { background: #8a8a8a; color: #fff; }
+.pf-tier-bronze { background: #cd7f32; color: #fff; }
+.pf-tier-prata { background: #c0c0c0; color: #333; }
+.pf-tier-ouro { background: #ffd700; color: #333; }
+.pf-tier-platina { background: #40e0d0; color: #1a3a3a; }
+.pf-tier-esmeralda { background: #50c878; color: #fff; }
+.pf-tier-diamante { background: #b9f2ff; color: #1a3a5a; }
+.pf-tier-mestre { background: #ff6b6b; color: #fff; }
+.pf-tier-grao-mestre { background: #a855f7; color: #fff; }
+.pf-tier-desafiante {
+  background: linear-gradient(90deg, #ff4444, #ff8800, #ffdd00, #44ff44, #4488ff, #dd44ff);
+  color: #fff;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+  background-size: 200% 100%;
+  animation: tierRainbowBg 2s linear infinite;
+}
+@keyframes tierRainbowBg {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+
 /* Títulos dentro do hero */
 .pf-hero-titulos {
   position: relative; z-index: 1;

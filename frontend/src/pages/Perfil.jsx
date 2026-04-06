@@ -124,6 +124,26 @@ export default function Perfil() {
   if (!jogador) return null
 
   const xpPct = Math.min(100, Math.round((jogador.xp / jogador.xp_proximo) * 100))
+
+  // Borda de status por nível
+  const getBordaTier = (nivel) => {
+    if (nivel >= 150) return 'desafiante'
+    if (nivel >= 120) return 'grao-mestre'
+    if (nivel >= 100) return 'mestre'
+    if (nivel >= 80) return 'diamante'
+    if (nivel >= 60) return 'esmeralda'
+    if (nivel >= 45) return 'platina'
+    if (nivel >= 30) return 'ouro'
+    if (nivel >= 18) return 'prata'
+    if (nivel >= 8) return 'bronze'
+    return 'ferro'
+  }
+  const bordaTier = getBordaTier(jogador.nivel)
+  const TIER_NOMES = {
+    ferro: 'Ferro', bronze: 'Bronze', prata: 'Prata', ouro: 'Ouro',
+    platina: 'Platina', esmeralda: 'Esmeralda', diamante: 'Diamante',
+    mestre: 'Mestre', 'grao-mestre': 'Grão-Mestre', desafiante: 'Desafiante'
+  }
   const desbloqueados = (jogador.avatares_premium || '')
     .split(',')
     .filter(Boolean)
@@ -141,7 +161,7 @@ export default function Perfil() {
     <div className="pf" data-tutorial="perfil-area">
 
       {/* === CARD DO JOGADOR === */}
-      <div className="pf-hero">
+      <div className={`pf-hero pf-borda-${bordaTier}`}>
         <div className="pf-hero-bg" />
         <div className="pf-hero-content">
           <div className="pf-avatar-area">
@@ -163,6 +183,7 @@ export default function Perfil() {
             {jogador.titulo && <div className="pf-titulo">{jogador.titulo}</div>}
             <div className="pf-rank-row">
               <span className="pf-rank">{jogador.rank || 'Peladeiro'}</span>
+              <span className={`pf-tier-badge pf-tier-${bordaTier}`}>{TIER_NOMES[bordaTier]}</span>
               {jogador.posicao && <span className="pf-pos-badge">{
                 {GK:'🧤 Goleiro', DEF:'🛡️ Defensor', MED:'🎯 Meia', ATA:'⚽ Atacante'}[jogador.posicao] || jogador.posicao
               }</span>}
