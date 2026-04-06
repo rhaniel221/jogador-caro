@@ -1186,6 +1186,7 @@ func AplicarEventoTrabalho(jogador *JogadorData, eventoID, opcaoID string, ganho
 			} else {
 				perda := int(float64(ganhoDin) * 0.3)
 				resultado.BonusDin = -perda
+				resultado.BonusEnergia = -(1 + rand.Intn(2))
 				resultado.Texto = "Errou o drible e caiu de cara... O olheiro foi embora."
 				resultado.Sucesso = false
 			}
@@ -1248,6 +1249,7 @@ func AplicarEventoTrabalho(jogador *JogadorData, eventoID, opcaoID string, ganho
 				resultado.Texto = "Jogou no sacrifício e brilhou! Que raça!"
 			} else {
 				resultado.PerdaSaude = 5 + rand.Intn(8)
+				resultado.BonusEnergia = -(2 + rand.Intn(3))
 				resultado.Texto = "Forçou demais e piorou a lesão..."
 				resultado.Sucesso = false
 			}
@@ -1263,7 +1265,8 @@ func AplicarEventoTrabalho(jogador *JogadorData, eventoID, opcaoID string, ganho
 				resultado.Texto = "Entrevista bombou nas redes! Você é tendência!"
 			} else {
 				resultado.PerdaFama = 3 + rand.Intn(5)
-				resultado.Texto = "Falou demais e a fala saiu errada... Viralizou do jeito ruim."
+				resultado.BonusEnergia = -(1 + rand.Intn(2))
+				resultado.Texto = "Falou demais e a fala saiu errada... Viralizou do jeito ruim. O estresse te cansou."
 				resultado.Sucesso = false
 			}
 		} else {
@@ -1289,7 +1292,8 @@ func AplicarEventoTrabalho(jogador *JogadorData, eventoID, opcaoID string, ganho
 				resultado.Texto = "Negociação aprovada! Salário aumentou!"
 			} else {
 				resultado.PerdaFama = 2
-				resultado.Texto = "O presidente não gostou da audácia. Clima pesou..."
+				resultado.BonusEnergia = -(1 + rand.Intn(2))
+				resultado.Texto = "O presidente não gostou da audácia. Clima pesou e você ficou tenso..."
 				resultado.Sucesso = false
 			}
 		} else {
@@ -1307,7 +1311,8 @@ func AplicarEventoTrabalho(jogador *JogadorData, eventoID, opcaoID string, ganho
 			} else {
 				resultado.PerdaFama = 3
 				resultado.PerdaSaude = 2
-				resultado.Texto = "A treta esquentou e saiu empurrão..."
+				resultado.BonusEnergia = -(1 + rand.Intn(2))
+				resultado.Texto = "A treta esquentou e saiu empurrão... Saiu cansado e machucado."
 				resultado.Sucesso = false
 			}
 		} else {

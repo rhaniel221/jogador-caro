@@ -48,6 +48,7 @@ func main() {
 	http.HandleFunc("/api/sacar", handlers.Cors(handlers.HandleSacar))
 	http.HandleFunc("/api/combates/historico", handlers.Cors(handlers.HandleHistoricoCombates))
 	http.HandleFunc("/api/recuperar-vitalidade", handlers.Cors(handlers.HandleRecuperarVitalidade))
+	http.HandleFunc("/api/tratamento", handlers.Cors(handlers.HandleTratamento))
 	http.HandleFunc("/api/loja-premium", handlers.Cors(handlers.HandleLojaPremium))
 	http.HandleFunc("/api/comprar-premium", handlers.Cors(handlers.HandleComprarPremium))
 	http.HandleFunc("/api/admin/moedas", handlers.Cors(handlers.HandleAdicionarMoedas))

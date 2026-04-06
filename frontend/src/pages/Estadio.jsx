@@ -182,12 +182,9 @@ export default function Estadio() {
               </div>
             ))}
             <div style={{ marginTop: '15px', paddingTop: '12px', borderTop: '1px solid #1a2214' }}>
-              <div style={{ fontSize: '11px', color: '#5a7a4a', marginBottom: '8px' }}>
-                Custo de recuperação: <strong style={{ color: '#fff' }}>R$ {fmt(100 * jogador.nivel)}</strong>
+              <div style={{ fontSize: '11px', color: '#5a7a4a' }}>
+                💡 Vá ao <strong style={{ color: '#ffd700' }}>Perfil</strong> para tratamentos de saúde e vitalidade.
               </div>
-              <button className="btn-work btn-verde" style={{ width: '100%' }} onClick={recuperarVitalidade}>
-                💊 Recuperar Vitalidade e Saúde
-              </button>
             </div>
           </div>
         </div>

@@ -187,6 +187,9 @@ export default function Perfil() {
         <div className="pf-stat"><span className="pf-stat-icon">⚔️</span><span className="pf-stat-val">{jogador.vitorias}V/{jogador.derrotas}D</span><span className="pf-stat-lbl">{winRate}% Win</span></div>
       </div>
 
+      {/* === CENTRAL DE TRATAMENTO === */}
+      <TratamentoSection jogadorID={jogadorID} jogador={jogador} setJogador={setJogador} mostrarNotificacao={mostrarNotificacao} />
+
       {/* === FAMA & PATROCÍNIO === */}
       <FamaCard jogadorID={jogadorID} jogador={jogador} setJogador={setJogador} mostrarNotificacao={mostrarNotificacao} />
 
@@ -206,6 +209,141 @@ export default function Perfil() {
       )}
 
       <CampinhoSection jogadorID={jogadorID} jogador={jogador} setJogador={setJogador} mostrarNotificacao={mostrarNotificacao} setLevelUp={setLevelUp} />
+    </div>
+  )
+}
+
+const TRATAMENTOS = [
+  {
+    id: 'academia', nome: 'Academia', icone: '🏋️',
+    desc: 'Treino pesado: recupera saúde, força e vitalidade.',
+    custoMult: 80,
+    ganhos: (n) => `+${10 + Math.floor(n/3)} Saúde · +1 Força · +${15 + Math.floor(n/5)} Vitalidade`,
+  },
+  {
+    id: 'psicologo', nome: 'Psicólogo', icone: '🧠',
+    desc: 'Sessão de terapia para renovar a mente.',
+    custoMult: 60,
+    ganhos: (n) => `+${20 + Math.floor(n/2)} Saúde · +${10 + Math.floor(n/5)} Vitalidade`,
+  },
+  {
+    id: 'fisioterapia', nome: 'Fisioterapia', icone: '💆',
+    desc: 'Recuperação corporal completa.',
+    custoMult: 100,
+    ganhos: (n) => `+${15 + Math.floor(n/3)} Saúde · +${20 + Math.floor(n/4)} Vitalidade · +${5 + Math.floor(n/10)} Energia`,
+  },
+  {
+    id: 'nutricao', nome: 'Nutricionista', icone: '🥗',
+    desc: 'Dieta equilibrada para o corpo.',
+    custoMult: 50,
+    ganhos: (n) => `+${8 + Math.floor(n/4)} Saúde · +${12 + Math.floor(n/5)} Vitalidade · +${3 + Math.floor(n/15)} Energia`,
+  },
+  {
+    id: 'spa', nome: 'Day Spa', icone: '🧖',
+    desc: 'Relaxamento total: corpo e mente.',
+    custoMult: 150,
+    ganhos: (n) => `+${25 + Math.floor(n/2)} Saúde · +${25 + Math.floor(n/3)} Vitalidade · +${8 + Math.floor(n/8)} Energia`,
+  },
+  {
+    id: 'meditacao', nome: 'Meditação', icone: '🧘',
+    desc: 'Foco mental e vitalidade renovada.',
+    custoMult: 30,
+    ganhos: (n) => `+${5 + Math.floor(n/5)} Saúde · +${20 + Math.floor(n/4)} Vitalidade`,
+  },
+]
+
+function TratamentoSection({ jogadorID, jogador, setJogador, mostrarNotificacao }) {
+  const [loading, setLoading] = useState(null)
+
+  async function fazerTratamento(tratamentoID) {
+    const t = TRATAMENTOS.find(x => x.id === tratamentoID)
+    if (!t) return
+    const custo = t.custoMult * jogador.nivel
+    if (!confirm(`Fazer ${t.nome} por R$ ${fmt(custo)}?`)) return
+    setLoading(tratamentoID)
+    try {
+      const res = await API.post('/api/tratamento', { jogador_id: jogadorID, tratamento_id: tratamentoID })
+      if (res.sucesso) {
+        setJogador(res.jogador)
+        const g = res.ganhos || {}
+        const parts = []
+        if (g.saude > 0) parts.push(`+${g.saude} Saúde`)
+        if (g.vitalidade > 0) parts.push(`+${g.vitalidade} Vitalidade`)
+        if (g.forca > 0) parts.push(`+${g.forca} Força`)
+        if (g.energia > 0) parts.push(`+${g.energia} Energia`)
+        mostrarNotificacao(`${t.icone} ${parts.join(' · ')}`, 'sucesso')
+      } else {
+        mostrarNotificacao(res.mensagem, 'erro')
+      }
+    } catch { mostrarNotificacao('Erro de conexão', 'erro') }
+    setLoading(null)
+  }
+
+  if (!jogador) return null
+
+  const vitalidadeBaixa = jogador.vitalidade < 30
+  const saudeBaixa = jogador.saude < jogador.saude_max * 0.5
+
+  return (
+    <div className="pf-section">
+      <div className="pf-section-header">
+        <h3>🏥 CENTRAL DE TRATAMENTO</h3>
+      </div>
+
+      {vitalidadeBaixa && (
+        <div style={{
+          background: '#3a1515', border: '1px solid #e74c3c', borderRadius: 8,
+          padding: '10px 14px', marginBottom: 12, fontSize: 12, color: '#ff6b6b', fontWeight: 700
+        }}>
+          ⚠️ Vitalidade abaixo de 30! Você não pode trabalhar. Faça um tratamento para se recuperar!
+        </div>
+      )}
+
+      <div style={{ display: 'flex', gap: 6, marginBottom: 12, flexWrap: 'wrap' }}>
+        <div style={{
+          background: '#1a2a14', borderRadius: 6, padding: '6px 12px', fontSize: 12, fontWeight: 700
+        }}>
+          ❤️ Saúde: <span style={{ color: saudeBaixa ? '#e74c3c' : '#4caf50' }}>{jogador.saude}/{jogador.saude_max}</span>
+        </div>
+        <div style={{
+          background: '#1a2a14', borderRadius: 6, padding: '6px 12px', fontSize: 12, fontWeight: 700
+        }}>
+          💚 Vitalidade: <span style={{ color: vitalidadeBaixa ? '#e74c3c' : '#4caf50' }}>{jogador.vitalidade}/{jogador.vitalidade_max}</span>
+        </div>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 10 }}>
+        {TRATAMENTOS.map(t => {
+          const custo = t.custoMult * jogador.nivel
+          const semDinheiro = jogador.dinheiro_mao < custo
+          const isLoading = loading === t.id
+          return (
+            <div key={t.id} style={{
+              background: '#0d1a08', border: '1px solid #2a3a20', borderRadius: 10,
+              padding: '14px', display: 'flex', flexDirection: 'column', gap: 6
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ fontSize: 24 }}>{t.icone}</span>
+                <div>
+                  <div style={{ fontWeight: 900, fontSize: 14, color: '#e0e0d0' }}>{t.nome}</div>
+                  <div style={{ fontSize: 11, color: '#7a8a6a' }}>{t.desc}</div>
+                </div>
+              </div>
+              <div style={{ fontSize: 11, color: '#a3b899', fontWeight: 700, lineHeight: 1.5 }}>
+                {t.ganhos(jogador.nivel)}
+              </div>
+              <button
+                className={`btn-work ${semDinheiro ? 'btn-disabled' : 'btn-verde'}`}
+                style={{ width: '100%', marginTop: 'auto', fontSize: 12 }}
+                onClick={() => fazerTratamento(t.id)}
+                disabled={isLoading || semDinheiro}
+              >
+                {isLoading ? '...' : `R$ ${fmt(custo)}`}
+              </button>
+            </div>
+          )
+        })}
+      </div>
     </div>
   )
 }

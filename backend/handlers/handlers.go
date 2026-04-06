@@ -198,6 +198,12 @@ func HandleTrabalhar(w http.ResponseWriter, r *http.Request) {
 	// Regenera energia antes de calcular (corrige dessincronização com o frontend)
 	regenerarEnergia(jogador)
 
+	// Bloqueio por vitalidade baixa (mínimo 30 para trabalhar)
+	if jogador.Vitalidade < 30 {
+		JsonResp(w, 200, TrabalharResponse{Mensagem: fmt.Sprintf("Vitalidade muito baixa! (%d/30) Vá ao Perfil e faça tratamentos para se recuperar.", jogador.Vitalidade)})
+		return
+	}
+
 	// Calcula TUDO no backend (anti-cheat)
 	custoEnergia := calcCustoEnergia(trabalho.Energia, jogador.Nivel, trabalho.Tier)
 	ganhoMin, ganhoMax, ganhoXP := calcRecompensaTrabalho(trabalho, jogador.Nivel)
@@ -1257,6 +1263,118 @@ func HandleRecuperarVitalidade(w http.ResponseWriter, r *http.Request) {
 		"sucesso":  true,
 		"mensagem": fmt.Sprintf("Você se recuperou totalmente por R$ %d!", custo),
 		"jogador":  jogador,
+	})
+}
+
+// POST /api/tratamento
+func HandleTratamento(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		ErrResp(w, 405, "Método não permitido")
+		return
+	}
+
+	var req struct {
+		JogadorID    int    `json:"jogador_id"`
+		TratamentoID string `json:"tratamento_id"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		ErrResp(w, 400, "Dados inválidos")
+		return
+	}
+
+	jogador, err := getJogador(req.JogadorID)
+	if err != nil {
+		ErrResp(w, 404, "Jogador não encontrado")
+		return
+	}
+
+	type TratamentoInfo struct {
+		Custo      int
+		Saude      int
+		Vitalidade int
+		Forca      int
+		Energia    int
+		Mensagem   string
+	}
+
+	tratamentos := map[string]TratamentoInfo{
+		"academia": {
+			Custo: 80 * jogador.Nivel, Saude: 10 + jogador.Nivel/3,
+			Forca: 1, Vitalidade: 15 + jogador.Nivel/5,
+			Mensagem: "Malhou pesado! Saúde, força e vitalidade recuperadas!",
+		},
+		"psicologo": {
+			Custo: 60 * jogador.Nivel, Saude: 20 + jogador.Nivel/2,
+			Vitalidade: 10 + jogador.Nivel/5,
+			Mensagem: "Sessão de terapia! Mente renovada, saúde restaurada!",
+		},
+		"fisioterapia": {
+			Custo: 100 * jogador.Nivel, Saude: 15 + jogador.Nivel/3,
+			Vitalidade: 20 + jogador.Nivel/4, Energia: 5 + jogador.Nivel/10,
+			Mensagem: "Fisioterapia completa! Corpo recuperado e pronto pra jogar!",
+		},
+		"nutricao": {
+			Custo: 50 * jogador.Nivel, Saude: 8 + jogador.Nivel/4,
+			Vitalidade: 12 + jogador.Nivel/5, Energia: 3 + jogador.Nivel/15,
+			Mensagem: "Dieta balanceada! Seu corpo agradece!",
+		},
+		"spa": {
+			Custo: 150 * jogador.Nivel, Saude: 25 + jogador.Nivel/2,
+			Vitalidade: 25 + jogador.Nivel/3, Energia: 8 + jogador.Nivel/8,
+			Mensagem: "Dia de spa completo! Relaxou e renovou todas as energias!",
+		},
+		"meditacao": {
+			Custo: 30 * jogador.Nivel, Saude: 5 + jogador.Nivel/5,
+			Vitalidade: 20 + jogador.Nivel/4,
+			Mensagem: "Meditação profunda! Mente limpa, vitalidade renovada!",
+		},
+	}
+
+	t, ok := tratamentos[req.TratamentoID]
+	if !ok {
+		JsonResp(w, 200, map[string]interface{}{"sucesso": false, "mensagem": "Tratamento não encontrado."})
+		return
+	}
+
+	if jogador.DinheiroMao < t.Custo {
+		JsonResp(w, 200, map[string]interface{}{
+			"sucesso":  false,
+			"mensagem": fmt.Sprintf("Precisa de R$ %s para este tratamento!", fmt.Sprintf("%d", t.Custo)),
+		})
+		return
+	}
+
+	jogador.DinheiroMao -= t.Custo
+	jogador.Saude += t.Saude
+	if jogador.Saude > jogador.SaudeMax {
+		jogador.Saude = jogador.SaudeMax
+	}
+	jogador.Vitalidade += t.Vitalidade
+	if jogador.Vitalidade > jogador.VitalidadeMax {
+		jogador.Vitalidade = jogador.VitalidadeMax
+	}
+	if t.Forca > 0 {
+		jogador.Forca += t.Forca
+	}
+	if t.Energia > 0 {
+		jogador.Energia += t.Energia
+		if jogador.Energia > jogador.EnergiaMax {
+			jogador.Energia = jogador.EnergiaMax
+		}
+	}
+
+	saveJogador(jogador)
+
+	JsonResp(w, 200, map[string]interface{}{
+		"sucesso":  true,
+		"mensagem": t.Mensagem,
+		"jogador":  jogador,
+		"ganhos": map[string]int{
+			"saude":      t.Saude,
+			"vitalidade": t.Vitalidade,
+			"forca":      t.Forca,
+			"energia":    t.Energia,
+		},
 	})
 }
 
