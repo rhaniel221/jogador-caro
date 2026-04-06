@@ -215,40 +215,40 @@ export default function Perfil() {
 
 const TRATAMENTOS = [
   {
-    id: 'academia', nome: 'Academia', icone: '🏋️',
-    desc: 'Treino pesado: recupera saúde, força e vitalidade.',
-    custoMult: 80,
-    ganhos: (n) => `+${10 + Math.floor(n/3)} Saúde · +1 Força · +${15 + Math.floor(n/5)} Vitalidade`,
-  },
-  {
-    id: 'psicologo', nome: 'Psicólogo', icone: '🧠',
-    desc: 'Sessão de terapia para renovar a mente.',
-    custoMult: 60,
-    ganhos: (n) => `+${20 + Math.floor(n/2)} Saúde · +${10 + Math.floor(n/5)} Vitalidade`,
-  },
-  {
-    id: 'fisioterapia', nome: 'Fisioterapia', icone: '💆',
-    desc: 'Recuperação corporal completa.',
-    custoMult: 100,
-    ganhos: (n) => `+${15 + Math.floor(n/3)} Saúde · +${20 + Math.floor(n/4)} Vitalidade · +${5 + Math.floor(n/10)} Energia`,
+    id: 'meditacao', nome: 'Meditação', icone: '🧘',
+    desc: 'Foco mental e vitalidade renovada.',
+    custoBase: 10000, custoNivel: 500,
+    ganhos: (n) => `+${5 + Math.floor(n/5)} Saúde · +${20 + Math.floor(n/4)} Vitalidade`,
   },
   {
     id: 'nutricao', nome: 'Nutricionista', icone: '🥗',
     desc: 'Dieta equilibrada para o corpo.',
-    custoMult: 50,
+    custoBase: 15000, custoNivel: 800,
     ganhos: (n) => `+${8 + Math.floor(n/4)} Saúde · +${12 + Math.floor(n/5)} Vitalidade · +${3 + Math.floor(n/15)} Energia`,
+  },
+  {
+    id: 'psicologo', nome: 'Psicólogo', icone: '🧠',
+    desc: 'Sessão de terapia para renovar a mente.',
+    custoBase: 20000, custoNivel: 1000,
+    ganhos: (n) => `+${20 + Math.floor(n/2)} Saúde · +${10 + Math.floor(n/5)} Vitalidade`,
+  },
+  {
+    id: 'academia', nome: 'Academia', icone: '🏋️',
+    desc: 'Treino pesado: recupera saúde, força e vitalidade.',
+    custoBase: 25000, custoNivel: 1200,
+    ganhos: (n) => `+${10 + Math.floor(n/3)} Saúde · +1 Força · +${15 + Math.floor(n/5)} Vitalidade`,
+  },
+  {
+    id: 'fisioterapia', nome: 'Fisioterapia', icone: '💆',
+    desc: 'Recuperação corporal completa.',
+    custoBase: 35000, custoNivel: 1500,
+    ganhos: (n) => `+${15 + Math.floor(n/3)} Saúde · +${20 + Math.floor(n/4)} Vitalidade · +${5 + Math.floor(n/10)} Energia`,
   },
   {
     id: 'spa', nome: 'Day Spa', icone: '🧖',
     desc: 'Relaxamento total: corpo e mente.',
-    custoMult: 150,
+    custoBase: 50000, custoNivel: 2000,
     ganhos: (n) => `+${25 + Math.floor(n/2)} Saúde · +${25 + Math.floor(n/3)} Vitalidade · +${8 + Math.floor(n/8)} Energia`,
-  },
-  {
-    id: 'meditacao', nome: 'Meditação', icone: '🧘',
-    desc: 'Foco mental e vitalidade renovada.',
-    custoMult: 30,
-    ganhos: (n) => `+${5 + Math.floor(n/5)} Saúde · +${20 + Math.floor(n/4)} Vitalidade`,
   },
 ]
 
@@ -258,7 +258,7 @@ function TratamentoSection({ jogadorID, jogador, setJogador, mostrarNotificacao 
   async function fazerTratamento(tratamentoID) {
     const t = TRATAMENTOS.find(x => x.id === tratamentoID)
     if (!t) return
-    const custo = t.custoMult * jogador.nivel
+    const custo = t.custoBase + t.custoNivel * jogador.nivel
     if (!confirm(`Fazer ${t.nome} por R$ ${fmt(custo)}?`)) return
     setLoading(tratamentoID)
     try {
@@ -301,7 +301,7 @@ function TratamentoSection({ jogadorID, jogador, setJogador, mostrarNotificacao 
 
       <div className="pf-inv-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))' }}>
         {TRATAMENTOS.map(t => {
-          const custo = t.custoMult * jogador.nivel
+          const custo = t.custoBase + t.custoNivel * jogador.nivel
           const semDinheiro = jogador.dinheiro_mao < custo
           const isLoading = loading === t.id
           return (

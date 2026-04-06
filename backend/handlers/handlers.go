@@ -1315,36 +1315,37 @@ func HandleTratamento(w http.ResponseWriter, r *http.Request) {
 		Mensagem   string
 	}
 
+	n := jogador.Nivel
 	tratamentos := map[string]TratamentoInfo{
-		"academia": {
-			Custo: 80 * jogador.Nivel, Saude: 10 + jogador.Nivel/3,
-			Forca: 1, Vitalidade: 15 + jogador.Nivel/5,
-			Mensagem: "Malhou pesado! Saúde, força e vitalidade recuperadas!",
-		},
-		"psicologo": {
-			Custo: 60 * jogador.Nivel, Saude: 20 + jogador.Nivel/2,
-			Vitalidade: 10 + jogador.Nivel/5,
-			Mensagem: "Sessão de terapia! Mente renovada, saúde restaurada!",
-		},
-		"fisioterapia": {
-			Custo: 100 * jogador.Nivel, Saude: 15 + jogador.Nivel/3,
-			Vitalidade: 20 + jogador.Nivel/4, Energia: 5 + jogador.Nivel/10,
-			Mensagem: "Fisioterapia completa! Corpo recuperado e pronto pra jogar!",
+		"meditacao": {
+			Custo: 10000 + 500*n, Saude: 5 + n/5,
+			Vitalidade: 20 + n/4,
+			Mensagem: "Meditação profunda! Mente limpa, vitalidade renovada!",
 		},
 		"nutricao": {
-			Custo: 50 * jogador.Nivel, Saude: 8 + jogador.Nivel/4,
-			Vitalidade: 12 + jogador.Nivel/5, Energia: 3 + jogador.Nivel/15,
+			Custo: 15000 + 800*n, Saude: 8 + n/4,
+			Vitalidade: 12 + n/5, Energia: 3 + n/15,
 			Mensagem: "Dieta balanceada! Seu corpo agradece!",
 		},
-		"spa": {
-			Custo: 150 * jogador.Nivel, Saude: 25 + jogador.Nivel/2,
-			Vitalidade: 25 + jogador.Nivel/3, Energia: 8 + jogador.Nivel/8,
-			Mensagem: "Dia de spa completo! Relaxou e renovou todas as energias!",
+		"psicologo": {
+			Custo: 20000 + 1000*n, Saude: 20 + n/2,
+			Vitalidade: 10 + n/5,
+			Mensagem: "Sessão de terapia! Mente renovada, saúde restaurada!",
 		},
-		"meditacao": {
-			Custo: 30 * jogador.Nivel, Saude: 5 + jogador.Nivel/5,
-			Vitalidade: 20 + jogador.Nivel/4,
-			Mensagem: "Meditação profunda! Mente limpa, vitalidade renovada!",
+		"academia": {
+			Custo: 25000 + 1200*n, Saude: 10 + n/3,
+			Forca: 1, Vitalidade: 15 + n/5,
+			Mensagem: "Malhou pesado! Saúde, força e vitalidade recuperadas!",
+		},
+		"fisioterapia": {
+			Custo: 35000 + 1500*n, Saude: 15 + n/3,
+			Vitalidade: 20 + n/4, Energia: 5 + n/10,
+			Mensagem: "Fisioterapia completa! Corpo recuperado e pronto pra jogar!",
+		},
+		"spa": {
+			Custo: 50000 + 2000*n, Saude: 25 + n/2,
+			Vitalidade: 25 + n/3, Energia: 8 + n/8,
+			Mensagem: "Dia de spa completo! Relaxou e renovou todas as energias!",
 		},
 	}
 
