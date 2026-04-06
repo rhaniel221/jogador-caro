@@ -23,14 +23,6 @@ export default function MiniGame() {
   const [showRewards, setShowRewards] = useState(false)
   const [ranking, setRanking] = useState([])
 
-  if (!jogador || jogador.nivel < 15) return (
-    <div style={{ textAlign: 'center', padding: 40 }}>
-      <div style={{ fontSize: 60 }}>🔒</div>
-      <h2 style={{ fontFamily: 'var(--font-titulo)', marginTop: 10 }}>MiniGame bloqueado</h2>
-      <p style={{ fontWeight: 700, color: '#555' }}>Alcance o nível 15 para desbloquear o Match-3!</p>
-    </div>
-  )
-
   useEffect(() => {
     if (!jogadorID) return
     API.get('/api/minigame/status/' + jogadorID)
@@ -53,6 +45,18 @@ export default function MiniGame() {
     }, 1000)
     return () => clearInterval(t)
   }, [cooldownSeg > 0])
+
+  // Cleanup Phaser on unmount
+  useEffect(() => () => { if (gameRef.current) { gameRef.current.destroy(true); gameRef.current = null } }, [])
+
+  // Lock screen AFTER all hooks
+  if (!jogador || jogador.nivel < 15) return (
+    <div style={{ textAlign: 'center', padding: 40 }}>
+      <div style={{ fontSize: 60 }}>🔒</div>
+      <h2 style={{ fontFamily: 'var(--font-titulo)', marginTop: 10 }}>MiniGame bloqueado</h2>
+      <p style={{ fontWeight: 700, color: '#555' }}>Alcance o nível 15 para desbloquear o Match-3!</p>
+    </div>
+  )
 
   function iniciar() {
     setEstado('jogando')
@@ -99,7 +103,6 @@ export default function MiniGame() {
         setEstado('resultado')
         setPodeJogar(false)
         if (res.level_up) setTimeout(() => setLevelUp(res.novo_nivel), 1500)
-        // Delay pra mostrar rewards com animação
         setTimeout(() => setShowRewards(true), 800)
       } else {
         mostrarNotificacao(res.mensagem, 'erro')
@@ -110,8 +113,6 @@ export default function MiniGame() {
       setEstado('menu')
     }
   }
-
-  useEffect(() => () => { if (gameRef.current) { gameRef.current.destroy(true); gameRef.current = null } }, [])
 
   const rankingSection = ranking.length > 0 && (
     <div className="pf-section" style={{ marginTop: 14 }}>
@@ -137,7 +138,7 @@ export default function MiniGame() {
     </div>
   )
 
-  // BLOQUEADO
+  // BLOQUEADO (cooldown)
   if (podeJogar === false && estado === 'menu') {
     const h = Math.floor(cooldownSeg / 3600)
     const m = Math.floor((cooldownSeg % 3600) / 60)
@@ -167,7 +168,6 @@ export default function MiniGame() {
         <div className={`mg-resultado mg-tier-${tier}`}>
           <div className="mg-resultado-glow" />
 
-          {/* Confetti */}
           {tier !== 'nada' && (
             <div className="mg-confetti-container">
               {Array.from({ length: 20 }, (_, i) => (
@@ -189,7 +189,6 @@ export default function MiniGame() {
           <div className="mg-resultado-score">{score}</div>
           <div className="mg-resultado-label">PONTOS</div>
 
-          {/* Rewards com animação sequencial */}
           {showRewards && (
             <div className="mg-resultado-rewards">
               {resultado.moedas > 0 && (
@@ -219,7 +218,7 @@ export default function MiniGame() {
           {showRewards && (
             <div className="mg-resultado-botoes mg-reward-enter" style={{ animationDelay: '0.7s' }}>
               <button className="btn-work btn-verde" onClick={() => navigate('/inicio')}>
-                🎒 Ver Inventário
+                ��� Ver Inventário
               </button>
               <button className="btn-work" onClick={() => setEstado('menu')}>
                 Continuar

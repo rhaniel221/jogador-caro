@@ -141,14 +141,6 @@ export default function Desafio1v1() {
   const [loading, setLoading] = useState(false)
   const [enviado, setEnviado] = useState(false)
 
-  if (!jogador || jogador.nivel < 12) return (
-    <div style={{ textAlign: 'center', padding: 40 }}>
-      <div style={{ fontSize: 60 }}>🔒</div>
-      <h2 style={{ fontFamily: 'var(--font-titulo)', marginTop: 10 }}>Desafio 1v1 bloqueado</h2>
-      <p style={{ fontWeight: 700, color: '#555' }}>Alcance o nível 12 para desbloquear os pênaltis!</p>
-    </div>
-  )
-
   function carregar() {
     if (!jogadorID) return
     API.get('/api/jogadores?excluir=' + jogadorID).then(setOponentes).catch(() => {})
@@ -156,6 +148,14 @@ export default function Desafio1v1() {
   }
 
   useEffect(() => { carregar() }, [jogadorID])
+
+  if (!jogador || jogador.nivel < 12) return (
+    <div style={{ textAlign: 'center', padding: 40 }}>
+      <div style={{ fontSize: 60 }}>🔒</div>
+      <h2 style={{ fontFamily: 'var(--font-titulo)', marginTop: 10 }}>Desafio 1v1 bloqueado</h2>
+      <p style={{ fontWeight: 700, color: '#555' }}>Alcance o nível 12 para desbloquear os pênaltis!</p>
+    </div>
+  )
 
   const pendentesRecebidos = desafios.filter(d => d.status === 'pendente' && d.desafiado_id === jogadorID)
   const pendentesEnviados = desafios.filter(d => d.status === 'pendente' && d.desafiante_id === jogadorID)
