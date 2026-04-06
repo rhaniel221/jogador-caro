@@ -4523,3 +4523,21 @@ func HandleBoletoHistorico(w http.ResponseWriter, r *http.Request) {
 		"total_pagos":  totalPagos,
 	})
 }
+
+// POST /api/admin/disparar-boletos — força boleto pendente pra todos (teste)
+func HandleAdminDispararBoletos(w http.ResponseWriter, r *http.Request) {
+	// Insere registro pra todos que têm nível >= 18 e não têm registro
+	db.Conn.Exec(`INSERT INTO boletos (jogador_id, ultimo_boleto)
+		SELECT id, NOW() - INTERVAL '3 days' FROM jogadores WHERE nivel >= 18
+		ON CONFLICT (jogador_id) DO UPDATE SET ultimo_boleto = NOW() - INTERVAL '3 days'`)
+
+	// Conta quantos foram afetados
+	var total int
+	db.Conn.QueryRow(`SELECT COUNT(*) FROM boletos WHERE ultimo_boleto < NOW() - INTERVAL '2 days'`).Scan(&total)
+
+	JsonResp(w, 200, map[string]interface{}{
+		"sucesso":  true,
+		"mensagem": fmt.Sprintf("Boletos disparados! %d jogadores com boleto pendente (1 dia de atraso + juros).", total),
+		"afetados": total,
+	})
+}

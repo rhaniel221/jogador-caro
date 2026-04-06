@@ -94,6 +94,7 @@ func main() {
 	http.HandleFunc("/api/fama/decaimento", handlers.Cors(handlers.HandleFamaDecaimento))
 	http.HandleFunc("/api/fama/", handlers.Cors(handlers.HandleFamaStatus))
 	http.HandleFunc("/api/patrimonio/", handlers.Cors(handlers.HandlePatrimonio))
+	http.HandleFunc("/api/admin/disparar-boletos", handlers.Cors(handlers.HandleAdminDispararBoletos))
 	http.HandleFunc("/api/boletos/pagar", handlers.Cors(handlers.HandleBoletoPagar))
 	http.HandleFunc("/api/boletos/historico/", handlers.Cors(handlers.HandleBoletoHistorico))
 	http.HandleFunc("/api/boletos/verificar/", handlers.Cors(handlers.HandleBoletoVerificar))
