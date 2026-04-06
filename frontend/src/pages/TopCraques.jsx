@@ -88,22 +88,37 @@ function PerfilModal({ jogadorID, targetID, onClose, getAvatar }) {
       <div className="pm-card" ref={cardRef} onClick={e => e.stopPropagation()}>
         <button className="pm-close" onClick={onClose}>✕</button>
 
-        {/* Banner topo com moldura de elo */}
-        <div className={`pm-banner pf-elo-${elo.id}`}>
-          <div className="pm-banner-glow" />
-          <div className="pf-avatar-frame" style={{ width: 100, height: 100, margin: '0 auto 8px' }}>
-            <img src={`/elos/${elo.id}.png`} alt={elo.nome} className="pf-elo-img"
-              onError={e => { e.target.style.display = 'none' }} />
-            <div className="pf-avatar" style={{ fontSize: 44, width: 64, height: 64 }}>{getAvatar(perfil.avatar)}</div>
+        {/* Banner topo com moldura de elo ÉPICA */}
+        <div className={`pm-banner pm-elo-${elo.id}`}>
+          <div className="pm-banner-bg" />
+          <div className="pm-rays" />
+          <div className="pm-particles">
+            {Array.from({ length: 12 }, (_, i) => (
+              <span key={i} className="pm-particle" style={{
+                left: (8 + Math.random() * 84) + '%',
+                animationDelay: (Math.random() * 3) + 's',
+                animationDuration: (2 + Math.random() * 2) + 's',
+                fontSize: (8 + Math.random() * 10) + 'px',
+              }}>{['✦','✧','⬥','◆','★'][Math.floor(Math.random() * 5)]}</span>
+            ))}
           </div>
+
+          <div className="pm-elo-showcase">
+            <div className="pm-elo-glow" />
+            <div className="pm-elo-ring" />
+            <img src={`/elos/${elo.id}.png`} alt={elo.nome} className="pm-elo-image"
+              onError={e => { e.target.style.display = 'none' }} />
+            <div className="pf-avatar" style={{ fontSize: 44, width: 64, height: 64, position: 'relative', zIndex: 2 }}>{getAvatar(perfil.avatar)}</div>
+          </div>
+
           <div className="pm-nome-big">{perfil.nome}</div>
-          <div style={{ display: 'flex', gap: 6, justifyContent: 'center', flexWrap: 'wrap', marginTop: 4 }}>
+          <div className="pm-badges-row">
             <span className="pm-rank-badge">{perfil.rank || 'Peladeiro'}</span>
-            <span className={`pf-elo-tag pf-elo-tag-${elo.id}`} style={{ position: 'static', transform: 'none' }}>{elo.nome}</span>
+            <span className={`pm-elo-badge pm-elo-badge-${elo.id}`}>{elo.nome}</span>
           </div>
           {perfil.titulo && <div className="pm-titulo-tag">{perfil.titulo}</div>}
           {perfil.titulos && (
-            <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', justifyContent: 'center', marginTop: 6 }}>
+            <div className="pm-titulos-row">
               {perfil.titulos.split(',').filter(Boolean).map((t, i) => (
                 <span key={i} className={`pf-hero-titulo-badge${t === perfil.titulo ? ' pf-hero-titulo-ativo' : ''}`}
                   style={{ fontSize: 9 }}>{t}</span>

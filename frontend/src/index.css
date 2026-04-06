@@ -3596,29 +3596,224 @@ input, select, textarea {
 
 /* Banner topo */
 .pm-banner {
-  background: linear-gradient(135deg, var(--azul) 0%, #003d99 100%);
-  padding: 24px 20px 20px; text-align: center;
+  --pm-cor1: #0047a3; --pm-cor2: #003d99; --pm-cor3: rgba(255,255,255,0.15);
+  background: linear-gradient(135deg, var(--pm-cor1) 0%, var(--pm-cor2) 100%);
+  padding: 28px 20px 20px; text-align: center;
   border-radius: 17px 17px 0 0; position: relative; overflow: hidden;
 }
-.pm-banner-glow {
-  position: absolute; top: -30%; left: 20%; width: 60%; height: 80%;
-  background: radial-gradient(circle, rgba(255,255,255,0.08), transparent 70%);
+
+/* Background animado */
+.pm-banner-bg {
+  position: absolute; inset: 0;
+  background:
+    repeating-linear-gradient(-45deg, transparent, transparent 18px, var(--pm-cor3) 18px, var(--pm-cor3) 36px);
   pointer-events: none;
 }
-.pm-avatar-big { font-size: 56px; position: relative; z-index: 1; }
+
+/* Raios de luz saindo do centro */
+.pm-rays {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 300px; height: 300px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 0;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg, var(--pm-cor3) 8deg, transparent 16deg,
+    transparent 36deg, var(--pm-cor3) 44deg, transparent 52deg,
+    transparent 72deg, var(--pm-cor3) 80deg, transparent 88deg,
+    transparent 108deg, var(--pm-cor3) 116deg, transparent 124deg,
+    transparent 144deg, var(--pm-cor3) 152deg, transparent 160deg,
+    transparent 180deg, var(--pm-cor3) 188deg, transparent 196deg,
+    transparent 216deg, var(--pm-cor3) 224deg, transparent 232deg,
+    transparent 252deg, var(--pm-cor3) 260deg, transparent 268deg,
+    transparent 288deg, var(--pm-cor3) 296deg, transparent 304deg,
+    transparent 324deg, var(--pm-cor3) 332deg, transparent 340deg,
+    transparent 360deg
+  );
+  opacity: 0.6;
+  animation: pmRaysSpin 12s linear infinite;
+}
+@keyframes pmRaysSpin {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* Partículas flutuantes */
+.pm-particles {
+  position: absolute; inset: 0; pointer-events: none; z-index: 1; overflow: hidden;
+}
+.pm-particle {
+  position: absolute;
+  bottom: -10px;
+  color: var(--pm-cor3);
+  opacity: 0;
+  animation: pmParticleUp ease-out infinite;
+}
+@keyframes pmParticleUp {
+  0% { transform: translateY(0) scale(0.5); opacity: 0; }
+  20% { opacity: 1; }
+  100% { transform: translateY(-160px) scale(1.2); opacity: 0; }
+}
+
+/* Showcase do elo — area central */
+.pm-elo-showcase {
+  position: relative;
+  width: 120px; height: 120px;
+  margin: 0 auto 10px;
+  display: flex; align-items: center; justify-content: center;
+  z-index: 2;
+}
+
+/* Glow pulsante atras do elo */
+.pm-elo-glow {
+  position: absolute; inset: -20px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--pm-cor3) 0%, transparent 70%);
+  opacity: 0.5;
+  animation: pmEloGlowPulse 2s ease-in-out infinite alternate;
+  z-index: 0;
+}
+@keyframes pmEloGlowPulse {
+  from { transform: scale(0.8); opacity: 0.3; }
+  to { transform: scale(1.3); opacity: 0.7; }
+}
+
+/* Anel girando ao redor */
+.pm-elo-ring {
+  position: absolute; inset: -6px;
+  border-radius: 50%;
+  border: 3px solid transparent;
+  border-top-color: var(--pm-cor3);
+  border-right-color: var(--pm-cor3);
+  animation: pmRingSpin 2s linear infinite;
+  z-index: 1;
+}
+@keyframes pmRingSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Imagem do elo */
+.pm-elo-image {
+  position: absolute;
+  inset: -5px;
+  width: calc(100% + 10px);
+  height: calc(100% + 10px);
+  object-fit: contain;
+  z-index: 3;
+  pointer-events: none;
+  filter: drop-shadow(0 0 8px var(--pm-cor3));
+}
+
+/* Nome */
 .pm-nome-big {
   font-family: var(--font-titulo); font-size: 26px; color: #fff;
-  text-shadow: 2px 2px 0 rgba(0,0,0,0.3); position: relative; z-index: 1;
+  text-shadow: 2px 2px 0 rgba(0,0,0,0.3); position: relative; z-index: 2;
+}
+.pm-badges-row {
+  display: flex; gap: 6px; justify-content: center; flex-wrap: wrap;
+  margin-top: 4px; position: relative; z-index: 2;
 }
 .pm-rank-badge {
   display: inline-block; background: var(--amarelo); color: var(--preto);
   font-size: 11px; font-weight: 900; padding: 2px 10px; border-radius: 10px;
-  margin-top: 4px; position: relative; z-index: 1;
+}
+.pm-elo-badge {
+  display: inline-block; font-size: 11px; font-weight: 900;
+  padding: 2px 10px; border-radius: 10px; color: #fff;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
 }
 .pm-titulo-tag {
   font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.7);
-  margin-top: 2px; position: relative; z-index: 1;
+  margin-top: 2px; position: relative; z-index: 2;
 }
+.pm-titulos-row {
+  display: flex; gap: 4px; flex-wrap: wrap; justify-content: center;
+  margin-top: 6px; position: relative; z-index: 2;
+}
+
+/* === CORES DO BANNER POR ELO === */
+.pm-elo-ferro { --pm-cor1: #4a4a4a; --pm-cor2: #333; --pm-cor3: rgba(180,180,180,0.2); }
+.pm-elo-badge-ferro { background: #6a6a6a; }
+
+.pm-elo-bronze { --pm-cor1: #5a3010; --pm-cor2: #3a1a05; --pm-cor3: rgba(205,127,50,0.25); }
+.pm-elo-badge-bronze { background: #8b4513; }
+
+.pm-elo-prata { --pm-cor1: #505060; --pm-cor2: #383848; --pm-cor3: rgba(200,200,220,0.25); }
+.pm-elo-badge-prata { background: #888; }
+
+.pm-elo-ouro { --pm-cor1: #5a4000; --pm-cor2: #3a2800; --pm-cor3: rgba(255,215,0,0.25); }
+.pm-elo-badge-ouro { background: #b8860b; }
+.pm-elo-ouro .pm-rays { opacity: 0.8; }
+.pm-elo-ouro .pm-elo-glow { opacity: 0.6; }
+
+.pm-elo-platina { --pm-cor1: #0a4a4a; --pm-cor2: #053535; --pm-cor3: rgba(64,224,208,0.25); }
+.pm-elo-badge-platina { background: #008b8b; }
+.pm-elo-platina .pm-rays { opacity: 0.8; }
+
+.pm-elo-esmeralda { --pm-cor1: #0a3a1a; --pm-cor2: #052a10; --pm-cor3: rgba(80,200,120,0.3); }
+.pm-elo-badge-esmeralda { background: #1a7a3a; }
+.pm-elo-esmeralda .pm-rays { opacity: 0.9; animation-duration: 10s; }
+.pm-elo-esmeralda .pm-elo-ring { border-width: 4px; }
+
+.pm-elo-diamante { --pm-cor1: #1a3a5a; --pm-cor2: #0a2040; --pm-cor3: rgba(185,242,255,0.3); }
+.pm-elo-badge-diamante { background: #4a90d9; }
+.pm-elo-diamante .pm-rays { opacity: 1; animation-duration: 8s; }
+.pm-elo-diamante .pm-elo-ring { border-width: 4px; animation-duration: 1.5s; }
+.pm-elo-diamante .pm-elo-glow { animation-duration: 1.5s; }
+
+.pm-elo-mestre { --pm-cor1: #4a0a0a; --pm-cor2: #2a0505; --pm-cor3: rgba(255,68,68,0.3); }
+.pm-elo-badge-mestre { background: #8b0000; }
+.pm-elo-mestre .pm-rays { opacity: 1; animation-duration: 6s; }
+.pm-elo-mestre .pm-elo-ring { border-width: 4px; animation-duration: 1.2s; }
+.pm-elo-mestre .pm-particle { color: rgba(255,100,100,0.6); }
+
+.pm-elo-grao-mestre { --pm-cor1: #2a0a4a; --pm-cor2: #1a0530; --pm-cor3: rgba(168,85,247,0.35); }
+.pm-elo-badge-grao-mestre { background: #5b21b6; }
+.pm-elo-grao-mestre .pm-rays { opacity: 1; animation-duration: 5s; }
+.pm-elo-grao-mestre .pm-elo-ring { border-width: 5px; animation-duration: 1s; }
+.pm-elo-grao-mestre .pm-elo-glow { animation-duration: 1s; }
+.pm-elo-grao-mestre .pm-particle { color: rgba(200,130,255,0.6); }
+
+.pm-elo-desafiante { --pm-cor1: #3a2000; --pm-cor2: #1a0a00; --pm-cor3: rgba(255,215,0,0.35); }
+.pm-elo-badge-desafiante {
+  background: linear-gradient(90deg, #ff4444, #ff8800, #ffd700, #44ff44, #4488ff, #dd44ff);
+  background-size: 300% 100%;
+  animation: tierRainbowBg 2s linear infinite;
+}
+.pm-elo-desafiante .pm-rays {
+  opacity: 1; animation-duration: 4s;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg, rgba(255,68,68,0.3) 8deg, transparent 16deg,
+    transparent 36deg, rgba(255,136,0,0.3) 44deg, transparent 52deg,
+    transparent 72deg, rgba(255,215,0,0.3) 80deg, transparent 88deg,
+    transparent 108deg, rgba(68,255,68,0.3) 116deg, transparent 124deg,
+    transparent 144deg, rgba(68,136,255,0.3) 152deg, transparent 160deg,
+    transparent 180deg, rgba(221,68,255,0.3) 188deg, transparent 196deg,
+    transparent 216deg, rgba(255,68,68,0.3) 224deg, transparent 232deg,
+    transparent 252deg, rgba(255,215,0,0.3) 260deg, transparent 268deg,
+    transparent 288deg, rgba(68,255,68,0.3) 296deg, transparent 304deg,
+    transparent 324deg, rgba(68,136,255,0.3) 332deg, transparent 340deg,
+    transparent 360deg
+  );
+}
+.pm-elo-desafiante .pm-elo-ring {
+  border-width: 5px;
+  border-color: transparent;
+  border-top-color: #ffd700;
+  border-right-color: #ff4444;
+  border-bottom-color: #4488ff;
+  border-left-color: #44ff44;
+  animation-duration: 0.8s;
+}
+.pm-elo-desafiante .pm-elo-glow {
+  background: radial-gradient(circle, rgba(255,215,0,0.4) 0%, rgba(255,136,0,0.2) 40%, transparent 70%);
+  animation-duration: 0.8s;
+}
+.pm-elo-desafiante .pm-particle { color: rgba(255,215,0,0.7); }
 
 /* Stats */
 .pm-stats-row {
