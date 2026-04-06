@@ -67,10 +67,23 @@ export default function Estadio() {
 
   if (!jogador) return null
 
+  const saudeBaixa = jogador.saude < 10
+
   return (
     <>
       <h2 className="page-title">⚔️ ESTÁDIO</h2>
       <p className="subtitle">Desafie outros jogadores em batalhas épicas. Vença para ganhar fama e dinheiro!</p>
+
+      {saudeBaixa && (
+        <div style={{
+          background: '#3a1515', border: '2px solid #e74c3c', borderRadius: 10,
+          padding: '12px 16px', marginBottom: 14, textAlign: 'center'
+        }}>
+          <div style={{ color: '#ff6b6b', fontWeight: 900, fontSize: 13 }}>
+            ⚠️ Saúde muito baixa! ({jogador.saude}) - Vá ao <strong style={{ color: '#ffd700' }}>Perfil → Central de Tratamento</strong> para se recuperar.
+          </div>
+        </div>
+      )}
 
       {combateModal && (
         <div id="modal-combate" style={{ display: 'flex' }}>

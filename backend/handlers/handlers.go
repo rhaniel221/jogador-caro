@@ -803,8 +803,8 @@ func HandleCombate(w http.ResponseWriter, r *http.Request) {
 		JsonResp(w, 200, CombateResult{Sucesso: false, Mensagem: "Sem vitalidade para lutar! Recupere-se primeiro."})
 		return
 	}
-	if atacante.Saude <= 0 {
-		JsonResp(w, 200, CombateResult{Sucesso: false, Mensagem: "Sem saúde para lutar! Use um item para recuperar."})
+	if atacante.Saude < 10 {
+		JsonResp(w, 200, CombateResult{Sucesso: false, Mensagem: "Saúde muito baixa para lutar! Vá ao Perfil e faça tratamentos para se recuperar."})
 		return
 	}
 
@@ -862,7 +862,7 @@ func HandleCombate(w http.ResponseWriter, r *http.Request) {
 	multFamaPvp := getMultiplicadorEvento("FAMA_PVP")
 
 	if poderAtacante > poderDefensor {
-		// Vitória: atacante não perde saúde, defensor perde pouco
+		// Vitória: atacante perde pouca saúde (desgaste), defensor perde bastante
 		vencedorID = atacante.ID
 		atacante.Vitorias++
 		defensor.Derrotas++
@@ -870,8 +870,11 @@ func HandleCombate(w http.ResponseWriter, r *http.Request) {
 		famaPvp := int(float64(10) * multFamaPvp)
 		atacante.XP += xpPvp
 		atacante.PontosFama += famaPvp
-		defensor.Saude = clampInt(defensor.Saude-(1+rand.Intn(3)), 0, defensor.SaudeMax)
-		mensagem = fmt.Sprintf("VITÓRIA! Você venceu %s! +2 XP, +10 Fama!", defensor.Nome)
+		perdaSaudeVencedor := 2 + rand.Intn(4) // 2-5 desgaste da luta
+		perdaSaudePerdedor := 5 + rand.Intn(6) // 5-10 por perder
+		atacante.Saude = clampInt(atacante.Saude-perdaSaudeVencedor, 0, atacante.SaudeMax)
+		defensor.Saude = clampInt(defensor.Saude-perdaSaudePerdedor, 0, defensor.SaudeMax)
+		mensagem = fmt.Sprintf("VITÓRIA! Você venceu %s! +2 XP, +10 Fama! (-%d Saúde do desgaste)", defensor.Nome, perdaSaudeVencedor)
 
 		// PVP streak: increment on win
 		atacante.PvpStreak++
@@ -883,14 +886,17 @@ func HandleCombate(w http.ResponseWriter, r *http.Request) {
 		// Skill missions: PVP streak
 		updateSkillProgress(atacante.ID, "VITORIA_PVP_STREAK", atacante.PvpStreak)
 	} else {
-		// Derrota: atacante perde pouca saúde (1-4), defensor nada
+		// Derrota: atacante perde bastante saúde, defensor perde pouco
 		vencedorID = defensor.ID
 		atacante.Derrotas++
 		defensor.Vitorias++
 		defensor.PontosFama += 5
+		perdaSaudeAtacante := 6 + rand.Intn(8) // 6-13 por perder
+		perdaSaudeDefensor := 1 + rand.Intn(3) // 1-3 desgaste leve
 		atacante.PontosFama = clampInt(atacante.PontosFama-25, 0, 999999)
-		atacante.Saude = clampInt(atacante.Saude-(1+rand.Intn(4)), 0, atacante.SaudeMax)
-		mensagem = fmt.Sprintf("DERROTA! %s foi mais forte. -25 Fama, -%d Saúde.", defensor.Nome, 1+rand.Intn(4))
+		atacante.Saude = clampInt(atacante.Saude-perdaSaudeAtacante, 0, atacante.SaudeMax)
+		defensor.Saude = clampInt(defensor.Saude-perdaSaudeDefensor, 0, defensor.SaudeMax)
+		mensagem = fmt.Sprintf("DERROTA! %s foi mais forte. -25 Fama, -%d Saúde.", defensor.Nome, perdaSaudeAtacante)
 
 		// PVP streak: reset on loss
 		atacante.PvpStreak = 0
