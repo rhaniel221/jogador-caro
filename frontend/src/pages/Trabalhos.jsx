@@ -92,8 +92,6 @@ function JobItem({ trabalho, maestria, nivel, onTrabalhar, loading, vezesHoje })
 
 const MILESTONES = [
   { n: 3, bonus: 10, icon: '⭐' },
-  { n: 4, bonus: 20, icon: '🌟' },
-  { n: 5, bonus: 30, icon: '🔥' },
 ]
 
 function VariedadePanel({ diferentesHoje, config, tier }) {

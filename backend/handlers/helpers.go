@@ -514,7 +514,7 @@ func regenerarVitalidade(j *JogadorData) int64 {
 }
 
 func regenerarSaude(j *JogadorData) int64 {
-	novoVal, proximo := regenerarRecurso(j.ID, "saude_ultima_recarga", "saude", j.Saude, j.SaudeMax, 10*time.Minute, 5)
+	novoVal, proximo := regenerarRecurso(j.ID, "saude_ultima_recarga", "saude", j.Saude, j.SaudeMax, 10*time.Minute, 9)
 	j.Saude = novoVal
 	return proximo
 }
@@ -713,18 +713,10 @@ func contarVariedadePorTier(jogadorID int) map[string]int {
 }
 
 func calcularBonusVariedadeXP(diferentesHoje, ganhoXP int, cfg ConfigProgressao) int {
-	var fator float64
-	switch {
-	case diferentesHoje >= 5:
-		fator = cfg.VariedadeBonus5
-	case diferentesHoje >= 4:
-		fator = cfg.VariedadeBonus4
-	case diferentesHoje >= 3:
-		fator = cfg.VariedadeBonus3
-	default:
-		return 0
+	if diferentesHoje >= 3 {
+		return int(float64(ganhoXP) * cfg.VariedadeBonus3)
 	}
-	return int(float64(ganhoXP) * fator)
+	return 0
 }
 
 func clampInt(val, lo, hi int) int {

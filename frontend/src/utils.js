@@ -136,10 +136,6 @@ export function calcularEnergiaMaxima(baseEnergia, tier) {
 
 export function calcularBonusVariedade(diferentesHoje, config = {}) {
   const b3 = config.variedade_bonus_3 ?? 0.10
-  const b4 = config.variedade_bonus_4 ?? 0.20
-  const b5 = config.variedade_bonus_5 ?? 0.30
-  if (diferentesHoje >= 5) return b5
-  if (diferentesHoje >= 4) return b4
   if (diferentesHoje >= 3) return b3
   return 0
 }

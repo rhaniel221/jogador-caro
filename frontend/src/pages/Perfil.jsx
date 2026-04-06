@@ -311,29 +311,26 @@ function TratamentoSection({ jogadorID, jogador, setJogador, mostrarNotificacao 
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 10 }}>
+      <div className="pf-stats" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))' }}>
         {TRATAMENTOS.map(t => {
           const custo = t.custoMult * jogador.nivel
           const semDinheiro = jogador.dinheiro_mao < custo
           const isLoading = loading === t.id
           return (
-            <div key={t.id} style={{
-              background: '#0d1a08', border: '1px solid #2a3a20', borderRadius: 10,
-              padding: '14px', display: 'flex', flexDirection: 'column', gap: 6
-            }}>
+            <div key={t.id} className="pf-stat" style={{ alignItems: 'stretch', padding: '12px', gap: 6, textAlign: 'left' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <span style={{ fontSize: 24 }}>{t.icone}</span>
+                <span className="pf-stat-icon">{t.icone}</span>
                 <div>
-                  <div style={{ fontWeight: 900, fontSize: 14, color: '#e0e0d0' }}>{t.nome}</div>
-                  <div style={{ fontSize: 11, color: '#7a8a6a' }}>{t.desc}</div>
+                  <span className="pf-stat-val" style={{ fontSize: 13 }}>{t.nome}</span>
+                  <span className="pf-stat-lbl">{t.desc}</span>
                 </div>
               </div>
-              <div style={{ fontSize: 11, color: '#a3b899', fontWeight: 700, lineHeight: 1.5 }}>
+              <div className="pf-stat-lbl" style={{ fontWeight: 700, color: '#a3b899', lineHeight: 1.5 }}>
                 {t.ganhos(jogador.nivel)}
               </div>
               <button
-                className={`btn-work ${semDinheiro ? 'btn-disabled' : 'btn-verde'}`}
-                style={{ width: '100%', marginTop: 'auto', fontSize: 12 }}
+                className={`btn-work btn-small${semDinheiro ? ' perfil-btn-disabled' : ''}`}
+                style={{ width: '100%', marginTop: 'auto' }}
                 onClick={() => fazerTratamento(t.id)}
                 disabled={isLoading || semDinheiro}
               >

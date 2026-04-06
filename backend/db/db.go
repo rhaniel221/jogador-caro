@@ -432,42 +432,42 @@ func seedCatalogos() {
 		// Nível 1-4 (Garoto) — ganho ~5-25/trabalho, energia max ~11-14
 		{14, 3, 1, 4, 0, 0, 0, 0, 0, 0, 3, 0, 0, "Água da Torneira", "Hidratação básica", "consumivel", "💧"},
 		{30, 15, 1, 4, 0, 0, 0, 0, 0, 0, 8, 0, 0, "Sanduíche", "Lanche completo", "consumivel", "🥪"},
-		{5, 10, 1, 4, 0, 0, 0, 0, 0, 0, 0, 15, 0, "Bandagem", "Curativo básico", "consumivel", "🩹"},
+		{5, 15, 1, 4, 0, 0, 0, 0, 0, 0, 0, 15, 0, "Bandagem", "Curativo básico", "consumivel", "🩹"},
 
 		// Nível 5-9 (Base) — ganho ~10-55/trabalho, energia max ~19-25
 		{63, 8, 5, 9, 0, 0, 0, 0, 0, 0, 5, 0, 0, "Água Mineral", "Hidratação boa", "consumivel", "💧"},
 		{31, 35, 5, 9, 0, 0, 0, 0, 0, 0, 12, 0, 0, "Arroz e Feijão", "Refeição completa", "consumivel", "🍚"},
-		{64, 25, 5, 9, 0, 0, 0, 0, 0, 0, 0, 25, 0, "Kit Primeiros Socorros", "Recupera saúde", "consumivel", "🩺"},
+		{64, 38, 5, 9, 0, 0, 0, 0, 0, 0, 0, 25, 0, "Kit Primeiros Socorros", "Recupera saúde", "consumivel", "🩺"},
 
 		// Nível 10-17 (Amador) — ganho ~40-150/trabalho, energia max ~34-45
 		{70, 25, 10, 17, 0, 0, 0, 0, 0, 0, 5, 0, 0, "Isotônico Light", "Reidratação leve", "consumivel", "🥤"},
 		{32, 80, 10, 17, 0, 0, 0, 0, 0, 0, 15, 0, 0, "Frango Grelhado", "Proteína pro treino", "consumivel", "🍗"},
-		{71, 60, 10, 17, 0, 0, 0, 0, 0, 0, 0, 40, 0, "Kit Médico Amador", "Tratamento completo", "consumivel", "🩺"},
+		{71, 90, 10, 17, 0, 0, 0, 0, 0, 0, 0, 40, 0, "Kit Médico Amador", "Tratamento completo", "consumivel", "🩺"},
 
 		// Nível 18-23 (Série C) — ganho ~150-800/trabalho, energia max ~50-60
 		{72, 100, 18, 23, 0, 0, 0, 0, 0, 0, 5, 0, 0, "Bebida Proteica", "Energia rápida", "consumivel", "🧉"},
 		{33, 500, 18, 23, 0, 0, 0, 0, 0, 0, 18, 0, 0, "Macarrão do Craque", "Carboidratos pro jogo", "consumivel", "🍝"},
-		{73, 350, 18, 23, 0, 0, 0, 0, 0, 0, 0, 60, 0, "Spray Criogênico", "Recuperação rápida", "consumivel", "🧊"},
+		{73, 525, 18, 23, 0, 0, 0, 0, 0, 0, 0, 60, 0, "Spray Criogênico", "Recuperação rápida", "consumivel", "🧊"},
 
 		// Nível 24-35 (Série B/A) — ganho ~400-4000/trabalho, energia max ~65-90
 		{74, 400, 24, 35, 0, 0, 0, 0, 0, 0, 5, 0, 0, "Vitamina B12", "Boost rápido", "consumivel", "💊"},
 		{34, 2000, 24, 35, 0, 0, 0, 0, 0, 0, 22, 0, 0, "Banquete do Campeão", "Refeição dos grandes", "consumivel", "🍖"},
-		{75, 1500, 24, 35, 0, 0, 0, 0, 0, 0, 0, 80, 0, "Tratamento Fisioterapia", "Recuperação profissional", "consumivel", "💉"},
+		{75, 2250, 24, 35, 0, 0, 0, 0, 0, 0, 0, 80, 0, "Tratamento Fisioterapia", "Recuperação profissional", "consumivel", "💉"},
 
 		// Nível 36-49 (Copa BR/Libertadores) — ganho ~2K-35K/trabalho, energia max ~95-130
 		{76, 2000, 36, 49, 0, 0, 0, 0, 0, 0, 5, 0, 0, "Isotônico Power", "Energia rápida", "consumivel", "⚡"},
 		{77, 10000, 36, 49, 0, 0, 0, 0, 0, 0, 25, 0, 0, "Carga de Inspiração", "Explosão de energia", "consumivel", "🔥"},
-		{78, 7000, 36, 49, 0, 0, 0, 0, 0, 0, 0, 100, 0, "Tratamento VIP", "Saúde de craque", "consumivel", "💉"},
+		{78, 10500, 36, 49, 0, 0, 0, 0, 0, 0, 0, 100, 0, "Tratamento VIP", "Saúde de craque", "consumivel", "💉"},
 
 		// Nível 50-71 (Europa/Champions) — ganho ~15K-350K/trabalho
 		{79, 10000, 50, 71, 0, 0, 0, 0, 0, 0, 5, 0, 0, "Suplemento Elite", "Boost rápido", "consumivel", "✨"},
 		{80, 50000, 50, 71, 0, 0, 0, 0, 0, 0, 30, 0, 0, "Shake Premium", "Energia premium", "consumivel", "💎"},
-		{81, 35000, 50, 71, 0, 0, 0, 0, 0, 0, 0, 120, 0, "Nanomedicina", "Regeneração futurista", "consumivel", "🧬"},
+		{81, 52500, 50, 71, 0, 0, 0, 0, 0, 0, 0, 120, 0, "Nanomedicina", "Regeneração futurista", "consumivel", "🧬"},
 
 		// Nível 72+ (Seleção/Copa/Lenda) — ganho ~150K-60M/trabalho
 		{82, 50000, 72, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, "Elixir Rápido", "Energia instantânea", "consumivel", "🌟"},
 		{83, 300000, 72, 0, 0, 0, 0, 0, 0, 0, 40, 0, 0, "Soro do GOAT", "Energia dos deuses", "consumivel", "🏆"},
-		{84, 200000, 72, 0, 0, 0, 0, 0, 0, 0, 0, 150, 0, "Terapia Genética", "Saúde máxima", "consumivel", "🧬"},
+		{84, 300000, 72, 0, 0, 0, 0, 0, 0, 0, 0, 150, 0, "Terapia Genética", "Saúde máxima", "consumivel", "🧬"},
 		// Equipamentos — nível baixo
 		{6, 15, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "Camisa do Time", "Necessária para trabalhar no estádio", "equipamento", "👕"},
 		{7, 20, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, "Chuteira Básica", "Uma chuteira simples pra dar os primeiros chutes", "equipamento", "👟"},
@@ -546,27 +546,27 @@ func seedCatalogos() {
 		// === CONSUMÍVEIS POR FAIXA — preço ~40% do trabalho top do tier ===
 		// Nível 1-9 (Garoto) — trabalhos pagam 2-25
 		{63, 8, 1, 9, 0, 0, 0, 0, 0, 0, 3, 0, 0, "Água Mineral", "Hidratação básica", "consumivel", "💧"},
-		{64, 12, 1, 9, 0, 0, 0, 0, 0, 0, 0, 15, 0, "Curativo Simples", "Primeiro socorro", "consumivel", "🩹"},
+		{64, 18, 1, 9, 0, 0, 0, 0, 0, 0, 0, 15, 0, "Curativo Simples", "Primeiro socorro", "consumivel", "🩹"},
 		// Nível 10-17 (Amador) — trabalhos pagam 40-150
 		{70, 60, 10, 17, 0, 0, 0, 0, 0, 0, 8, 0, 0, "Isotônico Sport", "Reidratação profissional", "consumivel", "🥤"},
-		{71, 75, 10, 17, 0, 0, 0, 0, 0, 0, 0, 30, 0, "Kit Médico Amador", "Tratamento completo", "consumivel", "🩺"},
-		{72, 90, 10, 17, 0, 0, 0, 0, 0, 0, 5, 15, 0, "Bebida Proteica", "Energia + saúde", "consumivel", "🧉"},
+		{71, 113, 10, 17, 0, 0, 0, 0, 0, 0, 0, 30, 0, "Kit Médico Amador", "Tratamento completo", "consumivel", "🩺"},
+		{72, 135, 10, 17, 0, 0, 0, 0, 0, 0, 5, 15, 0, "Bebida Proteica", "Energia + saúde", "consumivel", "🧉"},
 		// Nível 18-29 (Série C/B) — trabalhos pagam 150-1800
 		{73, 1500, 18, 29, 0, 0, 0, 0, 0, 0, 15, 0, 0, "Vitamina B12 Especial", "Boost de energia pro", "consumivel", "💊"},
-		{74, 1800, 18, 29, 0, 0, 0, 0, 0, 0, 0, 60, 0, "Spray Criogênico", "Recuperação instantânea", "consumivel", "🧊"},
-		{75, 2200, 18, 29, 0, 0, 0, 0, 0, 0, 10, 30, 0, "Isotônico Power", "Energia + saúde premium", "consumivel", "⚡"},
+		{74, 2700, 18, 29, 0, 0, 0, 0, 0, 0, 0, 60, 0, "Spray Criogênico", "Recuperação instantânea", "consumivel", "🧊"},
+		{75, 3300, 18, 29, 0, 0, 0, 0, 0, 0, 10, 30, 0, "Isotônico Power", "Energia + saúde premium", "consumivel", "⚡"},
 		// Nível 30-49 (Série A/Copa/Liberta) — trabalhos pagam 800-35000
 		{76, 2500, 30, 49, 0, 0, 0, 0, 0, 0, 20, 0, 0, "Carga de Inspiração", "Explosão de energia", "consumivel", "🔥"},
-		{77, 3500, 30, 49, 0, 0, 0, 0, 0, 0, 0, 80, 0, "Tratamento VIP", "Saúde de craque", "consumivel", "💉"},
-		{78, 5000, 30, 49, 0, 0, 0, 0, 0, 0, 12, 40, 0, "Shake do Campeão", "Recuperação total", "consumivel", "🥛"},
+		{77, 5250, 30, 49, 0, 0, 0, 0, 0, 0, 0, 80, 0, "Tratamento VIP", "Saúde de craque", "consumivel", "💉"},
+		{78, 7500, 30, 49, 0, 0, 0, 0, 0, 0, 12, 40, 0, "Shake do Campeão", "Recuperação total", "consumivel", "🥛"},
 		// Nível 50-71 (Europa/Champions) — trabalhos pagam 15K-350K
 		{79, 30000, 50, 71, 0, 0, 0, 0, 0, 0, 30, 0, 0, "Suplemento Elite", "Energia de elite", "consumivel", "✨"},
-		{80, 40000, 50, 71, 0, 0, 0, 0, 0, 0, 0, 100, 0, "Nanomedicina", "Regeneração futurista", "consumivel", "🧬"},
-		{81, 55000, 50, 71, 0, 0, 0, 0, 0, 0, 20, 60, 0, "Soro Premium", "Recuperação completa", "consumivel", "💎"},
+		{80, 60000, 50, 71, 0, 0, 0, 0, 0, 0, 0, 100, 0, "Nanomedicina", "Regeneração futurista", "consumivel", "🧬"},
+		{81, 82500, 50, 71, 0, 0, 0, 0, 0, 0, 20, 60, 0, "Soro Premium", "Recuperação completa", "consumivel", "💎"},
 		// Nível 72+ (Seleção/Copa/Lenda) — trabalhos pagam 150K-60M
 		{82, 200000, 72, 0, 0, 0, 0, 0, 0, 0, 40, 0, 0, "Elixir Lendário", "Energia dos deuses", "consumivel", "🌟"},
-		{83, 300000, 72, 0, 0, 0, 0, 0, 0, 0, 0, 150, 0, "Terapia Genética", "Saúde máxima", "consumivel", "🧬"},
-		{84, 450000, 72, 0, 0, 0, 0, 0, 0, 0, 30, 80, 0, "Soro do GOAT", "O melhor de tudo", "consumivel", "🏆"},
+		{83, 450000, 72, 0, 0, 0, 0, 0, 0, 0, 0, 150, 0, "Terapia Genética", "Saúde máxima", "consumivel", "🧬"},
+		{84, 675000, 72, 0, 0, 0, 0, 0, 0, 0, 30, 80, 0, "Soro do GOAT", "O melhor de tudo", "consumivel", "🏆"},
 		// Itens de missão (preço 0, ganhos em quests)
 		{65, 0, 1, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, "Água de Coco", "Recompensa de missão", "consumivel", "🥥"},
 	}
