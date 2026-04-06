@@ -3289,56 +3289,56 @@ input, select, textarea {
 .pf-av-opt.prem { filter: drop-shadow(0 0 3px gold); }
 
 .pf-hero-info { flex: 1; color: #fff; }
-.pf-nome { font-family: var(--font-titulo); font-size: 24px; text-shadow: 2px 2px 0 rgba(0,0,0,0.3); }
-.pf-titulo { font-size: 11px; color: rgba(255,255,255,0.7); }
-.pf-rank { display: inline-block; background: var(--amarelo); color: var(--preto); font-size: 10px; font-weight: 900; padding: 1px 8px; border-radius: 8px; margin: 4px 0; }
-.pf-level-row { display: flex; align-items: center; gap: 8px; margin: 4px 0; }
-.pf-level-chip { background: rgba(255,255,255,0.2); color: #fff; font-size: 12px; font-weight: 900; padding: 2px 8px; border-radius: 6px; }
-.pf-xp-text { font-size: 11px; color: rgba(255,255,255,0.8); }
-.pf-xp-bar { height: 6px; background: rgba(255,255,255,0.15); border-radius: 3px; overflow: hidden; margin: 4px 0; }
-.pf-xp-fill { height: 100%; background: var(--amarelo); border-radius: 3px; transition: width 0.4s; }
-.pf-code { font-size: 10px; color: rgba(255,255,255,0.6); margin-top: 4px; }
-.pf-code strong { color: #fff; letter-spacing: 1px; font-size: 12px; }
+.pf-nome { font-family: var(--font-titulo); font-size: 26px; text-shadow: 2px 2px 0 rgba(0,0,0,0.4); letter-spacing: 1px; }
+.pf-titulo { font-size: 12px; color: rgba(255,255,255,0.8); font-weight: 700; }
+.pf-rank { display: inline-block; background: var(--amarelo); color: var(--preto); font-size: 11px; font-weight: 900; padding: 2px 10px; border-radius: 8px; margin: 4px 0; }
+.pf-level-row { display: flex; align-items: center; gap: 8px; margin: 6px 0; }
+.pf-level-chip { background: rgba(255,255,255,0.25); color: #fff; font-size: 13px; font-weight: 900; padding: 3px 10px; border-radius: 6px; }
+.pf-xp-text { font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.9); }
+.pf-xp-bar { height: 8px; background: rgba(255,255,255,0.2); border-radius: 4px; overflow: hidden; margin: 5px 0; }
+.pf-xp-fill { height: 100%; background: var(--amarelo); border-radius: 4px; transition: width 0.4s; }
+.pf-code { font-size: 11px; color: rgba(255,255,255,0.7); margin-top: 6px; }
+.pf-code strong { color: #fff; letter-spacing: 1.5px; font-size: 13px; }
 
 /* Stats grid */
 .pf-stats {
-  display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
   margin-bottom: 14px;
 }
 .pf-stat {
   background: var(--card-bg); border: var(--borda); border-radius: 10px;
-  text-align: center; padding: 10px 4px; box-shadow: 2px 2px 0 var(--preto);
+  text-align: center; padding: 10px 8px; box-shadow: 2px 2px 0 var(--preto);
 }
-.pf-stat-icon { font-size: 16px; display: block; }
-.pf-stat-val { font-family: var(--font-titulo); font-size: 16px; color: var(--preto); display: block; line-height: 1.1; }
-.pf-stat-lbl { font-size: 8px; font-weight: 900; color: #888; text-transform: uppercase; }
+.pf-stat-icon { font-size: 18px; display: block; margin-bottom: 2px; }
+.pf-stat-val { font-family: var(--font-corpo); font-size: 15px; font-weight: 900; color: var(--preto); display: block; line-height: 1.2; }
+.pf-stat-lbl { font-size: 10px; font-weight: 900; color: #556; text-transform: uppercase; letter-spacing: 0.3px; }
 
 /* Section */
 .pf-section {
   background: var(--card-bg); border: var(--borda); border-radius: var(--radius);
   box-shadow: var(--sombra); padding: 16px; margin-bottom: 14px;
 }
-.pf-section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-.pf-section-header h3 { font-family: var(--font-titulo); font-size: 16px; color: var(--preto); letter-spacing: 1px; margin: 0; }
-.pf-section-badge { font-size: 11px; font-weight: 900; color: #888; }
-.pf-empty { color: #888; font-size: 12px; font-weight: 700; padding: 10px 0; }
+.pf-section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.pf-section-header h3 { font-family: var(--font-titulo); font-size: 18px; color: var(--preto); letter-spacing: 1px; margin: 0; }
+.pf-section-badge { font-size: 12px; font-weight: 900; color: #556; }
+.pf-empty { color: #888; font-size: 13px; font-weight: 700; padding: 10px 0; }
 
 /* Inventário grid */
 .pf-inv-group { margin-bottom: 12px; }
 .pf-inv-group-title { font-size: 11px; font-weight: 900; color: #556; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; padding-bottom: 4px; border-bottom: 1px solid #eee; }
 .pf-inv-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; }
 .pf-inv-card {
-  border: 2px solid #ccc; border-radius: 12px; padding: 12px;
-  display: flex; flex-direction: column; gap: 4px;
+  background: #fff; border: 2px solid #ccc; border-radius: 12px; padding: 12px;
+  display: flex; flex-direction: column; gap: 5px;
   transition: transform 0.1s; overflow: hidden;
 }
-.pf-inv-card:hover { transform: translateY(-2px); }
+.pf-inv-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
 .pf-inv-top { display: flex; align-items: center; justify-content: space-between; }
-.pf-inv-icon { font-size: 28px; }
-.pf-inv-badge-eq { font-size: 9px; font-weight: 900; background: var(--azul); color: #fff; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.pf-inv-qtd { font-size: 10px; font-weight: 900; color: #888; background: rgba(0,0,0,0.08); padding: 1px 5px; border-radius: 6px; flex-shrink: 0; }
-.pf-inv-name { font-size: 13px; font-weight: 900; word-break: break-word; }
-.pf-inv-desc { font-size: 10px; font-weight: 700; color: #556; line-height: 1.3; }
+.pf-inv-icon { font-size: 30px; }
+.pf-inv-badge-eq { font-size: 9px; font-weight: 900; background: var(--azul); color: #fff; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.pf-inv-qtd { font-size: 11px; font-weight: 900; color: #556; background: rgba(0,0,0,0.06); padding: 2px 6px; border-radius: 6px; flex-shrink: 0; }
+.pf-inv-name { font-size: 14px; font-weight: 900; color: var(--preto); word-break: break-word; }
+.pf-inv-desc { font-size: 11px; font-weight: 700; color: #556; line-height: 1.4; }
 .pf-inv-actions { display: flex; flex-direction: column; gap: 4px; margin-top: auto; padding-top: 6px; }
 .pf-inv-actions .btn-work { width: 100%; font-size: 11px; padding: 6px 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .pf-inv-btn { width: 100%; }
@@ -3363,10 +3363,10 @@ input, select, textarea {
 }
 .pf-task-done { opacity: 0.5; }
 .pf-task-info { flex: 1; min-width: 0; }
-.pf-task-info strong { font-size: 12px; display: block; margin-bottom: 3px; }
-.pf-task-bar { height: 6px; background: #ddd; border-radius: 3px; overflow: hidden; }
-.pf-task-fill { height: 100%; background: linear-gradient(90deg, var(--verde), #00e676); border-radius: 3px; }
-.pf-task-prog { font-size: 10px; font-weight: 900; color: #888; }
+.pf-task-info strong { font-size: 13px; display: block; margin-bottom: 3px; color: var(--preto); }
+.pf-task-bar { height: 7px; background: #ddd; border-radius: 4px; overflow: hidden; }
+.pf-task-fill { height: 100%; background: linear-gradient(90deg, var(--verde), #00e676); border-radius: 4px; }
+.pf-task-prog { font-size: 11px; font-weight: 900; color: #556; }
 
 /* =====================================================
    TOP CRAQUES NOVO + AMIGOS + PERFIL MODAL
@@ -3592,14 +3592,14 @@ input, select, textarea {
 /* Perfil position + titles */
 .pf-rank-row { display: flex; gap: 6px; align-items: center; margin: 4px 0; flex-wrap: wrap; }
 .pf-pos-badge {
-  background: rgba(255,255,255,0.2); color: #fff;
-  font-size: 10px; font-weight: 900; padding: 2px 8px;
+  background: rgba(255,255,255,0.25); color: #fff;
+  font-size: 11px; font-weight: 900; padding: 3px 10px;
   border-radius: 8px;
 }
 .pf-titulos { display: flex; flex-wrap: wrap; gap: 6px; }
 .pf-titulo-badge {
-  font-size: 11px; font-weight: 900; padding: 4px 10px;
-  border-radius: 8px; background: #f0f0f0; color: #555;
+  font-size: 12px; font-weight: 900; padding: 5px 12px;
+  border-radius: 8px; background: #f0f0f0; color: #444;
   border: 2px solid #ddd;
 }
 .pf-titulo-ativo {
@@ -3882,9 +3882,9 @@ input, select, textarea {
   transition: width 0.5s ease;
 }
 .fama-proximo {
-  font-size: 11px;
-  color: #555;
-  margin-top: 4px;
+  font-size: 12px;
+  color: #444;
+  margin-top: 5px;
   font-weight: 700;
 }
 .fama-bonus-grid {

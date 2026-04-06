@@ -76,11 +76,11 @@ export default function Estadio() {
 
       {saudeBaixa && (
         <div style={{
-          background: '#3a1515', border: '2px solid #e74c3c', borderRadius: 10,
+          background: '#ffeaea', border: '2px solid var(--vermelho)', borderRadius: 10,
           padding: '12px 16px', marginBottom: 14, textAlign: 'center'
         }}>
-          <div style={{ color: '#ff6b6b', fontWeight: 900, fontSize: 13 }}>
-            ⚠️ Saúde muito baixa! ({jogador.saude}) - Vá ao <strong style={{ color: '#ffd700' }}>Perfil → Central de Tratamento</strong> para se recuperar.
+          <div style={{ color: '#b00', fontWeight: 900, fontSize: 13 }}>
+            ⚠️ Saúde muito baixa! ({jogador.saude}) - Vá ao <strong style={{ color: 'var(--azul)' }}>Perfil → Central de Tratamento</strong> para se recuperar.
           </div>
         </div>
       )}
@@ -194,9 +194,9 @@ export default function Estadio() {
                 <span className="sv">{v}</span>
               </div>
             ))}
-            <div style={{ marginTop: '15px', paddingTop: '12px', borderTop: '1px solid #1a2214' }}>
-              <div style={{ fontSize: '11px', color: '#5a7a4a' }}>
-                💡 Vá ao <strong style={{ color: '#ffd700' }}>Perfil</strong> para tratamentos de saúde e vitalidade.
+            <div style={{ marginTop: '15px', paddingTop: '12px', borderTop: '1px solid #ddd' }}>
+              <div style={{ fontSize: '12px', color: '#556', fontWeight: 700 }}>
+                💡 Vá ao <strong style={{ color: 'var(--azul)' }}>Perfil</strong> para tratamentos de saúde e vitalidade.
               </div>
             </div>
           </div>

@@ -291,15 +291,15 @@ export default function Trabalhos() {
 
       {jogador && jogador.saude < 30 && (
         <div style={{
-          background: '#3a1515', border: '2px solid #e74c3c', borderRadius: 10,
+          background: '#ffeaea', border: '2px solid var(--vermelho)', borderRadius: 10,
           padding: '14px 18px', marginBottom: 14, textAlign: 'center'
         }}>
           <div style={{ fontSize: 28 }}>⚠️</div>
-          <div style={{ color: '#ff6b6b', fontWeight: 900, fontSize: 14, marginTop: 4 }}>
+          <div style={{ color: '#b00', fontWeight: 900, fontSize: 14, marginTop: 4 }}>
             Saúde muito baixa! ({jogador.saude}/30)
           </div>
-          <div style={{ color: '#cc9999', fontSize: 12, marginTop: 4 }}>
-            Vá ao <strong style={{ color: '#ffd700' }}>Perfil → Central de Tratamento</strong> para se recuperar antes de trabalhar.
+          <div style={{ color: '#666', fontSize: 12, marginTop: 4 }}>
+            Vá ao <strong style={{ color: 'var(--azul)' }}>Perfil → Central de Tratamento</strong> para se recuperar antes de trabalhar.
           </div>
         </div>
       )}

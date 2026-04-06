@@ -287,55 +287,42 @@ function TratamentoSection({ jogadorID, jogador, setJogador, mostrarNotificacao 
     <div className="pf-section">
       <div className="pf-section-header">
         <h3>🏥 CENTRAL DE TRATAMENTO</h3>
+        <span className="pf-section-badge">❤️ {jogador.saude}/100 · 💚 {jogador.vitalidade}/{jogador.vitalidade_max}</span>
       </div>
 
       {saudeBaixa && (
         <div style={{
-          background: '#3a1515', border: '1px solid #e74c3c', borderRadius: 8,
-          padding: '10px 14px', marginBottom: 12, fontSize: 12, color: '#ff6b6b', fontWeight: 700
+          background: '#ffeaea', border: '2px solid var(--vermelho)', borderRadius: 10,
+          padding: '10px 14px', marginBottom: 12, fontSize: 12, color: '#b00', fontWeight: 900
         }}>
-          ⚠️ Saúde abaixo de 30! Você não pode trabalhar. Faça um tratamento para se recuperar!
+          ⚠️ Saúde abaixo de 30! Você não pode trabalhar. Faça um tratamento!
         </div>
       )}
 
-      <div style={{ display: 'flex', gap: 6, marginBottom: 12, flexWrap: 'wrap' }}>
-        <div style={{
-          background: '#1a2a14', borderRadius: 6, padding: '6px 12px', fontSize: 12, fontWeight: 700
-        }}>
-          ❤️ Saúde: <span style={{ color: saudeBaixa ? '#e74c3c' : '#4caf50' }}>{jogador.saude}/100</span>
-        </div>
-        <div style={{
-          background: '#1a2a14', borderRadius: 6, padding: '6px 12px', fontSize: 12, fontWeight: 700
-        }}>
-          💚 Vitalidade: <span style={{ color: jogador.vitalidade < 3 ? '#e74c3c' : '#4caf50' }}>{jogador.vitalidade}/{jogador.vitalidade_max}</span>
-        </div>
-      </div>
-
-      <div className="pf-stats" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))' }}>
+      <div className="pf-inv-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))' }}>
         {TRATAMENTOS.map(t => {
           const custo = t.custoMult * jogador.nivel
           const semDinheiro = jogador.dinheiro_mao < custo
           const isLoading = loading === t.id
           return (
-            <div key={t.id} className="pf-stat" style={{ alignItems: 'stretch', padding: '12px', gap: 6, textAlign: 'left' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <span className="pf-stat-icon">{t.icone}</span>
-                <div>
-                  <span className="pf-stat-val" style={{ fontSize: 13 }}>{t.nome}</span>
-                  <span className="pf-stat-lbl">{t.desc}</span>
-                </div>
+            <div key={t.id} className="pf-inv-card" style={{ borderColor: semDinheiro ? '#ccc' : 'var(--azul-claro)' }}>
+              <div className="pf-inv-top">
+                <span className="pf-inv-icon">{t.icone}</span>
               </div>
-              <div className="pf-stat-lbl" style={{ fontWeight: 700, color: '#a3b899', lineHeight: 1.5 }}>
+              <div className="pf-inv-name">{t.nome}</div>
+              <div className="pf-inv-desc">{t.desc}</div>
+              <div className="pf-inv-desc" style={{ color: 'var(--azul)', fontWeight: 900 }}>
                 {t.ganhos(jogador.nivel)}
               </div>
-              <button
-                className={`btn-work btn-small${semDinheiro ? ' perfil-btn-disabled' : ''}`}
-                style={{ width: '100%', marginTop: 'auto' }}
-                onClick={() => fazerTratamento(t.id)}
-                disabled={isLoading || semDinheiro}
-              >
-                {isLoading ? '...' : `R$ ${fmt(custo)}`}
-              </button>
+              <div className="pf-inv-actions">
+                <button
+                  className={`btn-work btn-small${semDinheiro ? '' : ' btn-verde'}`}
+                  onClick={() => fazerTratamento(t.id)}
+                  disabled={isLoading || semDinheiro}
+                >
+                  {isLoading ? '...' : `R$ ${fmt(custo)}`}
+                </button>
+              </div>
             </div>
           )
         })}
