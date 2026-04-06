@@ -31,14 +31,13 @@ export function custoEnergiaEscalado(energiaBase, nivel, tier = 'Garoto') {
   const lvl = Number(nivel || 1)
   const fatorTier = TIER_FATORES_ENERGIA[tier] || 0.10
 
-  let custo = base + Math.floor(lvl * fatorTier)
+  // Calcula como float (igual ao backend) e arredonda só no final
+  let custo = base + lvl * fatorTier
 
-  // Ajuste fino para os níveis altos ficarem mais pesados
-  if (lvl >= 40) custo += Math.floor((lvl - 40) * 0.12)
-  if (lvl >= 70) custo += Math.floor((lvl - 70) * 0.18)
-  if (lvl >= 90) custo += Math.floor((lvl - 90) * 0.25)
+  if (lvl >= 40) custo += (lvl - 40) * 0.12
+  if (lvl >= 70) custo += (lvl - 70) * 0.18
+  if (lvl >= 90) custo += (lvl - 90) * 0.25
 
-  // Garantia: trabalhos do tier final no nível 100 gastam no mínimo 80
   if ((tier === 'Estrela' || tier === 'Lenda') && lvl >= 100) {
     custo = Math.max(custo, 80)
   }
