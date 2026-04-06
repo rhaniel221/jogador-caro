@@ -3614,7 +3614,7 @@ input, select, textarea {
 .pm-rays {
   position: absolute;
   top: 50%; left: 50%;
-  width: 300px; height: 300px;
+  width: 200%; height: 200%;
   transform: translate(-50%, -50%);
   pointer-events: none;
   z-index: 0;
