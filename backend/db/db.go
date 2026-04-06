@@ -637,74 +637,74 @@ func seedCatalogos() {
 		{"bola", "Garoto", "Pegar bola que saiu de campo", "⚽", 1, 2, 2, 5, 3, 0, 20},
 		{"fogos", "Garoto", "Vender fogos de artifício", "🎆", 1, 2, 5, 10, 3, 0, 20},
 		{"dogao", "Garoto", "Vender dogão na porta do estádio", "🌭", 1, 2, 8, 15, 4, 0, 15},
-		{"bebidas", "Garoto", "Vender bebidas no estádio", "🍺", 2, 3, 15, 25, 10, 6, 12},
+		{"bebidas", "Garoto", "Vender bebidas no estádio", "🍺", 2, 6, 15, 25, 10, 6, 12},
 		// === BASE (nv 5-9) ===
 		{"panfleto", "Base", "Distribuir panfleto de evento", "📄", 5, 2, 10, 18, 5, 0, 15},
 		{"lavajato", "Base", "Trabalhar no lava-jato", "🚗", 5, 3, 25, 40, 12, 0, 10},
 		{"pelada", "Base", "Jogar pelada organizada", "⚽", 5, 3, 20, 35, 12, 7, 10},
-		{"escolinha", "Base", "Monitor de escolinha de futebol", "🧒", 6, 3, 35, 55, 14, 100, 8},
+		{"escolinha", "Base", "Monitor de escolinha de futebol", "🧒", 6, 7, 35, 55, 14, 100, 8},
 		// === AMADOR (nv 10-17) ===
 		{"campinho", "Amador", "Treinar no campinho do bairro", "🏃", 10, 2, 40, 65, 16, 7, 8},
 		{"arbitro", "Amador", "Árbitro de pelada", "🟨", 10, 2, 50, 80, 16, 0, 8},
 		{"treino", "Amador", "Ajudar no treino do time local", "🎯", 10, 3, 80, 120, 30, 7, 6},
-		{"captador", "Amador", "Captador de jovens talentos", "🔍", 13, 3, 100, 150, 33, 101, 6},
+		{"captador", "Amador", "Captador de jovens talentos", "🔍", 13, 7, 100, 150, 33, 101, 6},
 		// === SÉRIE C (nv 18-23) ===
 		{"serie_c_treino", "Série C", "Treinar no CT do clube", "🏟️", 18, 3, 150, 250, 35, 8, 6},
 		{"serie_c_jogo", "Série C", "Jogar partida da Série C", "⚽", 18, 4, 250, 400, 50, 8, 5},
 		{"serie_c_gol", "Série C", "Marcar gol na Série C", "🥅", 20, 4, 350, 550, 65, 8, 4},
-		{"serie_c_destaque", "Série C", "Ser destaque da rodada", "⭐", 22, 5, 500, 800, 80, 102, 3},
+		{"serie_c_destaque", "Série C", "Ser destaque da rodada", "⭐", 22, 8, 500, 800, 80, 102, 3},
 		// === SÉRIE B (nv 24-29) ===
 		{"serie_b_treino", "Série B", "Treinar com time da Série B", "🏋️", 24, 3, 400, 650, 55, 8, 6},
 		{"serie_b_jogo", "Série B", "Jogar partida da Série B", "⚽", 24, 4, 600, 1000, 75, 8, 5},
 		{"serie_b_artilheiro", "Série B", "Artilheiro da rodada", "🎯", 26, 5, 900, 1400, 95, 8, 4},
-		{"serie_b_acesso", "Série B", "Lutar pelo acesso", "🏆", 28, 5, 1200, 1800, 110, 103, 3},
+		{"serie_b_acesso", "Série B", "Lutar pelo acesso", "🏆", 28, 9, 1200, 1800, 110, 103, 3},
 		// === SÉRIE A (nv 30-35) ===
 		{"serie_a_treino", "Série A", "Treinar no CT profissional", "🏟️", 30, 3, 800, 1200, 70, 8, 5},
 		{"serie_a_jogo", "Série A", "Jogar partida do Boleirão", "⚽", 30, 4, 1200, 2000, 90, 8, 4},
 		{"serie_a_classico", "Série A", "Jogar clássico regional", "🔥", 32, 5, 1800, 3000, 115, 8, 3},
-		{"serie_a_titulo", "Série A", "Disputar título brasileiro", "🏆", 34, 5, 2500, 4000, 135, 104, 3},
+		{"serie_a_titulo", "Série A", "Disputar título brasileiro", "🏆", 34, 9, 2500, 4000, 135, 104, 3},
 		// === COPINHA NACIONAL (nv 36-41) ===
 		{"copa_br_fase", "Copinha Nacional", "Jogar fase de grupos", "🏆", 36, 4, 2000, 3500, 100, 35, 4},
 		{"copa_br_quartas", "Copinha Nacional", "Quartas de final", "⚡", 38, 5, 3500, 5500, 130, 35, 3},
 		{"copa_br_semi", "Copinha Nacional", "Semifinal da Copinha", "🔥", 39, 5, 5000, 8000, 160, 35, 3},
-		{"copa_br_final", "Copinha Nacional", "Final da Copinha Nacional", "🏆", 41, 5, 8000, 12000, 200, 105, 2},
+		{"copa_br_final", "Copinha Nacional", "Final da Copinha Nacional", "🏆", 41, 9, 8000, 12000, 200, 105, 2},
 		// === CONTINENTÃO (nv 42-49) ===
 		{"liberta_fase", "Continentão", "Fase de grupos do Continentão", "🌎", 42, 4, 5000, 8000, 120, 35, 4},
 		{"liberta_oitavas", "Continentão", "Oitavas do Continentão", "⚔️", 44, 5, 8000, 13000, 150, 35, 3},
 		{"liberta_semi", "Continentão", "Semifinal do Continentão", "🔥", 46, 5, 13000, 20000, 185, 35, 2},
-		{"liberta_final", "Continentão", "Final do Continentão", "🏆", 48, 5, 20000, 35000, 220, 106, 2},
+		{"liberta_final", "Continentão", "Final do Continentão", "🏆", 48, 9, 20000, 35000, 220, 106, 2},
 		// === EUROPA (nv 50-59) ===
 		{"europa_contrato", "Europa", "Assinar com clube europeu", "📝", 50, 4, 15000, 25000, 140, 36, 4},
 		{"europa_liga", "Europa", "Jogar liga nacional europeia", "🌍", 52, 4, 25000, 40000, 170, 36, 3},
 		{"europa_destaque", "Europa", "Melhor jogador do mês", "⭐", 55, 5, 40000, 65000, 200, 36, 3},
-		{"europa_mvp", "Europa", "MVP da temporada europeia", "🏅", 58, 5, 65000, 100000, 250, 107, 2},
+		{"europa_mvp", "Europa", "MVP da temporada europeia", "🏅", 58, 9, 65000, 100000, 250, 107, 2},
 		// === LIGA DOS CRAQUES (nv 60-71) ===
 		{"ucl_fase", "Liga dos Craques", "Fase de grupos da Liga", "🌟", 60, 4, 50000, 80000, 180, 37, 3},
 		{"ucl_quartas", "Liga dos Craques", "Quartas da Liga dos Craques", "⚡", 63, 5, 80000, 130000, 220, 37, 3},
 		{"ucl_semi", "Liga dos Craques", "Semifinal da Liga", "🔥", 66, 5, 130000, 200000, 280, 37, 2},
-		{"ucl_final", "Liga dos Craques", "Final da Liga dos Craques", "🏆", 69, 5, 200000, 350000, 350, 108, 2},
+		{"ucl_final", "Liga dos Craques", "Final da Liga dos Craques", "🏆", 69, 9, 200000, 350000, 350, 108, 2},
 		// === SELEÇOCA (nv 72-84) ===
 		{"selecao_conv", "Seleçoca", "Convocado pra Seleçoca", "🇧🇷", 72, 4, 150000, 250000, 250, 38, 3},
 		{"selecao_amistoso", "Seleçoca", "Amistoso internacional", "⚽", 74, 5, 250000, 400000, 300, 38, 3},
 		{"selecao_eliminatorias", "Seleçoca", "Eliminatórias do Mundialito", "🌎", 78, 5, 400000, 600000, 380, 38, 2},
-		{"selecao_titular", "Seleçoca", "Titular da Seleçoca", "⭐", 82, 5, 600000, 1000000, 450, 109, 2},
+		{"selecao_titular", "Seleçoca", "Titular da Seleçoca", "⭐", 82, 9, 600000, 1000000, 450, 109, 2},
 		// === MUNDIALITO (nv 85-99) ===
 		{"copa_fase", "Mundialito", "Fase de grupos do Mundialito", "🏆", 85, 4, 500000, 800000, 350, 38, 3},
 		{"copa_oitavas", "Mundialito", "Oitavas do Mundialito", "⚔️", 88, 5, 800000, 1300000, 450, 38, 2},
 		{"copa_semi", "Mundialito", "Semifinal do Mundialito", "🔥", 92, 5, 1300000, 2000000, 550, 38, 2},
-		{"copa_final", "Mundialito", "Final do Mundialito", "🏆", 96, 5, 2000000, 3500000, 700, 110, 1},
+		{"copa_final", "Mundialito", "Final do Mundialito", "🏆", 96, 9, 2000000, 3500000, 700, 110, 1},
 		// === BOLA DE OURO (nv 100-119) ===
 		{"ballon_indicado", "Bola de Ouro", "Indicado à Bola de Ouro", "🥇", 100, 5, 2000000, 3500000, 600, 0, 2},
 		{"ballon_top3", "Bola de Ouro", "Top 3 da Bola de Ouro", "🏅", 105, 5, 3500000, 5500000, 750, 0, 2},
-		{"ballon_vencedor", "Bola de Ouro", "Vencer a Bola de Ouro", "🥇", 110, 5, 5500000, 8000000, 900, 111, 1},
+		{"ballon_vencedor", "Bola de Ouro", "Vencer a Bola de Ouro", "🥇", 110, 9, 5500000, 8000000, 900, 111, 1},
 		// === ÍDOLO (nv 120-149) ===
 		{"idolo_estatua", "Ídolo", "Ganhar estátua no clube", "🗿", 120, 5, 800000, 1300000, 1000, 0, 1},
 		{"idolo_camisa", "Ídolo", "Camisa aposentada", "👕", 130, 5, 1000000, 1700000, 1200, 0, 1},
-		{"idolo_hino", "Ídolo", "Torcida canta seu nome", "🎵", 140, 5, 1500000, 2500000, 1400, 112, 1},
+		{"idolo_hino", "Ídolo", "Torcida canta seu nome", "🎵", 140, 9, 1500000, 2500000, 1400, 112, 1},
 		// === LENDA (nv 150+) ===
 		{"hall_fama", "Lenda", "Entrar no Hall da Fama", "👑", 150, 5, 2000000, 3500000, 2000, 0, 1},
 		{"lenda_embaixador", "Lenda", "Embaixador do futebol mundial", "🌍", 175, 5, 3000000, 5000000, 3000, 0, 1},
-		{"lenda_imortal", "Lenda", "O Imortal do Futebol", "✨", 200, 5, 5000000, 8000000, 5000, 0, 1},
+		{"lenda_imortal", "Lenda", "O Imortal do Futebol", "✨", 200, 9, 5000000, 8000000, 5000, 0, 1},
 	}
 	for _, t := range trabalhos {
 		Conn.Exec(`INSERT INTO cat_trabalhos
