@@ -3271,13 +3271,13 @@ input, select, textarea {
   border-radius: var(--radius);
   border: var(--borda);
   box-shadow: var(--sombra);
-  overflow: hidden;
+  overflow: visible;
   position: relative;
   margin-bottom: 14px;
 }
 .pf-hero-inner {
   background: linear-gradient(135deg, var(--azul) 0%, #003d99 100%);
-  border-radius: calc(var(--radius) - 4px);
+  border-radius: calc(var(--radius) - 2px);
   overflow: hidden;
   position: relative;
 }
@@ -3309,224 +3309,297 @@ input, select, textarea {
 .pf-code strong { color: #fff; letter-spacing: 1.5px; font-size: 13px; }
 
 /* =====================================================
-   MOLDURA DE ELO — ESTILO LOL
+   MOLDURA DE ELO — ESTILO LOL (frame no avatar)
    ===================================================== */
 
-/* Container da moldura */
-.pf-moldura {
-  --elo-cor1: #8a8a8a;
-  --elo-cor2: #666;
-  --elo-cor3: #aaa;
+/* Borda do card por elo */
+.pf-hero[class*="pf-elo-"] {
+  --elo1: #8a8a8a; --elo2: #666; --elo3: #aaa;
+  border-color: var(--elo1);
+  box-shadow: var(--sombra), 0 0 12px var(--elo1);
+}
+
+/* Frame container ao redor do avatar */
+.pf-avatar-frame {
+  --elo1: #8a8a8a; --elo2: #666; --elo3: #aaa;
   position: relative;
-  margin-bottom: 14px;
-  padding: 6px;
-  border-radius: 18px;
-  background: linear-gradient(var(--elo-angle, 135deg), var(--elo-cor1), var(--elo-cor3), var(--elo-cor1), var(--elo-cor2), var(--elo-cor1));
-  background-size: 400% 400%;
-  animation: eloGradiente 4s ease infinite;
+  width: 120px;
+  height: 120px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-@keyframes eloGradiente {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+.pf-avatar-frame .pf-avatar {
+  position: relative;
+  z-index: 2;
+  font-size: 52px;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle, rgba(0,0,0,0.3), rgba(0,0,0,0.6));
+  border-radius: 50%;
 }
 
-/* Glow externo — brilho forte atras da moldura */
-.pf-moldura-glow {
+/* Anel principal — borda grossa com gradiente */
+.pf-frame-ring {
   position: absolute;
-  inset: -4px;
-  border-radius: 22px;
-  background: linear-gradient(135deg, var(--elo-cor1), var(--elo-cor3), var(--elo-cor1));
-  background-size: 400% 400%;
-  animation: eloGradiente 4s ease infinite;
-  filter: blur(14px);
-  opacity: 0.5;
-  z-index: -1;
+  inset: 10px;
+  border-radius: 50%;
+  border: 5px solid var(--elo1);
+  background: transparent;
+  box-shadow:
+    0 0 10px var(--elo1),
+    0 0 20px var(--elo2),
+    inset 0 0 8px var(--elo1);
+  z-index: 1;
 }
 
-/* Shimmer — luz correndo pela borda */
-.pf-moldura-shimmer {
+/* Glow atras do frame */
+.pf-frame-glow {
   position: absolute;
   inset: 0;
-  border-radius: 18px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--elo1) 0%, transparent 70%);
+  opacity: 0.4;
+  filter: blur(10px);
+  z-index: 0;
+  animation: frameGlowPulse 2.5s ease-in-out infinite alternate;
+}
+@keyframes frameGlowPulse {
+  from { opacity: 0.3; transform: scale(0.95); }
+  to { opacity: 0.6; transform: scale(1.1); }
+}
+
+/* Asas laterais — estilo LoL */
+.pf-frame-wing {
+  position: absolute;
+  top: 50%;
+  width: 30px;
+  height: 50px;
+  z-index: 3;
+  transform: translateY(-50%);
+}
+.pf-frame-wing::before,
+.pf-frame-wing::after {
+  content: '';
+  position: absolute;
+  background: linear-gradient(180deg, var(--elo3), var(--elo1), var(--elo2));
+}
+/* Asa esquerda */
+.pf-wing-l {
+  left: -6px;
+}
+.pf-wing-l::before {
+  width: 4px;
+  height: 100%;
+  border-radius: 4px 0 0 4px;
+  box-shadow: -2px 0 8px var(--elo1);
+  right: 0;
+}
+.pf-wing-l::after {
+  width: 20px;
+  height: 3px;
+  top: 12px;
+  right: 0;
+  border-radius: 4px;
+  transform: rotate(-30deg);
+  transform-origin: right center;
+  box-shadow: 0 0 6px var(--elo1);
+}
+/* Asa direita */
+.pf-wing-r {
+  right: -6px;
+}
+.pf-wing-r::before {
+  width: 4px;
+  height: 100%;
+  border-radius: 0 4px 4px 0;
+  box-shadow: 2px 0 8px var(--elo1);
+  left: 0;
+}
+.pf-wing-r::after {
+  width: 20px;
+  height: 3px;
+  top: 12px;
+  left: 0;
+  border-radius: 4px;
+  transform: rotate(30deg);
+  transform-origin: left center;
+  box-shadow: 0 0 6px var(--elo1);
+}
+
+/* Crista no topo */
+.pf-frame-crown {
+  position: absolute;
+  top: -2px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 4;
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-bottom: 16px solid var(--elo1);
+  filter: drop-shadow(0 -4px 6px var(--elo1));
+}
+.pf-frame-crown::after {
+  content: '';
+  position: absolute;
+  top: 6px;
+  left: -5px;
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 8px solid var(--elo3);
+}
+
+/* Shimmer girando no anel */
+.pf-frame-shimmer {
+  position: absolute;
+  inset: 8px;
+  border-radius: 50%;
   overflow: hidden;
   z-index: 3;
   pointer-events: none;
 }
-.pf-moldura-shimmer::before {
+.pf-frame-shimmer::before {
   content: '';
   position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 40%;
-  height: 200%;
-  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0) 30%, rgba(255,255,255,0.5) 50%, rgba(255,255,255,0) 70%, transparent 100%);
-  animation: eloShimmer 3s linear infinite;
-  transform: rotate(25deg);
+  top: -100%;
+  left: -100%;
+  width: 300%;
+  height: 300%;
+  background: conic-gradient(from 0deg, transparent 0%, transparent 40%, rgba(255,255,255,0.5) 50%, transparent 60%, transparent 100%);
+  animation: frameShimmerSpin 3s linear infinite;
 }
-@keyframes eloShimmer {
-  0% { left: -50%; }
-  100% { left: 150%; }
+@keyframes frameShimmerSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
-/* Cantos ornamentados — diamantes nos 4 cantos */
-.pf-moldura-canto {
+/* Tag do elo embaixo do avatar */
+.pf-frame-elo-tag {
   position: absolute;
-  width: 18px;
-  height: 18px;
-  background: var(--elo-cor3);
-  border: 2px solid var(--elo-cor2);
-  transform: rotate(45deg);
-  z-index: 4;
-  box-shadow: 0 0 8px var(--elo-cor1), inset 0 0 4px rgba(255,255,255,0.4);
-}
-.pf-canto-tl { top: -5px; left: -5px; }
-.pf-canto-tr { top: -5px; right: -5px; }
-.pf-canto-bl { bottom: -5px; left: -5px; }
-.pf-canto-br { bottom: -5px; right: -5px; }
-
-/* Tag do elo — centralizado no topo */
-.pf-moldura-elo-tag {
-  position: absolute;
-  top: -10px;
+  bottom: 2px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 5;
   font-family: var(--font-titulo);
-  font-size: 12px;
-  letter-spacing: 2px;
+  font-size: 9px;
+  letter-spacing: 1.5px;
   text-transform: uppercase;
-  padding: 2px 16px;
-  border-radius: 6px;
-  background: linear-gradient(180deg, var(--elo-cor3), var(--elo-cor1));
+  padding: 1px 10px;
+  border-radius: 4px;
+  background: linear-gradient(180deg, var(--elo1), var(--elo2));
   color: #fff;
-  border: 2px solid var(--elo-cor2);
-  box-shadow: 0 0 10px var(--elo-cor1), 0 2px 4px rgba(0,0,0,0.3);
-  text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+  border: 1px solid var(--elo3);
+  box-shadow: 0 0 6px var(--elo1);
+  text-shadow: 1px 1px 1px rgba(0,0,0,0.6);
   white-space: nowrap;
-}
-
-/* Hero dentro da moldura */
-.pf-moldura .pf-hero {
-  margin-bottom: 0;
-  border: 2px solid var(--elo-cor2);
-  border-radius: 13px;
 }
 
 /* ===== CORES POR ELO ===== */
 
-/* Ferro */
-.pf-elo-ferro {
-  --elo-cor1: #7a7a7a; --elo-cor2: #555; --elo-cor3: #aaa;
-}
-.pf-elo-ferro .pf-moldura-glow { opacity: 0.2; }
-.pf-elo-ferro .pf-moldura-shimmer::before { opacity: 0.3; }
-.pf-elo-ferro .pf-moldura-canto { width: 14px; height: 14px; }
+.pf-elo-ferro { --elo1: #8a8a8a; --elo2: #555; --elo3: #bbb; }
+.pf-frame-ferro { --elo1: #8a8a8a; --elo2: #555; --elo3: #bbb; }
+.pf-elo-ferro { box-shadow: var(--sombra); }
+.pf-frame-ferro .pf-frame-glow { opacity: 0.15; }
+.pf-frame-ferro .pf-frame-shimmer::before { opacity: 0.2; }
 
-/* Bronze */
-.pf-elo-bronze {
-  --elo-cor1: #cd7f32; --elo-cor2: #8b4513; --elo-cor3: #f4a942;
-}
+.pf-elo-bronze { --elo1: #cd7f32; --elo2: #8b4513; --elo3: #f4a942; border-color: #cd7f32; }
+.pf-frame-bronze { --elo1: #cd7f32; --elo2: #8b4513; --elo3: #f4a942; }
 
-/* Prata */
-.pf-elo-prata {
-  --elo-cor1: #c0c0c0; --elo-cor2: #808080; --elo-cor3: #f0f0f0;
-}
-.pf-elo-prata .pf-moldura-elo-tag { color: #333; text-shadow: none; }
+.pf-elo-prata { --elo1: #c0c0c0; --elo2: #888; --elo3: #f0f0f0; border-color: #c0c0c0; }
+.pf-frame-prata { --elo1: #c0c0c0; --elo2: #888; --elo3: #f0f0f0; }
+.pf-frame-prata .pf-frame-elo-tag { color: #333; text-shadow: none; }
 
-/* Ouro */
-.pf-elo-ouro {
-  --elo-cor1: #ffd700; --elo-cor2: #b8860b; --elo-cor3: #fff176;
-  padding: 7px;
-}
-.pf-elo-ouro .pf-moldura-glow { opacity: 0.6; filter: blur(16px); }
-.pf-elo-ouro .pf-moldura-canto { box-shadow: 0 0 12px #ffd700, inset 0 0 4px rgba(255,255,255,0.5); }
+.pf-elo-ouro { --elo1: #ffd700; --elo2: #b8860b; --elo3: #fff176; border-color: #ffd700; }
+.pf-frame-ouro { --elo1: #ffd700; --elo2: #b8860b; --elo3: #fff176; }
+.pf-frame-ouro .pf-frame-ring { border-width: 6px; }
+.pf-frame-ouro .pf-frame-glow { opacity: 0.5; }
 
-/* Platina */
-.pf-elo-platina {
-  --elo-cor1: #40e0d0; --elo-cor2: #008b8b; --elo-cor3: #afeeee;
-  padding: 7px;
-}
-.pf-elo-platina .pf-moldura-glow { opacity: 0.65; filter: blur(18px); }
-.pf-elo-platina .pf-moldura-shimmer::before { animation-duration: 2.5s; }
+.pf-elo-platina { --elo1: #40e0d0; --elo2: #008b8b; --elo3: #afeeee; border-color: #40e0d0; }
+.pf-frame-platina { --elo1: #40e0d0; --elo2: #008b8b; --elo3: #afeeee; }
+.pf-frame-platina .pf-frame-ring { border-width: 6px; }
+.pf-frame-platina .pf-frame-wing { width: 35px; height: 55px; }
 
-/* Esmeralda */
-.pf-elo-esmeralda {
-  --elo-cor1: #50c878; --elo-cor2: #1a7a3a; --elo-cor3: #90ee90;
-  padding: 7px;
-}
-.pf-elo-esmeralda .pf-moldura-glow { opacity: 0.7; filter: blur(18px); }
-.pf-elo-esmeralda .pf-moldura-canto { width: 20px; height: 20px; }
+.pf-elo-esmeralda { --elo1: #50c878; --elo2: #1a7a3a; --elo3: #90ee90; border-color: #50c878; }
+.pf-frame-esmeralda { --elo1: #50c878; --elo2: #1a7a3a; --elo3: #90ee90; }
+.pf-frame-esmeralda .pf-frame-ring { border-width: 6px; }
+.pf-frame-esmeralda .pf-frame-wing { width: 38px; height: 58px; }
+.pf-frame-esmeralda .pf-frame-glow { opacity: 0.55; }
 
-/* Diamante */
-.pf-elo-diamante {
-  --elo-cor1: #b9f2ff; --elo-cor2: #4a90d9; --elo-cor3: #ffffff;
-  padding: 8px;
-}
-.pf-elo-diamante .pf-moldura-glow { opacity: 0.8; filter: blur(20px); }
-.pf-elo-diamante .pf-moldura-canto { width: 22px; height: 22px; box-shadow: 0 0 14px #b9f2ff, 0 0 28px #87ceeb66, inset 0 0 6px rgba(255,255,255,0.6); }
-.pf-elo-diamante .pf-moldura-shimmer::before { animation-duration: 2s; }
-.pf-elo-diamante .pf-moldura-elo-tag { color: #1a3a5a; text-shadow: none; box-shadow: 0 0 14px #b9f2ff, 0 0 28px #87ceeb66; }
+.pf-elo-diamante { --elo1: #b9f2ff; --elo2: #4a90d9; --elo3: #fff; border-color: #b9f2ff; }
+.pf-frame-diamante { --elo1: #b9f2ff; --elo2: #4a90d9; --elo3: #fff; }
+.pf-frame-diamante .pf-frame-ring { border-width: 7px; box-shadow: 0 0 14px #b9f2ff, 0 0 28px #87ceeb66, inset 0 0 10px #b9f2ff; }
+.pf-frame-diamante .pf-frame-wing { width: 40px; height: 60px; }
+.pf-frame-diamante .pf-frame-glow { opacity: 0.65; filter: blur(14px); }
+.pf-frame-diamante .pf-frame-shimmer::before { animation-duration: 2s; }
+.pf-frame-diamante .pf-frame-crown { border-bottom-width: 20px; border-left-width: 12px; border-right-width: 12px; }
 
-/* Mestre */
-.pf-elo-mestre {
-  --elo-cor1: #ff4444; --elo-cor2: #8b0000; --elo-cor3: #ff8888;
-  padding: 8px;
-  animation-duration: 3s;
-}
-.pf-elo-mestre .pf-moldura-glow { opacity: 0.85; filter: blur(22px); }
-.pf-elo-mestre .pf-moldura-canto { width: 22px; height: 22px; box-shadow: 0 0 16px #ff4444, inset 0 0 6px rgba(255,255,255,0.5); }
-.pf-elo-mestre .pf-moldura-shimmer::before { animation-duration: 1.8s; background: linear-gradient(90deg, transparent 0%, rgba(255,200,200,0) 30%, rgba(255,200,200,0.6) 50%, rgba(255,200,200,0) 70%, transparent 100%); }
+.pf-elo-mestre { --elo1: #ff4444; --elo2: #8b0000; --elo3: #ff8888; border-color: #ff4444; }
+.pf-frame-mestre { --elo1: #ff4444; --elo2: #8b0000; --elo3: #ff8888; }
+.pf-frame-mestre .pf-frame-ring { border-width: 7px; box-shadow: 0 0 16px #ff4444, 0 0 32px #ff444444, inset 0 0 10px #ff4444; }
+.pf-frame-mestre .pf-frame-wing { width: 42px; height: 65px; }
+.pf-frame-mestre .pf-frame-glow { opacity: 0.7; filter: blur(16px); animation-duration: 1.5s; }
+.pf-frame-mestre .pf-frame-shimmer::before { animation-duration: 1.8s; }
+.pf-frame-mestre .pf-frame-crown { border-bottom-width: 22px; border-left-width: 13px; border-right-width: 13px; filter: drop-shadow(0 -6px 10px #ff4444); }
 
-/* Grão-Mestre */
-.pf-elo-grao-mestre {
-  --elo-cor1: #a855f7; --elo-cor2: #5b21b6; --elo-cor3: #e9d5ff;
-  padding: 9px;
-  animation-duration: 2.5s;
-}
-.pf-elo-grao-mestre .pf-moldura-glow { opacity: 0.9; filter: blur(24px); }
-.pf-elo-grao-mestre .pf-moldura-canto { width: 24px; height: 24px; box-shadow: 0 0 18px #a855f7, 0 0 36px #a855f744, inset 0 0 8px rgba(255,255,255,0.5); }
-.pf-elo-grao-mestre .pf-moldura-shimmer::before { animation-duration: 1.5s; background: linear-gradient(90deg, transparent 0%, rgba(200,130,255,0) 30%, rgba(200,130,255,0.7) 50%, rgba(200,130,255,0) 70%, transparent 100%); }
+.pf-elo-grao-mestre { --elo1: #a855f7; --elo2: #5b21b6; --elo3: #e9d5ff; border-color: #a855f7; }
+.pf-frame-grao-mestre { --elo1: #a855f7; --elo2: #5b21b6; --elo3: #e9d5ff; }
+.pf-frame-grao-mestre .pf-frame-ring { border-width: 8px; box-shadow: 0 0 18px #a855f7, 0 0 36px #a855f744, inset 0 0 12px #a855f7; }
+.pf-frame-grao-mestre .pf-frame-wing { width: 45px; height: 70px; }
+.pf-frame-grao-mestre .pf-frame-glow { opacity: 0.8; filter: blur(18px); animation-duration: 1.2s; }
+.pf-frame-grao-mestre .pf-frame-shimmer::before { animation-duration: 1.5s; }
+.pf-frame-grao-mestre .pf-frame-crown { border-bottom-width: 24px; border-left-width: 14px; border-right-width: 14px; filter: drop-shadow(0 -8px 12px #a855f7); }
 
-/* Desafiante — rainbow lendário */
-.pf-elo-desafiante {
-  --elo-cor1: #ffd700; --elo-cor2: #ff4444; --elo-cor3: #fff;
-  padding: 9px;
-  background: linear-gradient(135deg, #ff4444, #ff8800, #ffd700, #44ff44, #4488ff, #dd44ff, #ff4444);
-  background-size: 600% 600%;
-  animation: eloRainbow 3s linear infinite;
+/* Desafiante — rainbow */
+.pf-elo-desafiante { border-color: #ffd700; box-shadow: var(--sombra), 0 0 16px #ffd700, 0 0 32px #ff880044; border-width: 4px; }
+.pf-frame-desafiante { --elo1: #ffd700; --elo2: #ff4444; --elo3: #fff; }
+.pf-frame-desafiante .pf-frame-ring {
+  border-width: 8px;
+  border-color: transparent;
+  background: linear-gradient(#0a1a3a, #0a1a3a) padding-box, linear-gradient(135deg, #ff4444, #ff8800, #ffd700, #44ff44, #4488ff, #dd44ff) border-box;
+  background-size: 100% 100%, 600% 600%;
+  animation: desafianteRing 3s linear infinite;
+  box-shadow: 0 0 20px #ffd700, 0 0 40px #ff880044, inset 0 0 14px #ffd70066;
 }
-@keyframes eloRainbow {
-  0% { background-position: 0% 50%; }
-  100% { background-position: 300% 50%; }
+@keyframes desafianteRing {
+  0% { background-position: 0 0, 0% 50%; }
+  100% { background-position: 0 0, 300% 50%; }
 }
-.pf-elo-desafiante .pf-moldura-glow {
-  background: linear-gradient(135deg, #ff4444, #ff8800, #ffd700, #44ff44, #4488ff, #dd44ff);
-  background-size: 600% 600%;
-  animation: eloRainbow 3s linear infinite;
-  opacity: 1;
-  filter: blur(26px);
+.pf-frame-desafiante .pf-frame-wing { width: 48px; height: 75px; }
+.pf-frame-desafiante .pf-frame-wing::before {
+  background: linear-gradient(180deg, #ffd700, #ff8800, #ff4444);
 }
-.pf-elo-desafiante .pf-moldura-canto {
-  width: 26px; height: 26px;
-  background: linear-gradient(135deg, #ffd700, #fff);
-  border-color: #ff8800;
-  box-shadow: 0 0 20px #ffd700, 0 0 40px #ff880066, inset 0 0 8px rgba(255,255,255,0.6);
-  animation: eloCantoPulse 1s ease-in-out infinite alternate;
+.pf-frame-desafiante .pf-frame-wing::after {
+  background: linear-gradient(90deg, #ffd700, #fff);
 }
-@keyframes eloCantoPulse {
-  from { box-shadow: 0 0 12px #ffd700, 0 0 24px #ff880044; }
-  to { box-shadow: 0 0 24px #ffd700, 0 0 48px #ff880088; }
+.pf-frame-desafiante .pf-frame-glow {
+  background: radial-gradient(circle, #ffd700 0%, #ff8800 30%, transparent 70%);
+  opacity: 0.9;
+  filter: blur(18px);
+  animation-duration: 1s;
 }
-.pf-elo-desafiante .pf-moldura-shimmer::before { animation-duration: 1.2s; }
-.pf-elo-desafiante .pf-moldura-elo-tag {
+.pf-frame-desafiante .pf-frame-crown {
+  border-bottom: 26px solid #ffd700;
+  border-left-width: 15px;
+  border-right-width: 15px;
+  filter: drop-shadow(0 -10px 16px #ffd700);
+}
+.pf-frame-desafiante .pf-frame-shimmer::before { animation-duration: 1.2s; }
+.pf-frame-desafiante .pf-frame-elo-tag {
   background: linear-gradient(90deg, #ff4444, #ff8800, #ffd700, #44ff44, #4488ff, #dd44ff);
   background-size: 300% 100%;
   animation: tierRainbowBg 2s linear infinite;
-  font-size: 13px;
-  padding: 3px 20px;
+  font-size: 10px;
+  padding: 2px 14px;
   border-color: #ffd700;
-  box-shadow: 0 0 16px #ffd700, 0 0 32px #ff880044;
+  box-shadow: 0 0 12px #ffd700, 0 0 24px #ff880044;
 }
 @keyframes tierRainbowBg {
   0% { background-position: 0% 50%; }

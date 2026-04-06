@@ -161,31 +161,30 @@ export default function Perfil() {
     <div className="pf" data-tutorial="perfil-area">
 
       {/* === CARD DO JOGADOR === */}
-      <div className={`pf-moldura pf-elo-${bordaTier}`}>
-        <div className="pf-moldura-glow" />
-        <div className="pf-moldura-shimmer" />
-        <div className="pf-moldura-canto pf-canto-tl" />
-        <div className="pf-moldura-canto pf-canto-tr" />
-        <div className="pf-moldura-canto pf-canto-bl" />
-        <div className="pf-moldura-canto pf-canto-br" />
-        <div className="pf-moldura-elo-tag">{TIER_NOMES[bordaTier]}</div>
-      <div className="pf-hero">
+      <div className={`pf-hero pf-elo-${bordaTier}`}>
         <div className="pf-hero-inner">
         <div className="pf-hero-bg" />
         <div className="pf-hero-content">
-          <div className="pf-avatar-area">
+          <div className={`pf-avatar-frame pf-frame-${bordaTier}`}>
+            <div className="pf-frame-glow" />
+            <div className="pf-frame-ring" />
+            <div className="pf-frame-wing pf-wing-l" />
+            <div className="pf-frame-wing pf-wing-r" />
+            <div className="pf-frame-crown" />
+            <div className="pf-frame-shimmer" />
             <div className="pf-avatar">{getAvatar(jogador.avatar)}</div>
-            <div className="pf-avatar-selector">
-              {avatares.filter(a => a.tipo === 'comum').map(a => (
-                <span key={a.id} className={`pf-av-opt${jogador.avatar === a.id ? ' sel' : ''}`}
-                  onClick={() => selecionarAvatar(a.id)}>{a.icone}</span>
-              ))}
-              {desbloqueados.map(id => {
-                const av = avatares.find(a => a.id === id)
-                return av ? <span key={id} className={`pf-av-opt prem${jogador.avatar === id ? ' sel' : ''}`}
-                  onClick={() => selecionarAvatar(id)}>{av.icone}</span> : null
-              })}
-            </div>
+            <div className="pf-frame-elo-tag">{TIER_NOMES[bordaTier]}</div>
+          </div>
+          <div className="pf-avatar-selector">
+            {avatares.filter(a => a.tipo === 'comum').map(a => (
+              <span key={a.id} className={`pf-av-opt${jogador.avatar === a.id ? ' sel' : ''}`}
+                onClick={() => selecionarAvatar(a.id)}>{a.icone}</span>
+            ))}
+            {desbloqueados.map(id => {
+              const av = avatares.find(a => a.id === id)
+              return av ? <span key={id} className={`pf-av-opt prem${jogador.avatar === id ? ' sel' : ''}`}
+                onClick={() => selecionarAvatar(id)}>{av.icone}</span> : null
+            })}
           </div>
           <div className="pf-hero-info">
             <div className="pf-nome">{jogador.nome}</div>
@@ -216,7 +215,6 @@ export default function Perfil() {
         )}
         </div>{/* fecha pf-hero-inner */}
       </div>
-      </div>{/* fecha pf-moldura */}
 
       {/* === STATS GRID === */}
       <div className="pf-stats">
