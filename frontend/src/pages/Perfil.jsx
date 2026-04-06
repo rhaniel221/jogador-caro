@@ -162,6 +162,7 @@ export default function Perfil() {
 
       {/* === CARD DO JOGADOR === */}
       <div className={`pf-hero pf-borda-${bordaTier}`}>
+        <div className="pf-hero-inner">
         <div className="pf-hero-bg" />
         <div className="pf-hero-content">
           <div className="pf-avatar-area">
@@ -206,6 +207,7 @@ export default function Perfil() {
             </div>
           </div>
         )}
+        </div>{/* fecha pf-hero-inner */}
       </div>
 
       {/* === STATS GRID === */}

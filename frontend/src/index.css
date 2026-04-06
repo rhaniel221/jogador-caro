@@ -3268,10 +3268,18 @@ input, select, textarea {
 
 /* Hero card */
 .pf-hero {
-  background: linear-gradient(135deg, var(--azul) 0%, #003d99 100%);
-  border-radius: var(--radius); border: var(--borda);
-  box-shadow: var(--sombra); overflow: hidden; position: relative;
+  border-radius: var(--radius);
+  border: var(--borda);
+  box-shadow: var(--sombra);
+  overflow: hidden;
+  position: relative;
   margin-bottom: 14px;
+}
+.pf-hero-inner {
+  background: linear-gradient(135deg, var(--azul) 0%, #003d99 100%);
+  border-radius: calc(var(--radius) - 4px);
+  overflow: hidden;
+  position: relative;
 }
 .pf-hero-bg {
   position: absolute; inset: 0;
@@ -3301,72 +3309,131 @@ input, select, textarea {
 .pf-code strong { color: #fff; letter-spacing: 1.5px; font-size: 13px; }
 
 /* =====================================================
-   BORDAS DE STATUS (tier por nível)
+   MOLDURA DE STATUS — GLITTER ANIMADO
    ===================================================== */
-@keyframes bordaGlow {
-  0%, 100% { box-shadow: 0 0 8px var(--borda-cor), var(--sombra); }
-  50% { box-shadow: 0 0 20px var(--borda-cor), 0 0 40px var(--borda-cor2), var(--sombra); }
+
+/* Moldura base: borda gradiente girando com ::before */
+.pf-hero[class*="pf-borda-"] {
+  border: none !important;
+  padding: 4px;
+  background: var(--moldura-grad);
+  background-size: 300% 300%;
+  animation: molduraGira 3s linear infinite;
+  position: relative;
 }
-@keyframes bordaRainbow {
-  0% { border-color: #ff4444; box-shadow: 0 0 15px #ff4444, 0 0 30px #ff444466; }
-  16% { border-color: #ff8800; box-shadow: 0 0 15px #ff8800, 0 0 30px #ff880066; }
-  33% { border-color: #ffdd00; box-shadow: 0 0 15px #ffdd00, 0 0 30px #ffdd0066; }
-  50% { border-color: #44ff44; box-shadow: 0 0 15px #44ff44, 0 0 30px #44ff4466; }
-  66% { border-color: #4488ff; box-shadow: 0 0 15px #4488ff, 0 0 30px #4488ff66; }
-  83% { border-color: #dd44ff; box-shadow: 0 0 15px #dd44ff, 0 0 30px #dd44ff66; }
-  100% { border-color: #ff4444; box-shadow: 0 0 15px #ff4444, 0 0 30px #ff444466; }
+.pf-hero[class*="pf-borda-"]::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius);
+  background: var(--moldura-grad);
+  background-size: 300% 300%;
+  animation: molduraGira 3s linear infinite;
+  filter: blur(12px);
+  opacity: 0.6;
+  z-index: -1;
+}
+@keyframes molduraGira {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
+/* Glitter overlay — partículas brilhantes */
+.pf-hero[class*="pf-borda-"] .pf-hero-bg::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  z-index: 2;
+  pointer-events: none;
+  background-image:
+    radial-gradient(1.5px 1.5px at 10% 15%, #fff 50%, transparent 100%),
+    radial-gradient(1px 1px at 25% 80%, #fff 50%, transparent 100%),
+    radial-gradient(2px 2px at 45% 10%, #fff 50%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 60% 70%, #fff 50%, transparent 100%),
+    radial-gradient(1px 1px at 75% 25%, #fff 50%, transparent 100%),
+    radial-gradient(2px 2px at 90% 55%, #fff 50%, transparent 100%),
+    radial-gradient(1px 1px at 35% 45%, #fff 50%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 85% 85%, #fff 50%, transparent 100%),
+    radial-gradient(1px 1px at 15% 50%, #fff 50%, transparent 100%),
+    radial-gradient(2px 2px at 55% 35%, #fff 50%, transparent 100%);
+  animation: glitter 2s ease-in-out infinite alternate;
+}
+@keyframes glitter {
+  0% { opacity: 0.3; }
+  25% { opacity: 0.8; }
+  50% { opacity: 0.2; }
+  75% { opacity: 0.9; }
+  100% { opacity: 0.4; }
+}
+
+/* Ferro — cinza discreto */
 .pf-borda-ferro {
-  --borda-cor: #8a8a8a; --borda-cor2: #8a8a8a44;
-  border-color: #8a8a8a;
+  --moldura-grad: linear-gradient(135deg, #8a8a8a, #bbb, #8a8a8a, #666, #8a8a8a);
 }
+.pf-borda-ferro::after { opacity: 0.2; }
+.pf-borda-ferro .pf-hero-bg::after { animation-duration: 4s; }
+
+/* Bronze — cobre quente */
 .pf-borda-bronze {
-  --borda-cor: #cd7f32; --borda-cor2: #cd7f3244;
-  border-color: #cd7f32;
-  animation: bordaGlow 3s ease-in-out infinite;
+  --moldura-grad: linear-gradient(135deg, #cd7f32, #f4a942, #8b4513, #cd7f32, #daa520);
 }
+
+/* Prata — metálico frio */
 .pf-borda-prata {
-  --borda-cor: #c0c0c0; --borda-cor2: #c0c0c044;
-  border-color: #c0c0c0;
-  animation: bordaGlow 2.5s ease-in-out infinite;
+  --moldura-grad: linear-gradient(135deg, #c0c0c0, #f5f5f5, #a0a0a0, #e8e8e8, #c0c0c0);
 }
+
+/* Ouro — dourado intenso */
 .pf-borda-ouro {
-  --borda-cor: #ffd700; --borda-cor2: #ffd70055;
-  border-color: #ffd700;
-  animation: bordaGlow 2s ease-in-out infinite;
+  --moldura-grad: linear-gradient(135deg, #ffd700, #ffed4a, #daa520, #fff176, #ffd700);
 }
+.pf-borda-ouro::after { opacity: 0.7; }
+
+/* Platina — turquesa brilhante */
 .pf-borda-platina {
-  --borda-cor: #40e0d0; --borda-cor2: #40e0d055;
-  border-color: #40e0d0;
-  animation: bordaGlow 1.8s ease-in-out infinite;
+  --moldura-grad: linear-gradient(135deg, #40e0d0, #7fffd4, #00ced1, #afeeee, #40e0d0);
 }
+.pf-borda-platina::after { opacity: 0.7; }
+
+/* Esmeralda — verde luminoso */
 .pf-borda-esmeralda {
-  --borda-cor: #50c878; --borda-cor2: #50c87855;
-  border-color: #50c878;
-  animation: bordaGlow 1.6s ease-in-out infinite;
+  --moldura-grad: linear-gradient(135deg, #50c878, #2ecc71, #27ae60, #a8e6a3, #50c878);
 }
+.pf-borda-esmeralda::after { opacity: 0.8; filter: blur(16px); }
+
+/* Diamante — azul cristal cintilante */
 .pf-borda-diamante {
-  --borda-cor: #b9f2ff; --borda-cor2: #b9f2ff66;
-  border-color: #b9f2ff;
-  animation: bordaGlow 1.4s ease-in-out infinite;
+  --moldura-grad: linear-gradient(135deg, #b9f2ff, #e0f7ff, #87ceeb, #fff, #b9f2ff);
+  padding: 5px;
 }
+.pf-borda-diamante::after { opacity: 0.8; filter: blur(18px); }
+.pf-borda-diamante .pf-hero-bg::after { animation-duration: 1.2s; }
+
+/* Mestre — vermelho fogo */
 .pf-borda-mestre {
-  --borda-cor: #ff6b6b; --borda-cor2: #ff6b6b55;
-  border-color: #ff6b6b;
-  border-width: 4px;
-  animation: bordaGlow 1.2s ease-in-out infinite;
+  --moldura-grad: linear-gradient(135deg, #ff4444, #ff6b6b, #cc0000, #ff8888, #ff4444);
+  padding: 5px;
 }
+.pf-borda-mestre::after { opacity: 0.9; filter: blur(20px); }
+.pf-borda-mestre .pf-hero-bg::after { animation-duration: 1s; }
+
+/* Grão-Mestre — roxo épico */
 .pf-borda-grao-mestre {
-  --borda-cor: #a855f7; --borda-cor2: #a855f766;
-  border-color: #a855f7;
-  border-width: 4px;
-  animation: bordaGlow 1s ease-in-out infinite;
+  --moldura-grad: linear-gradient(135deg, #a855f7, #c084fc, #7c3aed, #e9d5ff, #a855f7);
+  padding: 6px;
 }
+.pf-borda-grao-mestre::after { opacity: 1; filter: blur(22px); }
+.pf-borda-grao-mestre .pf-hero-bg::after { animation-duration: 0.8s; }
+
+/* Desafiante — arco-íris lendário */
 .pf-borda-desafiante {
-  border-width: 4px;
-  animation: bordaRainbow 3s linear infinite;
+  --moldura-grad: linear-gradient(135deg, #ff4444, #ff8800, #ffdd00, #44ff44, #4488ff, #dd44ff, #ff4444);
+  padding: 6px;
+  animation: molduraGira 2s linear infinite;
 }
+.pf-borda-desafiante::after { opacity: 1; filter: blur(25px); animation-duration: 2s; }
+.pf-borda-desafiante .pf-hero-bg::after { animation-duration: 0.6s; }
 
 /* Tier badge no card */
 .pf-tier-badge {
