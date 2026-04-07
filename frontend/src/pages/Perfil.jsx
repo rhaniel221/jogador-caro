@@ -798,21 +798,21 @@ function CasaCard({ jogadorID, jogador, setJogador, mostrarNotificacao, setLevel
 
   // Auto-abrir modal quando chega na Série C sem casa ou Série B com casa básica
   const temCasaAtual = casa?.tipo && casa.tipo !== ''
-  const precisaUpgrade = jogador?.nivel >= 30 && casa?.tipo === 'basica'
-  const obrigatorio = (jogador?.nivel >= 20 && !temCasaAtual) || precisaUpgrade
+  const precisaUpgrade = jogador?.nivel >= 24 && casa?.tipo === 'basica'
+  const obrigatorio = (jogador?.nivel >= 18 && !temCasaAtual) || precisaUpgrade
 
   useEffect(() => {
     if (!casa || !jogador) return
     const temCasa = casa.tipo && casa.tipo !== ''
-    if (jogador.nivel >= 30 && casa.tipo === 'basica') {
+    if (jogador.nivel >= 24 && casa.tipo === 'basica') {
       setShowModal(true)
-    } else if (jogador.nivel >= 20 && !temCasa) {
+    } else if (jogador.nivel >= 18 && !temCasa) {
       setShowModal(true)
     }
   }, [casa, jogador?.nivel])
 
   // Só mostra a partir da Série C (nível 18+)
-  if (!jogador || jogador.nivel < 20) return null
+  if (!jogador || jogador.nivel < 18) return null
   if (!casa) return null
 
   async function comprar(tipo, pagarCom) {
