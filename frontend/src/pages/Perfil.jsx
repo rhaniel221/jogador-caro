@@ -781,7 +781,7 @@ const CASA_IMGS = {
 const CASA_NOMES = { basica: 'Casa Básica', media: 'Casa Média', top: 'Casa Top' }
 
 function CasaCard({ jogadorID, jogador, setJogador, mostrarNotificacao, setLevelUp }) {
-  const [casa, setCasa] = useState(null)
+  const [casa, setCasa] = useState({ tipo: '' })
   const [casas, setCasas] = useState([])
   const [showModal, setShowModal] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -789,9 +789,9 @@ function CasaCard({ jogadorID, jogador, setJogador, mostrarNotificacao, setLevel
   const carregar = useCallback(() => {
     if (!jogadorID) return
     API.get('/api/casa/' + jogadorID).then(res => {
-      setCasa(res.casa)
+      setCasa(res.casa || { tipo: '' })
       if (res.casas_disponiveis) setCasas(res.casas_disponiveis)
-    }).catch(() => {})
+    }).catch(() => { setCasa({ tipo: '' }) })
   }, [jogadorID])
 
   useEffect(() => { carregar() }, [carregar])
@@ -813,7 +813,6 @@ function CasaCard({ jogadorID, jogador, setJogador, mostrarNotificacao, setLevel
 
   // Só mostra a partir da Série C (nível 18+)
   if (!jogador || jogador.nivel < 18) return null
-  if (!casa) return null
 
   async function comprar(tipo, pagarCom) {
     setLoading(true)
