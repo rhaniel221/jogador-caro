@@ -815,9 +815,9 @@ function CasaCard({ jogadorID, jogador, setJogador, mostrarNotificacao, setLevel
   if (!jogador || jogador.nivel < 20) return null
   if (!casa) return null
 
-  async function comprar(tipo) {
+  async function comprar(tipo, pagarCom) {
     setLoading(true)
-    const res = await API.post('/api/casa/comprar', { jogador_id: jogadorID, tipo })
+    const res = await API.post('/api/casa/comprar', { jogador_id: jogadorID, tipo, pagar_com: pagarCom })
     if (res.sucesso) { if (res.jogador) setJogador(res.jogador); mostrarNotificacao(res.mensagem, 'sucesso'); carregar(); setShowModal(false) }
     else mostrarNotificacao(res.mensagem, 'erro')
     setLoading(false)
@@ -878,10 +878,15 @@ function CasaCard({ jogadorID, jogador, setJogador, mostrarNotificacao, setLevel
                       <span>⚡ +{c.energia_quant} energia a cada {c.energia_intervalo_min}min</span>
                       <span className="casa-modal-bonus">{det.bonus}</span>
                     </div>
-                    <div className="casa-modal-preco">🪙 {c.preco_moedas} moedas</div>
-                    <button className="btn-work btn-verde" onClick={() => comprar(c.tipo)} disabled={loading} style={{ width: '100%' }}>
-                      Alugar
-                    </button>
+                    <div className="casa-modal-preco">💰 R$ {fmt(c.preco)} ou 🪙 {c.preco_moedas} moedas</div>
+                    <div style={{ display: 'flex', gap: 6 }}>
+                      <button className="btn-work btn-verde" onClick={() => comprar(c.tipo, 'dinheiro')} disabled={loading} style={{ flex: 1, fontSize: 12 }}>
+                        💰 R$ {fmt(c.preco)}
+                      </button>
+                      <button className="btn-work btn-azul" onClick={() => comprar(c.tipo, 'moedas')} disabled={loading} style={{ flex: 1, fontSize: 12 }}>
+                        🪙 {c.preco_moedas}
+                      </button>
+                    </div>
                   </div>
                 )
               })}

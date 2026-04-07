@@ -3807,9 +3807,9 @@ func HandleWeeklyRanking(w http.ResponseWriter, r *http.Request) {
 // ========================
 
 var casasConfig = map[string]CasaConfig{
-	"basica": {Tipo: "basica", Nome: "Casa Básica", PrecoMoedas: 5, XPHora: 10, EnQuant: 5, EnIntMin: 15},
-	"media":  {Tipo: "media", Nome: "Casa Média", PrecoMoedas: 15, XPHora: 20, EnQuant: 10, EnIntMin: 30},
-	"top":    {Tipo: "top", Nome: "Casa Top", PrecoMoedas: 40, XPHora: 30, EnQuant: 15, EnIntMin: 30},
+	"basica": {Tipo: "basica", Nome: "Casa Básica", Preco: 50000, PrecoMoedas: 5, XPHora: 10, EnQuant: 5, EnIntMin: 15},
+	"media":  {Tipo: "media", Nome: "Casa Média", Preco: 250000, PrecoMoedas: 15, XPHora: 20, EnQuant: 10, EnIntMin: 30},
+	"top":    {Tipo: "top", Nome: "Casa Top", Preco: 800000, PrecoMoedas: 40, XPHora: 30, EnQuant: 15, EnIntMin: 30},
 }
 
 var casasOrdem = map[string]int{"": 0, "basica": 1, "media": 2, "top": 3}
@@ -3905,6 +3905,7 @@ func HandleCasaComprar(w http.ResponseWriter, r *http.Request) {
 	var req struct {
 		JogadorID int    `json:"jogador_id"`
 		Tipo      string `json:"tipo"`
+		PagarCom  string `json:"pagar_com"` // "moedas" ou "dinheiro"
 	}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		ErrResp(w, 400, "Dados inválidos")
@@ -3923,11 +3924,6 @@ func HandleCasaComprar(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if jogador.Moedas < cfg.PrecoMoedas {
-		JsonResp(w, 200, map[string]interface{}{"sucesso": false, "mensagem": fmt.Sprintf("Moedas insuficientes! Precisa de %d moedas.", cfg.PrecoMoedas)})
-		return
-	}
-
 	// Check current house
 	var tipoAtual string
 	db.Conn.QueryRow("SELECT COALESCE(tipo,'') FROM casas WHERE jogador_id=$1", req.JogadorID).Scan(&tipoAtual)
@@ -3936,7 +3932,32 @@ func HandleCasaComprar(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	jogador.Moedas -= cfg.PrecoMoedas
+	// Pagamento: padrão é dinheiro se não especificado
+	if req.PagarCom == "" {
+		req.PagarCom = "dinheiro"
+	}
+
+	if req.PagarCom == "moedas" {
+		if jogador.Moedas < cfg.PrecoMoedas {
+			JsonResp(w, 200, map[string]interface{}{"sucesso": false, "mensagem": fmt.Sprintf("Moedas insuficientes! Precisa de %d moedas.", cfg.PrecoMoedas)})
+			return
+		}
+		jogador.Moedas -= cfg.PrecoMoedas
+	} else {
+		// Paga em dinheiro (mão + banco)
+		total := jogador.DinheiroMao + jogador.DinheiroBanco
+		if total < cfg.Preco {
+			JsonResp(w, 200, map[string]interface{}{"sucesso": false, "mensagem": fmt.Sprintf("Dinheiro insuficiente! Precisa de R$ %d.", cfg.Preco)})
+			return
+		}
+		if jogador.DinheiroMao >= cfg.Preco {
+			jogador.DinheiroMao -= cfg.Preco
+		} else {
+			restante := cfg.Preco - jogador.DinheiroMao
+			jogador.DinheiroMao = 0
+			jogador.DinheiroBanco -= restante
+		}
+	}
 	saveJogador(jogador)
 
 	db.Conn.Exec(`INSERT INTO casas (jogador_id, tipo, ultima_coleta)
