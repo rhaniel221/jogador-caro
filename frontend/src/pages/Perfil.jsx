@@ -778,7 +778,7 @@ const CASA_IMGS = {
   media: '/casas/init-casa-media.png',
   top: '/casas/initcasa-top.png',
 }
-const CASA_NOMES = { basica: 'Casa Básica', media: 'Casa Média', top: 'Casa Top' }
+const CASA_NOMES = { basica: 'Casa Alugada', media: 'Casa Própria', top: 'Mansão do Craque' }
 
 function CasaCard({ jogadorID, jogador, setJogador, mostrarNotificacao, setLevelUp }) {
   const [casa, setCasa] = useState({ tipo: '' })
@@ -796,23 +796,24 @@ function CasaCard({ jogadorID, jogador, setJogador, mostrarNotificacao, setLevel
 
   useEffect(() => { carregar() }, [carregar])
 
-  // Auto-abrir modal quando chega na Série C sem casa ou Série B com casa básica
+  // Auto-abrir modal quando chega na Série C sem casa ou Série B com casa alugada
   const temCasaAtual = casa?.tipo && casa.tipo !== ''
-  const precisaUpgrade = jogador?.nivel >= 24 && casa?.tipo === 'basica'
-  const obrigatorio = (jogador?.nivel >= 18 && !temCasaAtual) || precisaUpgrade
+  const precisaUpgrade = jogador?.nivel >= 30 && casa?.tipo === 'basica'
+  const obrigatorio = (jogador?.nivel >= 20 && !temCasaAtual) || precisaUpgrade
+  const podeComprar = jogador?.nivel >= 30 // só na Série B em diante
 
   useEffect(() => {
     if (!casa || !jogador) return
     const temCasa = casa.tipo && casa.tipo !== ''
-    if (jogador.nivel >= 24 && casa.tipo === 'basica') {
+    if (jogador.nivel >= 30 && casa.tipo === 'basica') {
       setShowModal(true)
-    } else if (jogador.nivel >= 18 && !temCasa) {
+    } else if (jogador.nivel >= 20 && !temCasa) {
       setShowModal(true)
     }
   }, [casa, jogador?.nivel])
 
-  // Só mostra a partir da Série C (nível 18+)
-  if (!jogador || jogador.nivel < 18) return null
+  // Só mostra a partir da Série C (nível 20+)
+  if (!jogador || jogador.nivel < 20) return null
 
   async function comprar(tipo, pagarCom) {
     setLoading(true)
@@ -838,9 +839,9 @@ function CasaCard({ jogadorID, jogador, setJogador, mostrarNotificacao, setLevel
   const temRecompensa = casa.xp_disponivel > 0 || casa.energia_disponivel > 0
 
   const CASA_DETALHES = {
-    basica: { bonus: '+1 Força 💪', desc: 'Uma casa simples mas sua. Gera XP e energia passivamente.' },
-    media: { bonus: '+2 Velocidade 🏃 · +1 Força 💪', desc: 'Confortável e funcional. Recuperação mais rápida.' },
-    top: { bonus: '+2 Habilidade ⚽ · +2 Velocidade 🏃 · +1 Força 💪', desc: 'Mansão do craque. Máxima performance passiva.' },
+    basica: { bonus: '+1 Força 💪', desc: 'Casa alugada para morar enquanto sobe na carreira. Aluguel acessível.' },
+    media: { bonus: '+2 Velocidade 🏃 · +1 Força 💪', desc: 'Sua primeira casa própria. Liberada na Série B.' },
+    top: { bonus: '+2 Habilidade ⚽ · +2 Velocidade 🏃 · +1 Força 💪', desc: 'A mansão dos craques. Máxima performance passiva.' },
   }
 
   return (
@@ -852,13 +853,13 @@ function CasaCard({ jogadorID, jogador, setJogador, mostrarNotificacao, setLevel
             {!obrigatorio && <button className="pm-close" onClick={() => setShowModal(false)}>✕</button>}
             <div className="casa-modal-header">
               <span className="casa-modal-icon">🏠</span>
-              <h2 className="casa-modal-title">{precisaUpgrade ? 'Hora de mudar de casa!' : obrigatorio ? 'Hora de alugar sua casa!' : 'Parabéns!'}</h2>
+              <h2 className="casa-modal-title">{precisaUpgrade ? 'Hora de comprar sua casa!' : obrigatorio ? 'Hora de alugar sua casa!' : 'Sua moradia'}</h2>
               <p className="casa-modal-sub">
                 {precisaUpgrade
-                  ? 'A Série B exige uma casa melhor! Faça upgrade para continuar trabalhando.'
+                  ? 'Você chegou à Série B! Agora pode comprar uma casa própria — escolha abaixo.'
                   : obrigatorio
-                  ? 'Para continuar trabalhando na Série C, você precisa alugar uma casa! Escolha a sua abaixo.'
-                  : 'Agora você pode alugar uma casa! Ela gera XP e energia passivamente, mesmo quando você não está jogando.'}
+                  ? 'Para continuar trabalhando na Série C, você precisa alugar uma casa. O aluguel é barato e cresce conforme você sobe de nível.'
+                  : 'Aqui você pode alugar uma casa ou, na Série B, comprar a sua. Ela gera XP e energia passivamente.'}
               </p>
             </div>
             <div className="casa-modal-grid">
@@ -867,8 +868,10 @@ function CasaCard({ jogadorID, jogador, setJogador, mostrarNotificacao, setLevel
                 return true
               }).map(c => {
                 const det = CASA_DETALHES[c.tipo] || {}
+                const isAluguel = c.tipo === 'basica'
+                const bloqueada = !isAluguel && !podeComprar
                 return (
-                  <div key={c.tipo} className="casa-modal-card">
+                  <div key={c.tipo} className="casa-modal-card" style={bloqueada ? { opacity: 0.55 } : null}>
                     <img src={CASA_IMGS[c.tipo]} alt={c.nome} className="casa-modal-img" onError={e => { e.target.style.display = 'none' }} />
                     <strong className="casa-modal-nome">{c.nome}</strong>
                     <div className="casa-modal-desc">{det.desc}</div>
@@ -877,15 +880,29 @@ function CasaCard({ jogadorID, jogador, setJogador, mostrarNotificacao, setLevel
                       <span>⚡ +{c.energia_quant} energia a cada {c.energia_intervalo_min}min</span>
                       <span className="casa-modal-bonus">{det.bonus}</span>
                     </div>
-                    <div className="casa-modal-preco">💰 R$ {fmt(c.preco)} ou 🪙 {c.preco_moedas} moedas</div>
-                    <div style={{ display: 'flex', gap: 6 }}>
-                      <button className="btn-work btn-verde" onClick={() => comprar(c.tipo, 'dinheiro')} disabled={loading} style={{ flex: 1, fontSize: 12 }}>
-                        💰 R$ {fmt(c.preco)}
-                      </button>
-                      <button className="btn-work btn-azul" onClick={() => comprar(c.tipo, 'moedas')} disabled={loading} style={{ flex: 1, fontSize: 12 }}>
-                        🪙 {c.preco_moedas}
-                      </button>
+                    <div className="casa-modal-preco">
+                      {isAluguel
+                        ? <>🏷️ Aluguel: 💰 R$ {fmt(c.preco)}</>
+                        : <>💰 R$ {fmt(c.preco)} ou 🪙 {c.preco_moedas} moedas</>}
                     </div>
+                    {bloqueada ? (
+                      <div className="btn-work" style={{ background: '#444', color: '#bbb', textAlign: 'center', fontSize: 12 }}>
+                        🔒 Liberada na Série B (nv 30)
+                      </div>
+                    ) : isAluguel ? (
+                      <button className="btn-work btn-verde" onClick={() => comprar(c.tipo, 'dinheiro')} disabled={loading} style={{ width: '100%', fontSize: 12 }}>
+                        🏠 Alugar por R$ {fmt(c.preco)}
+                      </button>
+                    ) : (
+                      <div style={{ display: 'flex', gap: 6 }}>
+                        <button className="btn-work btn-verde" onClick={() => comprar(c.tipo, 'dinheiro')} disabled={loading} style={{ flex: 1, fontSize: 12 }}>
+                          💰 R$ {fmt(c.preco)}
+                        </button>
+                        <button className="btn-work btn-azul" onClick={() => comprar(c.tipo, 'moedas')} disabled={loading} style={{ flex: 1, fontSize: 12 }}>
+                          🪙 {c.preco_moedas}
+                        </button>
+                      </div>
+                    )}
                   </div>
                 )
               })}

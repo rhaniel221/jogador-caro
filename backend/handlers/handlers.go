@@ -220,20 +220,20 @@ func HandleTrabalhar(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// A partir da Série C (nível 18+), é obrigatório ter casa alugada
-	// A partir da Série B (nível 24+), é obrigatório ter casa média ou top
-	if jogador.Nivel >= 18 {
+	// A partir da Série C (nível 20+), é obrigatório ter casa alugada
+	// A partir da Série B (nível 30+), é obrigatório ter casa própria ou mansão
+	if jogador.Nivel >= 20 {
 		var tipoCasa string
 		db.Conn.QueryRow("SELECT COALESCE(tipo,'') FROM casas WHERE jogador_id=$1", req.JogadorID).Scan(&tipoCasa)
 		if tipoCasa == "" {
 			JsonResp(w, 200, TrabalharResponse{
-				Mensagem: "Você precisa alugar uma casa para trabalhar na Série C! Vá ao seu Perfil e escolha uma casa.",
+				Mensagem: "Você precisa alugar uma casa para trabalhar na Série C! Vá ao seu Perfil e alugue uma casa.",
 			})
 			return
 		}
-		if jogador.Nivel >= 24 && tipoCasa == "basica" {
+		if jogador.Nivel >= 30 && tipoCasa == "basica" {
 			JsonResp(w, 200, TrabalharResponse{
-				Mensagem: "A Série B exige uma casa melhor! Faça upgrade para Casa Média ou Casa Top no seu Perfil.",
+				Mensagem: "A Série B exige casa própria! Compre uma Casa Própria ou Mansão do Craque no seu Perfil.",
 			})
 			return
 		}
@@ -3771,12 +3771,23 @@ func HandleWeeklyRanking(w http.ResponseWriter, r *http.Request) {
 // ========================
 
 var casasConfig = map[string]CasaConfig{
-	"basica": {Tipo: "basica", Nome: "Casa Básica", Preco: 50000, PrecoMoedas: 5, XPHora: 10, EnQuant: 5, EnIntMin: 15},
-	"media":  {Tipo: "media", Nome: "Casa Média", Preco: 250000, PrecoMoedas: 15, XPHora: 20, EnQuant: 10, EnIntMin: 30},
-	"top":    {Tipo: "top", Nome: "Casa Top", Preco: 800000, PrecoMoedas: 40, XPHora: 30, EnQuant: 15, EnIntMin: 30},
+	"basica": {Tipo: "basica", Nome: "Casa Alugada", Preco: 0, PrecoMoedas: 0, XPHora: 10, EnQuant: 5, EnIntMin: 15},
+	"media":  {Tipo: "media", Nome: "Casa Própria", Preco: 120000, PrecoMoedas: 15, XPHora: 20, EnQuant: 10, EnIntMin: 30},
+	"top":    {Tipo: "top", Nome: "Mansão do Craque", Preco: 450000, PrecoMoedas: 40, XPHora: 30, EnQuant: 15, EnIntMin: 30},
 }
 
 var casasOrdem = map[string]int{"": 0, "basica": 1, "media": 2, "top": 3}
+
+// aluguelBasicaPreco calcula o aluguel da casa básica (entrada na Série C).
+// Escala de forma equilibrada com o nível do jogador.
+// Nível 20 (entrada Série C): 2.000  ·  Nível 25: 4.500  ·  Nível 29: 6.500
+func aluguelBasicaPreco(nivel int) int {
+	base := nivel - 20
+	if base < 0 {
+		base = 0
+	}
+	return 2000 + base*500
+}
 
 // GET /api/casa/{jogador_id}
 func HandleCasa(w http.ResponseWriter, r *http.Request) {
@@ -3787,20 +3798,32 @@ func HandleCasa(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Lê o nível para escalar o aluguel da básica
+	var nivelJog int
+	db.Conn.QueryRow(`SELECT nivel FROM jogadores WHERE id=$1`, jogadorID).Scan(&nivelJog)
+
+	montaLista := func() []CasaConfig {
+		lista := []CasaConfig{}
+		for _, c := range casasConfig {
+			if c.Tipo == "basica" {
+				c.Preco = aluguelBasicaPreco(nivelJog)
+				c.PrecoMoedas = 0 // aluguel só em dinheiro
+			}
+			lista = append(lista, c)
+		}
+		return lista
+	}
+
 	var tipo string
 	var ultimaColetaEpoch int64
 	err = db.Conn.QueryRow(`SELECT COALESCE(tipo,''), EXTRACT(EPOCH FROM ultima_coleta)::BIGINT
 		FROM casas WHERE jogador_id=$1`, jogadorID).Scan(&tipo, &ultimaColetaEpoch)
 	if err != nil {
 		// No house
-		listaConfig := []CasaConfig{}
-		for _, c := range casasConfig {
-			listaConfig = append(listaConfig, c)
-		}
 		JsonResp(w, 200, map[string]interface{}{
-			"sucesso": true,
-			"casa":    Casa{Tipo: ""},
-			"casas_disponiveis": listaConfig,
+			"sucesso":           true,
+			"casa":              Casa{Tipo: ""},
+			"casas_disponiveis": montaLista(),
 		})
 		return
 	}
@@ -3808,14 +3831,10 @@ func HandleCasa(w http.ResponseWriter, r *http.Request) {
 	cfg, ok := casasConfig[tipo]
 	if !ok {
 		// Has row but empty type
-		listaConfig := []CasaConfig{}
-		for _, c := range casasConfig {
-			listaConfig = append(listaConfig, c)
-		}
 		JsonResp(w, 200, map[string]interface{}{
-			"sucesso": true,
-			"casa":    Casa{Tipo: ""},
-			"casas_disponiveis": listaConfig,
+			"sucesso":           true,
+			"casa":              Casa{Tipo: ""},
+			"casas_disponiveis": montaLista(),
 		})
 		return
 	}
@@ -3847,15 +3866,10 @@ func HandleCasa(w http.ResponseWriter, r *http.Request) {
 		UltimaColeta:    ultimaColetaEpoch,
 	}
 
-	listaConfig := []CasaConfig{}
-	for _, c := range casasConfig {
-		listaConfig = append(listaConfig, c)
-	}
-
 	JsonResp(w, 200, map[string]interface{}{
 		"sucesso":           true,
 		"casa":              casa,
-		"casas_disponiveis": listaConfig,
+		"casas_disponiveis": montaLista(),
 	})
 }
 
@@ -3886,6 +3900,23 @@ func HandleCasaComprar(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		ErrResp(w, 404, "Jogador não encontrado")
 		return
+	}
+
+	// Casa básica: aluguel dinâmico baseado no nível
+	if req.Tipo == "basica" {
+		cfg.Preco = aluguelBasicaPreco(jogador.Nivel)
+		cfg.PrecoMoedas = 0
+		// Aluguel só em dinheiro
+		req.PagarCom = "dinheiro"
+	} else {
+		// Casa própria/Mansão: só liberada na Série B (nível 30+)
+		if jogador.Nivel < 30 {
+			JsonResp(w, 200, map[string]interface{}{
+				"sucesso":  false,
+				"mensagem": "Casa própria só está disponível a partir da Série B (nível 30). Até lá, alugue uma casa para morar.",
+			})
+			return
+		}
 	}
 
 	// Check current house
@@ -3930,9 +3961,13 @@ func HandleCasaComprar(w http.ResponseWriter, r *http.Request) {
 		req.JogadorID, req.Tipo)
 
 	atualizado, _ := getJogador(req.JogadorID)
+	verbo := "comprou"
+	if req.Tipo == "basica" {
+		verbo = "alugou"
+	}
 	JsonResp(w, 200, map[string]interface{}{
 		"sucesso":  true,
-		"mensagem": fmt.Sprintf("Você comprou a %s!", cfg.Nome),
+		"mensagem": fmt.Sprintf("Você %s a %s!", verbo, cfg.Nome),
 		"jogador":  atualizado,
 	})
 }
