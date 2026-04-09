@@ -36,7 +36,10 @@
       "Bash(node node_modules/vite/bin/vite.js build)",
       "Bash(node:*)",
       "Bash(PGPASSWORD=PIjMraVbxuxVunoytDDRAYnhbCsCxyhy psql:*)",
-      "Bash(brew list:*)"
+      "Bash(brew list:*)",
+      "Bash(xargs basename:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
     ]
   }
 }
