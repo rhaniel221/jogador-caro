@@ -49,6 +49,7 @@ export default function Perfil() {
   const [inventario, setInventario] = useState([])
   const [itensFama, setItensFama] = useState([])
   const [tasks, setTasks] = useState([])
+  const [clube, setClube] = useState(null)
 
   const carregarDados = async () => {
     if (!jogadorID) return
@@ -68,6 +69,7 @@ export default function Perfil() {
 
   useEffect(() => {
     carregarDados()
+    if (jogadorID) API.get('/api/clube/atual/' + jogadorID).then(setClube).catch(() => {})
   }, [jogadorID])
 
   async function selecionarAvatar(id) {
@@ -124,6 +126,26 @@ export default function Perfil() {
   if (!jogador) return null
 
   const xpPct = Math.min(100, Math.round((jogador.xp / jogador.xp_proximo) * 100))
+
+  // Borda de status por nível
+  const getBordaTier = (nivel) => {
+    if (nivel >= 190) return 'desafiante'
+    if (nivel >= 160) return 'grao-mestre'
+    if (nivel >= 135) return 'mestre'
+    if (nivel >= 100) return 'diamante'
+    if (nivel >= 72) return 'esmeralda'
+    if (nivel >= 50) return 'platina'
+    if (nivel >= 30) return 'ouro'
+    if (nivel >= 20) return 'prata'
+    if (nivel >= 10) return 'bronze'
+    return 'ferro'
+  }
+  const bordaTier = getBordaTier(jogador.nivel)
+  const TIER_NOMES = {
+    ferro: 'Ferro', bronze: 'Bronze', prata: 'Prata', ouro: 'Ouro',
+    platina: 'Platina', esmeralda: 'Esmeralda', diamante: 'Diamante',
+    mestre: 'Mestre', 'grao-mestre': 'Grão-Mestre', desafiante: 'Desafiante'
+  }
   const desbloqueados = (jogador.avatares_premium || '')
     .split(',')
     .filter(Boolean)
@@ -141,22 +163,30 @@ export default function Perfil() {
     <div className="pf" data-tutorial="perfil-area">
 
       {/* === CARD DO JOGADOR === */}
-      <div className="pf-hero">
+      <div className={`pf-hero pf-elo-${bordaTier}`}>
+        <div className="pf-hero-inner">
         <div className="pf-hero-bg" />
         <div className="pf-hero-content">
-          <div className="pf-avatar-area">
+          <div className="pf-avatar-frame">
+            <img
+              src={`/elos/${bordaTier}.png`}
+              alt={TIER_NOMES[bordaTier]}
+              className="pf-elo-img"
+              onError={e => { e.target.style.display = 'none' }}
+            />
             <div className="pf-avatar">{getAvatar(jogador.avatar)}</div>
-            <div className="pf-avatar-selector">
-              {avatares.filter(a => a.tipo === 'comum').map(a => (
-                <span key={a.id} className={`pf-av-opt${jogador.avatar === a.id ? ' sel' : ''}`}
-                  onClick={() => selecionarAvatar(a.id)}>{a.icone}</span>
-              ))}
-              {desbloqueados.map(id => {
-                const av = avatares.find(a => a.id === id)
-                return av ? <span key={id} className={`pf-av-opt prem${jogador.avatar === id ? ' sel' : ''}`}
-                  onClick={() => selecionarAvatar(id)}>{av.icone}</span> : null
-              })}
-            </div>
+            <div className={`pf-elo-tag pf-elo-tag-${bordaTier}`}>{TIER_NOMES[bordaTier]}</div>
+          </div>
+          <div className="pf-avatar-selector">
+            {avatares.filter(a => a.tipo === 'comum').map(a => (
+              <span key={a.id} className={`pf-av-opt${jogador.avatar === a.id ? ' sel' : ''}`}
+                onClick={() => selecionarAvatar(a.id)}>{a.icone}</span>
+            ))}
+            {desbloqueados.map(id => {
+              const av = avatares.find(a => a.id === id)
+              return av ? <span key={id} className={`pf-av-opt prem${jogador.avatar === id ? ' sel' : ''}`}
+                onClick={() => selecionarAvatar(id)}>{av.icone}</span> : null
+            })}
           </div>
           <div className="pf-hero-info">
             <div className="pf-nome">{jogador.nome}</div>
@@ -167,6 +197,14 @@ export default function Perfil() {
                 {GK:'🧤 Goleiro', DEF:'🛡️ Defensor', MED:'🎯 Meia', ATA:'⚽ Atacante'}[jogador.posicao] || jogador.posicao
               }</span>}
             </div>
+            {clube && clube.tem_clube && (
+              <div className="pf-clube-row">
+                <span className="pf-clube-badge" style={{ background: `linear-gradient(135deg, ${clube.cor1}, ${clube.cor2})` }}>
+                  {clube.icone} {clube.nome}
+                </span>
+                {clube.camisa > 0 && <span className="pf-camisa-badge">#{clube.camisa}</span>}
+              </div>
+            )}
             <div className="pf-level-row">
               <span className="pf-level-chip">LVL {jogador.nivel}</span>
               <span className="pf-xp-text">{jogador.xp}/{jogador.xp_proximo} XP</span>
@@ -175,6 +213,17 @@ export default function Perfil() {
             <div className="pf-code">Código: <strong>{jogador.codigo_amigo}</strong></div>
           </div>
         </div>
+        {jogador.titulos && (
+          <div className="pf-hero-titulos">
+            <div className="pf-hero-titulos-label">🏅 Títulos</div>
+            <div className="pf-hero-titulos-list">
+              {jogador.titulos.split(',').filter(Boolean).map((t, i) => (
+                <span key={i} className={`pf-hero-titulo-badge${t === jogador.titulo ? ' pf-hero-titulo-ativo' : ''}`}>{t}</span>
+              ))}
+            </div>
+          </div>
+        )}
+        </div>{/* fecha pf-hero-inner */}
       </div>
 
       {/* === STATS GRID === */}
@@ -187,25 +236,139 @@ export default function Perfil() {
         <div className="pf-stat"><span className="pf-stat-icon">⚔️</span><span className="pf-stat-val">{jogador.vitorias}V/{jogador.derrotas}D</span><span className="pf-stat-lbl">{winRate}% Win</span></div>
       </div>
 
-      {/* === FAMA & PATROCÍNIO === */}
-      <FamaCard jogadorID={jogadorID} jogador={jogador} setJogador={setJogador} mostrarNotificacao={mostrarNotificacao} />
+      {/* === PATRIMÔNIO === */}
+      <PatrimonioSection jogadorID={jogadorID} />
 
       {/* === CASA === */}
       <CasaCard jogadorID={jogadorID} jogador={jogador} setJogador={setJogador} mostrarNotificacao={mostrarNotificacao} setLevelUp={setLevelUp} />
 
-      {/* === TÍTULOS === */}
-      {jogador.titulos && (
-        <div className="pf-section">
-          <div className="pf-section-header"><h3>🏅 TÍTULOS CONQUISTADOS</h3></div>
-          <div className="pf-titulos">
-            {jogador.titulos.split(',').filter(Boolean).map((t, i) => (
-              <span key={i} className={`pf-titulo-badge${t === jogador.titulo ? ' pf-titulo-ativo' : ''}`}>{t}</span>
-            ))}
-          </div>
+      {/* === CAMPINHO === */}
+      <CampinhoSection jogadorID={jogadorID} jogador={jogador} setJogador={setJogador} mostrarNotificacao={mostrarNotificacao} setLevelUp={setLevelUp} />
+
+      {/* === FAMA & PATROCÍNIO === */}
+      <FamaCard jogadorID={jogadorID} jogador={jogador} setJogador={setJogador} mostrarNotificacao={mostrarNotificacao} />
+
+      {/* === CENTRAL DE RECUPERAÇÃO === */}
+      <TratamentoSection jogadorID={jogadorID} jogador={jogador} setJogador={setJogador} mostrarNotificacao={mostrarNotificacao} />
+
+    </div>
+  )
+}
+
+const TRATAMENTOS = [
+  {
+    id: 'meditacao', nome: 'Meditação', icone: '🧘',
+    desc: 'Foco mental e vitalidade renovada.',
+    custoBase: 8000, custoNivel: 400,
+    ganhos: (n) => `+${5 + Math.floor(n/5)} Saúde · +${20 + Math.floor(n/4)} Vitalidade`,
+  },
+  {
+    id: 'nutricao', nome: 'Nutricionista', icone: '🥗',
+    desc: 'Dieta equilibrada para o corpo.',
+    custoBase: 12000, custoNivel: 640,
+    ganhos: (n) => `+${8 + Math.floor(n/4)} Saúde · +${12 + Math.floor(n/5)} Vitalidade · +${3 + Math.floor(n/15)} Energia`,
+  },
+  {
+    id: 'psicologo', nome: 'Psicólogo', icone: '🧠',
+    desc: 'Sessão de terapia para renovar a mente.',
+    custoBase: 16000, custoNivel: 800,
+    ganhos: (n) => `+${20 + Math.floor(n/2)} Saúde · +${10 + Math.floor(n/5)} Vitalidade`,
+  },
+  {
+    id: 'academia', nome: 'Academia', icone: '🏋️',
+    desc: 'Treino pesado: recupera saúde, força e vitalidade.',
+    custoBase: 20000, custoNivel: 960,
+    ganhos: (n) => `+${10 + Math.floor(n/3)} Saúde · +1 Força · +${15 + Math.floor(n/5)} Vitalidade`,
+  },
+  {
+    id: 'fisioterapia', nome: 'Fisioterapia', icone: '💆',
+    desc: 'Recuperação corporal completa.',
+    custoBase: 28000, custoNivel: 1200,
+    ganhos: (n) => `+${15 + Math.floor(n/3)} Saúde · +${20 + Math.floor(n/4)} Vitalidade · +${5 + Math.floor(n/10)} Energia`,
+  },
+  {
+    id: 'spa', nome: 'Day Spa', icone: '🧖',
+    desc: 'Relaxamento total: corpo e mente.',
+    custoBase: 40000, custoNivel: 1600,
+    ganhos: (n) => `+${25 + Math.floor(n/2)} Saúde · +${25 + Math.floor(n/3)} Vitalidade · +${8 + Math.floor(n/8)} Energia`,
+  },
+]
+
+function TratamentoSection({ jogadorID, jogador, setJogador, mostrarNotificacao }) {
+  const [loading, setLoading] = useState(null)
+
+  async function fazerTratamento(tratamentoID) {
+    const t = TRATAMENTOS.find(x => x.id === tratamentoID)
+    if (!t) return
+    const custo = t.custoBase + t.custoNivel * jogador.nivel
+    if (!confirm(`Fazer ${t.nome} por R$ ${fmt(custo)}?`)) return
+    setLoading(tratamentoID)
+    try {
+      const res = await API.post('/api/tratamento', { jogador_id: jogadorID, tratamento_id: tratamentoID })
+      if (res.sucesso) {
+        setJogador(res.jogador)
+        const g = res.ganhos || {}
+        const parts = []
+        if (g.saude > 0) parts.push(`+${g.saude} Saúde`)
+        if (g.vitalidade > 0) parts.push(`+${g.vitalidade} Vitalidade`)
+        if (g.forca > 0) parts.push(`+${g.forca} Força`)
+        if (g.energia > 0) parts.push(`+${g.energia} Energia`)
+        mostrarNotificacao(`${t.icone} ${parts.join(' · ')}`, 'sucesso')
+      } else {
+        mostrarNotificacao(res.mensagem, 'erro')
+      }
+    } catch { mostrarNotificacao('Erro de conexão', 'erro') }
+    setLoading(null)
+  }
+
+  if (!jogador) return null
+
+  const saudeBaixa = jogador.saude < 30
+
+  return (
+    <div className="pf-section">
+      <div className="pf-section-header">
+        <h3>🏥 CENTRAL DE TRATAMENTO</h3>
+        <span className="pf-section-badge">❤️ {jogador.saude}/100 · 💚 {jogador.vitalidade}/{jogador.vitalidade_max}</span>
+      </div>
+
+      {saudeBaixa && (
+        <div style={{
+          background: '#ffeaea', border: '2px solid var(--vermelho)', borderRadius: 10,
+          padding: '10px 14px', marginBottom: 12, fontSize: 12, color: '#b00', fontWeight: 900
+        }}>
+          ⚠️ Saúde abaixo de 30! Você não pode trabalhar. Faça um tratamento!
         </div>
       )}
 
-      <CampinhoSection jogadorID={jogadorID} jogador={jogador} setJogador={setJogador} mostrarNotificacao={mostrarNotificacao} setLevelUp={setLevelUp} />
+      <div className="pf-inv-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))' }}>
+        {TRATAMENTOS.map(t => {
+          const custo = t.custoBase + t.custoNivel * jogador.nivel
+          const semDinheiro = jogador.dinheiro_mao < custo
+          const isLoading = loading === t.id
+          return (
+            <div key={t.id} className="pf-inv-card" style={{ borderColor: semDinheiro ? '#ccc' : 'var(--azul-claro)' }}>
+              <div className="pf-inv-top">
+                <span className="pf-inv-icon">{t.icone}</span>
+              </div>
+              <div className="pf-inv-name">{t.nome}</div>
+              <div className="pf-inv-desc">{t.desc}</div>
+              <div className="pf-inv-desc" style={{ color: 'var(--azul)', fontWeight: 900 }}>
+                {t.ganhos(jogador.nivel)}
+              </div>
+              <div className="pf-inv-actions">
+                <button
+                  className={`btn-work btn-small${semDinheiro ? '' : ' btn-verde'}`}
+                  onClick={() => fazerTratamento(t.id)}
+                  disabled={isLoading || semDinheiro}
+                >
+                  {isLoading ? '...' : `R$ ${fmt(custo)}`}
+                </button>
+              </div>
+            </div>
+          )
+        })}
+      </div>
     </div>
   )
 }
@@ -557,6 +720,59 @@ function CampinhoSection({ jogadorID, jogador, setJogador, mostrarNotificacao, s
   )
 }
 
+const CAT_ICONE = { moto: '🏍️', carro: '🚗', apartamento: '🏢' }
+const CAT_NOME = { moto: 'MOTOS', carro: 'CARROS', apartamento: 'IMÓVEIS' }
+
+function PatrimonioSection({ jogadorID }) {
+  const [dados, setDados] = useState(null)
+
+  useEffect(() => {
+    if (!jogadorID) return
+    API.get('/api/patrimonio/' + jogadorID).then(setDados).catch(() => {})
+  }, [jogadorID])
+
+  if (!dados || !dados.itens || dados.itens.length === 0) return null
+
+  // Agrupar por categoria
+  const grupos = {}
+  dados.itens.forEach(item => {
+    const cat = item.categoria || 'outro'
+    if (!grupos[cat]) grupos[cat] = []
+    grupos[cat].push(item)
+  })
+
+  return (
+    <div className="pf-section">
+      <div className="pf-section-header">
+        <h3>🏆 MEU PATRIMÔNIO</h3>
+        <span className="pf-section-badge">R$ {fmt(dados.valor_total)}</span>
+      </div>
+
+      {['moto', 'carro', 'apartamento'].map(cat => {
+        const itens = grupos[cat]
+        if (!itens || itens.length === 0) return null
+        return (
+          <div key={cat} className="pat-grupo">
+            <div className="pat-grupo-titulo">{CAT_ICONE[cat]} {CAT_NOME[cat]}</div>
+            <div className="pat-grid">
+              {itens.map(item => (
+                <div key={item.id} className="pat-card">
+                  <div className="pat-icone">{item.icone}</div>
+                  <div className="pat-info">
+                    <div className="pat-nome">{item.nome}{item.quantidade > 1 ? ` x${item.quantidade}` : ''}</div>
+                    <div className="pat-desc">{item.descricao}</div>
+                    <div className="pat-valor">R$ {fmt(item.preco)}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
 const CASA_IMGS = {
   basica: '/casas/init-casa-simples.png',
   media: '/casas/init-casa-media.png',
@@ -565,7 +781,7 @@ const CASA_IMGS = {
 const CASA_NOMES = { basica: 'Casa Básica', media: 'Casa Média', top: 'Casa Top' }
 
 function CasaCard({ jogadorID, jogador, setJogador, mostrarNotificacao, setLevelUp }) {
-  const [casa, setCasa] = useState(null)
+  const [casa, setCasa] = useState({ tipo: '' })
   const [casas, setCasas] = useState([])
   const [showModal, setShowModal] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -573,9 +789,9 @@ function CasaCard({ jogadorID, jogador, setJogador, mostrarNotificacao, setLevel
   const carregar = useCallback(() => {
     if (!jogadorID) return
     API.get('/api/casa/' + jogadorID).then(res => {
-      setCasa(res.casa)
+      setCasa(res.casa || { tipo: '' })
       if (res.casas_disponiveis) setCasas(res.casas_disponiveis)
-    }).catch(() => {})
+    }).catch(() => { setCasa({ tipo: '' }) })
   }, [jogadorID])
 
   useEffect(() => { carregar() }, [carregar])
@@ -597,11 +813,10 @@ function CasaCard({ jogadorID, jogador, setJogador, mostrarNotificacao, setLevel
 
   // Só mostra a partir da Série C (nível 18+)
   if (!jogador || jogador.nivel < 18) return null
-  if (!casa) return null
 
-  async function comprar(tipo) {
+  async function comprar(tipo, pagarCom) {
     setLoading(true)
-    const res = await API.post('/api/casa/comprar', { jogador_id: jogadorID, tipo })
+    const res = await API.post('/api/casa/comprar', { jogador_id: jogadorID, tipo, pagar_com: pagarCom })
     if (res.sucesso) { if (res.jogador) setJogador(res.jogador); mostrarNotificacao(res.mensagem, 'sucesso'); carregar(); setShowModal(false) }
     else mostrarNotificacao(res.mensagem, 'erro')
     setLoading(false)
@@ -662,10 +877,15 @@ function CasaCard({ jogadorID, jogador, setJogador, mostrarNotificacao, setLevel
                       <span>⚡ +{c.energia_quant} energia a cada {c.energia_intervalo_min}min</span>
                       <span className="casa-modal-bonus">{det.bonus}</span>
                     </div>
-                    <div className="casa-modal-preco">R$ {c.preco}</div>
-                    <button className="btn-work btn-verde" onClick={() => comprar(c.tipo)} disabled={loading} style={{ width: '100%' }}>
-                      Alugar
-                    </button>
+                    <div className="casa-modal-preco">💰 R$ {fmt(c.preco)} ou 🪙 {c.preco_moedas} moedas</div>
+                    <div style={{ display: 'flex', gap: 6 }}>
+                      <button className="btn-work btn-verde" onClick={() => comprar(c.tipo, 'dinheiro')} disabled={loading} style={{ flex: 1, fontSize: 12 }}>
+                        💰 R$ {fmt(c.preco)}
+                      </button>
+                      <button className="btn-work btn-azul" onClick={() => comprar(c.tipo, 'moedas')} disabled={loading} style={{ flex: 1, fontSize: 12 }}>
+                        🪙 {c.preco_moedas}
+                      </button>
+                    </div>
                   </div>
                 )
               })}

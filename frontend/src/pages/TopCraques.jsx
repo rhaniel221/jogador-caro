@@ -1,11 +1,31 @@
 import React, { useState, useEffect } from 'react'
+import ReactDOM from 'react-dom'
 import { useGame } from '../context/GameContext'
 import API from '../api'
 import { fmt, gerarDescricaoItem } from '../utils'
 
+const ELO_TIERS = [
+  { min: 190, id: 'desafiante', nome: 'Desafiante' },
+  { min: 160, id: 'grao-mestre', nome: 'Grão-Mestre' },
+  { min: 135, id: 'mestre', nome: 'Mestre' },
+  { min: 100, id: 'diamante', nome: 'Diamante' },
+  { min: 72, id: 'esmeralda', nome: 'Esmeralda' },
+  { min: 50, id: 'platina', nome: 'Platina' },
+  { min: 30, id: 'ouro', nome: 'Ouro' },
+  { min: 20, id: 'prata', nome: 'Prata' },
+  { min: 10, id: 'bronze', nome: 'Bronze' },
+  { min: 0, id: 'ferro', nome: 'Ferro' },
+]
+function getElo(nivel) {
+  return ELO_TIERS.find(t => nivel >= t.min) || ELO_TIERS[ELO_TIERS.length - 1]
+}
+
+const CAT_NOME = { moto: 'Motos', carro: 'Carros', apartamento: 'Imóveis' }
+
 function PerfilModal({ jogadorID, targetID, onClose, getAvatar }) {
   const [perfil, setPerfil] = useState(null)
   const [loading, setLoading] = useState(true)
+  const cardRef = React.useRef(null)
 
   useEffect(() => {
     if (!targetID) return
@@ -15,12 +35,31 @@ function PerfilModal({ jogadorID, targetID, onClose, getAvatar }) {
       .catch(() => setLoading(false))
   }, [targetID, jogadorID])
 
-  if (loading) return (
+  // Scroll card pro topo quando carrega
+  useEffect(() => {
+    if (!loading && cardRef.current) cardRef.current.scrollTop = 0
+  }, [loading])
+
+  // Trava scroll do fundo quando modal abre
+  useEffect(() => {
+    const el = document.querySelector('.game-container')
+    if (el) el.style.overflow = 'hidden'
+    document.body.style.overflow = 'hidden'
+    document.documentElement.style.overflow = 'hidden'
+    return () => {
+      if (el) el.style.overflow = ''
+      document.body.style.overflow = ''
+      document.documentElement.style.overflow = ''
+    }
+  }, [])
+
+  if (loading) return ReactDOM.createPortal(
     <div className="modal-overlay" onClick={onClose}>
       <div className="pm-card" onClick={e => e.stopPropagation()}>
         <div style={{ textAlign: 'center', padding: 40, fontWeight: 900 }}>Carregando...</div>
       </div>
-    </div>
+    </div>,
+    document.body
   )
 
   if (!perfil) return null
@@ -28,24 +67,72 @@ function PerfilModal({ jogadorID, targetID, onClose, getAvatar }) {
   const winRate = perfil.vitorias + perfil.derrotas > 0
     ? Math.round((perfil.vitorias / (perfil.vitorias + perfil.derrotas)) * 100) : 0
   const poder = perfil.forca + perfil.velocidade + perfil.habilidade
+  const elo = getElo(perfil.nivel)
+
+  // Agrupar patrimônio por categoria
+  const patGrupos = {}
+  if (perfil.patrimonio) {
+    perfil.patrimonio.forEach(p => {
+      if (!patGrupos[p.categoria]) patGrupos[p.categoria] = []
+      patGrupos[p.categoria].push(p)
+    })
+  }
 
   async function adicionarAmigo() {
     const res = await API.post('/api/amizade/solicitar', { jogador_id: jogadorID, amigo_id: targetID })
     if (res.sucesso) setPerfil(p => ({ ...p, solicitacao_pendente: true }))
   }
 
-  return (
+  return ReactDOM.createPortal(
     <div className="modal-overlay" onClick={onClose}>
-      <div className="pm-card" onClick={e => e.stopPropagation()}>
+      <div className="pm-card" ref={cardRef} onClick={e => e.stopPropagation()}>
         <button className="pm-close" onClick={onClose}>✕</button>
 
-        {/* Banner topo */}
-        <div className="pm-banner">
-          <div className="pm-banner-glow" />
-          <div className="pm-avatar-big">{getAvatar(perfil.avatar)}</div>
+        {/* Banner topo com moldura de elo ÉPICA */}
+        <div className={`pm-banner pm-elo-${elo.id}`}>
+          <div className="pm-banner-bg" />
+          <div className="pm-rays" />
+          <div className="pm-particles">
+            {Array.from({ length: 12 }, (_, i) => (
+              <span key={i} className="pm-particle" style={{
+                left: (8 + Math.random() * 84) + '%',
+                animationDelay: (Math.random() * 3) + 's',
+                animationDuration: (2 + Math.random() * 2) + 's',
+                fontSize: (8 + Math.random() * 10) + 'px',
+              }}>{['✦','✧','⬥','◆','★'][Math.floor(Math.random() * 5)]}</span>
+            ))}
+          </div>
+
+          <div className="pm-elo-showcase">
+            <div className="pm-elo-glow" />
+            <div className="pm-elo-ring" />
+            <img src={`/elos/${elo.id}.png`} alt={elo.nome} className="pm-elo-image"
+              onError={e => { e.target.style.display = 'none' }} />
+            <div className="pf-avatar" style={{ fontSize: 44, width: 64, height: 64, position: 'relative', zIndex: 2 }}>{getAvatar(perfil.avatar)}</div>
+          </div>
+
           <div className="pm-nome-big">{perfil.nome}</div>
-          <div className="pm-rank-badge">{perfil.rank || 'Peladeiro'}</div>
+          {perfil.clube_nome && (
+            <div className="pm-clube-row">
+              <span className="pm-clube-badge" style={{ background: `linear-gradient(135deg, ${perfil.clube_cor1 || '#555'}, ${perfil.clube_cor2 || '#333'})` }}>
+                {perfil.clube_icone} {perfil.clube_nome}
+              </span>
+              {perfil.numero_camisa > 0 && <span className="pm-camisa-num">#{perfil.numero_camisa}</span>}
+            </div>
+          )}
+          <div className="pm-badges-row">
+            <span className="pm-rank-badge">{perfil.rank || 'Peladeiro'}</span>
+            <span className={`pm-elo-badge pm-elo-badge-${elo.id}`}>{elo.nome}</span>
+          </div>
           {perfil.titulo && <div className="pm-titulo-tag">{perfil.titulo}</div>}
+          {perfil.titulos && (
+            <div className="pm-titulos-row">
+              {perfil.titulos.split(',').filter(Boolean).map((t, i) => (
+                <span key={i} className={`pf-hero-titulo-badge${t === perfil.titulo ? ' pf-hero-titulo-ativo' : ''}`}
+                  style={{ fontSize: 9 }}>{t}</span>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Stats principais */}
@@ -95,6 +182,28 @@ function PerfilModal({ jogadorID, targetID, onClose, getAvatar }) {
           <div className="pm-poder-total">Poder Total: <strong>{poder}</strong></div>
         </div>
 
+        {/* Patrimônio */}
+        {perfil.patrimonio && perfil.patrimonio.length > 0 && (
+          <div className="pm-pat-section">
+            <div className="pm-pat-title">🏆 Patrimônio <span style={{ fontSize: 11, color: '#888' }}>R$ {fmt(perfil.patrimonio_total)}</span></div>
+            {['moto', 'carro', 'apartamento'].map(cat => {
+              const itens = patGrupos[cat]
+              if (!itens) return null
+              return (
+                <div key={cat} className="pm-pat-grupo">
+                  <div className="pm-pat-cat">{CAT_NOME[cat]}</div>
+                  {itens.map(p => (
+                    <div key={p.id} className="pm-pat-item">
+                      <span>{p.icone} {p.nome}{p.quantidade > 1 ? ` x${p.quantidade}` : ''}</span>
+                      <span style={{ color: 'var(--verde)', fontWeight: 900 }}>R$ {fmt(p.preco)}</span>
+                    </div>
+                  ))}
+                </div>
+              )
+            })}
+          </div>
+        )}
+
         {/* Código de amigo */}
         <div className="pm-code-box">
           <span>Código:</span>
@@ -127,7 +236,8 @@ function PerfilModal({ jogadorID, targetID, onClose, getAvatar }) {
           {perfil.eh_amigo && <div className="pm-status-tag pm-status-amigo">✅ Amigos</div>}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   )
 }
 
@@ -212,13 +322,16 @@ export default function TopCraques() {
             {lista.map((j, i) => {
               const medalha = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i + 1}`
               const isMeu = j.id === jogadorID
+              const jElo = getElo(j.nivel)
               return (
                 <div key={j.id} className={`ranking-row${isMeu ? ' ranking-meu' : ''}`}
                   onClick={() => !isMeu && setPerfilTarget(j.id)}>
                   <span className="ranking-pos">{medalha}</span>
+                  <img src={`/elos/${jElo.id}.png`} alt={jElo.nome} className="ranking-elo-img"
+                    onError={e => { e.target.style.display = 'none' }} />
                   <div className="ranking-info">
                     <strong>{j.nome} {isMeu && <span style={{ color: 'var(--amarelo)', fontSize: 10 }}>(você)</span>}</strong>
-                    <span className="ranking-sub">Nv.{j.nivel} · ⭐{j.pontos_fama} · {j.vitorias}V/{j.derrotas}D</span>
+                    <span className="ranking-sub">Nv.{j.nivel} · {jElo.nome} · ⭐{j.pontos_fama} · {j.vitorias}V/{j.derrotas}D</span>
                   </div>
                   <span className="ranking-valor">
                     {modo === 'fama' ? `⭐${j.pontos_fama}` :

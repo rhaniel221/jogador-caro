@@ -122,24 +122,24 @@ func calcEnergiaMaxBase(nivel int) int {
 }
 
 func calcularXPProximo(nivel int) int {
-	// Curva piecewise calibrada por faixa:
-	// Nível  1 →  12  |  5 →  60  | 10 → 170   (fácil)
-	// Nível 11 → 228  | 15 → 480  | 20 → 880   (médio)
-	// Nível 21 → 1302 | 30 → 3150 | 50 → 8250  (médio-alto)
-	// Nível 51 → 15555 | 75 → 33875 | 100 → 59000 (desafiador)
+	// Curva rebalanceada — ~15 dias intensivos até L40
+	// Nível  1 →  15  |  5 →  75  | 10 → 200   (inicio rápido)
+	// Nível 11 → 583  | 15 → 975  | 20 → 1600  (progressão firme)
+	// Nível 21 → 3276 | 30 → 6300 | 40 → 10800 (desafiador)
+	// Nível 50 → 16500 | 75 → 55875 | 100 → 101500 (endgame pesado)
 	n := nivel
 	switch {
 	case n <= 10:
 		if n == 1 {
-			return 12
+			return 15
 		}
-		return n*n + n*7
+		return n*n + n*10
 	case n <= 20:
-		return n*n*2 + n*8
+		return n*n*3 + n*20
 	case n <= 50:
-		return n*n*3 + n*12
+		return n*n*6 + n*30
 	default:
-		return n*n*5 + n*80 - 500
+		return n*n*10 + n*150 - 800
 	}
 }
 
@@ -163,11 +163,11 @@ func getRank(nivel int) string {
 
 func findItemByID(id int) *Item {
 	var item Item
-	err := db.Conn.QueryRow(`SELECT id, nome, descricao, preco, tipo, icone, COALESCE(raridade, 'comum'), nivel_min, nivel_max,
+	err := db.Conn.QueryRow(`SELECT id, nome, descricao, preco, COALESCE(preco_moedas, 0), tipo, icone, COALESCE(raridade, 'comum'), nivel_min, nivel_max,
 		bonus_forca, bonus_velocidade, bonus_habilidade, bonus_saude_max, bonus_energia_max,
 		bonus_vit_max, recupera_energia, recupera_saude, slots_mochila, cooldown_minutos
 		FROM cat_itens WHERE id=$1`, id).Scan(
-		&item.ID, &item.Nome, &item.Descricao, &item.Preco, &item.Tipo, &item.Icone,
+		&item.ID, &item.Nome, &item.Descricao, &item.Preco, &item.PrecoMoedas, &item.Tipo, &item.Icone,
 		&item.Raridade, &item.NivelMin, &item.NivelMax, &item.BonusForca, &item.BonusVelocidade,
 		&item.BonusHabilidade, &item.BonusSaudeMax, &item.BonusEnergiaMax,
 		&item.BonusVitMax, &item.RecuperaEnergia, &item.RecuperaSaude, &item.SlotsMochila,
@@ -276,24 +276,26 @@ func calcCustoEnergia(energiaBase, nivel int, tier string) int {
 
 func calcRecompensaTrabalho(trabalho *Trabalho, nivel int) (ganhoMin, ganhoMax, ganhoXP int) {
 	lvl := float64(nivel)
-	fatorMin := 1.0 + lvl*0.035
-	fatorMax := 1.0 + lvl*0.040
-	bonusXP := int(lvl * 0.6)
+	// Dinheiro: crescimento reduzido (~30% menos que antes)
+	fatorMin := 1.0 + lvl*0.022
+	fatorMax := 1.0 + lvl*0.025
+	// XP bonus por nível: mais contido
+	bonusXP := int(lvl * 0.4)
 
 	if nivel >= 30 {
-		fatorMin += 0.08
-		fatorMax += 0.10
-		bonusXP += 3
+		fatorMin += 0.05
+		fatorMax += 0.06
+		bonusXP += 2
 	}
 	if nivel >= 60 {
-		fatorMin += 0.15
-		fatorMax += 0.18
-		bonusXP += 6
+		fatorMin += 0.10
+		fatorMax += 0.12
+		bonusXP += 4
 	}
 	if nivel >= 90 {
-		fatorMin += 0.20
-		fatorMax += 0.25
-		bonusXP += 10
+		fatorMin += 0.15
+		fatorMax += 0.18
+		bonusXP += 8
 	}
 
 	ganhoMin = int(float64(trabalho.GanhoMin)*fatorMin + 0.5)
@@ -332,29 +334,29 @@ var tierOrdem = []string{
 
 func getTierDoJogador(nivel int) string {
 	switch {
-	case nivel >= 150:
+	case nivel >= 190:
 		return "Lenda"
-	case nivel >= 120:
+	case nivel >= 160:
 		return "Ídolo"
-	case nivel >= 100:
+	case nivel >= 135:
 		return "Bola de Ouro"
-	case nivel >= 85:
+	case nivel >= 115:
 		return "Mundialito"
-	case nivel >= 72:
+	case nivel >= 100:
 		return "Seleçoca"
-	case nivel >= 60:
+	case nivel >= 85:
 		return "Liga dos Craques"
-	case nivel >= 50:
+	case nivel >= 72:
 		return "Europa"
-	case nivel >= 42:
+	case nivel >= 60:
 		return "Continentão"
-	case nivel >= 36:
+	case nivel >= 50:
 		return "Copinha Nacional"
-	case nivel >= 30:
+	case nivel >= 40:
 		return "Série A"
-	case nivel >= 24:
+	case nivel >= 30:
 		return "Série B"
-	case nivel >= 18:
+	case nivel >= 20:
 		return "Série C"
 	case nivel >= 10:
 		return "Amador"
@@ -428,13 +430,15 @@ func getJogador(id int) (*JogadorData, error) {
 		       saude, saude_max, forca, velocidade, habilidade, dinheiro_mao, dinheiro_banco,
 		       pontos_fama, vitorias, derrotas, avatar, capacidade_mochila,
 		       moedas, cooldown_premium, titulo, avatares_premium, itens_fama, tutorial_step,
-		       codigo_amigo, inventario_publico, posicao, titulos, COALESCE(pvp_streak, 0)
+		       codigo_amigo, inventario_publico, posicao, titulos, COALESCE(pvp_streak, 0),
+		       COALESCE(clube_id,0), COALESCE(numero_camisa,0)
 		FROM jogadores WHERE id = $1`, id).Scan(
 		&j.ID, &j.Nome, &j.Nivel, &j.XP, &j.XPProximo, &j.Energia, &j.EnergiaMax,
 		&j.Vitalidade, &j.VitalidadeMax, &j.Saude, &j.SaudeMax, &j.Forca, &j.Velocidade,
 		&j.Habilidade, &j.DinheiroMao, &j.DinheiroBanco, &j.PontosFama, &j.Vitorias, &j.Derrotas, &j.Avatar,
 		&j.CapacidadeMochila, &j.Moedas, &j.CooldownPremium, &j.Titulo, &j.AvataresPremium, &j.ItensFama, &j.TutorialStep,
-		&j.CodigoAmigo, &j.InventarioPublico, &j.Posicao, &j.Titulos, &j.PvpStreak)
+		&j.CodigoAmigo, &j.InventarioPublico, &j.Posicao, &j.Titulos, &j.PvpStreak,
+		&j.ClubeID, &j.NumeroCamisa)
 	if err != nil {
 		return nil, err
 	}
@@ -455,13 +459,15 @@ func saveJogador(j *JogadorData) error {
 		habilidade=$12, dinheiro_mao=$13, dinheiro_banco=$14, pontos_fama=$15,
 		vitorias=$16, derrotas=$17, avatar=$18, capacidade_mochila=$19,
 		moedas=$20, cooldown_premium=$21, titulo=$22, avatares_premium=$23, itens_fama=$24, tutorial_step=$25,
-		codigo_amigo=$26, inventario_publico=$27, posicao=$28, titulos=$29, pvp_streak=$30, ultima_atualizacao=NOW()
-		WHERE id=$31`,
+		codigo_amigo=$26, inventario_publico=$27, posicao=$28, titulos=$29, pvp_streak=$30,
+		clube_id=$31, numero_camisa=$32, ultima_atualizacao=NOW()
+		WHERE id=$33`,
 		j.Nivel, j.XP, j.XPProximo, j.Energia, j.EnergiaMax, j.Vitalidade, j.VitalidadeMax,
 		j.Saude, j.SaudeMax, j.Forca, j.Velocidade, j.Habilidade, j.DinheiroMao, j.DinheiroBanco,
 		j.PontosFama, j.Vitorias, j.Derrotas, j.Avatar, j.CapacidadeMochila,
 		j.Moedas, j.CooldownPremium, j.Titulo, j.AvataresPremium, j.ItensFama, j.TutorialStep,
-		j.CodigoAmigo, j.InventarioPublico, j.Posicao, j.Titulos, j.PvpStreak, j.ID)
+		j.CodigoAmigo, j.InventarioPublico, j.Posicao, j.Titulos, j.PvpStreak,
+		j.ClubeID, j.NumeroCamisa, j.ID)
 	return err
 }
 
@@ -514,7 +520,7 @@ func regenerarVitalidade(j *JogadorData) int64 {
 }
 
 func regenerarSaude(j *JogadorData) int64 {
-	novoVal, proximo := regenerarRecurso(j.ID, "saude_ultima_recarga", "saude", j.Saude, j.SaudeMax, 10*time.Minute, 5)
+	novoVal, proximo := regenerarRecurso(j.ID, "saude_ultima_recarga", "saude", j.Saude, j.SaudeMax, 10*time.Minute, 9)
 	j.Saude = novoVal
 	return proximo
 }
@@ -713,18 +719,10 @@ func contarVariedadePorTier(jogadorID int) map[string]int {
 }
 
 func calcularBonusVariedadeXP(diferentesHoje, ganhoXP int, cfg ConfigProgressao) int {
-	var fator float64
-	switch {
-	case diferentesHoje >= 5:
-		fator = cfg.VariedadeBonus5
-	case diferentesHoje >= 4:
-		fator = cfg.VariedadeBonus4
-	case diferentesHoje >= 3:
-		fator = cfg.VariedadeBonus3
-	default:
-		return 0
+	if diferentesHoje >= 3 {
+		return int(float64(ganhoXP) * cfg.VariedadeBonus3)
 	}
-	return int(float64(ganhoXP) * fator)
+	return 0
 }
 
 func clampInt(val, lo, hi int) int {
@@ -1175,167 +1173,201 @@ func GerarEventoTrabalho(jogador *JogadorData, ganhoDin, ganhoXP int) (*EventoTr
 func AplicarEventoTrabalho(jogador *JogadorData, eventoID, opcaoID string, ganhoDin, ganhoXP int) *ResultadoEvento {
 	resultado := &ResultadoEvento{OpcaoID: opcaoID, Sucesso: true}
 
+	// Escala baseada no nível do jogador para manter relevância
+	lvl := jogador.Nivel
+	famaBase := 5 + lvl/3    // 5-18 dependendo do nível
+	saudeBase := 8 + lvl/4   // 8-18
+	energiaBase := 3 + lvl/8 // 3-8
+
 	switch eventoID {
 	case "olheiro":
 		if opcaoID == "impressionar" {
-			// 60% sucesso: +80% XP, 40% falha: -30% dinheiro
-			if rand.Intn(100) < 60 {
-				bonus := int(float64(ganhoXP) * 0.8)
-				resultado.BonusXP = bonus
-				resultado.Texto = "O olheiro ficou impressionado! Seu nome está na lista dos craques!"
+			if rand.Intn(100) < 55 {
+				resultado.BonusXP = int(float64(ganhoXP) * 1.5)
+				resultado.BonusFama = famaBase + rand.Intn(famaBase)
+				resultado.Texto = "O olheiro ficou IMPRESSIONADO! Seu nome circula nos clubes grandes! Fama e XP massivos!"
 			} else {
-				perda := int(float64(ganhoDin) * 0.3)
-				resultado.BonusDin = -perda
-				resultado.Texto = "Errou o drible e caiu de cara... O olheiro foi embora."
+				resultado.BonusDin = -int(float64(ganhoDin) * 0.8)
+				resultado.BonusEnergia = -(energiaBase + rand.Intn(3))
+				resultado.PerdaSaude = saudeBase / 2
+				resultado.Texto = "Errou o drible feio e caiu de cara... Olheiro foi embora rindo. Vergonha total."
 				resultado.Sucesso = false
 			}
 		} else {
-			resultado.BonusXP = int(float64(ganhoXP) * 0.15)
-			resultado.Texto = "Jogou bem e seguro. O olheiro anotou seu nome."
+			resultado.BonusXP = int(float64(ganhoXP) * 0.4)
+			resultado.BonusFama = famaBase / 2
+			resultado.Texto = "Jogou seguro. O olheiro anotou seu nome, mas sem destaque."
 		}
 
 	case "treta":
 		if opcaoID == "apartar" {
-			resultado.BonusFama = 3 + rand.Intn(5)
-			resultado.BonusXP = int(float64(ganhoXP) * 0.2)
-			resultado.Texto = "Você acalmou todo mundo! Respeito no vestiário."
+			resultado.BonusFama = famaBase + rand.Intn(famaBase)
+			resultado.BonusXP = int(float64(ganhoXP) * 0.5)
+			resultado.BonusEnergia = energiaBase / 2
+			resultado.Texto = "Você acalmou todo mundo! Virou referência no vestiário. Respeito total!"
 		} else {
-			resultado.BonusDin = int(float64(ganhoDin) * 0.5)
-			resultado.PerdaSaude = 3 + rand.Intn(5)
-			resultado.Texto = "Porrada! Ganhou moral mas saiu machucado."
+			resultado.BonusDin = int(float64(ganhoDin) * 1.0)
+			resultado.PerdaSaude = saudeBase + rand.Intn(saudeBase/2)
+			resultado.PerdaFama = famaBase / 2
+			resultado.BonusEnergia = -(energiaBase)
+			resultado.Texto = "Porrada feia! Ganhou moral mas saiu todo machucado. Precisou de gelo."
 		}
 
 	case "chuva":
 		if opcaoID == "lama" {
-			resultado.BonusXP = int(float64(ganhoXP) * 0.5)
-			resultado.BonusEnergia = -(2 + rand.Intn(3))
-			resultado.Texto = "Jogou na lama como guerreiro! Treino insano!"
+			resultado.BonusXP = int(float64(ganhoXP) * 1.2)
+			resultado.BonusEnergia = -(energiaBase + rand.Intn(3))
+			resultado.PerdaSaude = saudeBase / 3
+			resultado.Texto = "Jogou na lama como guerreiro! Treino insano, evolução brutal!"
 		} else {
-			resultado.BonusDin = -int(float64(ganhoDin) * 0.3)
-			resultado.Texto = "Esperou a chuva mas perdeu tempo. Rendeu menos."
+			resultado.BonusDin = -int(float64(ganhoDin) * 0.5)
+			resultado.BonusEnergia = -(energiaBase / 2)
+			resultado.Texto = "Esperou demais, perdeu metade do treino. Rendeu pouco."
 		}
 
 	case "empresario":
 		if opcaoID == "aceitar" {
-			resultado.BonusDin = int(float64(ganhoDin) * 2)
-			resultado.PerdaFama = 5 + rand.Intn(8)
-			resultado.Texto = "Dinheiro fácil! Mas as fofocas já começaram..."
+			resultado.BonusDin = int(float64(ganhoDin) * 5)
+			resultado.PerdaFama = famaBase*2 + rand.Intn(famaBase)
+			resultado.PerdaSaude = saudeBase / 2
+			resultado.Texto = "Dinheiro absurdo no bolso! Mas saiu em todos os jornais como mercenário..."
 		} else {
-			resultado.BonusFama = 5 + rand.Intn(5)
+			resultado.BonusFama = famaBase + rand.Intn(famaBase)
 			if rand.Intn(100) < 40 {
-				resultado.BonusDin = int(float64(ganhoDin) * 0.5)
-				resultado.Texto = "Recusou com classe! E o presidente te deu um bônus por honestidade!"
+				resultado.BonusDin = int(float64(ganhoDin) * 1.5)
+				resultado.BonusXP = int(float64(ganhoXP) * 0.5)
+				resultado.Texto = "Recusou com classe! O presidente te deu bônus gordo por honestidade!"
 			} else {
-				resultado.Texto = "Recusou com firmeza. Sua reputação cresceu!"
+				resultado.BonusXP = int(float64(ganhoXP) * 0.3)
+				resultado.Texto = "Recusou firme. Sua reputação disparou nos bastidores!"
 			}
 		}
 
 	case "torcida":
 		if opcaoID == "autografo" {
-			resultado.BonusFama = 3 + rand.Intn(5)
-			resultado.BonusEnergia = 2 + rand.Intn(3)
-			resultado.Texto = "Os fãs te amam! A energia da torcida te motivou!"
+			resultado.BonusFama = famaBase + rand.Intn(famaBase)
+			resultado.BonusEnergia = energiaBase + rand.Intn(3)
+			resultado.BonusXP = int(float64(ganhoXP) * 0.3)
+			resultado.Texto = "A torcida te carregou! Energia renovada, fama nas alturas!"
 		} else {
-			resultado.BonusXP = int(float64(ganhoXP) * 0.25)
-			resultado.Texto = "Focou no treino. A disciplina compensa!"
+			resultado.BonusXP = int(float64(ganhoXP) * 0.7)
+			resultado.PerdaFama = famaBase / 3
+			resultado.Texto = "Focou 100% no treino. Rendeu muito, mas a torcida ficou chateada."
 		}
 
 	case "lesao_leve":
 		if opcaoID == "continuar" {
-			if rand.Intn(100) < 50 {
-				resultado.BonusXP = int(float64(ganhoXP) * 0.6)
-				resultado.BonusFama = 2
-				resultado.Texto = "Jogou no sacrifício e brilhou! Que raça!"
+			if rand.Intn(100) < 45 {
+				resultado.BonusXP = int(float64(ganhoXP) * 1.5)
+				resultado.BonusFama = famaBase
+				resultado.Texto = "Jogou no sacrifício e BRILHOU! Que raça! A torcida gritou seu nome!"
 			} else {
-				resultado.PerdaSaude = 5 + rand.Intn(8)
-				resultado.Texto = "Forçou demais e piorou a lesão..."
+				resultado.PerdaSaude = saudeBase + rand.Intn(saudeBase)
+				resultado.BonusEnergia = -(energiaBase + rand.Intn(energiaBase))
+				resultado.Texto = "Forçou demais e PIOROU MUITO a lesão... Vai precisar de tratamento sério."
 				resultado.Sucesso = false
 			}
 		} else {
-			resultado.BonusEnergia = 3
-			resultado.Texto = "Descansou e voltou melhor. Inteligente!"
+			resultado.BonusEnergia = energiaBase
+			resultado.PerdaSaude = saudeBase / 4
+			resultado.Texto = "Parou e cuidou do corpo. Recuperou energia mas perdeu um pouco de saúde."
 		}
 
 	case "reporter":
 		if opcaoID == "entrevista" {
-			if rand.Intn(100) < 60 {
-				resultado.BonusFama = 5 + rand.Intn(8)
-				resultado.Texto = "Entrevista bombou nas redes! Você é tendência!"
+			if rand.Intn(100) < 55 {
+				resultado.BonusFama = famaBase*2 + rand.Intn(famaBase)
+				resultado.BonusDin = int(float64(ganhoDin) * 0.5)
+				resultado.Texto = "VIRALIZOU! Entrevista bombou, patrocínios batendo na porta!"
 			} else {
-				resultado.PerdaFama = 3 + rand.Intn(5)
-				resultado.Texto = "Falou demais e a fala saiu errada... Viralizou do jeito ruim."
+				resultado.PerdaFama = famaBase + rand.Intn(famaBase)
+				resultado.BonusEnergia = -(energiaBase)
+				resultado.PerdaSaude = saudeBase / 3
+				resultado.Texto = "Falou MUITO errado ao vivo... Memes, hate, estresse total. Desastre!"
 				resultado.Sucesso = false
 			}
 		} else {
-			resultado.BonusFama = 2
-			resultado.BonusXP = int(float64(ganhoXP) * 0.1)
-			resultado.Texto = "Resposta humilde e certeira. Boa imagem!"
+			resultado.BonusFama = famaBase / 2
+			resultado.BonusXP = int(float64(ganhoXP) * 0.3)
+			resultado.Texto = "Resposta humilde e certeira. Imagem sólida construída."
 		}
 
 	case "gato_campo":
 		if opcaoID == "pegar" {
-			resultado.BonusFama = 4 + rand.Intn(4)
-			resultado.Texto = "Pegou o gato! A torcida gritou seu nome! O gato ronronou."
+			resultado.BonusFama = famaBase + rand.Intn(famaBase)
+			resultado.BonusXP = int(float64(ganhoXP) * 0.3)
+			resultado.Texto = "Pegou o gato e virou meme positivo! Fama explodiu nas redes!"
 		} else {
-			resultado.BonusXP = int(float64(ganhoXP) * 0.15)
-			resultado.Texto = "O gato adorou a bola! Momento fofo viralizou."
-			resultado.BonusFama = 2
+			resultado.BonusXP = int(float64(ganhoXP) * 0.4)
+			resultado.BonusFama = famaBase / 2
+			resultado.BonusEnergia = energiaBase / 2
+			resultado.Texto = "O gato amou a bola! Momento fofo viralizou e você descansou."
 		}
 
 	case "patrao":
 		if opcaoID == "negociar" {
-			if rand.Intn(100) < 45 {
-				resultado.BonusDin = int(float64(ganhoDin) * 1.5)
-				resultado.Texto = "Negociação aprovada! Salário aumentou!"
+			if rand.Intn(100) < 40 {
+				resultado.BonusDin = int(float64(ganhoDin) * 4)
+				resultado.BonusFama = famaBase / 2
+				resultado.Texto = "Negociação ÉPICA! Salário quadruplicou! Você manda no clube agora!"
 			} else {
-				resultado.PerdaFama = 2
-				resultado.Texto = "O presidente não gostou da audácia. Clima pesou..."
+				resultado.PerdaFama = famaBase
+				resultado.BonusEnergia = -(energiaBase)
+				resultado.PerdaSaude = saudeBase / 3
+				resultado.Texto = "O presidente ficou FURIOSO. Clima pesadíssimo, estresse total..."
 				resultado.Sucesso = false
 			}
 		} else {
-			resultado.BonusFama = 3
-			resultado.BonusXP = int(float64(ganhoXP) * 0.15)
-			resultado.Texto = "Humildade conquista! O presidente te respeita mais."
+			resultado.BonusFama = famaBase
+			resultado.BonusXP = int(float64(ganhoXP) * 0.5)
+			resultado.BonusDin = int(float64(ganhoDin) * 0.3)
+			resultado.Texto = "Humildade conquista! O presidente te respeita e te deu um bônus."
 		}
 
 	case "rival":
 		if opcaoID == "provocar" {
-			if rand.Intn(100) < 50 {
-				resultado.BonusXP = int(float64(ganhoXP) * 0.4)
-				resultado.BonusFama = 3
-				resultado.Texto = "A provocação virou motivação! Jogou demais depois!"
+			if rand.Intn(100) < 45 {
+				resultado.BonusXP = int(float64(ganhoXP) * 1.0)
+				resultado.BonusFama = famaBase + rand.Intn(famaBase/2)
+				resultado.Texto = "HUMILHOU o rival! A provocação virou motivação insana!"
 			} else {
-				resultado.PerdaFama = 3
-				resultado.PerdaSaude = 2
-				resultado.Texto = "A treta esquentou e saiu empurrão..."
+				resultado.PerdaFama = famaBase
+				resultado.PerdaSaude = saudeBase + rand.Intn(saudeBase/2)
+				resultado.BonusEnergia = -(energiaBase + rand.Intn(3))
+				resultado.Texto = "A treta EXPLODIU! Porrada, cartão vermelho, suspensão. Saiu destruído."
 				resultado.Sucesso = false
 			}
 		} else {
-			resultado.BonusFama = 4
-			resultado.Texto = "Ignorou com estilo. A torcida aplaudiu a maturidade!"
+			resultado.BonusFama = famaBase + rand.Intn(famaBase/2)
+			resultado.BonusXP = int(float64(ganhoXP) * 0.3)
+			resultado.Texto = "Ignorou com estilo! A torcida aplaudiu de pé. Maturidade de craque!"
 		}
 
 	case "sonho":
 		if opcaoID == "treinar_dobro" {
-			resultado.BonusXP = int(float64(ganhoXP) * 0.6)
-			resultado.BonusEnergia = -(3 + rand.Intn(3))
-			resultado.Texto = "Treinou como nunca! Exaustor mas evoluiu muito!"
+			resultado.BonusXP = int(float64(ganhoXP) * 1.5)
+			resultado.BonusEnergia = -(energiaBase + rand.Intn(energiaBase))
+			resultado.PerdaSaude = saudeBase / 3
+			resultado.Texto = "Treinou como NUNCA na vida! Evolução absurda mas corpo no limite!"
 		} else {
-			resultado.BonusXP = int(float64(ganhoXP) * 0.2)
-			resultado.BonusEnergia = 2
-			resultado.Texto = "Aproveitou a motivação com equilíbrio. Dia perfeito!"
+			resultado.BonusXP = int(float64(ganhoXP) * 0.5)
+			resultado.BonusEnergia = energiaBase
+			resultado.BonusFama = famaBase / 3
+			resultado.Texto = "Aproveitou a motivação com equilíbrio. Dia produtivo e saudável!"
 		}
 
 	case "apostador":
 		if opcaoID == "aceitar_aposta" {
-			resultado.BonusDin = int(float64(ganhoDin) * 3)
-			resultado.PerdaFama = 10 + rand.Intn(10)
-			resultado.PerdaSaude = 2
-			resultado.Texto = "Dinheiro sujo no bolso... Mas e se descobrirem?"
+			resultado.BonusDin = int(float64(ganhoDin) * 8)
+			resultado.PerdaFama = famaBase*3 + rand.Intn(famaBase*2)
+			resultado.PerdaSaude = saudeBase
+			resultado.BonusEnergia = -(energiaBase)
+			resultado.Texto = "Dinheiro SUJO pesado no bolso... Mas se descobrirem, acabou sua carreira."
 		} else {
-			resultado.BonusFama = 8 + rand.Intn(5)
-			resultado.BonusXP = int(float64(ganhoXP) * 0.3)
-			resultado.Texto = "Denunciou! O clube te premiou pela honestidade!"
+			resultado.BonusFama = famaBase*2 + rand.Intn(famaBase)
+			resultado.BonusXP = int(float64(ganhoXP) * 0.8)
+			resultado.BonusDin = int(float64(ganhoDin) * 1.0)
+			resultado.Texto = "HERÓI! Denunciou a máfia! O clube te premiou com bônus e a fama explodiu!"
 		}
 	}
 

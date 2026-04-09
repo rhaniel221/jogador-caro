@@ -198,6 +198,12 @@ func HandleTrabalhar(w http.ResponseWriter, r *http.Request) {
 	// Regenera energia antes de calcular (corrige dessincronização com o frontend)
 	regenerarEnergia(jogador)
 
+	// Bloqueio por saúde baixa (mínimo 30 para trabalhar)
+	if jogador.Saude < 30 {
+		JsonResp(w, 200, TrabalharResponse{Mensagem: fmt.Sprintf("Saúde muito baixa! (%d/30) Vá ao Perfil e faça tratamentos para se recuperar.", jogador.Saude)})
+		return
+	}
+
 	// Calcula TUDO no backend (anti-cheat)
 	custoEnergia := calcCustoEnergia(trabalho.Energia, jogador.Nivel, trabalho.Tier)
 	ganhoMin, ganhoMax, ganhoXP := calcRecompensaTrabalho(trabalho, jogador.Nivel)
@@ -506,15 +512,25 @@ func HandleComprar(w http.ResponseWriter, r *http.Request) {
 		})
 		return
 	}
-	if jogador.DinheiroMao < item.Preco {
-		JsonResp(w, 200, map[string]interface{}{
-			"sucesso":  false,
-			"mensagem": fmt.Sprintf("Dinheiro insuficiente! Você tem R$ %d mas precisa de R$ %d.", jogador.DinheiroMao, item.Preco),
-		})
-		return
+	if item.PrecoMoedas > 0 {
+		if jogador.Moedas < item.PrecoMoedas {
+			JsonResp(w, 200, map[string]interface{}{
+				"sucesso":  false,
+				"mensagem": fmt.Sprintf("Moedas insuficientes! Você tem %d mas precisa de %d moedas.", jogador.Moedas, item.PrecoMoedas),
+			})
+			return
+		}
+		jogador.Moedas -= item.PrecoMoedas
+	} else {
+		if jogador.DinheiroMao < item.Preco {
+			JsonResp(w, 200, map[string]interface{}{
+				"sucesso":  false,
+				"mensagem": fmt.Sprintf("Dinheiro insuficiente! Você tem R$ %d mas precisa de R$ %d.", jogador.DinheiroMao, item.Preco),
+			})
+			return
+		}
+		jogador.DinheiroMao -= item.Preco
 	}
-
-	jogador.DinheiroMao -= item.Preco
 	db.Conn.Exec(`
 		INSERT INTO inventario (jogador_id, item_id, quantidade, equipado)
 		VALUES ($1, $2, 1, false)
@@ -746,7 +762,8 @@ func HandleEquipar(w http.ResponseWriter, r *http.Request) {
 	jogador.Forca = clampInt(jogador.Forca+item.BonusForca*mult, 1, 9999)
 	jogador.Velocidade = clampInt(jogador.Velocidade+item.BonusVelocidade*mult, 1, 9999)
 	jogador.Habilidade = clampInt(jogador.Habilidade+item.BonusHabilidade*mult, 1, 9999)
-	jogador.SaudeMax = clampInt(jogador.SaudeMax+item.BonusSaudeMax*mult, 10, 9999)
+	// SaudeMax fixo em 100 para todos — itens não alteram mais
+	jogador.SaudeMax = 100
 	jogador.EnergiaMax = clampInt(jogador.EnergiaMax+item.BonusEnergiaMax*mult, 5, 9999)
 	jogador.VitalidadeMax = clampInt(jogador.VitalidadeMax+item.BonusVitMax*mult, 1, 99)
 
@@ -791,8 +808,8 @@ func HandleCombate(w http.ResponseWriter, r *http.Request) {
 		JsonResp(w, 200, CombateResult{Sucesso: false, Mensagem: "Sem vitalidade para lutar! Recupere-se primeiro."})
 		return
 	}
-	if atacante.Saude <= 0 {
-		JsonResp(w, 200, CombateResult{Sucesso: false, Mensagem: "Sem saúde para lutar! Use um item para recuperar."})
+	if atacante.Saude < 10 {
+		JsonResp(w, 200, CombateResult{Sucesso: false, Mensagem: "Saúde muito baixa para lutar! Vá ao Perfil e faça tratamentos para se recuperar."})
 		return
 	}
 
@@ -850,7 +867,7 @@ func HandleCombate(w http.ResponseWriter, r *http.Request) {
 	multFamaPvp := getMultiplicadorEvento("FAMA_PVP")
 
 	if poderAtacante > poderDefensor {
-		// Vitória: atacante não perde saúde, defensor perde pouco
+		// Vitória: atacante perde pouca saúde (desgaste), defensor perde bastante
 		vencedorID = atacante.ID
 		atacante.Vitorias++
 		defensor.Derrotas++
@@ -858,8 +875,11 @@ func HandleCombate(w http.ResponseWriter, r *http.Request) {
 		famaPvp := int(float64(10) * multFamaPvp)
 		atacante.XP += xpPvp
 		atacante.PontosFama += famaPvp
-		defensor.Saude = clampInt(defensor.Saude-(1+rand.Intn(3)), 0, defensor.SaudeMax)
-		mensagem = fmt.Sprintf("VITÓRIA! Você venceu %s! +2 XP, +10 Fama!", defensor.Nome)
+		perdaSaudeVencedor := 2 + rand.Intn(4) // 2-5 desgaste da luta
+		perdaSaudePerdedor := 5 + rand.Intn(6) // 5-10 por perder
+		atacante.Saude = clampInt(atacante.Saude-perdaSaudeVencedor, 0, atacante.SaudeMax)
+		defensor.Saude = clampInt(defensor.Saude-perdaSaudePerdedor, 0, defensor.SaudeMax)
+		mensagem = fmt.Sprintf("VITÓRIA! Você venceu %s! +2 XP, +10 Fama! (-%d Saúde do desgaste)", defensor.Nome, perdaSaudeVencedor)
 
 		// PVP streak: increment on win
 		atacante.PvpStreak++
@@ -871,14 +891,17 @@ func HandleCombate(w http.ResponseWriter, r *http.Request) {
 		// Skill missions: PVP streak
 		updateSkillProgress(atacante.ID, "VITORIA_PVP_STREAK", atacante.PvpStreak)
 	} else {
-		// Derrota: atacante perde pouca saúde (1-4), defensor nada
+		// Derrota: atacante perde bastante saúde, defensor perde pouco
 		vencedorID = defensor.ID
 		atacante.Derrotas++
 		defensor.Vitorias++
 		defensor.PontosFama += 5
+		perdaSaudeAtacante := 6 + rand.Intn(8) // 6-13 por perder
+		perdaSaudeDefensor := 1 + rand.Intn(3) // 1-3 desgaste leve
 		atacante.PontosFama = clampInt(atacante.PontosFama-25, 0, 999999)
-		atacante.Saude = clampInt(atacante.Saude-(1+rand.Intn(4)), 0, atacante.SaudeMax)
-		mensagem = fmt.Sprintf("DERROTA! %s foi mais forte. -25 Fama, -%d Saúde.", defensor.Nome, 1+rand.Intn(4))
+		atacante.Saude = clampInt(atacante.Saude-perdaSaudeAtacante, 0, atacante.SaudeMax)
+		defensor.Saude = clampInt(defensor.Saude-perdaSaudeDefensor, 0, defensor.SaudeMax)
+		mensagem = fmt.Sprintf("DERROTA! %s foi mais forte. -25 Fama, -%d Saúde.", defensor.Nome, perdaSaudeAtacante)
 
 		// PVP streak: reset on loss
 		atacante.PvpStreak = 0
@@ -993,7 +1016,7 @@ func HandleJogadores(w http.ResponseWriter, r *http.Request) {
 }
 
 func HandleItens(w http.ResponseWriter, r *http.Request) {
-	rows, err := db.Conn.Query(`SELECT id, nome, descricao, preco, tipo, icone, COALESCE(raridade, 'comum'), nivel_min, nivel_max,
+	rows, err := db.Conn.Query(`SELECT id, nome, descricao, preco, COALESCE(preco_moedas, 0), tipo, icone, COALESCE(raridade, 'comum'), nivel_min, nivel_max,
 		bonus_forca, bonus_velocidade, bonus_habilidade, bonus_saude_max, bonus_energia_max,
 		bonus_vit_max, recupera_energia, recupera_saude, slots_mochila, cooldown_minutos FROM cat_itens ORDER BY preco`)
 	if err != nil {
@@ -1004,7 +1027,7 @@ func HandleItens(w http.ResponseWriter, r *http.Request) {
 	itens := []Item{}
 	for rows.Next() {
 		var item Item
-		rows.Scan(&item.ID, &item.Nome, &item.Descricao, &item.Preco, &item.Tipo, &item.Icone,
+		rows.Scan(&item.ID, &item.Nome, &item.Descricao, &item.Preco, &item.PrecoMoedas, &item.Tipo, &item.Icone,
 			&item.Raridade, &item.NivelMin, &item.NivelMax, &item.BonusForca, &item.BonusVelocidade,
 			&item.BonusHabilidade, &item.BonusSaudeMax, &item.BonusEnergiaMax,
 			&item.BonusVitMax, &item.RecuperaEnergia, &item.RecuperaSaude, &item.SlotsMochila,
@@ -1242,12 +1265,127 @@ func HandleRecuperarVitalidade(w http.ResponseWriter, r *http.Request) {
 	}
 	jogador.DinheiroMao -= custo
 	jogador.Vitalidade = jogador.VitalidadeMax
-	jogador.Saude = jogador.SaudeMax
+	jogador.SaudeMax = 100
+	jogador.Saude = 100
 	saveJogador(jogador)
 	JsonResp(w, 200, map[string]interface{}{
 		"sucesso":  true,
 		"mensagem": fmt.Sprintf("Você se recuperou totalmente por R$ %d!", custo),
 		"jogador":  jogador,
+	})
+}
+
+// POST /api/tratamento
+func HandleTratamento(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		ErrResp(w, 405, "Método não permitido")
+		return
+	}
+
+	var req struct {
+		JogadorID    int    `json:"jogador_id"`
+		TratamentoID string `json:"tratamento_id"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		ErrResp(w, 400, "Dados inválidos")
+		return
+	}
+
+	jogador, err := getJogador(req.JogadorID)
+	if err != nil {
+		ErrResp(w, 404, "Jogador não encontrado")
+		return
+	}
+
+	type TratamentoInfo struct {
+		Custo      int
+		Saude      int
+		Vitalidade int
+		Forca      int
+		Energia    int
+		Mensagem   string
+	}
+
+	n := jogador.Nivel
+	tratamentos := map[string]TratamentoInfo{
+		"meditacao": {
+			Custo: 8000 + 400*n, Saude: 5 + n/5,
+			Vitalidade: 20 + n/4,
+			Mensagem: "Meditação profunda! Mente limpa, vitalidade renovada!",
+		},
+		"nutricao": {
+			Custo: 12000 + 640*n, Saude: 8 + n/4,
+			Vitalidade: 12 + n/5, Energia: 3 + n/15,
+			Mensagem: "Dieta balanceada! Seu corpo agradece!",
+		},
+		"psicologo": {
+			Custo: 16000 + 800*n, Saude: 20 + n/2,
+			Vitalidade: 10 + n/5,
+			Mensagem: "Sessão de terapia! Mente renovada, saúde restaurada!",
+		},
+		"academia": {
+			Custo: 20000 + 960*n, Saude: 10 + n/3,
+			Forca: 1, Vitalidade: 15 + n/5,
+			Mensagem: "Malhou pesado! Saúde, força e vitalidade recuperadas!",
+		},
+		"fisioterapia": {
+			Custo: 28000 + 1200*n, Saude: 15 + n/3,
+			Vitalidade: 20 + n/4, Energia: 5 + n/10,
+			Mensagem: "Fisioterapia completa! Corpo recuperado e pronto pra jogar!",
+		},
+		"spa": {
+			Custo: 40000 + 1600*n, Saude: 25 + n/2,
+			Vitalidade: 25 + n/3, Energia: 8 + n/8,
+			Mensagem: "Dia de spa completo! Relaxou e renovou todas as energias!",
+		},
+	}
+
+	t, ok := tratamentos[req.TratamentoID]
+	if !ok {
+		JsonResp(w, 200, map[string]interface{}{"sucesso": false, "mensagem": "Tratamento não encontrado."})
+		return
+	}
+
+	if jogador.DinheiroMao < t.Custo {
+		JsonResp(w, 200, map[string]interface{}{
+			"sucesso":  false,
+			"mensagem": fmt.Sprintf("Precisa de R$ %s para este tratamento!", fmt.Sprintf("%d", t.Custo)),
+		})
+		return
+	}
+
+	jogador.DinheiroMao -= t.Custo
+	jogador.SaudeMax = 100
+	jogador.Saude += t.Saude
+	if jogador.Saude > 100 {
+		jogador.Saude = 100
+	}
+	jogador.Vitalidade += t.Vitalidade
+	if jogador.Vitalidade > jogador.VitalidadeMax {
+		jogador.Vitalidade = jogador.VitalidadeMax
+	}
+	if t.Forca > 0 {
+		jogador.Forca += t.Forca
+	}
+	if t.Energia > 0 {
+		jogador.Energia += t.Energia
+		if jogador.Energia > jogador.EnergiaMax {
+			jogador.Energia = jogador.EnergiaMax
+		}
+	}
+
+	saveJogador(jogador)
+
+	JsonResp(w, 200, map[string]interface{}{
+		"sucesso":  true,
+		"mensagem": t.Mensagem,
+		"jogador":  jogador,
+		"ganhos": map[string]int{
+			"saude":      t.Saude,
+			"vitalidade": t.Vitalidade,
+			"forca":      t.Forca,
+			"energia":    t.Energia,
+		},
 	})
 }
 
@@ -1402,8 +1540,8 @@ func HandleGastarFama(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var itemFamaVal ItemFama
-	err := db.Conn.QueryRow(`SELECT id, nome, descricao, preco, fama_ganha, icone, unico FROM cat_itens_fama WHERE id=$1`, req.ItemID).Scan(
-		&itemFamaVal.ID, &itemFamaVal.Nome, &itemFamaVal.Descricao, &itemFamaVal.Preco, &itemFamaVal.FamaGanha, &itemFamaVal.Icone, &itemFamaVal.Unico)
+	err := db.Conn.QueryRow(`SELECT id, nome, descricao, preco, fama_ganha, icone, COALESCE(categoria,''), COALESCE(limite_compra,1) FROM cat_itens_fama WHERE id=$1`, req.ItemID).Scan(
+		&itemFamaVal.ID, &itemFamaVal.Nome, &itemFamaVal.Descricao, &itemFamaVal.Preco, &itemFamaVal.FamaGanha, &itemFamaVal.Icone, &itemFamaVal.Categoria, &itemFamaVal.LimiteCompra)
 	if err != nil {
 		ErrResp(w, 400, "Item de fama não encontrado")
 		return
@@ -1414,23 +1552,37 @@ func HandleGastarFama(w http.ResponseWriter, r *http.Request) {
 		ErrResp(w, 404, "Jogador não encontrado")
 		return
 	}
-	if item.Unico && strings.Contains(jogador.ItensFama, item.ID) {
-		JsonResp(w, 200, map[string]any{"sucesso": false, "mensagem": "Você já possui este item!"})
+
+	// Checar limite de compra
+	var jaComprou int
+	db.Conn.QueryRow("SELECT COALESCE(quantidade,0) FROM fama_compras WHERE jogador_id=$1 AND item_id=$2", req.JogadorID, item.ID).Scan(&jaComprou)
+	if jaComprou >= item.LimiteCompra {
+		JsonResp(w, 200, map[string]any{"sucesso": false, "mensagem": fmt.Sprintf("Limite atingido! Você já tem %d/%d deste item.", jaComprou, item.LimiteCompra)})
 		return
 	}
+
 	if jogador.DinheiroMao < item.Preco {
 		JsonResp(w, 200, map[string]any{"sucesso": false, "mensagem": fmt.Sprintf("Você precisa de R$ %d na mão!", item.Preco)})
 		return
 	}
 	jogador.DinheiroMao -= item.Preco
 	jogador.PontosFama += item.FamaGanha
-	if item.Unico {
+
+	// Registrar compra
+	db.Conn.Exec(`INSERT INTO fama_compras (jogador_id, item_id, quantidade)
+		VALUES ($1, $2, 1)
+		ON CONFLICT (jogador_id, item_id) DO UPDATE SET quantidade = fama_compras.quantidade + 1`,
+		req.JogadorID, item.ID)
+
+	// Manter ItensFama para compatibilidade
+	if !strings.Contains(jogador.ItensFama, item.ID) {
 		if jogador.ItensFama == "" {
 			jogador.ItensFama = item.ID
 		} else {
 			jogador.ItensFama += "," + item.ID
 		}
 	}
+
 	saveJogador(jogador)
 	JsonResp(w, 200, map[string]any{
 		"sucesso":  true,
@@ -1579,7 +1731,13 @@ func HandleForuns(w http.ResponseWriter, r *http.Request) {
 }
 
 func HandleItensFama(w http.ResponseWriter, r *http.Request) {
-	rows, err := db.Conn.Query(`SELECT id, nome, descricao, preco, fama_ganha, icone, unico FROM cat_itens_fama ORDER BY preco`)
+	// Aceita ?jogador_id=X para retornar quantidade comprada
+	jogadorID := 0
+	if q := r.URL.Query().Get("jogador_id"); q != "" {
+		jogadorID, _ = strconv.Atoi(q)
+	}
+
+	rows, err := db.Conn.Query(`SELECT id, nome, descricao, preco, fama_ganha, icone, COALESCE(categoria,''), COALESCE(limite_compra,1) FROM cat_itens_fama ORDER BY categoria, preco`)
 	if err != nil {
 		ErrResp(w, 500, "Erro ao buscar itens fama")
 		return
@@ -1588,7 +1746,10 @@ func HandleItensFama(w http.ResponseWriter, r *http.Request) {
 	itens := []ItemFama{}
 	for rows.Next() {
 		var item ItemFama
-		rows.Scan(&item.ID, &item.Nome, &item.Descricao, &item.Preco, &item.FamaGanha, &item.Icone, &item.Unico)
+		rows.Scan(&item.ID, &item.Nome, &item.Descricao, &item.Preco, &item.FamaGanha, &item.Icone, &item.Categoria, &item.LimiteCompra)
+		if jogadorID > 0 {
+			db.Conn.QueryRow("SELECT COALESCE(quantidade,0) FROM fama_compras WHERE jogador_id=$1 AND item_id=$2", jogadorID, item.ID).Scan(&item.Comprado)
+		}
 		itens = append(itens, item)
 	}
 	JsonResp(w, 200, itens)
@@ -2959,6 +3120,16 @@ func HandleMinigameResultado(w http.ResponseWriter, r *http.Request) {
 	saveJogador(jogador)
 	db.Conn.Exec("UPDATE jogadores SET ultimo_minigame=NOW() WHERE id=$1", req.JogadorID)
 
+	// Salvar recorde do minigame (all-time high score)
+	db.Conn.Exec(`INSERT INTO minigame_recordes (jogador_id, score, max_combo)
+		VALUES ($1, $2, $3)
+		ON CONFLICT (jogador_id) DO UPDATE SET
+			score = GREATEST(minigame_recordes.score, EXCLUDED.score),
+			max_combo = GREATEST(minigame_recordes.max_combo, EXCLUDED.max_combo),
+			jogadas = minigame_recordes.jogadas + 1,
+			atualizado_em = NOW()`,
+		req.JogadorID, req.Score, req.MaxCombo)
+
 	// Skill missions: combo and score
 	if req.MaxCombo > 0 {
 		updateSkillProgress(req.JogadorID, "COMBO_MATCH3", req.MaxCombo)
@@ -2997,6 +3168,50 @@ func HandleMinigameStatus(w http.ResponseWriter, r *http.Request) {
 	JsonResp(w, 200, map[string]any{"pode_jogar": pode, "restante_seg": restante})
 }
 
+// GET /api/minigame/ranking
+func HandleMinigameRanking(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "GET" {
+		ErrResp(w, 405, "Método não permitido")
+		return
+	}
+	rows, err := db.Conn.Query(`
+		SELECT mr.jogador_id, j.nome, j.nivel, j.avatar, mr.score, mr.max_combo, mr.jogadas
+		FROM minigame_recordes mr
+		JOIN jogadores j ON j.id = mr.jogador_id
+		WHERE mr.score > 0
+		ORDER BY mr.score DESC
+		LIMIT 20`)
+	if err != nil {
+		ErrResp(w, 500, "Erro ao buscar ranking")
+		return
+	}
+	defer rows.Close()
+
+	type RankEntry struct {
+		Posicao   int    `json:"posicao"`
+		JogadorID int    `json:"jogador_id"`
+		Nome      string `json:"nome"`
+		Nivel     int    `json:"nivel"`
+		Avatar    int    `json:"avatar"`
+		Score     int    `json:"score"`
+		MaxCombo  int    `json:"max_combo"`
+		Jogadas   int    `json:"jogadas"`
+	}
+	var lista []RankEntry
+	pos := 1
+	for rows.Next() {
+		var e RankEntry
+		rows.Scan(&e.JogadorID, &e.Nome, &e.Nivel, &e.Avatar, &e.Score, &e.MaxCombo, &e.Jogadas)
+		e.Posicao = pos
+		pos++
+		lista = append(lista, e)
+	}
+	if lista == nil {
+		lista = []RankEntry{}
+	}
+	JsonResp(w, 200, lista)
+}
+
 // ========================
 // PERFIL PÚBLICO & AMIZADES
 // ========================
@@ -3018,15 +3233,41 @@ func HandlePerfilPublico(w http.ResponseWriter, r *http.Request) {
 	var p PerfilPublico
 	err = db.Conn.QueryRow(`
 		SELECT id, nome, nivel, avatar, pontos_fama, vitorias, derrotas,
-		       forca, velocidade, habilidade, titulo, codigo_amigo, inventario_publico
+		       forca, velocidade, habilidade, titulo, COALESCE(titulos,''), codigo_amigo, inventario_publico
 		FROM jogadores WHERE id=$1`, targetID).Scan(
 		&p.ID, &p.Nome, &p.Nivel, &p.Avatar, &p.PontosFama, &p.Vitorias, &p.Derrotas,
-		&p.Forca, &p.Velocidade, &p.Habilidade, &p.Titulo, &p.CodigoAmigo, &p.InventarioPublico)
+		&p.Forca, &p.Velocidade, &p.Habilidade, &p.Titulo, &p.Titulos, &p.CodigoAmigo, &p.InventarioPublico)
 	if err != nil {
 		ErrResp(w, 404, "Jogador não encontrado")
 		return
 	}
 	p.Rank = getRank(p.Nivel)
+
+	// Patrimônio (itens de fama comprados)
+	patRows, patErr := db.Conn.Query(`
+		SELECT f.id, f.nome, f.icone, COALESCE(f.categoria,''), f.preco, c.quantidade
+		FROM fama_compras c
+		JOIN cat_itens_fama f ON f.id = c.item_id
+		WHERE c.jogador_id = $1 AND c.quantidade > 0
+		ORDER BY f.categoria, f.preco DESC
+	`, targetID)
+	if patErr == nil {
+		defer patRows.Close()
+		for patRows.Next() {
+			var pi PatrimonioItem
+			patRows.Scan(&pi.ID, &pi.Nome, &pi.Icone, &pi.Categoria, &pi.Preco, &pi.Qtd)
+			p.PatrimonioTotal += pi.Preco * pi.Qtd
+			p.Patrimonio = append(p.Patrimonio, pi)
+		}
+	}
+
+	// Clube atual
+	var clubeID int
+	db.Conn.QueryRow("SELECT COALESCE(clube_id,0) FROM jogadores WHERE id=$1", targetID).Scan(&clubeID)
+	if clubeID > 0 {
+		db.Conn.QueryRow("SELECT nome, icone, cor1, cor2 FROM clubes WHERE id=$1", clubeID).Scan(&p.ClubeNome, &p.ClubeIcone, &p.ClubeCor1, &p.ClubeCor2)
+		db.Conn.QueryRow("SELECT COALESCE(numero_camisa,0) FROM jogador_clube WHERE jogador_id=$1", targetID).Scan(&p.NumeroCamisa)
+	}
 
 	viewerStr := r.URL.Query().Get("viewer")
 	viewerID, _ := strconv.Atoi(viewerStr)
@@ -3530,9 +3771,9 @@ func HandleWeeklyRanking(w http.ResponseWriter, r *http.Request) {
 // ========================
 
 var casasConfig = map[string]CasaConfig{
-	"basica": {"basica", "Casa Básica", 1200, 10, 5, 15},
-	"media":  {"media", "Casa Média", 15000, 20, 10, 30},
-	"top":    {"top", "Casa Top", 80000, 30, 15, 30},
+	"basica": {Tipo: "basica", Nome: "Casa Básica", Preco: 50000, PrecoMoedas: 5, XPHora: 10, EnQuant: 5, EnIntMin: 15},
+	"media":  {Tipo: "media", Nome: "Casa Média", Preco: 250000, PrecoMoedas: 15, XPHora: 20, EnQuant: 10, EnIntMin: 30},
+	"top":    {Tipo: "top", Nome: "Casa Top", Preco: 800000, PrecoMoedas: 40, XPHora: 30, EnQuant: 15, EnIntMin: 30},
 }
 
 var casasOrdem = map[string]int{"": 0, "basica": 1, "media": 2, "top": 3}
@@ -3628,6 +3869,7 @@ func HandleCasaComprar(w http.ResponseWriter, r *http.Request) {
 	var req struct {
 		JogadorID int    `json:"jogador_id"`
 		Tipo      string `json:"tipo"`
+		PagarCom  string `json:"pagar_com"` // "moedas" ou "dinheiro"
 	}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		ErrResp(w, 400, "Dados inválidos")
@@ -3646,11 +3888,6 @@ func HandleCasaComprar(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if jogador.DinheiroMao < cfg.Preco {
-		JsonResp(w, 200, map[string]interface{}{"sucesso": false, "mensagem": fmt.Sprintf("Dinheiro insuficiente! Precisa de R$ %d.", cfg.Preco)})
-		return
-	}
-
 	// Check current house
 	var tipoAtual string
 	db.Conn.QueryRow("SELECT COALESCE(tipo,'') FROM casas WHERE jogador_id=$1", req.JogadorID).Scan(&tipoAtual)
@@ -3659,7 +3896,32 @@ func HandleCasaComprar(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	jogador.DinheiroMao -= cfg.Preco
+	// Pagamento: padrão é dinheiro se não especificado
+	if req.PagarCom == "" {
+		req.PagarCom = "dinheiro"
+	}
+
+	if req.PagarCom == "moedas" {
+		if jogador.Moedas < cfg.PrecoMoedas {
+			JsonResp(w, 200, map[string]interface{}{"sucesso": false, "mensagem": fmt.Sprintf("Moedas insuficientes! Precisa de %d moedas.", cfg.PrecoMoedas)})
+			return
+		}
+		jogador.Moedas -= cfg.PrecoMoedas
+	} else {
+		// Paga em dinheiro (mão + banco)
+		total := jogador.DinheiroMao + jogador.DinheiroBanco
+		if total < cfg.Preco {
+			JsonResp(w, 200, map[string]interface{}{"sucesso": false, "mensagem": fmt.Sprintf("Dinheiro insuficiente! Precisa de R$ %d.", cfg.Preco)})
+			return
+		}
+		if jogador.DinheiroMao >= cfg.Preco {
+			jogador.DinheiroMao -= cfg.Preco
+		} else {
+			restante := cfg.Preco - jogador.DinheiroMao
+			jogador.DinheiroMao = 0
+			jogador.DinheiroBanco -= restante
+		}
+	}
 	saveJogador(jogador)
 
 	db.Conn.Exec(`INSERT INTO casas (jogador_id, tipo, ultima_coleta)
@@ -3933,5 +4195,803 @@ func HandleFamaDecaimento(w http.ResponseWriter, r *http.Request) {
 	JsonResp(w, 200, map[string]interface{}{
 		"sucesso":  true,
 		"afetados": afetados,
+	})
+}
+
+// ========================
+// PATRIMÔNIO (itens de fama comprados pelo jogador)
+// ========================
+
+// GET /api/patrimonio/{jogador_id}
+func HandlePatrimonio(w http.ResponseWriter, r *http.Request) {
+	parts := strings.Split(r.URL.Path, "/")
+	idStr := parts[len(parts)-1]
+	jogadorID, _ := strconv.Atoi(idStr)
+	if jogadorID <= 0 {
+		ErrResp(w, 400, "ID inválido")
+		return
+	}
+
+	rows, err := db.Conn.Query(`
+		SELECT f.id, f.nome, f.descricao, f.preco, f.fama_ganha, f.icone, COALESCE(f.categoria,''), c.quantidade
+		FROM fama_compras c
+		JOIN cat_itens_fama f ON f.id = c.item_id
+		WHERE c.jogador_id = $1 AND c.quantidade > 0
+		ORDER BY f.categoria, f.preco DESC
+	`, jogadorID)
+	if err != nil {
+		JsonResp(w, 200, map[string]interface{}{"itens": []interface{}{}})
+		return
+	}
+	defer rows.Close()
+
+	type PatItem struct {
+		ID        string `json:"id"`
+		Nome      string `json:"nome"`
+		Descricao string `json:"descricao"`
+		Preco     int    `json:"preco"`
+		Fama      int    `json:"fama"`
+		Icone     string `json:"icone"`
+		Categoria string `json:"categoria"`
+		Qtd       int    `json:"quantidade"`
+	}
+	itens := []PatItem{}
+	valorTotal := 0
+	for rows.Next() {
+		var p PatItem
+		rows.Scan(&p.ID, &p.Nome, &p.Descricao, &p.Preco, &p.Fama, &p.Icone, &p.Categoria, &p.Qtd)
+		valorTotal += p.Preco * p.Qtd
+		itens = append(itens, p)
+	}
+
+	JsonResp(w, 200, map[string]interface{}{
+		"itens":       itens,
+		"valor_total": valorTotal,
+	})
+}
+
+// ========================
+// BOLETOS (contas periódicas)
+// ========================
+
+// calcBoleto calcula o valor do boleto baseado no nível do jogador
+// 30% do ganho médio de ~8 sessões de trabalho no tier atual
+func calcBoleto(nivel int) (total int, itens []map[string]interface{}) {
+	// Ganho base por sessão de trabalho no nível atual (média)
+	// Usando os mesmos fatores de calcRecompensaTrabalho com base genérica
+	lvl := float64(nivel)
+	fator := 1.0 + lvl*0.023 // média entre min e max
+	if nivel >= 30 {
+		fator += 0.055
+	}
+	if nivel >= 60 {
+		fator += 0.11
+	}
+	if nivel >= 90 {
+		fator += 0.165
+	}
+
+	// Base de ganho por trabalho no tier correspondente
+	var ganhoBase float64
+	switch {
+	case nivel < 5:
+		ganhoBase = 35
+	case nivel < 10:
+		ganhoBase = 60
+	case nivel < 20:
+		ganhoBase = 120
+	case nivel < 30:
+		ganhoBase = 200
+	case nivel < 40:
+		ganhoBase = 350
+	case nivel < 50:
+		ganhoBase = 500
+	case nivel < 60:
+		ganhoBase = 700
+	case nivel < 72:
+		ganhoBase = 1000
+	case nivel < 85:
+		ganhoBase = 1400
+	case nivel < 100:
+		ganhoBase = 2000
+	case nivel < 115:
+		ganhoBase = 3000
+	case nivel < 135:
+		ganhoBase = 4500
+	case nivel < 160:
+		ganhoBase = 6000
+	case nivel < 190:
+		ganhoBase = 8000
+	default:
+		ganhoBase = 12000
+	}
+
+	ganhoPorTrabalho := ganhoBase * fator
+	// ~8 trabalhos por dia, 2 dias = 16 trabalhos
+	ganho2Dias := ganhoPorTrabalho * 16
+	// Boleto = 39% disso (30% base + 30% de aumento)
+	totalBoleto := int(ganho2Dias * 0.39)
+
+	// Divide em categorias proporcionais
+	aluguel := int(float64(totalBoleto) * 0.40)
+	energia := int(float64(totalBoleto) * 0.18)
+	agua := int(float64(totalBoleto) * 0.12)
+	internet := int(float64(totalBoleto) * 0.15)
+	condominio := int(float64(totalBoleto) * 0.15)
+
+	itens = []map[string]interface{}{
+		{"nome": "Aluguel", "icone": "🏠", "valor": aluguel},
+		{"nome": "Energia Elétrica", "icone": "💡", "valor": energia},
+		{"nome": "Água", "icone": "🚿", "valor": agua},
+		{"nome": "Internet", "icone": "📡", "valor": internet},
+		{"nome": "Condomínio", "icone": "🏢", "valor": condominio},
+	}
+
+	total = aluguel + energia + agua + internet + condominio
+	return
+}
+
+// GET /api/boletos/verificar/{jogador_id}
+func HandleBoletoVerificar(w http.ResponseWriter, r *http.Request) {
+	parts := strings.Split(r.URL.Path, "/")
+	idStr := parts[len(parts)-1]
+	jogadorID, _ := strconv.Atoi(idStr)
+	if jogadorID <= 0 {
+		ErrResp(w, 400, "ID inválido")
+		return
+	}
+
+	jogador, err := getJogador(jogadorID)
+	if err != nil {
+		ErrResp(w, 404, "Jogador não encontrado")
+		return
+	}
+
+	// Só cobra boleto a partir do nível 18 (quando tem casa)
+	if jogador.Nivel < 18 {
+		JsonResp(w, 200, map[string]interface{}{"tem_boleto": false})
+		return
+	}
+
+	// Garante que existe registro na tabela boletos
+	db.Conn.Exec(`INSERT INTO boletos (jogador_id) VALUES ($1) ON CONFLICT DO NOTHING`, jogadorID)
+
+	var ultimoBoleto time.Time
+	err = db.Conn.QueryRow(`SELECT ultimo_boleto FROM boletos WHERE jogador_id=$1`, jogadorID).Scan(&ultimoBoleto)
+	if err != nil {
+		JsonResp(w, 200, map[string]interface{}{"tem_boleto": false})
+		return
+	}
+
+	agora := time.Now()
+	diff := agora.Sub(ultimoBoleto)
+
+	// A cada 2 dias reais (48 horas)
+	if diff.Hours() < 48 {
+		restanteSeg := int((48*time.Hour - diff).Seconds())
+		JsonResp(w, 200, map[string]interface{}{
+			"tem_boleto":   false,
+			"restante_seg": restanteSeg,
+		})
+		return
+	}
+
+	valorBase, itens := calcBoleto(jogador.Nivel)
+
+	// Juros: 5% por dia de atraso (após as 48h)
+	horasAtraso := diff.Hours() - 48
+	diasAtraso := int(horasAtraso / 24)
+	if diasAtraso < 0 {
+		diasAtraso = 0
+	}
+	juros := 0
+	if diasAtraso > 0 {
+		juros = int(float64(valorBase) * 0.05 * float64(diasAtraso))
+	}
+	totalComJuros := valorBase + juros
+
+	JsonResp(w, 200, map[string]interface{}{
+		"tem_boleto":   true,
+		"valor_base":   valorBase,
+		"juros":        juros,
+		"dias_atraso":  diasAtraso,
+		"total":        totalComJuros,
+		"itens":        itens,
+		"nivel":        jogador.Nivel,
+	})
+}
+
+// POST /api/boletos/pagar
+func HandleBoletoPagar(w http.ResponseWriter, r *http.Request) {
+	var req struct {
+		JogadorID int `json:"jogador_id"`
+	}
+	json.NewDecoder(r.Body).Decode(&req)
+	if req.JogadorID <= 0 {
+		ErrResp(w, 400, "ID inválido")
+		return
+	}
+
+	jogador, err := getJogador(req.JogadorID)
+	if err != nil {
+		ErrResp(w, 404, "Jogador não encontrado")
+		return
+	}
+
+	// Verifica se realmente tem boleto pendente
+	var ultimoBoleto time.Time
+	err = db.Conn.QueryRow(`SELECT ultimo_boleto FROM boletos WHERE jogador_id=$1`, req.JogadorID).Scan(&ultimoBoleto)
+	if err != nil {
+		ErrResp(w, 400, "Sem boleto pendente")
+		return
+	}
+	agora := time.Now()
+	diff := agora.Sub(ultimoBoleto)
+	if diff.Hours() < 48 {
+		ErrResp(w, 400, "Sem boleto pendente")
+		return
+	}
+
+	valorBase, _ := calcBoleto(jogador.Nivel)
+
+	// Juros: 5% por dia de atraso
+	horasAtraso := diff.Hours() - 48
+	diasAtraso := int(horasAtraso / 24)
+	if diasAtraso < 0 {
+		diasAtraso = 0
+	}
+	juros := 0
+	if diasAtraso > 0 {
+		juros = int(float64(valorBase) * 0.05 * float64(diasAtraso))
+	}
+	total := valorBase + juros
+
+	// Pode pagar do dinheiro na mão OU banco
+	dinheiroDisponivel := jogador.DinheiroMao + jogador.DinheiroBanco
+	if dinheiroDisponivel < total {
+		ErrResp(w, 400, fmt.Sprintf("Dinheiro insuficiente! Precisa de R$ %d (base R$ %d + juros R$ %d)", total, valorBase, juros))
+		return
+	}
+
+	// Paga primeiro da mão, depois do banco
+	if jogador.DinheiroMao >= total {
+		jogador.DinheiroMao -= total
+	} else {
+		restante := total - jogador.DinheiroMao
+		jogador.DinheiroMao = 0
+		jogador.DinheiroBanco -= restante
+	}
+
+	saveJogador(jogador)
+
+	// Atualiza timestamp do último boleto
+	db.Conn.Exec(`UPDATE boletos SET ultimo_boleto=NOW(), boletos_pagos=boletos_pagos+1 WHERE jogador_id=$1`, req.JogadorID)
+
+	// Registra no histórico
+	db.Conn.Exec(`INSERT INTO boletos_historico (jogador_id, valor_base, juros, valor_total, dias_atraso) VALUES ($1,$2,$3,$4,$5)`,
+		req.JogadorID, valorBase, juros, total, diasAtraso)
+
+	msg := fmt.Sprintf("Boleto pago! R$ %d debitado.", total)
+	if juros > 0 {
+		msg = fmt.Sprintf("Boleto pago com juros! R$ %d (base R$ %d + juros R$ %d)", total, valorBase, juros)
+	}
+
+	JsonResp(w, 200, map[string]interface{}{
+		"sucesso":  true,
+		"mensagem": msg,
+		"jogador":  jogador,
+	})
+}
+
+// GET /api/boletos/historico/{jogador_id}
+func HandleBoletoHistorico(w http.ResponseWriter, r *http.Request) {
+	parts := strings.Split(r.URL.Path, "/")
+	idStr := parts[len(parts)-1]
+	jogadorID, _ := strconv.Atoi(idStr)
+	if jogadorID <= 0 {
+		ErrResp(w, 400, "ID inválido")
+		return
+	}
+
+	rows, err := db.Conn.Query(`
+		SELECT valor_base, juros, valor_total, dias_atraso, pago_em
+		FROM boletos_historico
+		WHERE jogador_id=$1
+		ORDER BY pago_em DESC
+		LIMIT 20
+	`, jogadorID)
+	if err != nil {
+		JsonResp(w, 200, map[string]interface{}{"historico": []interface{}{}})
+		return
+	}
+	defer rows.Close()
+
+	type HistItem struct {
+		ValorBase  int    `json:"valor_base"`
+		Juros      int    `json:"juros"`
+		ValorTotal int    `json:"valor_total"`
+		DiasAtraso int    `json:"dias_atraso"`
+		PagoEm     string `json:"pago_em"`
+	}
+	hist := []HistItem{}
+	for rows.Next() {
+		var h HistItem
+		var pagoEm time.Time
+		rows.Scan(&h.ValorBase, &h.Juros, &h.ValorTotal, &h.DiasAtraso, &pagoEm)
+		h.PagoEm = pagoEm.Format("02/01/2006 15:04")
+		hist = append(hist, h)
+	}
+
+	// Total de boletos pagos
+	var totalPagos int
+	db.Conn.QueryRow(`SELECT COALESCE(boletos_pagos,0) FROM boletos WHERE jogador_id=$1`, jogadorID).Scan(&totalPagos)
+
+	JsonResp(w, 200, map[string]interface{}{
+		"historico":    hist,
+		"total_pagos":  totalPagos,
+	})
+}
+
+// ========================
+// CDB — Investimento bancário
+// ========================
+
+// Taxa CDB: 2% a cada 6 horas (8% ao dia)
+const cdbTaxaPorHora = 0.02 / 6.0 // ~0.333% por hora
+const cdbMinimoResgate = 12         // horas mínimas pra resgatar com lucro
+
+// GET /api/cdb/{jogador_id}
+func HandleCDB(w http.ResponseWriter, r *http.Request) {
+	parts := strings.Split(r.URL.Path, "/")
+	idStr := parts[len(parts)-1]
+	jogadorID, _ := strconv.Atoi(idStr)
+	if jogadorID <= 0 {
+		ErrResp(w, 400, "ID inválido")
+		return
+	}
+
+	rows, err := db.Conn.Query(`
+		SELECT id, valor, criado_em FROM cdb_investimentos
+		WHERE jogador_id=$1 AND resgatado=false
+		ORDER BY criado_em DESC
+	`, jogadorID)
+	if err != nil {
+		JsonResp(w, 200, map[string]interface{}{"investimentos": []interface{}{}})
+		return
+	}
+	defer rows.Close()
+
+	type CDBItem struct {
+		ID           int    `json:"id"`
+		Valor        int    `json:"valor"`
+		CriadoEm     string `json:"criado_em"`
+		HorasAtivas  int    `json:"horas_ativas"`
+		Rendimento   int    `json:"rendimento"`
+		TotalResgate int    `json:"total_resgate"`
+		PodeResgatar bool   `json:"pode_resgatar"`
+	}
+
+	agora := time.Now()
+	itens := []CDBItem{}
+	totalInvestido := 0
+	totalRendimento := 0
+
+	for rows.Next() {
+		var c CDBItem
+		var criadoEm time.Time
+		rows.Scan(&c.ID, &c.Valor, &criadoEm)
+		c.CriadoEm = criadoEm.Format("02/01 15:04")
+
+		horas := agora.Sub(criadoEm).Hours()
+		c.HorasAtivas = int(horas)
+		c.Rendimento = int(float64(c.Valor) * cdbTaxaPorHora * horas)
+		c.TotalResgate = c.Valor + c.Rendimento
+		c.PodeResgatar = horas >= float64(cdbMinimoResgate)
+
+		totalInvestido += c.Valor
+		totalRendimento += c.Rendimento
+		itens = append(itens, c)
+	}
+
+	JsonResp(w, 200, map[string]interface{}{
+		"investimentos":    itens,
+		"total_investido":  totalInvestido,
+		"total_rendimento": totalRendimento,
+	})
+}
+
+// POST /api/cdb/investir
+func HandleCDBInvestir(w http.ResponseWriter, r *http.Request) {
+	var req struct {
+		JogadorID int `json:"jogador_id"`
+		Valor     int `json:"valor"`
+	}
+	json.NewDecoder(r.Body).Decode(&req)
+
+	if req.Valor < 1000 {
+		ErrResp(w, 400, "Investimento mínimo: R$ 1.000")
+		return
+	}
+
+	jogador, err := getJogador(req.JogadorID)
+	if err != nil {
+		ErrResp(w, 404, "Jogador não encontrado")
+		return
+	}
+
+	totalDisponivel := jogador.DinheiroBanco + jogador.DinheiroMao
+	if totalDisponivel < req.Valor {
+		ErrResp(w, 400, fmt.Sprintf("Dinheiro insuficiente! Tem R$ %d (banco + mao)", totalDisponivel))
+		return
+	}
+
+	// Limite: máximo 5 investimentos ativos
+	var ativos int
+	db.Conn.QueryRow(`SELECT COUNT(*) FROM cdb_investimentos WHERE jogador_id=$1 AND resgatado=false`, req.JogadorID).Scan(&ativos)
+	if ativos >= 5 {
+		ErrResp(w, 400, "Limite de 5 investimentos ativos! Resgate um antes.")
+		return
+	}
+
+	// Desconta: primeiro do banco, depois da mão
+	if jogador.DinheiroBanco >= req.Valor {
+		jogador.DinheiroBanco -= req.Valor
+	} else {
+		restante := req.Valor - jogador.DinheiroBanco
+		jogador.DinheiroBanco = 0
+		jogador.DinheiroMao -= restante
+	}
+	saveJogador(jogador)
+
+	db.Conn.Exec(`INSERT INTO cdb_investimentos (jogador_id, valor) VALUES ($1, $2)`, req.JogadorID, req.Valor)
+
+	JsonResp(w, 200, map[string]interface{}{
+		"sucesso":  true,
+		"mensagem": fmt.Sprintf("Investido R$ %d no CDB! Rendimento de 2%% a cada 6h.", req.Valor),
+		"jogador":  jogador,
+	})
+}
+
+// POST /api/cdb/resgatar
+func HandleCDBResgatar(w http.ResponseWriter, r *http.Request) {
+	var req struct {
+		JogadorID      int `json:"jogador_id"`
+		InvestimentoID int `json:"investimento_id"`
+	}
+	json.NewDecoder(r.Body).Decode(&req)
+
+	jogador, err := getJogador(req.JogadorID)
+	if err != nil {
+		ErrResp(w, 404, "Jogador não encontrado")
+		return
+	}
+
+	var valor int
+	var criadoEm time.Time
+	err = db.Conn.QueryRow(`
+		SELECT valor, criado_em FROM cdb_investimentos
+		WHERE id=$1 AND jogador_id=$2 AND resgatado=false
+	`, req.InvestimentoID, req.JogadorID).Scan(&valor, &criadoEm)
+	if err != nil {
+		ErrResp(w, 400, "Investimento não encontrado")
+		return
+	}
+
+	horas := time.Now().Sub(criadoEm).Hours()
+	rendimento := 0
+	if horas >= float64(cdbMinimoResgate) {
+		rendimento = int(float64(valor) * cdbTaxaPorHora * horas)
+	}
+	// Se resgatar antes de 12h, recebe só o valor base (sem lucro)
+
+	totalResgate := valor + rendimento
+	jogador.DinheiroBanco += totalResgate
+	saveJogador(jogador)
+
+	db.Conn.Exec(`UPDATE cdb_investimentos SET resgatado=true, resgatado_em=NOW() WHERE id=$1`, req.InvestimentoID)
+
+	msg := fmt.Sprintf("Resgatado R$ %d", totalResgate)
+	if rendimento > 0 {
+		msg = fmt.Sprintf("Resgatado R$ %d (R$ %d investido + R$ %d de lucro!)", totalResgate, valor, rendimento)
+	} else {
+		msg = fmt.Sprintf("Resgatado R$ %d (sem lucro — mínimo 12h para render)", valor)
+	}
+
+	JsonResp(w, 200, map[string]interface{}{
+		"sucesso":    true,
+		"mensagem":   msg,
+		"jogador":    jogador,
+		"rendimento": rendimento,
+	})
+}
+
+// GET /api/clube/atual/{jogador_id}
+func HandleClubeAtual(w http.ResponseWriter, r *http.Request) {
+	parts := strings.Split(r.URL.Path, "/")
+	idStr := parts[len(parts)-1]
+	jogadorID, _ := strconv.Atoi(idStr)
+	if jogadorID <= 0 {
+		JsonResp(w, 200, map[string]interface{}{"tem_clube": false})
+		return
+	}
+
+	var clubeID int
+	db.Conn.QueryRow("SELECT COALESCE(clube_id,0) FROM jogadores WHERE id=$1", jogadorID).Scan(&clubeID)
+	if clubeID <= 0 {
+		JsonResp(w, 200, map[string]interface{}{"tem_clube": false})
+		return
+	}
+
+	var nome, mascote, cor1, cor2, tier, icone string
+	err := db.Conn.QueryRow("SELECT nome, mascote, cor1, cor2, tier, icone FROM clubes WHERE id=$1", clubeID).Scan(&nome, &mascote, &cor1, &cor2, &tier, &icone)
+	if err != nil {
+		JsonResp(w, 200, map[string]interface{}{"tem_clube": false})
+		return
+	}
+
+	var camisa int
+	db.Conn.QueryRow("SELECT COALESCE(numero_camisa,0) FROM jogador_clube WHERE jogador_id=$1", jogadorID).Scan(&camisa)
+
+	JsonResp(w, 200, map[string]interface{}{
+		"tem_clube": true,
+		"clube_id":  clubeID,
+		"nome":      nome,
+		"mascote":   mascote,
+		"cor1":      cor1,
+		"cor2":      cor2,
+		"tier":      tier,
+		"icone":     icone,
+		"camisa":    camisa,
+	})
+}
+
+// GET /api/clubes/disponiveis/{jogador_id}
+func HandleClubesDisponiveis(w http.ResponseWriter, r *http.Request) {
+	parts := strings.Split(r.URL.Path, "/")
+	idStr := parts[len(parts)-1]
+	jogadorID, _ := strconv.Atoi(idStr)
+	if jogadorID <= 0 {
+		ErrResp(w, 400, "ID inválido")
+		return
+	}
+
+	jogador, err := getJogador(jogadorID)
+	if err != nil {
+		ErrResp(w, 404, "Jogador não encontrado")
+		return
+	}
+
+	tier := getTierDoJogador(jogador.Nivel)
+
+	// Só oferece clubes da Série C em diante
+	tiersComClube := []string{"Série C", "Série B", "Série A", "Copinha Nacional", "Continentão", "Europa", "Liga dos Craques", "Seleçoca", "Mundialito", "Bola de Ouro", "Ídolo", "Lenda"}
+	temClube := false
+	for _, t := range tiersComClube {
+		if tier == t {
+			temClube = true
+			break
+		}
+	}
+	if !temClube {
+		JsonResp(w, 200, map[string]interface{}{"disponivel": false, "motivo": "Clubes disponíveis a partir da Série C"})
+		return
+	}
+
+	// Verifica se já tem clube neste tier
+	var clubeAtualTier string
+	db.Conn.QueryRow("SELECT COALESCE(tier,'') FROM jogador_clube WHERE jogador_id=$1", jogadorID).Scan(&clubeAtualTier)
+	if clubeAtualTier == tier {
+		JsonResp(w, 200, map[string]interface{}{"disponivel": false, "motivo": "Já escolheu clube neste tier"})
+		return
+	}
+
+	type ClubeResp struct {
+		ID      int    `json:"id"`
+		Nome    string `json:"nome"`
+		Mascote string `json:"mascote"`
+		Cor1    string `json:"cor1"`
+		Cor2    string `json:"cor2"`
+		Icone   string `json:"icone"`
+	}
+	rows, err := db.Conn.Query("SELECT id, nome, mascote, cor1, cor2, icone FROM clubes WHERE tier=$1 ORDER BY RANDOM() LIMIT 3", tier)
+	if err != nil {
+		ErrResp(w, 500, "Erro ao buscar clubes")
+		return
+	}
+	defer rows.Close()
+	clubes := []ClubeResp{}
+	for rows.Next() {
+		var c ClubeResp
+		rows.Scan(&c.ID, &c.Nome, &c.Mascote, &c.Cor1, &c.Cor2, &c.Icone)
+		clubes = append(clubes, c)
+	}
+
+	JsonResp(w, 200, map[string]interface{}{
+		"disponivel": true,
+		"tier":       tier,
+		"clubes":     clubes,
+	})
+}
+
+// POST /api/clube/escolher
+func HandleEscolherClube(w http.ResponseWriter, r *http.Request) {
+	var req struct {
+		JogadorID int `json:"jogador_id"`
+		ClubeID   int `json:"clube_id"`
+	}
+	json.NewDecoder(r.Body).Decode(&req)
+
+	jogador, err := getJogador(req.JogadorID)
+	if err != nil {
+		ErrResp(w, 404, "Jogador não encontrado")
+		return
+	}
+
+	// Validar que o clube pertence ao tier do jogador
+	tier := getTierDoJogador(jogador.Nivel)
+	var clubeNome, clubeTier, clubeIcone string
+	err = db.Conn.QueryRow("SELECT nome, tier, icone FROM clubes WHERE id=$1", req.ClubeID).Scan(&clubeNome, &clubeTier, &clubeIcone)
+	if err != nil {
+		ErrResp(w, 400, "Clube não encontrado")
+		return
+	}
+	if clubeTier != tier {
+		ErrResp(w, 400, "Este clube não pertence ao seu tier atual")
+		return
+	}
+
+	jogador.ClubeID = req.ClubeID
+	saveJogador(jogador)
+
+	db.Conn.Exec(`INSERT INTO jogador_clube (jogador_id, clube_id, tier)
+		VALUES ($1, $2, $3)
+		ON CONFLICT (jogador_id) DO UPDATE SET clube_id=$2, tier=$3, entrou_em=NOW()`,
+		req.JogadorID, req.ClubeID, tier)
+
+	JsonResp(w, 200, map[string]interface{}{
+		"sucesso":  true,
+		"mensagem": fmt.Sprintf("Bem-vindo ao %s %s!", clubeIcone, clubeNome),
+		"jogador":  jogador,
+	})
+}
+
+// GET /api/camisas/disponiveis/{jogador_id}
+func HandleCamisasDisponiveis(w http.ResponseWriter, r *http.Request) {
+	parts := strings.Split(r.URL.Path, "/")
+	idStr := parts[len(parts)-1]
+	jogadorID, _ := strconv.Atoi(idStr)
+	if jogadorID <= 0 {
+		ErrResp(w, 400, "ID inválido")
+		return
+	}
+
+	jogador, err := getJogador(jogadorID)
+	if err != nil {
+		ErrResp(w, 404, "Jogador não encontrado")
+		return
+	}
+
+	// Só disponível da Série B (nv 30+)
+	if jogador.Nivel < 30 {
+		JsonResp(w, 200, map[string]interface{}{"disponivel": false})
+		return
+	}
+
+	pos := jogador.Posicao
+	fama := jogador.PontosFama
+
+	type Camisa struct {
+		Numero     int    `json:"numero"`
+		Raridade   string `json:"raridade"`
+		Disponivel bool   `json:"disponivel"`
+		FamaMin    int    `json:"fama_min"`
+	}
+
+	// Define all shirts with rarity and fama requirements
+	todas := []struct {
+		num       int
+		rar       string
+		fama      int
+		bloqueadas []string
+	}{
+		{1, "incomum", 500, []string{"MED", "ATA"}},
+		{2, "comum", 0, []string{}},
+		{3, "comum", 0, []string{}},
+		{4, "comum", 0, []string{}},
+		{5, "incomum", 1000, []string{}},
+		{6, "incomum", 1000, []string{}},
+		{7, "rara", 5000, []string{"GK", "DEF"}},
+		{8, "rara", 3000, []string{"GK"}},
+		{9, "rara", 8000, []string{"GK", "DEF"}},
+		{10, "lendaria", 15000, []string{"GK", "DEF"}},
+		{11, "rara", 6000, []string{"GK", "DEF"}},
+		{12, "comum", 0, []string{}},
+		{13, "comum", 0, []string{}},
+		{14, "comum", 0, []string{}},
+		{15, "comum", 0, []string{}},
+		{16, "comum", 0, []string{}},
+		{17, "comum", 0, []string{}},
+		{18, "comum", 0, []string{}},
+		{19, "comum", 0, []string{}},
+		{20, "comum", 0, []string{}},
+		{21, "comum", 0, []string{}},
+		{22, "comum", 0, []string{"MED", "ATA"}},
+		{23, "comum", 0, []string{}},
+	}
+
+	camisas := []Camisa{}
+	for _, t := range todas {
+		bloqueada := false
+		for _, bp := range t.bloqueadas {
+			if bp == pos {
+				bloqueada = true
+				break
+			}
+		}
+		if bloqueada {
+			continue
+		}
+		camisas = append(camisas, Camisa{
+			Numero:     t.num,
+			Raridade:   t.rar,
+			Disponivel: fama >= t.fama,
+			FamaMin:    t.fama,
+		})
+	}
+
+	JsonResp(w, 200, map[string]interface{}{
+		"disponivel": true,
+		"camisas":    camisas,
+		"posicao":    pos,
+		"fama":       fama,
+	})
+}
+
+// POST /api/camisa/escolher
+func HandleEscolherCamisa(w http.ResponseWriter, r *http.Request) {
+	var req struct {
+		JogadorID int `json:"jogador_id"`
+		Numero    int `json:"numero"`
+	}
+	json.NewDecoder(r.Body).Decode(&req)
+
+	jogador, err := getJogador(req.JogadorID)
+	if err != nil {
+		ErrResp(w, 404, "Jogador não encontrado")
+		return
+	}
+
+	if jogador.Nivel < 30 {
+		ErrResp(w, 400, "Camisas disponíveis a partir da Série B (nível 30)")
+		return
+	}
+
+	jogador.NumeroCamisa = req.Numero
+	saveJogador(jogador)
+
+	db.Conn.Exec("UPDATE jogador_clube SET numero_camisa=$1 WHERE jogador_id=$2", req.Numero, req.JogadorID)
+
+	JsonResp(w, 200, map[string]interface{}{
+		"sucesso":  true,
+		"mensagem": fmt.Sprintf("Camisa %d escolhida!", req.Numero),
+		"jogador":  jogador,
+	})
+}
+
+// POST /api/admin/disparar-boletos — força boleto pendente pra todos (teste)
+func HandleAdminDispararBoletos(w http.ResponseWriter, r *http.Request) {
+	// Insere registro pra todos que têm nível >= 18 e não têm registro
+	db.Conn.Exec(`INSERT INTO boletos (jogador_id, ultimo_boleto)
+		SELECT id, NOW() - INTERVAL '3 days' FROM jogadores WHERE nivel >= 18
+		ON CONFLICT (jogador_id) DO UPDATE SET ultimo_boleto = NOW() - INTERVAL '3 days'`)
+
+	// Conta quantos foram afetados
+	var total int
+	db.Conn.QueryRow(`SELECT COUNT(*) FROM boletos WHERE ultimo_boleto < NOW() - INTERVAL '2 days'`).Scan(&total)
+
+	JsonResp(w, 200, map[string]interface{}{
+		"sucesso":  true,
+		"mensagem": fmt.Sprintf("Boletos disparados! %d jogadores com boleto pendente (1 dia de atraso + juros).", total),
+		"afetados": total,
 	})
 }

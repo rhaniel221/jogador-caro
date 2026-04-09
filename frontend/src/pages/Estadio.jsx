@@ -6,13 +6,6 @@ import { fmt } from '../utils'
 export default function Estadio() {
   const { jogador, setJogador, jogadorID, mostrarNotificacao } = useGame()
 
-  if (!jogador || jogador.nivel < 10) return (
-    <div style={{ textAlign: 'center', padding: 40 }}>
-      <div style={{ fontSize: 60 }}>🔒</div>
-      <h2 style={{ fontFamily: 'var(--font-titulo)', marginTop: 10 }}>Estádio bloqueado</h2>
-      <p style={{ fontWeight: 700, color: '#555' }}>Alcance o nível 10 para desbloquear o PvP!</p>
-    </div>
-  )
   const [oponentes, setOponentes] = useState([])
   const [historico, setHistorico] = useState([])
   const [combateModal, setCombateModal] = useState(null)
@@ -22,6 +15,14 @@ export default function Estadio() {
     carregarOponentes()
     carregarHistorico()
   }, [jogadorID])
+
+  if (!jogador || jogador.nivel < 10) return (
+    <div style={{ textAlign: 'center', padding: 40 }}>
+      <div style={{ fontSize: 60 }}>🔒</div>
+      <h2 style={{ fontFamily: 'var(--font-titulo)', marginTop: 10 }}>Estádio bloqueado</h2>
+      <p style={{ fontWeight: 700, color: '#555' }}>Alcance o nível 10 para desbloquear o PvP!</p>
+    </div>
+  )
 
   async function carregarOponentes() {
     if (!jogadorID) return
@@ -67,10 +68,23 @@ export default function Estadio() {
 
   if (!jogador) return null
 
+  const saudeBaixa = jogador.saude < 10
+
   return (
     <>
       <h2 className="page-title">⚔️ ESTÁDIO</h2>
       <p className="subtitle">Desafie outros jogadores em batalhas épicas. Vença para ganhar fama e dinheiro!</p>
+
+      {saudeBaixa && (
+        <div style={{
+          background: '#ffeaea', border: '2px solid var(--vermelho)', borderRadius: 10,
+          padding: '12px 16px', marginBottom: 14, textAlign: 'center'
+        }}>
+          <div style={{ color: '#b00', fontWeight: 900, fontSize: 13 }}>
+            ⚠️ Saúde muito baixa! ({jogador.saude}) - Vá ao <strong style={{ color: 'var(--azul)' }}>Perfil → Central de Tratamento</strong> para se recuperar.
+          </div>
+        </div>
+      )}
 
       {combateModal && (
         <div id="modal-combate" style={{ display: 'flex' }}>
@@ -171,7 +185,7 @@ export default function Estadio() {
               ['⚡ Velocidade', jogador.velocidade],
               ['🎯 Habilidade', jogador.habilidade],
               ['💚 Vitalidade', `${jogador.vitalidade}/${jogador.vitalidade_max}`],
-              ['❤️ Saúde', `${jogador.saude}/${jogador.saude_max}`],
+              ['❤️ Saúde', `${jogador.saude}/100`],
               ['🏆 Vitórias', jogador.vitorias],
               ['💀 Derrotas', jogador.derrotas],
               ['⭐ Fama', jogador.pontos_fama],
@@ -181,13 +195,10 @@ export default function Estadio() {
                 <span className="sv">{v}</span>
               </div>
             ))}
-            <div style={{ marginTop: '15px', paddingTop: '12px', borderTop: '1px solid #1a2214' }}>
-              <div style={{ fontSize: '11px', color: '#5a7a4a', marginBottom: '8px' }}>
-                Custo de recuperação: <strong style={{ color: '#fff' }}>R$ {fmt(100 * jogador.nivel)}</strong>
+            <div style={{ marginTop: '15px', paddingTop: '12px', borderTop: '1px solid #ddd' }}>
+              <div style={{ fontSize: '12px', color: '#556', fontWeight: 700 }}>
+                💡 Vá ao <strong style={{ color: 'var(--azul)' }}>Perfil</strong> para tratamentos de saúde e vitalidade.
               </div>
-              <button className="btn-work btn-verde" style={{ width: '100%' }} onClick={recuperarVitalidade}>
-                💊 Recuperar Vitalidade e Saúde
-              </button>
             </div>
           </div>
         </div>

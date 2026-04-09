@@ -84,6 +84,7 @@ func createTables() {
 		`ALTER TABLE jogadores ADD COLUMN IF NOT EXISTS streak_consecutiva INT DEFAULT 0`,
 		`ALTER TABLE jogadores ADD CONSTRAINT jogadores_nome_unique UNIQUE (nome)`,
 		`ALTER TABLE cat_itens ADD COLUMN IF NOT EXISTS cooldown_minutos INT DEFAULT 0`,
+		`ALTER TABLE cat_itens ADD COLUMN IF NOT EXISTS preco_moedas INT DEFAULT 0`,
 	} {
 		Conn.Exec(m)
 	}
@@ -183,7 +184,17 @@ func createTables() {
 		preco INT DEFAULT 0,
 		fama_ganha INT DEFAULT 0,
 		icone VARCHAR(20) DEFAULT '',
-		unico BOOLEAN DEFAULT false
+		unico BOOLEAN DEFAULT false,
+		categoria VARCHAR(30) DEFAULT '',
+		limite_compra INT DEFAULT 1
+	)`)
+	Conn.Exec(`ALTER TABLE cat_itens_fama ADD COLUMN IF NOT EXISTS categoria VARCHAR(30) DEFAULT ''`)
+	Conn.Exec(`ALTER TABLE cat_itens_fama ADD COLUMN IF NOT EXISTS limite_compra INT DEFAULT 1`)
+	Conn.Exec(`CREATE TABLE IF NOT EXISTS fama_compras (
+		jogador_id INT REFERENCES jogadores(id),
+		item_id VARCHAR(50),
+		quantidade INT DEFAULT 1,
+		PRIMARY KEY (jogador_id, item_id)
 	)`)
 
 	Conn.Exec(`CREATE TABLE IF NOT EXISTS cat_tasks_diarias (
@@ -248,6 +259,14 @@ func createTables() {
 	Conn.Exec(`ALTER TABLE jogadores ADD COLUMN IF NOT EXISTS energia_gasta_total INT DEFAULT 0`)
 	Conn.Exec(`ALTER TABLE jogadores ADD COLUMN IF NOT EXISTS minigame_hoje DATE`)
 	Conn.Exec(`ALTER TABLE jogadores ADD COLUMN IF NOT EXISTS ultimo_minigame TIMESTAMP`)
+
+	Conn.Exec(`CREATE TABLE IF NOT EXISTS minigame_recordes (
+		jogador_id INT PRIMARY KEY REFERENCES jogadores(id),
+		score INT DEFAULT 0,
+		max_combo INT DEFAULT 0,
+		jogadas INT DEFAULT 1,
+		atualizado_em TIMESTAMP DEFAULT NOW()
+	)`)
 	Conn.Exec(`ALTER TABLE jogadores ADD COLUMN IF NOT EXISTS ultimo_periodo_desafio VARCHAR(20) DEFAULT ''`)
 	Conn.Exec(`ALTER TABLE desafios_1v1 ADD COLUMN IF NOT EXISTS periodo VARCHAR(20) DEFAULT ''`)
 
@@ -463,42 +482,42 @@ func seedCatalogos() {
 		// Nível 1-4 (Garoto) — ganho ~5-25/trabalho, energia max ~11-14
 		{14, 3, 1, 4, 0, 0, 0, 0, 0, 0, 3, 0, 0, "Água da Torneira", "Hidratação básica", "consumivel", "💧"},
 		{30, 15, 1, 4, 0, 0, 0, 0, 0, 0, 8, 0, 0, "Sanduíche", "Lanche completo", "consumivel", "🥪"},
-		{5, 10, 1, 4, 0, 0, 0, 0, 0, 0, 0, 15, 0, "Bandagem", "Curativo básico", "consumivel", "🩹"},
+		{5, 15, 1, 4, 0, 0, 0, 0, 0, 0, 0, 15, 0, "Bandagem", "Curativo básico", "consumivel", "🩹"},
 
 		// Nível 5-9 (Base) — ganho ~10-55/trabalho, energia max ~19-25
 		{63, 8, 5, 9, 0, 0, 0, 0, 0, 0, 5, 0, 0, "Água Mineral", "Hidratação boa", "consumivel", "💧"},
 		{31, 35, 5, 9, 0, 0, 0, 0, 0, 0, 12, 0, 0, "Arroz e Feijão", "Refeição completa", "consumivel", "🍚"},
-		{64, 25, 5, 9, 0, 0, 0, 0, 0, 0, 0, 25, 0, "Kit Primeiros Socorros", "Recupera saúde", "consumivel", "🩺"},
+		{64, 38, 5, 9, 0, 0, 0, 0, 0, 0, 0, 25, 0, "Kit Primeiros Socorros", "Recupera saúde", "consumivel", "🩺"},
 
 		// Nível 10-17 (Amador) — ganho ~40-150/trabalho, energia max ~34-45
 		{70, 25, 10, 17, 0, 0, 0, 0, 0, 0, 5, 0, 0, "Isotônico Light", "Reidratação leve", "consumivel", "🥤"},
 		{32, 80, 10, 17, 0, 0, 0, 0, 0, 0, 15, 0, 0, "Frango Grelhado", "Proteína pro treino", "consumivel", "🍗"},
-		{71, 60, 10, 17, 0, 0, 0, 0, 0, 0, 0, 40, 0, "Kit Médico Amador", "Tratamento completo", "consumivel", "🩺"},
+		{71, 90, 10, 17, 0, 0, 0, 0, 0, 0, 0, 40, 0, "Kit Médico Amador", "Tratamento completo", "consumivel", "🩺"},
 
 		// Nível 18-23 (Série C) — ganho ~150-800/trabalho, energia max ~50-60
 		{72, 100, 18, 23, 0, 0, 0, 0, 0, 0, 5, 0, 0, "Bebida Proteica", "Energia rápida", "consumivel", "🧉"},
 		{33, 500, 18, 23, 0, 0, 0, 0, 0, 0, 18, 0, 0, "Macarrão do Craque", "Carboidratos pro jogo", "consumivel", "🍝"},
-		{73, 350, 18, 23, 0, 0, 0, 0, 0, 0, 0, 60, 0, "Spray Criogênico", "Recuperação rápida", "consumivel", "🧊"},
+		{73, 525, 18, 23, 0, 0, 0, 0, 0, 0, 0, 60, 0, "Spray Criogênico", "Recuperação rápida", "consumivel", "🧊"},
 
 		// Nível 24-35 (Série B/A) — ganho ~400-4000/trabalho, energia max ~65-90
 		{74, 400, 24, 35, 0, 0, 0, 0, 0, 0, 5, 0, 0, "Vitamina B12", "Boost rápido", "consumivel", "💊"},
 		{34, 2000, 24, 35, 0, 0, 0, 0, 0, 0, 22, 0, 0, "Banquete do Campeão", "Refeição dos grandes", "consumivel", "🍖"},
-		{75, 1500, 24, 35, 0, 0, 0, 0, 0, 0, 0, 80, 0, "Tratamento Fisioterapia", "Recuperação profissional", "consumivel", "💉"},
+		{75, 2250, 24, 35, 0, 0, 0, 0, 0, 0, 0, 80, 0, "Tratamento Fisioterapia", "Recuperação profissional", "consumivel", "💉"},
 
 		// Nível 36-49 (Copa BR/Libertadores) — ganho ~2K-35K/trabalho, energia max ~95-130
 		{76, 2000, 36, 49, 0, 0, 0, 0, 0, 0, 5, 0, 0, "Isotônico Power", "Energia rápida", "consumivel", "⚡"},
 		{77, 10000, 36, 49, 0, 0, 0, 0, 0, 0, 25, 0, 0, "Carga de Inspiração", "Explosão de energia", "consumivel", "🔥"},
-		{78, 7000, 36, 49, 0, 0, 0, 0, 0, 0, 0, 100, 0, "Tratamento VIP", "Saúde de craque", "consumivel", "💉"},
+		{78, 10500, 36, 49, 0, 0, 0, 0, 0, 0, 0, 100, 0, "Tratamento VIP", "Saúde de craque", "consumivel", "💉"},
 
 		// Nível 50-71 (Europa/Champions) — ganho ~15K-350K/trabalho
 		{79, 10000, 50, 71, 0, 0, 0, 0, 0, 0, 5, 0, 0, "Suplemento Elite", "Boost rápido", "consumivel", "✨"},
 		{80, 50000, 50, 71, 0, 0, 0, 0, 0, 0, 30, 0, 0, "Shake Premium", "Energia premium", "consumivel", "💎"},
-		{81, 35000, 50, 71, 0, 0, 0, 0, 0, 0, 0, 120, 0, "Nanomedicina", "Regeneração futurista", "consumivel", "🧬"},
+		{81, 52500, 50, 71, 0, 0, 0, 0, 0, 0, 0, 120, 0, "Nanomedicina", "Regeneração futurista", "consumivel", "🧬"},
 
 		// Nível 72+ (Seleção/Copa/Lenda) — ganho ~150K-60M/trabalho
 		{82, 50000, 72, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, "Elixir Rápido", "Energia instantânea", "consumivel", "🌟"},
 		{83, 300000, 72, 0, 0, 0, 0, 0, 0, 0, 40, 0, 0, "Soro do GOAT", "Energia dos deuses", "consumivel", "🏆"},
-		{84, 200000, 72, 0, 0, 0, 0, 0, 0, 0, 0, 150, 0, "Terapia Genética", "Saúde máxima", "consumivel", "🧬"},
+		{84, 300000, 72, 0, 0, 0, 0, 0, 0, 0, 0, 150, 0, "Terapia Genética", "Saúde máxima", "consumivel", "🧬"},
 		// Equipamentos — nível baixo
 		{6, 15, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "Camisa do Time", "Necessária para trabalhar no estádio", "equipamento", "👕"},
 		{7, 20, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, "Chuteira Básica", "Uma chuteira simples pra dar os primeiros chutes", "equipamento", "👟"},
@@ -577,27 +596,27 @@ func seedCatalogos() {
 		// === CONSUMÍVEIS POR FAIXA — preço ~40% do trabalho top do tier ===
 		// Nível 1-9 (Garoto) — trabalhos pagam 2-25
 		{63, 8, 1, 9, 0, 0, 0, 0, 0, 0, 3, 0, 0, "Água Mineral", "Hidratação básica", "consumivel", "💧"},
-		{64, 12, 1, 9, 0, 0, 0, 0, 0, 0, 0, 15, 0, "Curativo Simples", "Primeiro socorro", "consumivel", "🩹"},
+		{64, 18, 1, 9, 0, 0, 0, 0, 0, 0, 0, 15, 0, "Curativo Simples", "Primeiro socorro", "consumivel", "🩹"},
 		// Nível 10-17 (Amador) — trabalhos pagam 40-150
 		{70, 60, 10, 17, 0, 0, 0, 0, 0, 0, 8, 0, 0, "Isotônico Sport", "Reidratação profissional", "consumivel", "🥤"},
-		{71, 75, 10, 17, 0, 0, 0, 0, 0, 0, 0, 30, 0, "Kit Médico Amador", "Tratamento completo", "consumivel", "🩺"},
-		{72, 90, 10, 17, 0, 0, 0, 0, 0, 0, 5, 15, 0, "Bebida Proteica", "Energia + saúde", "consumivel", "🧉"},
+		{71, 113, 10, 17, 0, 0, 0, 0, 0, 0, 0, 30, 0, "Kit Médico Amador", "Tratamento completo", "consumivel", "🩺"},
+		{72, 135, 10, 17, 0, 0, 0, 0, 0, 0, 5, 15, 0, "Bebida Proteica", "Energia + saúde", "consumivel", "🧉"},
 		// Nível 18-29 (Série C/B) — trabalhos pagam 150-1800
 		{73, 1500, 18, 29, 0, 0, 0, 0, 0, 0, 15, 0, 0, "Vitamina B12 Especial", "Boost de energia pro", "consumivel", "💊"},
-		{74, 1800, 18, 29, 0, 0, 0, 0, 0, 0, 0, 60, 0, "Spray Criogênico", "Recuperação instantânea", "consumivel", "🧊"},
-		{75, 2200, 18, 29, 0, 0, 0, 0, 0, 0, 10, 30, 0, "Isotônico Power", "Energia + saúde premium", "consumivel", "⚡"},
+		{74, 2700, 18, 29, 0, 0, 0, 0, 0, 0, 0, 60, 0, "Spray Criogênico", "Recuperação instantânea", "consumivel", "🧊"},
+		{75, 3300, 18, 29, 0, 0, 0, 0, 0, 0, 10, 30, 0, "Isotônico Power", "Energia + saúde premium", "consumivel", "⚡"},
 		// Nível 30-49 (Série A/Copa/Liberta) — trabalhos pagam 800-35000
 		{76, 2500, 30, 49, 0, 0, 0, 0, 0, 0, 20, 0, 0, "Carga de Inspiração", "Explosão de energia", "consumivel", "🔥"},
-		{77, 3500, 30, 49, 0, 0, 0, 0, 0, 0, 0, 80, 0, "Tratamento VIP", "Saúde de craque", "consumivel", "💉"},
-		{78, 5000, 30, 49, 0, 0, 0, 0, 0, 0, 12, 40, 0, "Shake do Campeão", "Recuperação total", "consumivel", "🥛"},
+		{77, 5250, 30, 49, 0, 0, 0, 0, 0, 0, 0, 80, 0, "Tratamento VIP", "Saúde de craque", "consumivel", "💉"},
+		{78, 7500, 30, 49, 0, 0, 0, 0, 0, 0, 12, 40, 0, "Shake do Campeão", "Recuperação total", "consumivel", "🥛"},
 		// Nível 50-71 (Europa/Champions) — trabalhos pagam 15K-350K
 		{79, 30000, 50, 71, 0, 0, 0, 0, 0, 0, 30, 0, 0, "Suplemento Elite", "Energia de elite", "consumivel", "✨"},
-		{80, 40000, 50, 71, 0, 0, 0, 0, 0, 0, 0, 100, 0, "Nanomedicina", "Regeneração futurista", "consumivel", "🧬"},
-		{81, 55000, 50, 71, 0, 0, 0, 0, 0, 0, 20, 60, 0, "Soro Premium", "Recuperação completa", "consumivel", "💎"},
+		{80, 60000, 50, 71, 0, 0, 0, 0, 0, 0, 0, 100, 0, "Nanomedicina", "Regeneração futurista", "consumivel", "🧬"},
+		{81, 82500, 50, 71, 0, 0, 0, 0, 0, 0, 20, 60, 0, "Soro Premium", "Recuperação completa", "consumivel", "💎"},
 		// Nível 72+ (Seleção/Copa/Lenda) — trabalhos pagam 150K-60M
 		{82, 200000, 72, 0, 0, 0, 0, 0, 0, 0, 40, 0, 0, "Elixir Lendário", "Energia dos deuses", "consumivel", "🌟"},
-		{83, 300000, 72, 0, 0, 0, 0, 0, 0, 0, 0, 150, 0, "Terapia Genética", "Saúde máxima", "consumivel", "🧬"},
-		{84, 450000, 72, 0, 0, 0, 0, 0, 0, 0, 30, 80, 0, "Soro do GOAT", "O melhor de tudo", "consumivel", "🏆"},
+		{83, 450000, 72, 0, 0, 0, 0, 0, 0, 0, 0, 150, 0, "Terapia Genética", "Saúde máxima", "consumivel", "🧬"},
+		{84, 675000, 72, 0, 0, 0, 0, 0, 0, 0, 30, 80, 0, "Soro do GOAT", "O melhor de tudo", "consumivel", "🏆"},
 		// Itens de missão (preço 0, ganhos em quests)
 		{65, 0, 1, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, "Água de Coco", "Recompensa de missão", "consumivel", "🥥"},
 	}
@@ -647,6 +666,28 @@ func seedCatalogos() {
 			e.recuperaEnergia, e.cooldown, e.id)
 	}
 
+	// Itens de saúde (recupera_saude > 0) custam moedas, não dinheiro
+	saudeMoedas := map[int]int{
+		// Saúde pura
+		5: 1, 64: 1,       // Garoto/Base: 1 moeda
+		71: 2,              // Amador: 2 moedas
+		74: 3,              // Série C/B: 3 moedas
+		77: 5,              // Série A/Copa: 5 moedas
+		80: 8,              // Europa/Champions: 8 moedas
+		83: 12,             // Seleção/Lenda: 12 moedas
+		// Combo (energia + saúde)
+		72: 2,              // Amador combo: 2 moedas
+		75: 4,              // Série C/B combo: 4 moedas
+		78: 6,              // Série A/Copa combo: 6 moedas
+		81: 10,             // Europa combo: 10 moedas
+		84: 15,             // Lenda combo: 15 moedas
+		// Antigos (primeira seção, sobrescritos mas por segurança)
+		73: 3,
+	}
+	for id, moedas := range saudeMoedas {
+		Conn.Exec(`UPDATE cat_itens SET preco_moedas=$1, preco=0 WHERE id=$2`, moedas, id)
+	}
+
 	// Update rarities for new items
 	raridadeUpdates := map[int]string{
 		43: "raro", 44: "raro", 48: "raro", 49: "raro", 54: "raro", 55: "raro", 57: "raro", 58: "raro",
@@ -668,80 +709,81 @@ func seedCatalogos() {
 		{"bola", "Garoto", "Pegar bola que saiu de campo", "⚽", 1, 2, 2, 5, 3, 0, 20},
 		{"fogos", "Garoto", "Vender fogos de artifício", "🎆", 1, 2, 5, 10, 3, 0, 20},
 		{"dogao", "Garoto", "Vender dogão na porta do estádio", "🌭", 1, 2, 8, 15, 4, 0, 15},
-		{"bebidas", "Garoto", "Vender bebidas no estádio", "🍺", 2, 3, 15, 25, 10, 6, 12},
+		{"bebidas", "Garoto", "Vender bebidas no estádio", "🍺", 2, 6, 15, 25, 10, 6, 12},
 		// === BASE (nv 5-9) ===
 		{"panfleto", "Base", "Distribuir panfleto de evento", "📄", 5, 2, 10, 18, 5, 0, 15},
 		{"lavajato", "Base", "Trabalhar no lava-jato", "🚗", 5, 3, 25, 40, 12, 0, 10},
 		{"pelada", "Base", "Jogar pelada organizada", "⚽", 5, 3, 20, 35, 12, 7, 10},
-		{"escolinha", "Base", "Monitor de escolinha de futebol", "🧒", 6, 3, 35, 55, 14, 100, 8},
-		// === AMADOR (nv 10-17) ===
+		{"escolinha", "Base", "Monitor de escolinha de futebol", "🧒", 6, 7, 35, 55, 14, 100, 8},
+		// === AMADOR (nv 10-19) ===
 		{"campinho", "Amador", "Treinar no campinho do bairro", "🏃", 10, 2, 40, 65, 16, 7, 8},
 		{"arbitro", "Amador", "Árbitro de pelada", "🟨", 10, 2, 50, 80, 16, 0, 8},
 		{"treino", "Amador", "Ajudar no treino do time local", "🎯", 10, 3, 80, 120, 30, 7, 6},
-		{"captador", "Amador", "Captador de jovens talentos", "🔍", 13, 3, 100, 150, 33, 101, 6},
-		// === SÉRIE C (nv 18-23) ===
-		{"serie_c_treino", "Série C", "Treinar no CT do clube", "🏟️", 18, 3, 150, 250, 35, 8, 6},
-		{"serie_c_jogo", "Série C", "Jogar partida da Série C", "⚽", 18, 4, 250, 400, 50, 8, 5},
-		{"serie_c_gol", "Série C", "Marcar gol na Série C", "🥅", 20, 4, 350, 550, 65, 8, 4},
-		{"serie_c_destaque", "Série C", "Ser destaque da rodada", "⭐", 22, 5, 500, 800, 80, 102, 3},
-		// === SÉRIE B (nv 24-29) ===
-		{"serie_b_treino", "Série B", "Treinar com time da Série B", "🏋️", 24, 3, 400, 650, 55, 8, 6},
-		{"serie_b_jogo", "Série B", "Jogar partida da Série B", "⚽", 24, 4, 600, 1000, 75, 8, 5},
-		{"serie_b_artilheiro", "Série B", "Artilheiro da rodada", "🎯", 26, 5, 900, 1400, 95, 8, 4},
-		{"serie_b_acesso", "Série B", "Lutar pelo acesso", "🏆", 28, 5, 1200, 1800, 110, 103, 3},
-		// === SÉRIE A (nv 30-35) ===
-		{"serie_a_treino", "Série A", "Treinar no CT profissional", "🏟️", 30, 3, 800, 1200, 70, 8, 5},
-		{"serie_a_jogo", "Série A", "Jogar partida do Boleirão", "⚽", 30, 4, 1200, 2000, 90, 8, 4},
-		{"serie_a_classico", "Série A", "Jogar clássico regional", "🔥", 32, 5, 1800, 3000, 115, 8, 3},
-		{"serie_a_titulo", "Série A", "Disputar título brasileiro", "🏆", 34, 5, 2500, 4000, 135, 104, 3},
-		// === COPINHA NACIONAL (nv 36-41) ===
-		{"copa_br_fase", "Copinha Nacional", "Jogar fase de grupos", "🏆", 36, 4, 2000, 3500, 100, 35, 4},
-		{"copa_br_quartas", "Copinha Nacional", "Quartas de final", "⚡", 38, 5, 3500, 5500, 130, 35, 3},
-		{"copa_br_semi", "Copinha Nacional", "Semifinal da Copinha", "🔥", 39, 5, 5000, 8000, 160, 35, 3},
-		{"copa_br_final", "Copinha Nacional", "Final da Copinha Nacional", "🏆", 41, 5, 8000, 12000, 200, 105, 2},
-		// === CONTINENTÃO (nv 42-49) ===
-		{"liberta_fase", "Continentão", "Fase de grupos do Continentão", "🌎", 42, 4, 5000, 8000, 120, 35, 4},
-		{"liberta_oitavas", "Continentão", "Oitavas do Continentão", "⚔️", 44, 5, 8000, 13000, 150, 35, 3},
-		{"liberta_semi", "Continentão", "Semifinal do Continentão", "🔥", 46, 5, 13000, 20000, 185, 35, 2},
-		{"liberta_final", "Continentão", "Final do Continentão", "🏆", 48, 5, 20000, 35000, 220, 106, 2},
-		// === EUROPA (nv 50-59) ===
-		{"europa_contrato", "Europa", "Assinar com clube europeu", "📝", 50, 4, 15000, 25000, 140, 36, 4},
-		{"europa_liga", "Europa", "Jogar liga nacional europeia", "🌍", 52, 4, 25000, 40000, 170, 36, 3},
-		{"europa_destaque", "Europa", "Melhor jogador do mês", "⭐", 55, 5, 40000, 65000, 200, 36, 3},
-		{"europa_mvp", "Europa", "MVP da temporada europeia", "🏅", 58, 5, 65000, 100000, 250, 107, 2},
-		// === LIGA DOS CRAQUES (nv 60-71) ===
-		{"ucl_fase", "Liga dos Craques", "Fase de grupos da Liga", "🌟", 60, 4, 50000, 80000, 180, 37, 3},
-		{"ucl_quartas", "Liga dos Craques", "Quartas da Liga dos Craques", "⚡", 63, 5, 80000, 130000, 220, 37, 3},
-		{"ucl_semi", "Liga dos Craques", "Semifinal da Liga", "🔥", 66, 5, 130000, 200000, 280, 37, 2},
-		{"ucl_final", "Liga dos Craques", "Final da Liga dos Craques", "🏆", 69, 5, 200000, 350000, 350, 108, 2},
-		// === SELEÇOCA (nv 72-84) ===
-		{"selecao_conv", "Seleçoca", "Convocado pra Seleçoca", "🇧🇷", 72, 4, 150000, 250000, 250, 38, 3},
-		{"selecao_amistoso", "Seleçoca", "Amistoso internacional", "⚽", 74, 5, 250000, 400000, 300, 38, 3},
-		{"selecao_eliminatorias", "Seleçoca", "Eliminatórias do Mundialito", "🌎", 78, 5, 400000, 600000, 380, 38, 2},
-		{"selecao_titular", "Seleçoca", "Titular da Seleçoca", "⭐", 82, 5, 600000, 1000000, 450, 109, 2},
-		// === MUNDIALITO (nv 85-99) ===
-		{"copa_fase", "Mundialito", "Fase de grupos do Mundialito", "🏆", 85, 4, 500000, 800000, 350, 38, 3},
-		{"copa_oitavas", "Mundialito", "Oitavas do Mundialito", "⚔️", 88, 5, 800000, 1300000, 450, 38, 2},
-		{"copa_semi", "Mundialito", "Semifinal do Mundialito", "🔥", 92, 5, 1300000, 2000000, 550, 38, 2},
-		{"copa_final", "Mundialito", "Final do Mundialito", "🏆", 96, 5, 2000000, 3500000, 700, 110, 1},
-		// === BOLA DE OURO (nv 100-119) ===
-		{"ballon_indicado", "Bola de Ouro", "Indicado à Bola de Ouro", "🥇", 100, 5, 2000000, 3500000, 600, 0, 2},
-		{"ballon_top3", "Bola de Ouro", "Top 3 da Bola de Ouro", "🏅", 105, 5, 3500000, 5500000, 750, 0, 2},
-		{"ballon_vencedor", "Bola de Ouro", "Vencer a Bola de Ouro", "🥇", 110, 5, 5500000, 8000000, 900, 111, 1},
-		// === ÍDOLO (nv 120-149) ===
-		{"idolo_estatua", "Ídolo", "Ganhar estátua no clube", "🗿", 120, 5, 800000, 1300000, 1000, 0, 1},
-		{"idolo_camisa", "Ídolo", "Camisa aposentada", "👕", 130, 5, 1000000, 1700000, 1200, 0, 1},
-		{"idolo_hino", "Ídolo", "Torcida canta seu nome", "🎵", 140, 5, 1500000, 2500000, 1400, 112, 1},
-		// === LENDA (nv 150+) ===
-		{"hall_fama", "Lenda", "Entrar no Hall da Fama", "👑", 150, 5, 2000000, 3500000, 2000, 0, 1},
-		{"lenda_embaixador", "Lenda", "Embaixador do futebol mundial", "🌍", 175, 5, 3000000, 5000000, 3000, 0, 1},
-		{"lenda_imortal", "Lenda", "O Imortal do Futebol", "✨", 200, 5, 5000000, 8000000, 5000, 0, 1},
+		{"captador", "Amador", "Captador de jovens talentos", "🔍", 15, 7, 100, 150, 33, 101, 6},
+		// === SÉRIE C (nv 20-29) ===
+		{"serie_c_treino", "Série C", "Treinar no CT do clube", "🏟️", 20, 3, 150, 250, 35, 8, 6},
+		{"serie_c_jogo", "Série C", "Jogar partida da Série C", "⚽", 20, 4, 250, 400, 50, 8, 5},
+		{"serie_c_gol", "Série C", "Marcar gol na Série C", "🥅", 24, 4, 350, 550, 65, 8, 4},
+		{"serie_c_destaque", "Série C", "Ser destaque da rodada", "⭐", 27, 8, 500, 800, 80, 102, 3},
+		// === SÉRIE B (nv 30-39) ===
+		{"serie_b_treino", "Série B", "Treinar com time da Série B", "🏋️", 30, 3, 400, 650, 55, 8, 6},
+		{"serie_b_jogo", "Série B", "Jogar partida da Série B", "⚽", 30, 4, 600, 1000, 75, 8, 5},
+		{"serie_b_artilheiro", "Série B", "Artilheiro da rodada", "🎯", 34, 5, 900, 1400, 95, 8, 4},
+		{"serie_b_acesso", "Série B", "Lutar pelo acesso", "🏆", 37, 9, 1200, 1800, 110, 103, 3},
+		// === SÉRIE A (nv 40-49) ===
+		{"serie_a_treino", "Série A", "Treinar no CT profissional", "🏟️", 40, 3, 800, 1200, 70, 8, 5},
+		{"serie_a_jogo", "Série A", "Jogar partida do Boleirão", "⚽", 40, 4, 1200, 2000, 90, 8, 4},
+		{"serie_a_classico", "Série A", "Jogar clássico regional", "🔥", 44, 5, 1800, 3000, 115, 8, 3},
+		{"serie_a_titulo", "Série A", "Disputar título brasileiro", "🏆", 47, 9, 2500, 4000, 135, 104, 3},
+		// === COPINHA NACIONAL (nv 50-59) ===
+		{"copa_br_fase", "Copinha Nacional", "Jogar fase de grupos", "🏆", 50, 4, 2000, 3500, 100, 35, 4},
+		{"copa_br_quartas", "Copinha Nacional", "Quartas de final", "⚡", 52, 5, 3500, 5500, 130, 35, 3},
+		{"copa_br_semi", "Copinha Nacional", "Semifinal da Copinha", "🔥", 55, 5, 5000, 8000, 160, 35, 3},
+		{"copa_br_final", "Copinha Nacional", "Final da Copinha Nacional", "🏆", 58, 9, 8000, 12000, 200, 105, 2},
+		// === CONTINENTÃO (nv 60-71) ===
+		{"liberta_fase", "Continentão", "Fase de grupos do Continentão", "🌎", 60, 4, 5000, 8000, 120, 35, 4},
+		{"liberta_oitavas", "Continentão", "Oitavas do Continentão", "⚔️", 63, 5, 8000, 13000, 150, 35, 3},
+		{"liberta_semi", "Continentão", "Semifinal do Continentão", "🔥", 66, 5, 13000, 20000, 185, 35, 2},
+		{"liberta_final", "Continentão", "Final do Continentão", "🏆", 69, 9, 20000, 35000, 220, 106, 2},
+		// === EUROPA (nv 72-84) ===
+		{"europa_contrato", "Europa", "Assinar com clube europeu", "📝", 72, 4, 15000, 25000, 140, 36, 4},
+		{"europa_liga", "Europa", "Jogar liga nacional europeia", "🌍", 75, 4, 25000, 40000, 170, 36, 3},
+		{"europa_destaque", "Europa", "Melhor jogador do mês", "⭐", 78, 5, 40000, 65000, 200, 36, 3},
+		{"europa_mvp", "Europa", "MVP da temporada europeia", "🏅", 82, 9, 65000, 100000, 250, 107, 2},
+		// === LIGA DOS CRAQUES (nv 85-99) ===
+		{"ucl_fase", "Liga dos Craques", "Fase de grupos da Liga", "🌟", 85, 4, 50000, 80000, 180, 37, 3},
+		{"ucl_quartas", "Liga dos Craques", "Quartas da Liga dos Craques", "⚡", 88, 5, 80000, 130000, 220, 37, 3},
+		{"ucl_semi", "Liga dos Craques", "Semifinal da Liga", "🔥", 92, 5, 130000, 200000, 280, 37, 2},
+		{"ucl_final", "Liga dos Craques", "Final da Liga dos Craques", "🏆", 97, 9, 200000, 350000, 350, 108, 2},
+		// === SELEÇOCA (nv 100-114) ===
+		{"selecao_conv", "Seleçoca", "Convocado pra Seleçoca", "🇧🇷", 100, 4, 150000, 250000, 250, 38, 3},
+		{"selecao_amistoso", "Seleçoca", "Amistoso internacional", "⚽", 103, 5, 250000, 400000, 300, 38, 3},
+		{"selecao_eliminatorias", "Seleçoca", "Eliminatórias do Mundialito", "🌎", 108, 5, 400000, 600000, 380, 38, 2},
+		{"selecao_titular", "Seleçoca", "Titular da Seleçoca", "⭐", 112, 9, 600000, 1000000, 450, 109, 2},
+		// === MUNDIALITO (nv 115-134) ===
+		{"copa_fase", "Mundialito", "Fase de grupos do Mundialito", "🏆", 115, 4, 500000, 800000, 350, 38, 3},
+		{"copa_oitavas", "Mundialito", "Oitavas do Mundialito", "⚔️", 120, 5, 800000, 1300000, 450, 38, 2},
+		{"copa_semi", "Mundialito", "Semifinal do Mundialito", "🔥", 126, 5, 1300000, 2000000, 550, 38, 2},
+		{"copa_final", "Mundialito", "Final do Mundialito", "🏆", 132, 9, 2000000, 3500000, 700, 110, 1},
+		// === BOLA DE OURO (nv 135-159) ===
+		{"ballon_indicado", "Bola de Ouro", "Indicado à Bola de Ouro", "🥇", 135, 5, 2000000, 3500000, 600, 0, 2},
+		{"ballon_top3", "Bola de Ouro", "Top 3 da Bola de Ouro", "🏅", 142, 5, 3500000, 5500000, 750, 0, 2},
+		{"ballon_vencedor", "Bola de Ouro", "Vencer a Bola de Ouro", "🥇", 152, 9, 5500000, 8000000, 900, 111, 1},
+		// === ÍDOLO (nv 160-189) ===
+		{"idolo_estatua", "Ídolo", "Ganhar estátua no clube", "🗿", 160, 5, 800000, 1300000, 1000, 0, 1},
+		{"idolo_camisa", "Ídolo", "Camisa aposentada", "👕", 172, 5, 1000000, 1700000, 1200, 0, 1},
+		{"idolo_hino", "Ídolo", "Torcida canta seu nome", "🎵", 185, 9, 1500000, 2500000, 1400, 112, 1},
+		// === LENDA (nv 190+) ===
+		{"hall_fama", "Lenda", "Entrar no Hall da Fama", "👑", 190, 5, 2000000, 3500000, 2000, 0, 1},
+		{"lenda_embaixador", "Lenda", "Embaixador do futebol mundial", "🌍", 210, 5, 3000000, 5000000, 3000, 0, 1},
+		{"lenda_imortal", "Lenda", "O Imortal do Futebol", "✨", 230, 9, 5000000, 8000000, 5000, 0, 1},
 	}
 	for _, t := range trabalhos {
 		Conn.Exec(`INSERT INTO cat_trabalhos
 			(id, nome, tier, nivel_min, energia, ganho_min, ganho_max, ganho_xp, requer_item, icone, limite_diario)
 			VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)
 			ON CONFLICT (id) DO UPDATE SET
+				nivel_min=EXCLUDED.nivel_min,
 				energia=EXCLUDED.energia,
 				ganho_min=EXCLUDED.ganho_min,
 				ganho_max=EXCLUDED.ganho_max,
@@ -775,31 +817,40 @@ func seedCatalogos() {
 			p.id, p.nome, p.descricao, p.preco, p.tipo, p.icone, p.avatarID, p.tituloVal, p.mochilaSlots)
 	}
 
-	// Seed cat_itens_fama
+	// Seed cat_itens_fama — apenas itens de luxo (motos, carros, apartamentos)
 	type famaSeed struct {
-		id, nome, descricao, icone string
-		preco, famaGanha int
-		unico bool
+		id, nome, descricao, icone, categoria string
+		preco, famaGanha, limite              int
 	}
 	fama := []famaSeed{
-		{"bicicleta", "Bicicleta do Craque", "Chega estiloso no treino", "🚲", 800, 5, true},
-		{"moto", "Moto Esportiva", "Toda esquina te respeita", "🏍️", 5000, 40, true},
-		{"carro_popular", "Carro Popular", "Um carro zero na garagem", "🚗", 15000, 100, true},
-		{"suv", "SUV Importado", "Estilo e poder na estrada", "🚙", 60000, 400, true},
-		{"superesportivo", "Superesportivo", "O carro dos campeões", "🏎️", 250000, 1500, true},
-		{"kitnet", "Kitnet no Bairro", "Saiu da casa dos pais", "🏠", 50000, 15, true},
-		{"apartamento", "Apartamento na Cidade", "Vista bonita e endereço chique", "🏢", 300000, 200, true},
-		{"mansao", "Mansão do Craque", "Piscina, churrasqueira e tudo mais", "🏰", 1500000, 1200, true},
-		{"personal", "Sessão com Personal", "Treino de elite por um dia", "💪", 500, 3, false},
-		{"coletiva", "Coletiva de Imprensa", "Apareça na mídia hoje", "🎤", 3000, 25, false},
-		{"empresario", "Contratar Empresário", "Ele gerencia sua imagem por um tempo", "🤝", 10000, 100, false},
+		// Motos (limite 2 por modelo)
+		{"moto_cg", "CG 160", "A moto do trabalhador", "🏍️", "moto", 5000, 30, 2},
+		{"moto_fazer", "Fazer 250", "Estilo e velocidade nas ruas", "🏍️", "moto", 15000, 80, 2},
+		{"moto_cb500", "CB 500", "Moto de respeito", "🏍️", "moto", 40000, 200, 2},
+		{"moto_bmw", "BMW S1000", "Supermáquina alemã", "🏍️", "moto", 120000, 600, 2},
+		{"moto_ducati", "Ducati Panigale", "A moto dos sonhos", "🏍️", "moto", 350000, 1500, 2},
+		// Carros (limite 2 por modelo)
+		{"carro_uno", "Uno Mille", "O primeiro carro do craque", "🚗", "carro", 8000, 40, 2},
+		{"carro_civic", "Civic Si", "Conforto e potência", "🚗", "carro", 35000, 150, 2},
+		{"carro_hilux", "Hilux SW4", "Pra quem manda no bairro", "🚙", "carro", 80000, 400, 2},
+		{"carro_bmw", "BMW M3", "Luxo europeu na garagem", "🚗", "carro", 200000, 900, 2},
+		{"carro_ferrari", "Ferrari 488", "O carro dos campeões", "🏎️", "carro", 500000, 2000, 2},
+		{"carro_bugatti", "Bugatti Chiron", "Hipercar lendário", "🏎️", "carro", 1500000, 5000, 2},
+		// Apartamentos (limite 1 por modelo)
+		{"apto_kitnet", "Kitnet no Bairro", "Saiu da casa dos pais", "🏠", "apartamento", 50000, 100, 1},
+		{"apto_2quartos", "Apartamento 2 Quartos", "Confortável e funcional", "🏢", "apartamento", 150000, 350, 1},
+		{"apto_cobertura", "Cobertura Duplex", "Vista panorâmica da cidade", "🏢", "apartamento", 500000, 1200, 1},
+		{"apto_penthouse", "Penthouse de Luxo", "O topo do mundo", "🏢", "apartamento", 1500000, 3500, 1},
+		{"apto_mansao", "Mansão do Craque", "Piscina, churrasqueira e tudo mais", "🏰", "apartamento", 5000000, 10000, 1},
 	}
+	// Limpar itens antigos que não existem mais
+	Conn.Exec(`DELETE FROM cat_itens_fama WHERE id NOT IN ('moto_cg','moto_fazer','moto_cb500','moto_bmw','moto_ducati','carro_uno','carro_civic','carro_hilux','carro_bmw','carro_ferrari','carro_bugatti','apto_kitnet','apto_2quartos','apto_cobertura','apto_penthouse','apto_mansao')`)
 	for _, f := range fama {
 		Conn.Exec(`INSERT INTO cat_itens_fama
-			(id, nome, descricao, preco, fama_ganha, icone, unico)
-			VALUES ($1,$2,$3,$4,$5,$6,$7)
-			ON CONFLICT (id) DO UPDATE SET preco=$4, fama_ganha=$5`,
-			f.id, f.nome, f.descricao, f.preco, f.famaGanha, f.icone, f.unico)
+			(id, nome, descricao, preco, fama_ganha, icone, unico, categoria, limite_compra)
+			VALUES ($1,$2,$3,$4,$5,$6,false,$7,$8)
+			ON CONFLICT (id) DO UPDATE SET preco=$4, fama_ganha=$5, categoria=$7, limite_compra=$8`,
+			f.id, f.nome, f.descricao, f.preco, f.famaGanha, f.icone, f.categoria, f.limite)
 	}
 
 	// Seed cat_tasks_diarias
@@ -1265,6 +1316,57 @@ func seedCatalogos() {
 	Conn.Exec(`DELETE FROM eventos WHERE fim < NOW()`)
 
 	// ========================
+	// BOLETOS (contas periódicas a cada 2 dias reais)
+	// ========================
+	Conn.Exec(`CREATE TABLE IF NOT EXISTS boletos (
+		jogador_id INT PRIMARY KEY REFERENCES jogadores(id),
+		ultimo_boleto TIMESTAMP DEFAULT NOW(),
+		boletos_pagos INT DEFAULT 0
+	)`)
+	// ========================
+	// CDB (investimento bancário)
+	// ========================
+	Conn.Exec(`CREATE TABLE IF NOT EXISTS cdb_investimentos (
+		id SERIAL PRIMARY KEY,
+		jogador_id INT REFERENCES jogadores(id),
+		valor INT NOT NULL,
+		criado_em TIMESTAMP DEFAULT NOW(),
+		resgatado BOOLEAN DEFAULT FALSE,
+		resgatado_em TIMESTAMP
+	)`)
+
+	Conn.Exec(`CREATE TABLE IF NOT EXISTS boletos_historico (
+		id SERIAL PRIMARY KEY,
+		jogador_id INT REFERENCES jogadores(id),
+		valor_base INT DEFAULT 0,
+		juros INT DEFAULT 0,
+		valor_total INT DEFAULT 0,
+		dias_atraso INT DEFAULT 0,
+		pago_em TIMESTAMP DEFAULT NOW()
+	)`)
+
+	Conn.Exec(`CREATE TABLE IF NOT EXISTS clubes (
+		id SERIAL PRIMARY KEY,
+		nome VARCHAR(100) NOT NULL,
+		mascote VARCHAR(50) DEFAULT '',
+		cor1 VARCHAR(30) DEFAULT '',
+		cor2 VARCHAR(30) DEFAULT '',
+		tier VARCHAR(50) NOT NULL,
+		icone VARCHAR(20) DEFAULT ''
+	)`)
+
+	Conn.Exec(`CREATE TABLE IF NOT EXISTS jogador_clube (
+		jogador_id INT PRIMARY KEY REFERENCES jogadores(id),
+		clube_id INT DEFAULT 0,
+		numero_camisa INT DEFAULT 0,
+		tier VARCHAR(50) DEFAULT '',
+		entrou_em TIMESTAMP DEFAULT NOW()
+	)`)
+
+	Conn.Exec(`ALTER TABLE jogadores ADD COLUMN IF NOT EXISTS clube_id INT DEFAULT 0`)
+	Conn.Exec(`ALTER TABLE jogadores ADD COLUMN IF NOT EXISTS numero_camisa INT DEFAULT 0`)
+
+	// ========================
 	// MISSÕES COMBINADAS
 	// ========================
 	Conn.Exec(`CREATE TABLE IF NOT EXISTS combined_missions (
@@ -1316,5 +1418,148 @@ func seedCatalogos() {
 			VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)
 			ON CONFLICT DO NOTHING`,
 			cm.id, cm.nome, cm.desc, cm.icone, cm.t1, cm.a1, cm.t2, cm.a2, cm.t3, cm.a3, cm.xp, cm.din, cm.moedas)
+	}
+
+	// Seed clubes — limpa e recria tudo
+	Conn.Exec(`DELETE FROM clubes`)
+	type clubeSeed struct {
+		nome, mascote, cor1, cor2, tier, icone string
+	}
+	clubesSeed := []clubeSeed{
+		// === SÉRIE C — 20 clubes regionais/pequenos ===
+		{"Ferroviário do Brejo", "Locomotiva", "#cc0000", "#222", "Série C", "🚂"},
+		{"Operário Bola Murcha", "Martelo", "#0055aa", "#fff", "Série C", "🔨"},
+		{"Juventude da Várzea", "Piaba", "#228b22", "#ffd700", "Série C", "🐟"},
+		{"Carcará FC", "Carcará", "#cc5500", "#fff", "Série C", "🦅"},
+		{"Boto Rosa EC", "Boto", "#ff69b4", "#222", "Série C", "🐬"},
+		{"Capivara Futebol", "Capivara", "#8b4513", "#ffd700", "Série C", "🦫"},
+		{"Jacaré do Pantanal", "Jacaré", "#006400", "#222", "Série C", "🐊"},
+		{"Peixe Boi FC", "Peixe-Boi", "#4682b4", "#c0c0c0", "Série C", "🐋"},
+		{"Tatu Bola EC", "Tatu", "#d2691e", "#333", "Série C", "⚽"},
+		{"Onça Pintada FC", "Onça", "#ffa500", "#222", "Série C", "🐆"},
+		{"Arara Azul EC", "Arara", "#1e90ff", "#ffd700", "Série C", "🦜"},
+		{"Tucano da Serra", "Tucano", "#ff4500", "#222", "Série C", "🐦"},
+		{"Piranha do São Francisco", "Piranha", "#cc0000", "#fff", "Série C", "🐡"},
+		{"Mandacaru FC", "Cacto", "#228b22", "#fff", "Série C", "🌵"},
+		{"Baião de Dois EC", "Panela", "#ff8c00", "#8b0000", "Série C", "🍲"},
+		{"Lampião Futebol", "Lamparina", "#ffd700", "#8b0000", "Série C", "🔥"},
+		{"Cangaceiro FC", "Chapéu", "#8b4513", "#ffd700", "Série C", "🤠"},
+		{"Maracatu EC", "Tambor", "#6a0dad", "#ffd700", "Série C", "🥁"},
+		{"Sertanejo FC", "Violão", "#d2691e", "#ffd700", "Série C", "🎸"},
+		{"Açaí Esporte", "Tigela", "#4b0082", "#fff", "Série C", "🫐"},
+
+		// === SÉRIE B — 20 clubes em crescimento ===
+		{"Galo Cego FC", "Galo Vendado", "#222", "#fff", "Série B", "🐓"},
+		{"Estrela do Mangue", "Caranguejo", "#ff6600", "#0066cc", "Série B", "🦀"},
+		{"Trovão Esporte Clube", "Raio", "#6a0dad", "#ffd700", "Série B", "⚡"},
+		{"Tubarão Branco FC", "Tubarão", "#003366", "#c0c0c0", "Série B", "🦈"},
+		{"Águia Negra EC", "Águia", "#222", "#ffd700", "Série B", "🦅"},
+		{"Lobo Guará FC", "Lobo", "#cc0000", "#222", "Série B", "🐺"},
+		{"Tigre do Vale", "Tigre", "#ff8c00", "#222", "Série B", "🐯"},
+		{"Gavião Real EC", "Gavião", "#333", "#cc0000", "Série B", "🦅"},
+		{"Cobra Coral FC", "Cobra", "#cc0000", "#222", "Série B", "🐍"},
+		{"Touro Bravo EC", "Touro", "#8b0000", "#ffd700", "Série B", "🐂"},
+		{"Falcão Peregrino", "Falcão", "#4169e1", "#fff", "Série B", "🦅"},
+		{"Pantera Negra FC", "Pantera", "#222", "#6a0dad", "Série B", "🐆"},
+		{"Búfalo do Norte", "Búfalo", "#333", "#cc0000", "Série B", "🦬"},
+		{"Cervo EC", "Cervo", "#8b4513", "#fff", "Série B", "🦌"},
+		{"Coruja Atlética", "Coruja", "#4b0082", "#ffd700", "Série B", "🦉"},
+		{"Raposa Dourada FC", "Raposa", "#ff8c00", "#fff", "Série B", "🦊"},
+		{"Leão do Sertão", "Leão", "#ffa500", "#222", "Série B", "🦁"},
+		{"Javali FC", "Javali", "#556b2f", "#fff", "Série B", "🐗"},
+		{"Fênix do Sul", "Fênix", "#ff4500", "#ffd700", "Série B", "🔥"},
+		{"Pelicano EC", "Pelicano", "#fff", "#0055aa", "Série B", "🐦"},
+
+		// === SÉRIE A — 20 grandes clubes nacionais (os mais famosos!) ===
+		{"Flamingos FC", "Flamingo", "#cc0000", "#222", "Série A", "🦩"},
+		{"Verdão Palmares", "Porco", "#006400", "#fff", "Série A", "🐷"},
+		{"Peixão Santástico", "Peixe", "#222", "#fff", "Série A", "🐟"},
+		{"Timão Corinthiano", "Mosqueteiro", "#222", "#fff", "Série A", "⚔️"},
+		{"Tricolor Paulistta", "São Paulo", "#cc0000", "#fff", "Série A", "🔴"},
+		{"Galo Minerão", "Galo", "#222", "#fff", "Série A", "🐓"},
+		{"Cruzeirão da Toca", "Raposa", "#0055aa", "#fff", "Série A", "🦊"},
+		{"Grêmio Imortal", "Mosqueteiro", "#0055aa", "#222", "Série A", "⚔️"},
+		{"Colorado Gaúcho", "Colorado", "#cc0000", "#fff", "Série A", "🔴"},
+		{"Furacão Atleticano", "Furacão", "#cc0000", "#222", "Série A", "🌪️"},
+		{"Coxa Branca FC", "Coxa", "#006400", "#fff", "Série A", "💚"},
+		{"Botafoguense EC", "Estrela", "#222", "#fff", "Série A", "⭐"},
+		{"Vascaíno da Gama", "Almirante", "#222", "#cc0000", "Série A", "⚓"},
+		{"Leão Baiano", "Leão", "#cc0000", "#0055aa", "Série A", "🦁"},
+		{"Esquadrão de Aço", "Bahia", "#0055aa", "#cc0000", "Série A", "🛡️"},
+		{"Dragão Goiano", "Dragão", "#cc0000", "#222", "Série A", "🐉"},
+		{"Coelho Mineiro", "Coelho", "#cc0000", "#fff", "Série A", "🐰"},
+		{"Leão Cearense", "Leão", "#006400", "#fff", "Série A", "🦁"},
+		{"Tricolor Pernambucano", "Náutico", "#cc0000", "#fff", "Série A", "🚢"},
+		{"Rubro-Negro Candango", "Águia", "#cc0000", "#222", "Série A", "🦅"},
+
+		// === COPINHA NACIONAL — 10 clubes ===
+		{"Dragões do Norte", "Dragão", "#004d00", "#ffd700", "Copinha Nacional", "🐉"},
+		{"Falcões da Capital", "Falcão", "#222", "#cc0000", "Copinha Nacional", "🦅"},
+		{"Piranhas FC", "Piranha", "#cc0000", "#222", "Copinha Nacional", "🐡"},
+		{"Imperador FC", "Coroa", "#ffd700", "#cc0000", "Copinha Nacional", "👑"},
+		{"Relâmpago EC", "Raio", "#ffd700", "#0055aa", "Copinha Nacional", "⚡"},
+		{"Titãs do Cerrado", "Titã", "#8b0000", "#ffd700", "Copinha Nacional", "💪"},
+		{"Gladiadores FC", "Espada", "#c0c0c0", "#cc0000", "Copinha Nacional", "⚔️"},
+		{"Furacão do Litoral", "Furacão", "#0055aa", "#fff", "Copinha Nacional", "🌪️"},
+		{"Samurais FC", "Katana", "#222", "#cc0000", "Copinha Nacional", "⛩️"},
+		{"Vikings do Sul", "Viking", "#003366", "#ffd700", "Copinha Nacional", "🛡️"},
+
+		// === CONTINENTÃO — 8 clubes ===
+		{"Panteras do Plata", "Pantera", "#222", "#c0c0c0", "Continentão", "🐆"},
+		{"Condores Andinos", "Condor", "#fff", "#0055aa", "Continentão", "🦅"},
+		{"Jaguares do Rio", "Jaguar", "#ffd700", "#228b22", "Continentão", "🐆"},
+		{"Boca de Ferro FC", "Dentes", "#0055aa", "#ffd700", "Continentão", "😬"},
+		{"River Prateado", "Rio", "#fff", "#cc0000", "Continentão", "🌊"},
+		{"Nacional Celeste", "Celeste", "#87ceeb", "#fff", "Continentão", "💙"},
+		{"Peñarol Dourado", "Sol", "#ffd700", "#222", "Continentão", "☀️"},
+		{"Olimpia Guarani", "Olimpia", "#222", "#fff", "Continentão", "🏛️"},
+
+		// === EUROPA — 8 clubes ===
+		{"FC Corvo de Milão", "Corvo", "#222", "#0055aa", "Europa", "🐦‍⬛"},
+		{"Real Linhares", "Coroa", "#fff", "#ffd700", "Europa", "👑"},
+		{"Lobos de Munique", "Lobo", "#cc0000", "#fff", "Europa", "🐺"},
+		{"Leões de Londres", "Leão", "#0055aa", "#fff", "Europa", "🦁"},
+		{"Dragões de Lisboa", "Dragão", "#cc0000", "#006400", "Europa", "🐉"},
+		{"Águias de Paris", "Águia", "#003366", "#cc0000", "Europa", "🦅"},
+		{"Touro de Turim", "Touro", "#222", "#fff", "Europa", "🐂"},
+		{"Ajax de Amsterdã", "Herói", "#cc0000", "#fff", "Europa", "⚡"},
+
+		// === LIGA DOS CRAQUES — 6 clubes ===
+		{"Olimpo FC", "Águia Dourada", "#ffd700", "#fff", "Liga dos Craques", "🦅"},
+		{"Titanes Futebol", "Titã", "#0044aa", "#c0c0c0", "Liga dos Craques", "⚔️"},
+		{"Imperium Esporte", "Imperador", "#6a0dad", "#ffd700", "Liga dos Craques", "👑"},
+		{"Supremacia FC", "Diamante", "#222", "#87ceeb", "Liga dos Craques", "💎"},
+		{"Celestial EC", "Anjo", "#fff", "#ffd700", "Liga dos Craques", "😇"},
+		{"Soberano Futebol", "Trono", "#8b0000", "#ffd700", "Liga dos Craques", "🏆"},
+
+		// === SELEÇOCA — 3 clubes ===
+		{"Seleçoca Canarinho", "Canário", "#ffd700", "#228b22", "Seleçoca", "🐦"},
+		{"Seleçoca Fúria", "Onça", "#ffd700", "#0055aa", "Seleçoca", "🐆"},
+		{"Seleçoca Garra", "Arara", "#228b22", "#ffd700", "Seleçoca", "🦜"},
+
+		// === MUNDIALITO — 3 clubes ===
+		{"All Stars Mundial", "Estrela", "#ffd700", "#222", "Mundialito", "⭐"},
+		{"Constelação FC", "Constelação", "#000033", "#c0c0c0", "Mundialito", "🌟"},
+		{"Galáxia Futebol", "Planeta", "#6a0dad", "#ffd700", "Mundialito", "🪐"},
+
+		// === BOLA DE OURO — 3 clubes ===
+		{"Deuses do Gramado", "Raio", "#ffd700", "#fff", "Bola de Ouro", "⚡"},
+		{"Eterno FC", "Infinito", "#222", "#ffd700", "Bola de Ouro", "♾️"},
+		{"Supremo Esporte", "Diamante", "#0055aa", "#87ceeb", "Bola de Ouro", "💎"},
+
+		// === ÍDOLO — 3 clubes ===
+		{"Panteão dos Craques", "Estátua", "#c0c0c0", "#ffd700", "Ídolo", "🗿"},
+		{"Lendários FC", "Fogo Sagrado", "#cc0000", "#ffd700", "Ídolo", "🔥"},
+		{"Imortais Esporte", "Fênix Eterna", "#fff", "#cc0000", "Ídolo", "🏛️"},
+
+		// === LENDA — 3 clubes ===
+		{"FC Eternidade", "Coroa Celestial", "#ffd700", "#ffd700", "Lenda", "👑"},
+		{"Mitologia Futebol", "Dragão Dourado", "#ffd700", "#222", "Lenda", "🐲"},
+		{"Transcendência EC", "Aura", "#fff", "#ffd700", "Lenda", "✨"},
+	}
+	for _, c := range clubesSeed {
+		Conn.Exec(`INSERT INTO clubes (nome, mascote, cor1, cor2, tier, icone)
+			VALUES ($1,$2,$3,$4,$5,$6)`,
+			c.nome, c.mascote, c.cor1, c.cor2, c.tier, c.icone)
 	}
 }

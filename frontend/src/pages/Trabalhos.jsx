@@ -18,9 +18,9 @@ const TIERS = [
   'Seleçoca', 'Mundialito', 'Bola de Ouro', 'Ídolo', 'Lenda'
 ]
 const TIER_NIVEL_MIN = {
-  Garoto: 1, Base: 5, Amador: 10, 'Série C': 18, 'Série B': 24, 'Série A': 30,
-  'Copinha Nacional': 36, Continentão: 42, Europa: 50, 'Liga dos Craques': 60,
-  'Seleçoca': 72, Mundialito: 85, 'Bola de Ouro': 100, 'Ídolo': 120, Lenda: 150
+  Garoto: 1, Base: 5, Amador: 10, 'Série C': 20, 'Série B': 30, 'Série A': 40,
+  'Copinha Nacional': 50, Continentão: 60, Europa: 72, 'Liga dos Craques': 85,
+  'Seleçoca': 100, Mundialito: 115, 'Bola de Ouro': 135, 'Ídolo': 160, Lenda: 190
 }
 
 function getTierDoJogador(nivel) {
@@ -92,8 +92,6 @@ function JobItem({ trabalho, maestria, nivel, onTrabalhar, loading, vezesHoje })
 
 const MILESTONES = [
   { n: 3, bonus: 10, icon: '⭐' },
-  { n: 4, bonus: 20, icon: '🌟' },
-  { n: 5, bonus: 30, icon: '🔥' },
 ]
 
 function VariedadePanel({ diferentesHoje, config, tier }) {
@@ -290,6 +288,21 @@ export default function Trabalhos() {
       <p className="subtitle">
         Faça trabalhos para ganhar dinheiro e XP. Maestria alta reduz o rendimento — varie seus trabalhos!
       </p>
+
+      {jogador && jogador.saude < 30 && (
+        <div style={{
+          background: '#ffeaea', border: '2px solid var(--vermelho)', borderRadius: 10,
+          padding: '14px 18px', marginBottom: 14, textAlign: 'center'
+        }}>
+          <div style={{ fontSize: 28 }}>⚠️</div>
+          <div style={{ color: '#b00', fontWeight: 900, fontSize: 14, marginTop: 4 }}>
+            Saúde muito baixa! ({jogador.saude}/30)
+          </div>
+          <div style={{ color: '#666', fontSize: 12, marginTop: 4 }}>
+            Vá ao <strong style={{ color: 'var(--azul)' }}>Perfil → Central de Tratamento</strong> para se recuperar antes de trabalhar.
+          </div>
+        </div>
+      )}
 
       <VariedadePanel
         diferentesHoje={hoje.diferentes_por_tier?.[tierAtivo] || 0}

@@ -9,6 +9,7 @@ type Item struct {
 	Nome             string `json:"nome"`
 	Descricao        string `json:"descricao"`
 	Preco            int    `json:"preco"`
+	PrecoMoedas      int    `json:"preco_moedas"`
 	Tipo             string `json:"tipo"` // consumivel, equipamento, mochila
 	Icone            string `json:"icone"`
 	Raridade         string `json:"raridade"` // comum, raro, epico, lendario
@@ -74,6 +75,8 @@ type JogadorData struct {
 	Titulos                    string `json:"titulos"`
 	Rank                       string `json:"rank"`
 	PvpStreak                  int    `json:"pvp_streak"`
+	ClubeID                    int    `json:"clube_id"`
+	NumeroCamisa               int    `json:"numero_camisa"`
 	ProximaEnergiaEm           int64  `json:"proxima_energia_em"`
 	ProximaVitalidadeEm        int64  `json:"proxima_vitalidade_em"`
 	ProximaSaudeEm             int64  `json:"proxima_saude_em"`
@@ -113,11 +116,28 @@ type PerfilPublico struct {
 	Velocidade          int              `json:"velocidade"`
 	Habilidade          int              `json:"habilidade"`
 	Titulo              string           `json:"titulo"`
+	Titulos             string           `json:"titulos"`
 	CodigoAmigo         string           `json:"codigo_amigo"`
 	InventarioPublico   bool             `json:"inventario_publico"`
 	Inventario          []InventarioItem `json:"inventario,omitempty"`
+	Patrimonio          []PatrimonioItem `json:"patrimonio,omitempty"`
+	PatrimonioTotal     int              `json:"patrimonio_total"`
+	ClubeNome           string           `json:"clube_nome,omitempty"`
+	ClubeIcone          string           `json:"clube_icone,omitempty"`
+	ClubeCor1           string           `json:"clube_cor1,omitempty"`
+	ClubeCor2           string           `json:"clube_cor2,omitempty"`
+	NumeroCamisa        int              `json:"numero_camisa"`
 	EhAmigo             bool             `json:"eh_amigo"`
 	SolicitacaoPendente bool             `json:"solicitacao_pendente"`
+}
+
+type PatrimonioItem struct {
+	ID        string `json:"id"`
+	Nome      string `json:"nome"`
+	Icone     string `json:"icone"`
+	Categoria string `json:"categoria"`
+	Preco     int    `json:"preco"`
+	Qtd       int    `json:"quantidade"`
 }
 
 type CombateResult struct {
@@ -213,13 +233,15 @@ type ItemPremium struct {
 
 
 type ItemFama struct {
-	ID        string `json:"id"`
-	Nome      string `json:"nome"`
-	Descricao string `json:"descricao"`
-	Preco     int    `json:"preco"`
-	FamaGanha int    `json:"fama_ganha"`
-	Icone     string `json:"icone"`
-	Unico     bool   `json:"unico"`
+	ID           string `json:"id"`
+	Nome         string `json:"nome"`
+	Descricao    string `json:"descricao"`
+	Preco        int    `json:"preco"`
+	FamaGanha    int    `json:"fama_ganha"`
+	Icone        string `json:"icone"`
+	Categoria    string `json:"categoria"`
+	LimiteCompra int    `json:"limite_compra"`
+	Comprado     int    `json:"comprado"`
 }
 
 
@@ -439,12 +461,13 @@ type Casa struct {
 }
 
 type CasaConfig struct {
-	Tipo     string `json:"tipo"`
-	Nome     string `json:"nome"`
-	Preco    int    `json:"preco"`
-	XPHora   int    `json:"xp_hora"`
-	EnQuant  int    `json:"energia_quant"`
-	EnIntMin int    `json:"energia_intervalo_min"`
+	Tipo        string `json:"tipo"`
+	Nome        string `json:"nome"`
+	Preco       int    `json:"preco"`
+	PrecoMoedas int    `json:"preco_moedas"`
+	XPHora      int    `json:"xp_hora"`
+	EnQuant     int    `json:"energia_quant"`
+	EnIntMin    int    `json:"energia_intervalo_min"`
 }
 
 // ========================

@@ -11,6 +11,7 @@ import TutorialOverlay from './components/TutorialOverlay'
 import PosicaoModal from './components/PosicaoModal'
 import StreakModal from './components/StreakModal'
 import EventBanner from './components/EventBanner'
+import ClubeModal from './components/ClubeModal'
 import Historia from './pages/Historia'
 import Trabalhos from './pages/Trabalhos'
 import Perfil from './pages/Perfil'
@@ -45,6 +46,7 @@ export default function App() {
         <PosicaoModal />
         <StreakModal />
         <EventBanner />
+        <ClubeModal />
         <Layout>
           <Routes>
             <Route path="/" element={<HomeRouter />} />
