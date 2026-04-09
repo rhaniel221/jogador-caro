@@ -399,6 +399,37 @@ func createTables() {
 		}
 	}
 
+	// =====================================================
+	// TREINO — sistema de progressão de atributos
+	// =====================================================
+	Conn.Exec(`CREATE TABLE IF NOT EXISTS treinos_cooldown (
+		jogador_id INT REFERENCES jogadores(id),
+		treino_id VARCHAR(80) NOT NULL,
+		ultimo_em TIMESTAMP DEFAULT NOW(),
+		PRIMARY KEY (jogador_id, treino_id)
+	)`)
+
+	Conn.Exec(`CREATE TABLE IF NOT EXISTS treinos_total (
+		jogador_id INT REFERENCES jogadores(id),
+		treino_id VARCHAR(80) NOT NULL,
+		vezes_feito INT DEFAULT 0,
+		PRIMARY KEY (jogador_id, treino_id)
+	)`)
+
+	// Flag de migração one-time para boost de jogadores existentes (MVP testers)
+	Conn.Exec(`ALTER TABLE jogadores ADD COLUMN IF NOT EXISTS treino_migrado BOOLEAN DEFAULT FALSE`)
+
+	// Boost proporcional para jogadores existentes que não foram migrados ainda.
+	// Fórmula: stats = MAX(atual, 5 + (nivel-1)*2). Mantém quem já tinha mais (item bônus
+	// aplicado no atributo) e dá um valor justo aos que ficaram pra trás com a remoção
+	// do ganho de stats por level-up.
+	Conn.Exec(`UPDATE jogadores
+		SET forca = GREATEST(forca, 5 + (nivel-1)*2),
+		    velocidade = GREATEST(velocidade, 5 + (nivel-1)*2),
+		    habilidade = GREATEST(habilidade, 5 + (nivel-1)*2),
+		    treino_migrado = TRUE
+		WHERE treino_migrado = FALSE OR treino_migrado IS NULL`)
+
 	seedCatalogos()
 
 	fmt.Println("Tabelas verificadas!")

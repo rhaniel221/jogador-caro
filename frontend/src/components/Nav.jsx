@@ -5,6 +5,7 @@ import { useGame } from '../context/GameContext'
 const links = [
   { to: '/inicio', label: 'Perfil', tid: 'nav-perfil' },
   { to: '/', label: 'Trabalhos', end: true, tid: 'nav-trabalhos' },
+  { to: '/treino', label: 'Treino', tid: 'nav-treino' },
   { to: '/missoes', label: 'Missões', tid: 'nav-missoes' },
   { to: '/estadio', label: 'Estádio', tid: 'nav-estadio', minLevel: 10 },
   { to: '/desafio', label: 'Desafio 1v1', tid: 'nav-desafio', minLevel: 12 },

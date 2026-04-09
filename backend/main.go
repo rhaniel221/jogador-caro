@@ -91,6 +91,8 @@ func main() {
 	http.HandleFunc("/api/fama/coletar-patrocinio", handlers.Cors(handlers.HandleColetarPatrocinio))
 	http.HandleFunc("/api/fama/decaimento", handlers.Cors(handlers.HandleFamaDecaimento))
 	http.HandleFunc("/api/fama/", handlers.Cors(handlers.HandleFamaStatus))
+	http.HandleFunc("/api/treinos/", handlers.Cors(handlers.HandleTreinos))
+	http.HandleFunc("/api/treinar", handlers.Cors(handlers.HandleTreinar))
 
 	// Cron: decaimento de fama diário (roda às 08:05 horário SP)
 	go func() {

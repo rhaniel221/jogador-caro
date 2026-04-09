@@ -311,9 +311,6 @@ func HandleTrabalhar(w http.ResponseWriter, r *http.Request) {
 		jogador.XPProximo = calcularXPProximo(jogador.Nivel)
 		jogador.EnergiaMax = calcEnergiaMaxBase(jogador.Nivel)
 		jogador.Energia = jogador.EnergiaMax
-		jogador.Forca++
-		jogador.Velocidade++
-		jogador.Habilidade++
 		jogador.VitalidadeMax++
 		jogador.Vitalidade = jogador.VitalidadeMax
 		novoNivel = jogador.Nivel
@@ -391,9 +388,6 @@ func HandleEventoEscolha(w http.ResponseWriter, r *http.Request) {
 		jogador.XPProximo = calcularXPProximo(jogador.Nivel)
 		jogador.EnergiaMax = calcEnergiaMaxBase(jogador.Nivel)
 		jogador.Energia = jogador.EnergiaMax
-		jogador.Forca++
-		jogador.Velocidade++
-		jogador.Habilidade++
 		jogador.VitalidadeMax++
 		jogador.Vitalidade = jogador.VitalidadeMax
 		novoNivel = jogador.Nivel
@@ -903,9 +897,6 @@ func HandleCombate(w http.ResponseWriter, r *http.Request) {
 		atacante.XPProximo = calcularXPProximo(atacante.Nivel)
 		atacante.EnergiaMax = calcEnergiaMaxBase(atacante.Nivel)
 		atacante.Energia = atacante.EnergiaMax
-		atacante.Forca++
-		atacante.Velocidade++
-		atacante.Habilidade++
 		levelUp = true
 		novoNivel = atacante.Nivel
 	}
@@ -1526,9 +1517,6 @@ func HandleCompletarTask(w http.ResponseWriter, r *http.Request) {
 		jogador.XPProximo = calcularXPProximo(jogador.Nivel)
 		jogador.EnergiaMax = calcEnergiaMaxBase(jogador.Nivel)
 		jogador.Energia = jogador.EnergiaMax
-		jogador.Forca++
-		jogador.Velocidade++
-		jogador.Habilidade++
 		jogador.VitalidadeMax++
 		jogador.Vitalidade = jogador.VitalidadeMax
 		novoNivel = jogador.Nivel
@@ -1812,9 +1800,6 @@ func HandleExecutarMissao(w http.ResponseWriter, r *http.Request) {
 			jogador.XPProximo = calcularXPProximo(jogador.Nivel)
 			jogador.EnergiaMax = calcEnergiaMaxBase(jogador.Nivel)
 			jogador.Energia = jogador.EnergiaMax
-			jogador.Forca++
-			jogador.Velocidade++
-			jogador.Habilidade++
 			levelUp = true
 			novoNivel = jogador.Nivel
 		}
@@ -1872,9 +1857,6 @@ func HandleExecutarMissao(w http.ResponseWriter, r *http.Request) {
 		jogador.XPProximo = calcularXPProximo(jogador.Nivel)
 		jogador.EnergiaMax = calcEnergiaMaxBase(jogador.Nivel)
 		jogador.Energia = jogador.EnergiaMax
-		jogador.Forca++
-		jogador.Velocidade++
-		jogador.Habilidade++
 		levelUp = true
 		novoNivel = jogador.Nivel
 	}
@@ -2138,9 +2120,6 @@ func HandleCampinhoBonus(w http.ResponseWriter, r *http.Request) {
 		jogador.XPProximo = calcularXPProximo(jogador.Nivel)
 		jogador.EnergiaMax = calcEnergiaMaxBase(jogador.Nivel)
 		jogador.Energia = jogador.EnergiaMax
-		jogador.Forca++
-		jogador.Velocidade++
-		jogador.Habilidade++
 		jogador.VitalidadeMax++
 		jogador.Vitalidade = jogador.VitalidadeMax
 		novoNivel = jogador.Nivel
@@ -2469,9 +2448,6 @@ func HandleResgatarQuest(w http.ResponseWriter, r *http.Request) {
 		jogador.XPProximo = calcularXPProximo(jogador.Nivel)
 		jogador.EnergiaMax = calcEnergiaMaxBase(jogador.Nivel)
 		jogador.Energia = jogador.EnergiaMax
-		jogador.Forca++
-		jogador.Velocidade++
-		jogador.Habilidade++
 		jogador.VitalidadeMax++
 		jogador.Vitalidade = jogador.VitalidadeMax
 		novoNivel = jogador.Nivel
@@ -2795,9 +2771,6 @@ func HandleResponderDesafio1v1(w http.ResponseWriter, r *http.Request) {
 		desafiante.XPProximo = calcularXPProximo(desafiante.Nivel)
 		desafiante.EnergiaMax = calcEnergiaMaxBase(desafiante.Nivel)
 		desafiante.Energia = desafiante.EnergiaMax
-		desafiante.Forca++
-		desafiante.Velocidade++
-		desafiante.Habilidade++
 	}
 	saveJogador(desafiante)
 
@@ -2810,9 +2783,6 @@ func HandleResponderDesafio1v1(w http.ResponseWriter, r *http.Request) {
 		desafiado.XPProximo = calcularXPProximo(desafiado.Nivel)
 		desafiado.EnergiaMax = calcEnergiaMaxBase(desafiado.Nivel)
 		desafiado.Energia = desafiado.EnergiaMax
-		desafiado.Forca++
-		desafiado.Velocidade++
-		desafiado.Habilidade++
 		levelUp = true
 		novoNivel = desafiado.Nivel
 	}
@@ -2982,9 +2952,6 @@ func HandleMinigameResultado(w http.ResponseWriter, r *http.Request) {
 		jogador.XPProximo = calcularXPProximo(jogador.Nivel)
 		jogador.EnergiaMax = calcEnergiaMaxBase(jogador.Nivel)
 		jogador.Energia = jogador.EnergiaMax
-		jogador.Forca++
-		jogador.Velocidade++
-		jogador.Habilidade++
 		levelUp = true
 		novoNivel = jogador.Nivel
 	}
@@ -3397,9 +3364,6 @@ func HandleStreakColetar(w http.ResponseWriter, r *http.Request) {
 		jogador.XPProximo = calcularXPProximo(jogador.Nivel)
 		jogador.EnergiaMax = calcEnergiaMaxBase(jogador.Nivel)
 		jogador.Energia = jogador.EnergiaMax
-		jogador.Forca++
-		jogador.Velocidade++
-		jogador.Habilidade++
 		levelUp = true
 	}
 	jogador.Rank = getRank(jogador.Nivel)
@@ -3782,9 +3746,6 @@ func HandleCasaColetar(w http.ResponseWriter, r *http.Request) {
 		jogador.XPProximo = calcularXPProximo(jogador.Nivel)
 		jogador.EnergiaMax = calcEnergiaMaxBase(jogador.Nivel)
 		jogador.Energia = jogador.EnergiaMax
-		jogador.Forca++
-		jogador.Velocidade++
-		jogador.Habilidade++
 		levelUp = true
 		novoNivel = jogador.Nivel
 	}

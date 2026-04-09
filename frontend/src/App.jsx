@@ -24,6 +24,7 @@ import Torneio from './pages/Torneio'
 import Foruns from './pages/Foruns'
 import Banco from './pages/Banco'
 import Performance from './pages/Performance'
+import Treino from './pages/Treino'
 const MiniGame = React.lazy(() => import('./pages/MiniGame'))
 
 function HomeRouter() {
@@ -59,6 +60,7 @@ export default function App() {
             <Route path="/foruns" element={<Foruns />} />
             <Route path="/banco" element={<Banco />} />
             <Route path="/performance" element={<Performance />} />
+            <Route path="/treino" element={<Treino />} />
             <Route path="/minigame" element={<React.Suspense fallback={<div style={{textAlign:'center',padding:40,fontWeight:900}}>Carregando MiniGame...</div>}><MiniGame /></React.Suspense>} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
