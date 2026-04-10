@@ -74,13 +74,24 @@ export default function Loja() {
     return true
   }
 
+  // Equipamentos: só mostra itens que o jogador pode usar (nivel_min <= nivel)
+  // e que são do tier atual (não mostra itens fracos demais)
+  const TIERS_EQUIP = [1, 10, 20, 30, 40, 50, 60, 70, 80]
+  const tierAtual = TIERS_EQUIP.filter(t => nivel >= t).pop() || 1
+  const visivelEquip = (item) => {
+    if (item.preco <= 0 && (item.preco_moedas || 0) <= 0) return false
+    if (item.nivel_min > nivel) return false // ainda não pode comprar
+    if (item.nivel_min < tierAtual) return false // item de tier antigo, esconde
+    return true
+  }
+
   const consumiveis = itensLoja.filter(i => i.tipo === 'consumivel' && visivel(i))
   const isDinheiro = (i) => !i.preco_moedas || i.preco_moedas <= 0
   const isMoedas = (i) => i.preco_moedas > 0
   const energiaItems = consumiveis.filter(i => i.recupera_energia > 0 && !i.recupera_saude && isDinheiro(i))
   const saudeItemsMoedas = consumiveis.filter(i => i.recupera_saude > 0 && !i.recupera_energia && isMoedas(i))
   const comboItemsMoedas = consumiveis.filter(i => i.recupera_energia > 0 && i.recupera_saude > 0 && isMoedas(i))
-  const equipamentos = itensLoja.filter(i => i.tipo === 'equipamento' && visivel(i))
+  const equipamentos = itensLoja.filter(i => i.tipo === 'equipamento' && visivelEquip(i))
   const mochilas = itensLoja.filter(i => i.tipo === 'mochila' && visivel(i))
 
   const rarCor = { comum: '#666', raro: '#2980b9', epico: '#8e44ad', lendario: '#f39c12' }
