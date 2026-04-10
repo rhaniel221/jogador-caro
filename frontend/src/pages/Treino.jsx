@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback } from 'react'
 import { useGame } from '../context/GameContext'
 import API from '../api'
 
-const CATEGORIAS = ['Iniciante', 'Intermediário', 'Avançado', 'Elite', 'Lendário', 'Mito']
 
 function formatRestante(segs) {
   if (segs <= 0) return 'pronto'
@@ -23,14 +22,17 @@ function StatBadge({ label, value, color }) {
   )
 }
 
-function TreinoCard({ treino, agora, loading, onTreinar, jogador }) {
+function TreinoCard({ treino, agora, loading, onTreinar }) {
   const proximoEm = treino.proximo_em || 0
   const restante = proximoEm > 0 ? proximoEm - agora : 0
   const onCooldown = restante > 0
   const nivelOK = treino.nivel_ok
-  const energiaOK = jogador && jogador.energia >= treino.custo_energia
-  const disponivel = nivelOK && !onCooldown && energiaOK
+  const disponivel = nivelOK && !onCooldown
   const isLoading = loading === treino.id
+
+  const cooldownTxt = Math.floor(treino.cooldown_minutos / 60) > 0
+    ? `${Math.floor(treino.cooldown_minutos / 60)}h${treino.cooldown_minutos % 60 > 0 ? ` ${treino.cooldown_minutos % 60}m` : ''}`
+    : `${treino.cooldown_minutos}m`
 
   return (
     <div
@@ -64,7 +66,7 @@ function TreinoCard({ treino, agora, loading, onTreinar, jogador }) {
         </div>
 
         <div style={{ fontSize: 11, color: '#666' }}>
-          ⚡ {treino.custo_energia} energia • ⏱ cooldown {Math.floor(treino.cooldown_minutos / 60) > 0 ? `${Math.floor(treino.cooldown_minutos / 60)}h${treino.cooldown_minutos % 60 > 0 ? ` ${treino.cooldown_minutos % 60}m` : ''}` : `${treino.cooldown_minutos}m`}
+          ⏱ cooldown {cooldownTxt}
           {treino.vezes_feito > 0 && <> • feito {treino.vezes_feito}x</>}
         </div>
       </div>
@@ -75,10 +77,6 @@ function TreinoCard({ treino, agora, loading, onTreinar, jogador }) {
         ) : onCooldown ? (
           <div style={{ fontSize: 12, color: '#c47a00', fontWeight: 700 }}>
             ⏳ {formatRestante(restante)}
-          </div>
-        ) : !energiaOK ? (
-          <div style={{ fontSize: 12, color: '#c44', fontWeight: 700 }}>
-            sem energia
           </div>
         ) : (
           <button
@@ -98,7 +96,6 @@ function TreinoCard({ treino, agora, loading, onTreinar, jogador }) {
 export default function Treino() {
   const { jogador, setJogador, jogadorID, mostrarNotificacao } = useGame()
   const [treinos, setTreinos] = useState([])
-  const [categoriaAtiva, setCategoriaAtiva] = useState('Iniciante')
   const [loading, setLoading] = useState(null)
   const [agora, setAgora] = useState(Math.floor(Date.now() / 1000))
 
@@ -119,17 +116,6 @@ export default function Treino() {
   useEffect(() => {
     carregar()
   }, [carregar])
-
-  // Auto-seleciona a maior categoria disponível pro nível do jogador
-  useEffect(() => {
-    if (!jogador || !treinos.length) return
-    const disponiveis = CATEGORIAS.filter(cat =>
-      treinos.some(t => t.categoria === cat && t.nivel_ok)
-    )
-    if (disponiveis.length > 0) {
-      setCategoriaAtiva(disponiveis[disponiveis.length - 1])
-    }
-  }, [jogador, treinos])
 
   async function handleTreinar(treinoID) {
     if (!jogador || loading) return
@@ -158,14 +144,10 @@ export default function Treino() {
     return <div style={{ padding: 20, textAlign: 'center' }}>Carregando…</div>
   }
 
-  const treinosFiltrados = treinos.filter(t => t.categoria === categoriaAtiva)
-  const categoriasDisponiveis = CATEGORIAS.filter(cat =>
-    treinos.some(t => t.categoria === cat)
-  )
-
   // Cooldown global: pega o proximo_em de qualquer treino (todos têm o mesmo)
   const globalCooldown = treinos.length > 0 ? treinos[0].proximo_em || 0 : 0
   const globalRestante = globalCooldown > 0 ? globalCooldown - agora : 0
+  const categoriaAtual = treinos.length > 0 ? treinos[0].categoria : ''
 
   return (
     <div className="page-treino" style={{ padding: 12, maxWidth: 760, margin: '0 auto' }}>
@@ -176,9 +158,9 @@ export default function Treino() {
         borderRadius: 12,
         marginBottom: 14
       }}>
-        <h1 style={{ margin: 0, fontSize: 22 }}>🏋️ TREINO</h1>
+        <h1 style={{ margin: 0, fontSize: 22 }}>🏋️ TREINO — {categoriaAtual}</h1>
         <p style={{ margin: '4px 0 0 0', fontSize: 12, opacity: 0.9 }}>
-          Cada treino dá bônus de atributo. Ao treinar, todos os treinos entram em cooldown — escolha bem! Treinos fortes travam por mais tempo. Sua build é sua estratégia.
+          Escolha um treino e entre em cooldown. Quanto mais forte o treino, maior o cooldown. Sua build, sua estratégia.
         </p>
       </div>
 
@@ -204,42 +186,6 @@ export default function Treino() {
           <div style={{ fontSize: 11, color: '#888' }}>HABILIDADE</div>
           <div style={{ fontSize: 22, fontWeight: 900, color: '#9c27b0' }}>{jogador.habilidade}</div>
         </div>
-        <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: 11, color: '#888' }}>ENERGIA</div>
-          <div style={{ fontSize: 22, fontWeight: 900, color: '#f5a623' }}>{jogador.energia}/{jogador.energia_max}</div>
-        </div>
-      </div>
-
-      <div style={{
-        display: 'flex',
-        gap: 6,
-        marginBottom: 12,
-        overflowX: 'auto',
-        paddingBottom: 4
-      }}>
-        {categoriasDisponiveis.map(cat => {
-          const ativo = cat === categoriaAtiva
-          const algumDisponivel = treinos.some(t => t.categoria === cat && t.nivel_ok)
-          return (
-            <button
-              key={cat}
-              onClick={() => setCategoriaAtiva(cat)}
-              style={{
-                background: ativo ? '#1a3a1a' : (algumDisponivel ? '#fff' : '#eee'),
-                color: ativo ? '#fff' : (algumDisponivel ? '#1a3a1a' : '#999'),
-                border: '2px solid ' + (ativo ? '#1a3a1a' : '#d4d8d0'),
-                borderRadius: 20,
-                padding: '6px 14px',
-                fontWeight: 700,
-                fontSize: 12,
-                whiteSpace: 'nowrap',
-                cursor: 'pointer'
-              }}
-            >
-              {cat} {!algumDisponivel && '🔒'}
-            </button>
-          )
-        })}
       </div>
 
       {globalRestante > 0 && (
@@ -248,40 +194,22 @@ export default function Treino() {
           padding: '10px 14px', marginBottom: 12, textAlign: 'center',
           fontWeight: 700, fontSize: 14, color: '#8a6d00'
         }}>
-          ⏳ Cooldown global: <span style={{ color: '#c47a00' }}>{formatRestante(globalRestante)}</span>
+          ⏳ Cooldown: <span style={{ color: '#c47a00' }}>{formatRestante(globalRestante)}</span>
         </div>
       )}
 
       <div>
-        {treinosFiltrados.length === 0 && (
-          <div style={{ textAlign: 'center', color: '#888', padding: 20 }}>
-            Nenhum treino nesta categoria.
-          </div>
-        )}
-        {treinosFiltrados.map(t => (
+        {treinos.map(t => (
           <TreinoCard
             key={t.id}
             treino={t}
             agora={agora}
             loading={loading}
             onTreinar={handleTreinar}
-            jogador={jogador}
           />
         ))}
       </div>
 
-      <div style={{
-        marginTop: 12,
-        padding: 12,
-        background: '#fffbe6',
-        border: '1px dashed #d4b800',
-        borderRadius: 10,
-        fontSize: 12,
-        color: '#5a4a00'
-      }}>
-        💡 <strong>Dica:</strong> Subir de nível não dá mais atributos — só treinando!
-        Cada categoria tem opções diferentes: especialize ou faça híbridos. Quem treina mais ao longo do dia ganha vantagem real sobre os outros. A escolha do estilo é sua.
-      </div>
     </div>
   )
 }

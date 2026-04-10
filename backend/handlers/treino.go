@@ -24,13 +24,12 @@ type Treino struct {
 	Nome           string `json:"nome"`
 	Descricao      string `json:"descricao"`
 	Icone          string `json:"icone"`
-	Categoria      string `json:"categoria"` // Iniciante, Intermediário, Avançado, Elite, Lendário
+	Categoria      string `json:"categoria"` // Iniciante, Intermediário, Avançado, Elite, Lendário, Mito
 	NivelMin       int    `json:"nivel_min"`
 	CooldownMin    int    `json:"cooldown_minutos"`
 	BonusForca     int    `json:"bonus_forca"`
 	BonusVelocidade int   `json:"bonus_velocidade"`
 	BonusHabilidade int   `json:"bonus_habilidade"`
-	CustoEnergia   int    `json:"custo_energia"`
 }
 
 type TreinoView struct {
@@ -41,6 +40,30 @@ type TreinoView struct {
 	NivelOK      bool  `json:"nivel_ok"`
 }
 
+// Ordem das categorias para determinar o tier mais alto
+var categoriasOrdem = []struct {
+	Nome     string
+	NivelMin int
+}{
+	{"Iniciante", 1},
+	{"Intermediário", 8},
+	{"Avançado", 18},
+	{"Elite", 30},
+	{"Lendário", 50},
+	{"Mito", 80},
+}
+
+// categoriaMaisAlta retorna a categoria mais alta que o jogador pode acessar
+func categoriaMaisAlta(nivel int) string {
+	melhor := "Iniciante"
+	for _, c := range categoriasOrdem {
+		if nivel >= c.NivelMin {
+			melhor = c.Nome
+		}
+	}
+	return melhor
+}
+
 // Catálogo hardcoded — fácil de balancear
 var catalogoTreinos = []Treino{
 	// ===== INICIANTE (nível 1+) — escolha pura, 60 min =====
@@ -48,21 +71,21 @@ var catalogoTreinos = []Treino{
 		ID: "treino_forca_basico", Nome: "Musculação no Quintal",
 		Descricao: "Levanta peso de cimento. Dói, mas funciona.",
 		Icone: "💪", Categoria: "Iniciante",
-		NivelMin: 1, CooldownMin: 60, CustoEnergia: 2,
+		NivelMin: 1, CooldownMin: 60,
 		BonusForca: 2,
 	},
 	{
 		ID: "treino_velocidade_basico", Nome: "Corrida na Praia",
 		Descricao: "Tiros na areia fofa. Pernas em chamas.",
 		Icone: "💨", Categoria: "Iniciante",
-		NivelMin: 1, CooldownMin: 60, CustoEnergia: 2,
+		NivelMin: 1, CooldownMin: 60,
 		BonusVelocidade: 2,
 	},
 	{
 		ID: "treino_habilidade_basico", Nome: "Embaixadinhas",
 		Descricao: "Mil toques na bola. Pé virando bússola.",
 		Icone: "⚽", Categoria: "Iniciante",
-		NivelMin: 1, CooldownMin: 60, CustoEnergia: 2,
+		NivelMin: 1, CooldownMin: 60,
 		BonusHabilidade: 2,
 	},
 
@@ -71,21 +94,21 @@ var catalogoTreinos = []Treino{
 		ID: "treino_potencia", Nome: "Treino de Potência",
 		Descricao: "Saltos pliométricos: explosão e velocidade juntas.",
 		Icone: "🔥", Categoria: "Intermediário",
-		NivelMin: 8, CooldownMin: 90, CustoEnergia: 3,
+		NivelMin: 8, CooldownMin: 90,
 		BonusForca: 1, BonusVelocidade: 2,
 	},
 	{
 		ID: "treino_finta", Nome: "Treino de Finta",
 		Descricao: "Cones e mudança de direção. Rapidez + drible.",
 		Icone: "🌀", Categoria: "Intermediário",
-		NivelMin: 8, CooldownMin: 90, CustoEnergia: 3,
+		NivelMin: 8, CooldownMin: 90,
 		BonusVelocidade: 1, BonusHabilidade: 2,
 	},
 	{
 		ID: "treino_disputa", Nome: "Treino de Disputa",
 		Descricao: "Dividida no físico — força bruta e técnica.",
 		Icone: "🛡️", Categoria: "Intermediário",
-		NivelMin: 8, CooldownMin: 90, CustoEnergia: 3,
+		NivelMin: 8, CooldownMin: 90,
 		BonusForca: 2, BonusHabilidade: 1,
 	},
 
@@ -94,21 +117,21 @@ var catalogoTreinos = []Treino{
 		ID: "treino_personal_forca", Nome: "Personal Trainer (Força)",
 		Descricao: "Bodybuilder cuida do seu shape. Tudo no peito.",
 		Icone: "🏋️", Categoria: "Avançado",
-		NivelMin: 18, CooldownMin: 120, CustoEnergia: 4,
+		NivelMin: 18, CooldownMin: 120,
 		BonusForca: 4,
 	},
 	{
 		ID: "treino_sprint_pro", Nome: "Sprint Profissional",
 		Descricao: "Treino de explosão com cronômetro a laser.",
 		Icone: "⚡", Categoria: "Avançado",
-		NivelMin: 18, CooldownMin: 120, CustoEnergia: 4,
+		NivelMin: 18, CooldownMin: 120,
 		BonusVelocidade: 4,
 	},
 	{
 		ID: "treino_finalizacao_pro", Nome: "Finalização Profissional",
 		Descricao: "500 chutes com cobrança no canto. Pé calibrado.",
 		Icone: "🎯", Categoria: "Avançado",
-		NivelMin: 18, CooldownMin: 120, CustoEnergia: 4,
+		NivelMin: 18, CooldownMin: 120,
 		BonusHabilidade: 4,
 	},
 
@@ -117,21 +140,21 @@ var catalogoTreinos = []Treino{
 		ID: "treino_olimpico", Nome: "Treino Olímpico",
 		Descricao: "Programa de medalhista. Força bruta e fôlego.",
 		Icone: "🥇", Categoria: "Elite",
-		NivelMin: 30, CooldownMin: 180, CustoEnergia: 5,
+		NivelMin: 30, CooldownMin: 180,
 		BonusForca: 5, BonusVelocidade: 1,
 	},
 	{
 		ID: "treino_velocista_mundial", Nome: "Velocista Mundial",
 		Descricao: "Técnica de Bolt aplicada ao futebol.",
 		Icone: "🏃", Categoria: "Elite",
-		NivelMin: 30, CooldownMin: 180, CustoEnergia: 5,
+		NivelMin: 30, CooldownMin: 180,
 		BonusVelocidade: 5, BonusHabilidade: 1,
 	},
 	{
 		ID: "treino_drible_magico", Nome: "Drible Mágico",
 		Descricao: "Aulas particulares com lenda do drible.",
 		Icone: "✨", Categoria: "Elite",
-		NivelMin: 30, CooldownMin: 180, CustoEnergia: 5,
+		NivelMin: 30, CooldownMin: 180,
 		BonusHabilidade: 5, BonusForca: 1,
 	},
 
@@ -140,28 +163,28 @@ var catalogoTreinos = []Treino{
 		ID: "treino_titan", Nome: "Treino do Titã",
 		Descricao: "Programa secreto. Vira parede no ataque.",
 		Icone: "🗿", Categoria: "Lendário",
-		NivelMin: 50, CooldownMin: 240, CustoEnergia: 6,
+		NivelMin: 50, CooldownMin: 240,
 		BonusForca: 8,
 	},
 	{
 		ID: "treino_relampago", Nome: "Treino Relâmpago",
 		Descricao: "Ninguém te alcança. Nem o vento.",
 		Icone: "⚡", Categoria: "Lendário",
-		NivelMin: 50, CooldownMin: 240, CustoEnergia: 6,
+		NivelMin: 50, CooldownMin: 240,
 		BonusVelocidade: 8,
 	},
 	{
 		ID: "treino_maestro", Nome: "Treino do Maestro",
 		Descricao: "Toque de bola que vira poesia.",
 		Icone: "🎼", Categoria: "Lendário",
-		NivelMin: 50, CooldownMin: 240, CustoEnergia: 6,
+		NivelMin: 50, CooldownMin: 240,
 		BonusHabilidade: 8,
 	},
 	{
 		ID: "treino_bola_de_ouro", Nome: "Treino Bola de Ouro",
 		Descricao: "Tudo no melhor nível. Cooldown brutal.",
 		Icone: "🏆", Categoria: "Lendário",
-		NivelMin: 60, CooldownMin: 360, CustoEnergia: 8,
+		NivelMin: 60, CooldownMin: 360,
 		BonusForca: 4, BonusVelocidade: 4, BonusHabilidade: 4,
 	},
 
@@ -170,21 +193,21 @@ var catalogoTreinos = []Treino{
 		ID: "treino_mitologico_forca", Nome: "Força Mitológica",
 		Descricao: "Hércules teria vergonha do seu shape.",
 		Icone: "💎", Categoria: "Mito",
-		NivelMin: 80, CooldownMin: 300, CustoEnergia: 8,
+		NivelMin: 80, CooldownMin: 300,
 		BonusForca: 12, BonusVelocidade: 2,
 	},
 	{
 		ID: "treino_mitologico_velocidade", Nome: "Velocidade Sobrenatural",
 		Descricao: "Risca o gramado. Câmeras não acompanham.",
 		Icone: "💎", Categoria: "Mito",
-		NivelMin: 80, CooldownMin: 300, CustoEnergia: 8,
+		NivelMin: 80, CooldownMin: 300,
 		BonusVelocidade: 12, BonusHabilidade: 2,
 	},
 	{
 		ID: "treino_mitologico_habilidade", Nome: "Habilidade Divina",
 		Descricao: "Faz a bola obedecer pelo olhar.",
 		Icone: "💎", Categoria: "Mito",
-		NivelMin: 80, CooldownMin: 300, CustoEnergia: 8,
+		NivelMin: 80, CooldownMin: 300,
 		BonusHabilidade: 12, BonusForca: 2,
 	},
 }
@@ -241,15 +264,23 @@ func HandleTreinos(w http.ResponseWriter, r *http.Request) {
 		rows.Close()
 	}
 
+	// Só retorna treinos do tier mais alto desbloqueado
+	melhorCat := categoriaMaisAlta(jogador.Nivel)
+
 	var lista []TreinoView
 	for _, t := range catalogoTreinos {
+		if t.Categoria != melhorCat {
+			continue
+		}
+		// Dentro do tier, pode ter treinos com nível maior (ex: Bola de Ouro nv60 no Lendário)
+		nivelOK := jogador.Nivel >= t.NivelMin
 		view := TreinoView{Treino: t}
-		view.NivelOK = jogador.Nivel >= t.NivelMin
+		view.NivelOK = nivelOK
 		view.VezesFeito = contagem[t.ID]
 		if globalProximoEm > 0 {
 			view.ProximoEm = globalProximoEm
 		}
-		view.Disponivel = view.NivelOK && view.ProximoEm == 0
+		view.Disponivel = nivelOK && view.ProximoEm == 0
 		lista = append(lista, view)
 	}
 	JsonResp(w, 200, lista)
@@ -292,7 +323,7 @@ func HandleTreinar(w http.ResponseWriter, r *http.Request) {
 	db.Conn.QueryRow("SELECT ultimo_em FROM treinos_cooldown WHERE jogador_id=$1 AND treino_id='_global'",
 		req.JogadorID).Scan(&globalCooldownAte)
 	if globalCooldownAte.After(time.Now()) {
-		restante := int(globalCooldownAte.Sub(time.Now()).Minutes())
+		restante := int(time.Until(globalCooldownAte).Minutes())
 		JsonResp(w, 200, map[string]any{
 			"sucesso":    false,
 			"mensagem":   fmt.Sprintf("Cooldown! Aguarde %d min para treinar novamente.", restante+1),
@@ -301,14 +332,6 @@ func HandleTreinar(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Energia
-	regenerarEnergia(jogador)
-	if jogador.Energia < t.CustoEnergia {
-		JsonResp(w, 200, map[string]any{"sucesso": false, "mensagem": fmt.Sprintf("Energia insuficiente! Precisa de %d.", t.CustoEnergia)})
-		return
-	}
-
-	jogador.Energia -= t.CustoEnergia
 	jogador.Forca += t.BonusForca
 	jogador.Velocidade += t.BonusVelocidade
 	jogador.Habilidade += t.BonusHabilidade
@@ -330,8 +353,6 @@ func HandleTreinar(w http.ResponseWriter, r *http.Request) {
 		VALUES ($1, $2, 1)
 		ON CONFLICT (jogador_id, treino_id) DO UPDATE SET vezes_feito = treinos_total.vezes_feito + 1`,
 		req.JogadorID, req.TreinoID)
-
-	jogador.ProximaEnergiaEm = regenerarEnergia(jogador)
 
 	// Mensagem com bônus aplicados
 	bonusTexto := ""
