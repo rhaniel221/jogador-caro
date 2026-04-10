@@ -40,7 +40,8 @@
       "Bash(xargs basename:*)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(find C:/Projetos/jogador-caro -path */node_modules -prune -o -type f -name *.ts -print)"
     ]
   }
 }
