@@ -217,41 +217,37 @@ func HandleTreinos(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Carrega cooldowns + contagem
-	cooldowns := map[string]time.Time{}
-	rows, _ := db.Conn.Query("SELECT treino_id, ultimo_em FROM treinos_cooldown WHERE jogador_id=$1", jogadorID)
+	// Cooldown global — um único timer compartilhado por todos os treinos
+	var globalCooldownAte time.Time
+	db.Conn.QueryRow("SELECT ultimo_em FROM treinos_cooldown WHERE jogador_id=$1 AND treino_id='_global'",
+		jogadorID).Scan(&globalCooldownAte)
+
+	agora := time.Now()
+	var globalProximoEm int64
+	if globalCooldownAte.After(agora) {
+		globalProximoEm = globalCooldownAte.Unix()
+	}
+
+	// Contagem de vezes feito
+	contagem := map[string]int{}
+	rows, _ := db.Conn.Query("SELECT treino_id, vezes_feito FROM treinos_total WHERE jogador_id=$1", jogadorID)
 	if rows != nil {
 		for rows.Next() {
 			var tid string
-			var t time.Time
-			rows.Scan(&tid, &t)
-			cooldowns[tid] = t
+			var v int
+			rows.Scan(&tid, &v)
+			contagem[tid] = v
 		}
 		rows.Close()
 	}
-	contagem := map[string]int{}
-	rows2, _ := db.Conn.Query("SELECT treino_id, vezes_feito FROM treinos_total WHERE jogador_id=$1", jogadorID)
-	if rows2 != nil {
-		for rows2.Next() {
-			var tid string
-			var v int
-			rows2.Scan(&tid, &v)
-			contagem[tid] = v
-		}
-		rows2.Close()
-	}
 
-	agora := time.Now()
 	var lista []TreinoView
 	for _, t := range catalogoTreinos {
 		view := TreinoView{Treino: t}
 		view.NivelOK = jogador.Nivel >= t.NivelMin
 		view.VezesFeito = contagem[t.ID]
-		if last, ok := cooldowns[t.ID]; ok {
-			next := last.Add(time.Duration(t.CooldownMin) * time.Minute)
-			if next.After(agora) {
-				view.ProximoEm = next.Unix()
-			}
+		if globalProximoEm > 0 {
+			view.ProximoEm = globalProximoEm
 		}
 		view.Disponivel = view.NivelOK && view.ProximoEm == 0
 		lista = append(lista, view)
@@ -291,21 +287,18 @@ func HandleTreinar(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Cooldown
-	var ultimoEm time.Time
-	db.Conn.QueryRow("SELECT ultimo_em FROM treinos_cooldown WHERE jogador_id=$1 AND treino_id=$2",
-		req.JogadorID, req.TreinoID).Scan(&ultimoEm)
-	if !ultimoEm.IsZero() {
-		next := ultimoEm.Add(time.Duration(t.CooldownMin) * time.Minute)
-		if next.After(time.Now()) {
-			restante := int(next.Sub(time.Now()).Minutes())
-			JsonResp(w, 200, map[string]any{
-				"sucesso":  false,
-				"mensagem": fmt.Sprintf("Cooldown! Aguarde %d min para repetir esse treino.", restante+1),
-				"proximo_em": next.Unix(),
-			})
-			return
-		}
+	// Cooldown global — um único timer para todos os treinos
+	var globalCooldownAte time.Time
+	db.Conn.QueryRow("SELECT ultimo_em FROM treinos_cooldown WHERE jogador_id=$1 AND treino_id='_global'",
+		req.JogadorID).Scan(&globalCooldownAte)
+	if globalCooldownAte.After(time.Now()) {
+		restante := int(globalCooldownAte.Sub(time.Now()).Minutes())
+		JsonResp(w, 200, map[string]any{
+			"sucesso":    false,
+			"mensagem":   fmt.Sprintf("Cooldown! Aguarde %d min para treinar novamente.", restante+1),
+			"proximo_em": globalCooldownAte.Unix(),
+		})
+		return
 	}
 
 	// Energia
@@ -325,11 +318,14 @@ func HandleTreinar(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Atualiza cooldown e contagem
+	// Cooldown global: grava quando expira (NOW + cooldown do treino feito)
+	cooldownAte := time.Now().Add(time.Duration(t.CooldownMin) * time.Minute)
 	db.Conn.Exec(`INSERT INTO treinos_cooldown (jogador_id, treino_id, ultimo_em)
-		VALUES ($1, $2, NOW())
-		ON CONFLICT (jogador_id, treino_id) DO UPDATE SET ultimo_em = NOW()`,
-		req.JogadorID, req.TreinoID)
+		VALUES ($1, '_global', $2)
+		ON CONFLICT (jogador_id, treino_id) DO UPDATE SET ultimo_em = $2`,
+		req.JogadorID, cooldownAte)
+
+	// Contagem por treino individual (estatísticas)
 	db.Conn.Exec(`INSERT INTO treinos_total (jogador_id, treino_id, vezes_feito)
 		VALUES ($1, $2, 1)
 		ON CONFLICT (jogador_id, treino_id) DO UPDATE SET vezes_feito = treinos_total.vezes_feito + 1`,
@@ -349,7 +345,7 @@ func HandleTreinar(w http.ResponseWriter, r *http.Request) {
 		bonusTexto += fmt.Sprintf(" +%d Habilidade", t.BonusHabilidade)
 	}
 
-	proximoEm := time.Now().Add(time.Duration(t.CooldownMin) * time.Minute).Unix()
+	proximoEm := cooldownAte.Unix()
 
 	JsonResp(w, 200, map[string]any{
 		"sucesso":     true,

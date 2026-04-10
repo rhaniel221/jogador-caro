@@ -163,6 +163,10 @@ export default function Treino() {
     treinos.some(t => t.categoria === cat)
   )
 
+  // Cooldown global: pega o proximo_em de qualquer treino (todos têm o mesmo)
+  const globalCooldown = treinos.length > 0 ? treinos[0].proximo_em || 0 : 0
+  const globalRestante = globalCooldown > 0 ? globalCooldown - agora : 0
+
   return (
     <div className="page-treino" style={{ padding: 12, maxWidth: 760, margin: '0 auto' }}>
       <div style={{
@@ -174,7 +178,7 @@ export default function Treino() {
       }}>
         <h1 style={{ margin: 0, fontSize: 22 }}>🏋️ TREINO</h1>
         <p style={{ margin: '4px 0 0 0', fontSize: 12, opacity: 0.9 }}>
-          Cada treino dá um bônus de atributo. Escolha sua especialidade — força, velocidade ou habilidade — e domine seu estilo. Cooldowns existem para equilibrar: quem treina mais ao longo do dia, fica mais forte.
+          Cada treino dá bônus de atributo. Ao treinar, todos os treinos entram em cooldown — escolha bem! Treinos fortes travam por mais tempo. Sua build é sua estratégia.
         </p>
       </div>
 
@@ -237,6 +241,16 @@ export default function Treino() {
           )
         })}
       </div>
+
+      {globalRestante > 0 && (
+        <div style={{
+          background: '#fff8e1', border: '2px solid #f5a623', borderRadius: 12,
+          padding: '10px 14px', marginBottom: 12, textAlign: 'center',
+          fontWeight: 700, fontSize: 14, color: '#8a6d00'
+        }}>
+          ⏳ Cooldown global: <span style={{ color: '#c47a00' }}>{formatRestante(globalRestante)}</span>
+        </div>
+      )}
 
       <div>
         {treinosFiltrados.length === 0 && (
