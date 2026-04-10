@@ -700,6 +700,22 @@ func seedCatalogos() {
 		Conn.Exec("UPDATE cat_itens SET raridade=$1 WHERE id=$2", rar, id)
 	}
 
+	// Slot assignments for equipment (MU Online-style slots)
+	Conn.Exec(`ALTER TABLE cat_itens ADD COLUMN IF NOT EXISTS slot VARCHAR(20) DEFAULT ''`)
+	slotUpdates := map[string][]int{
+		"cabeca":   {21, 41, 45},
+		"camisa":   {6, 20, 35, 38, 50, 56, 59, 61},
+		"bracos":   {9, 11, 40, 42, 44, 49, 51, 52, 53, 55, 58, 62},
+		"meiao":    {10, 18, 19, 46, 47},
+		"chuteira": {7, 8, 12, 36, 37, 43, 48, 54, 57, 60},
+		"contrato": {100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112},
+	}
+	for slot, ids := range slotUpdates {
+		for _, id := range ids {
+			Conn.Exec("UPDATE cat_itens SET slot=$1 WHERE id=$2", slot, id)
+		}
+	}
+
 	// Seed cat_trabalhos
 	type trabalhoSeed struct {
 		id, tier, nome, icone string

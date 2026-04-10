@@ -754,6 +754,35 @@ func HandleEquipar(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Auto-desequipa item no mesmo slot ao equipar
+	if req.Equipar && item.Slot != "" {
+		eqRows, _ := db.Conn.Query(
+			"SELECT item_id FROM inventario WHERE jogador_id=$1 AND equipado=true AND item_id != $2",
+			req.JogadorID, req.ItemID)
+		if eqRows != nil {
+			var toUnequip []int
+			for eqRows.Next() {
+				var oldID int
+				eqRows.Scan(&oldID)
+				oldItem := findItemByID(oldID)
+				if oldItem != nil && oldItem.Slot == item.Slot {
+					toUnequip = append(toUnequip, oldID)
+				}
+			}
+			eqRows.Close()
+			for _, oldID := range toUnequip {
+				oldItem := findItemByID(oldID)
+				db.Conn.Exec("UPDATE inventario SET equipado=false WHERE jogador_id=$1 AND item_id=$2",
+					req.JogadorID, oldID)
+				jogador.Forca = clampInt(jogador.Forca-oldItem.BonusForca, 1, 9999)
+				jogador.Velocidade = clampInt(jogador.Velocidade-oldItem.BonusVelocidade, 1, 9999)
+				jogador.Habilidade = clampInt(jogador.Habilidade-oldItem.BonusHabilidade, 1, 9999)
+				jogador.EnergiaMax = clampInt(jogador.EnergiaMax-oldItem.BonusEnergiaMax, 5, 9999)
+				jogador.VitalidadeMax = clampInt(jogador.VitalidadeMax-oldItem.BonusVitMax, 1, 99)
+			}
+		}
+	}
+
 	mult := 1
 	if !req.Equipar {
 		mult = -1
@@ -762,7 +791,6 @@ func HandleEquipar(w http.ResponseWriter, r *http.Request) {
 	jogador.Forca = clampInt(jogador.Forca+item.BonusForca*mult, 1, 9999)
 	jogador.Velocidade = clampInt(jogador.Velocidade+item.BonusVelocidade*mult, 1, 9999)
 	jogador.Habilidade = clampInt(jogador.Habilidade+item.BonusHabilidade*mult, 1, 9999)
-	// SaudeMax fixo em 100 para todos — itens não alteram mais
 	jogador.SaudeMax = 100
 	jogador.EnergiaMax = clampInt(jogador.EnergiaMax+item.BonusEnergiaMax*mult, 5, 9999)
 	jogador.VitalidadeMax = clampInt(jogador.VitalidadeMax+item.BonusVitMax*mult, 1, 99)
@@ -1072,7 +1100,7 @@ func HandleJogadores(w http.ResponseWriter, r *http.Request) {
 func HandleItens(w http.ResponseWriter, r *http.Request) {
 	rows, err := db.Conn.Query(`SELECT id, nome, descricao, preco, COALESCE(preco_moedas, 0), tipo, icone, COALESCE(raridade, 'comum'), nivel_min, nivel_max,
 		bonus_forca, bonus_velocidade, bonus_habilidade, bonus_saude_max, bonus_energia_max,
-		bonus_vit_max, recupera_energia, recupera_saude, slots_mochila, cooldown_minutos FROM cat_itens ORDER BY preco`)
+		bonus_vit_max, recupera_energia, recupera_saude, slots_mochila, cooldown_minutos, COALESCE(slot, '') FROM cat_itens ORDER BY preco`)
 	if err != nil {
 		ErrResp(w, 500, "Erro ao buscar itens")
 		return
@@ -1085,7 +1113,7 @@ func HandleItens(w http.ResponseWriter, r *http.Request) {
 			&item.Raridade, &item.NivelMin, &item.NivelMax, &item.BonusForca, &item.BonusVelocidade,
 			&item.BonusHabilidade, &item.BonusSaudeMax, &item.BonusEnergiaMax,
 			&item.BonusVitMax, &item.RecuperaEnergia, &item.RecuperaSaude, &item.SlotsMochila,
-			&item.CooldownMinutos)
+			&item.CooldownMinutos, &item.Slot)
 		itens = append(itens, item)
 	}
 	JsonResp(w, 200, itens)

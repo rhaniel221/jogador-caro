@@ -23,8 +23,74 @@ const RAR_COR = { comum: '#666', raro: '#2980b9', epico: '#8e44ad', lendario: '#
 const RAR_BG = { comum: '#f5f5f5', raro: '#e8f4fd', epico: '#f3e8fd', lendario: '#fdf8e8' }
 const RAR_BORDER = { comum: '#ccc', raro: '#85c1e9', epico: '#bb8fce', lendario: '#f0c040' }
 
+const SLOTS_ESQ = [
+  { id: 'cabeca', nome: 'Cabeça', icone: '⛑️' },
+  { id: 'camisa', nome: 'Camisa', icone: '👕' },
+  { id: 'bracos', nome: 'Braços', icone: '💪' },
+]
+const SLOTS_DIR = [
+  { id: 'shorts', nome: 'Shorts', icone: '🩳' },
+  { id: 'meiao', nome: 'Meião', icone: '🧦' },
+  { id: 'chuteira', nome: 'Chuteira', icone: '👟' },
+]
+
+function SlotBox({ slot, equipped, onEquipar, onDesequipar, inventario }) {
+  const [aberto, setAberto] = useState(false)
+  const inv = equipped
+  const item = inv?.item
+  const rar = item?.raridade || 'comum'
+
+  // Itens disponíveis para esse slot (não equipados, tipo equipamento, mesmo slot)
+  const disponiveis = inventario.filter(i =>
+    !i.equipado && i.item?.tipo === 'equipamento' && i.item?.slot === slot.id
+  )
+
+  if (inv) {
+    return (
+      <div className="eq-slot eq-slot-filled" style={{ borderColor: RAR_BORDER[rar], background: RAR_BG[rar] }}
+        onClick={() => setAberto(!aberto)}>
+        <span className="eq-slot-item-icon">{item.icone}</span>
+        <div className="eq-slot-info">
+          <div className="eq-slot-item-name" style={{ color: RAR_COR[rar] }}>{item.nome}</div>
+          <div className="eq-slot-item-stats">{gerarDescricaoItem(item)}</div>
+        </div>
+        {aberto && (
+          <button className="btn-work btn-small eq-slot-btn" onClick={e => { e.stopPropagation(); onDesequipar(inv.item_id); setAberto(false) }}>
+            Tirar
+          </button>
+        )}
+      </div>
+    )
+  }
+
+  return (
+    <div className="eq-slot eq-slot-empty" onClick={() => disponiveis.length > 0 && setAberto(!aberto)}>
+      <span className="eq-slot-icon-placeholder">{slot.icone}</span>
+      <span className="eq-slot-label">{slot.nome}</span>
+      {disponiveis.length > 0 && <span className="eq-slot-avail">{disponiveis.length}</span>}
+      {aberto && disponiveis.length > 0 && (
+        <div className="eq-slot-dropdown" onClick={e => e.stopPropagation()}>
+          {disponiveis.map(di => {
+            const r = di.item?.raridade || 'comum'
+            return (
+              <div key={di.item_id} className="eq-slot-option" style={{ borderColor: RAR_BORDER[r] }}
+                onClick={() => { onEquipar(di.item_id); setAberto(false) }}>
+                <span>{di.item.icone}</span>
+                <div>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: RAR_COR[r] }}>{di.item.nome}</div>
+                  <div style={{ fontSize: 10, color: '#666' }}>{gerarDescricaoItem(di.item)}</div>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      )}
+    </div>
+  )
+}
+
 export default function Inventario() {
-  const { jogador, setJogador, jogadorID, mostrarNotificacao, recarregarJogador } = useGame()
+  const { jogador, setJogador, jogadorID, mostrarNotificacao, recarregarJogador, getAvatar } = useGame()
   const [inventario, setInventario] = useState([])
 
   const carregar = () => {
@@ -39,8 +105,14 @@ export default function Inventario() {
     else mostrarNotificacao(res.mensagem, 'erro')
   }
 
-  async function equipar(itemID, eq) {
-    const res = await API.post('/api/equipar', { jogador_id: jogadorID, item_id: itemID, equipar: eq })
+  async function equipar(itemID) {
+    const res = await API.post('/api/equipar', { jogador_id: jogadorID, item_id: itemID, equipar: true })
+    if (res.sucesso) { setJogador(res.jogador); carregar(); mostrarNotificacao(res.mensagem, 'sucesso') }
+    else mostrarNotificacao(res.mensagem, 'erro')
+  }
+
+  async function desequipar(itemID) {
+    const res = await API.post('/api/equipar', { jogador_id: jogadorID, item_id: itemID, equipar: false })
     if (res.sucesso) { setJogador(res.jogador); carregar(); mostrarNotificacao(res.mensagem, 'sucesso') }
     else mostrarNotificacao(res.mensagem, 'erro')
   }
@@ -53,9 +125,18 @@ export default function Inventario() {
 
   if (!jogador) return null
 
-  const equipados = inventario.filter(i => i.equipado)
+  // Mapa de slot → item equipado
+  const equippedBySlot = {}
+  inventario.filter(i => i.equipado && i.item?.slot).forEach(i => {
+    if (!equippedBySlot[i.item.slot]) equippedBySlot[i.item.slot] = i
+  })
+
+  // Contratos equipados (slot "contrato") - seção separada
+  const contratos = inventario.filter(i => i.equipado && i.item?.slot === 'contrato')
+
+  // Consumíveis e itens não equipados
   const consumiveis = inventario.filter(i => !i.equipado && i.item?.tipo === 'consumivel')
-  const outrosItens = inventario.filter(i => !i.equipado && i.item?.tipo !== 'consumivel')
+  const equipaveis = inventario.filter(i => !i.equipado && i.item?.tipo === 'equipamento' && i.item?.slot !== 'contrato')
   const slotsUsados = inventario.filter(i => !i.equipado).length
 
   const renderCard = (inv, tipo) => {
@@ -64,7 +145,6 @@ export default function Inventario() {
       <div key={inv.item_id} className="pf-inv-card" style={{ borderColor: RAR_BORDER[rar], background: RAR_BG[rar] }}>
         <div className="pf-inv-top">
           <span className="pf-inv-icon">{inv.item?.icone}</span>
-          {inv.equipado && <span className="pf-inv-badge-eq">E</span>}
           {inv.quantidade > 1 && <span className="pf-inv-qtd">x{inv.quantidade}</span>}
         </div>
         <div className="pf-inv-name" style={{ color: RAR_COR[rar] }}>{inv.item?.nome}</div>
@@ -73,14 +153,12 @@ export default function Inventario() {
         <div className="pf-inv-actions">
           {tipo === 'consumivel' ? (
             <BotaoCooldown ts={inv.item?.recupera_energia > 0 ? inv.proximo_em : jogador.proximo_consumivel_em} onUsar={() => usarItem(inv.item_id)} />
-          ) : inv.equipado ? (
-            <button className="btn-work btn-small" onClick={() => equipar(inv.item_id, false)}>Desequipar</button>
           ) : (
-            <button className="btn-work btn-small btn-verde" onClick={() => equipar(inv.item_id, true)}>Equipar</button>
+            <button className="btn-work btn-small btn-verde" onClick={() => equipar(inv.item_id)}>Equipar</button>
           )}
-          {!inv.equipado && (
+          {!inv.equipado && inv.item?.preco > 0 && (
             <button className="btn-work btn-small inv-btn-vender" onClick={() => venderItem(inv.item_id)}>
-              Vender R${Math.max(1, Math.floor((inv.item?.preco || 0) * 0.7))}
+              Vender R${fmt(Math.max(1, Math.floor((inv.item?.preco || 0) * 0.7)))}
             </button>
           )}
         </div>
@@ -103,31 +181,73 @@ export default function Inventario() {
         </label>
       </div>
 
-      {inventario.length === 0 ? (
+      {/* Painel de equipamento estilo MU Online */}
+      <div className="eq-panel">
+        <div className="eq-col">
+          {SLOTS_ESQ.map(s => (
+            <SlotBox key={s.id} slot={s} equipped={equippedBySlot[s.id]}
+              onEquipar={equipar} onDesequipar={desequipar} inventario={inventario} />
+          ))}
+        </div>
+        <div className="eq-avatar">
+          <div className="eq-avatar-emoji">{getAvatar(jogador.avatar)}</div>
+          <div className="eq-avatar-name">{jogador.nome}</div>
+          <div className="eq-avatar-stats">
+            <span style={{ color: '#e63946' }}>💪{jogador.forca}</span>
+            <span style={{ color: '#1d72c2' }}>🏃{jogador.velocidade}</span>
+            <span style={{ color: '#9c27b0' }}>⚽{jogador.habilidade}</span>
+          </div>
+        </div>
+        <div className="eq-col">
+          {SLOTS_DIR.map(s => (
+            <SlotBox key={s.id} slot={s} equipped={equippedBySlot[s.id]}
+              onEquipar={equipar} onDesequipar={desequipar} inventario={inventario} />
+          ))}
+        </div>
+      </div>
+
+      {/* Contratos equipados */}
+      {contratos.length > 0 && (
+        <div className="pf-section">
+          <div className="pf-section-header"><h3>📋 CONTRATOS ({contratos.length})</h3></div>
+          <div className="pf-inv-grid">
+            {contratos.map(inv => {
+              const rar = inv.item?.raridade || 'comum'
+              return (
+                <div key={inv.item_id} className="pf-inv-card" style={{ borderColor: RAR_BORDER[rar], background: RAR_BG[rar] }}>
+                  <div className="pf-inv-top">
+                    <span className="pf-inv-icon">{inv.item?.icone}</span>
+                    <span className="pf-inv-badge-eq">E</span>
+                  </div>
+                  <div className="pf-inv-name" style={{ color: RAR_COR[rar] }}>{inv.item?.nome}</div>
+                  <div className="pf-inv-desc">{gerarDescricaoItem(inv.item)}</div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Consumíveis */}
+      {consumiveis.length > 0 && (
+        <div className="pf-section">
+          <div className="pf-section-header"><h3>🍎 CONSUMÍVEIS ({consumiveis.length})</h3></div>
+          <div className="pf-inv-grid">{consumiveis.map(inv => renderCard(inv, 'consumivel'))}</div>
+        </div>
+      )}
+
+      {/* Equipamentos na mochila */}
+      {equipaveis.length > 0 && (
+        <div className="pf-section">
+          <div className="pf-section-header"><h3>📦 EQUIPAMENTOS ({equipaveis.length})</h3></div>
+          <div className="pf-inv-grid">{equipaveis.map(inv => renderCard(inv, 'equipamento'))}</div>
+        </div>
+      )}
+
+      {inventario.length === 0 && (
         <div className="pf-section">
           <p className="pf-empty">Bolsa vazia. Compre itens na Loja ou complete Missões!</p>
         </div>
-      ) : (
-        <>
-          {equipados.length > 0 && (
-            <div className="pf-section">
-              <div className="pf-section-header"><h3>⚔️ EQUIPADOS ({equipados.length})</h3></div>
-              <div className="pf-inv-grid">{equipados.map(inv => renderCard(inv, 'equipamento'))}</div>
-            </div>
-          )}
-          {consumiveis.length > 0 && (
-            <div className="pf-section">
-              <div className="pf-section-header"><h3>🍎 CONSUMÍVEIS ({consumiveis.length})</h3></div>
-              <div className="pf-inv-grid">{consumiveis.map(inv => renderCard(inv, 'consumivel'))}</div>
-            </div>
-          )}
-          {outrosItens.length > 0 && (
-            <div className="pf-section">
-              <div className="pf-section-header"><h3>📦 ITENS ({outrosItens.length})</h3></div>
-              <div className="pf-inv-grid">{outrosItens.map(inv => renderCard(inv, 'equipamento'))}</div>
-            </div>
-          )}
-        </>
       )}
     </>
   )
