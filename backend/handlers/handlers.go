@@ -2627,21 +2627,9 @@ func HandleResgatarQuest(w http.ResponseWriter, r *http.Request) {
 			req.JogadorID, q.RecompensaItemID)
 	}
 
-	// Add energy reward as consumable item to inventory
+	// Energia vai direto pra barra (recompensa passiva: transborda além do máximo)
 	if q.RecompensaEnergia > 0 {
-		var energyItemID int
-		switch {
-		case q.RecompensaEnergia <= 5:
-			energyItemID = 63 // Água Mineral (3 energia)
-		case q.RecompensaEnergia <= 10:
-			energyItemID = 64 // Isotônico (8 energia)
-		default:
-			energyItemID = 65 // Energético Monster (15 energia)
-		}
-		db.Conn.Exec(`INSERT INTO inventario (jogador_id, item_id, quantidade)
-			VALUES ($1, $2, 1)
-			ON CONFLICT (jogador_id, item_id) DO UPDATE SET quantidade = inventario.quantidade + 1`,
-			req.JogadorID, energyItemID)
+		jogador.Energia += q.RecompensaEnergia
 	}
 
 	// Grant title for position quests
@@ -2695,7 +2683,7 @@ func HandleResgatarQuest(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	if q.RecompensaEnergia > 0 {
-		msg += ", +1 item de energia"
+		msg += fmt.Sprintf(", +%d Energia", q.RecompensaEnergia)
 	}
 
 	JsonResp(w, 200, map[string]any{

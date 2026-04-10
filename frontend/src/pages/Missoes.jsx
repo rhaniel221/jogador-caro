@@ -201,12 +201,19 @@ export default function Missoes() {
             {tasks.length === 0 && <p className="pf-empty">Nenhuma task disponível hoje.</p>}
             {tasks.map(t => {
               const pct = Math.min(100, Math.round((t.progresso / t.objetivo) * 100))
+              const recompensas = []
+              if (t.recompensa_xp > 0) recompensas.push(`+${t.recompensa_xp} XP`)
+              if (t.recompensa_dinheiro > 0) recompensas.push(`+R$${t.recompensa_dinheiro}`)
+              if (t.recompensa_fama > 0) recompensas.push(`+${t.recompensa_fama} Fama`)
               return (
                 <div key={t.id} className={`pf-task${t.completada ? ' pf-task-done' : ''}`}>
                   <div className="pf-task-info">
                     <strong>{t.nome}</strong>
                     <div className="pf-task-bar"><div className="pf-task-fill" style={{ width: pct + '%' }} /></div>
                     <span className="pf-task-prog">{t.progresso}/{t.objetivo}</span>
+                    {recompensas.length > 0 && (
+                      <span className="pf-task-rewards">{recompensas.join(' · ')}</span>
+                    )}
                   </div>
                   {!t.completada && t.progresso >= t.objetivo && (
                     <button className="btn-work btn-small btn-verde" onClick={() => coletarTask(t.id)}>Coletar</button>
