@@ -37,6 +37,7 @@ func main() {
 	http.HandleFunc("/api/vender-item", handlers.Cors(handlers.HandleVenderItem))
 	http.HandleFunc("/api/equipar", handlers.Cors(handlers.HandleEquipar))
 	http.HandleFunc("/api/combate", handlers.Cors(handlers.HandleCombate))
+	http.HandleFunc("/api/distribuir-ponto", handlers.Cors(handlers.HandleDistribuirPonto))
 	http.HandleFunc("/api/leaderboard", handlers.Cors(handlers.HandleLeaderboard))
 	http.HandleFunc("/api/jogadores", handlers.Cors(handlers.HandleJogadores))
 	http.HandleFunc("/api/itens", handlers.Cors(handlers.HandleItens))

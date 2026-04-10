@@ -885,6 +885,12 @@ func HandleCombate(w http.ResponseWriter, r *http.Request) {
 		atacante.PvpStreak++
 		defensor.PvpStreak = 0
 
+		// Ponto de atributo: a cada 20 vitórias ganha 1 ponto para distribuir
+		if atacante.Vitorias%20 == 0 {
+			atacante.PontosAtributo++
+			mensagem += " 🎯 +1 Ponto de Atributo!"
+		}
+
 		// Weekly ranking: PVP win
 		registrarWeekly(atacante.ID, "vitorias_pvp", 1)
 
@@ -944,6 +950,54 @@ func HandleCombate(w http.ResponseWriter, r *http.Request) {
 		Sucesso: true, VencedorID: vencedorID, AtacanteID: atacante.ID, DefensorID: defensor.ID,
 		DinheiroRoubado: 0, PoderAtacante: poderAtacante, PoderDefensor: poderDefensor,
 		Mensagem: mensagem, Jogador: atualizado,
+	})
+}
+
+// POST /api/distribuir-ponto — gasta 1 ponto de atributo em forca/velocidade/habilidade
+func HandleDistribuirPonto(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		ErrResp(w, 405, "Método não permitido")
+		return
+	}
+	var req struct {
+		JogadorID int    `json:"jogador_id"`
+		Atributo  string `json:"atributo"` // "forca", "velocidade", "habilidade"
+	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		ErrResp(w, 400, "Dados inválidos")
+		return
+	}
+
+	jogador, err := getJogador(req.JogadorID)
+	if err != nil {
+		ErrResp(w, 404, "Jogador não encontrado")
+		return
+	}
+
+	if jogador.PontosAtributo <= 0 {
+		JsonResp(w, 200, map[string]any{"sucesso": false, "mensagem": "Você não tem pontos de atributo para distribuir!"})
+		return
+	}
+
+	switch req.Atributo {
+	case "forca":
+		jogador.Forca++
+	case "velocidade":
+		jogador.Velocidade++
+	case "habilidade":
+		jogador.Habilidade++
+	default:
+		JsonResp(w, 200, map[string]any{"sucesso": false, "mensagem": "Atributo inválido!"})
+		return
+	}
+	jogador.PontosAtributo--
+	saveJogador(jogador)
+
+	atualizado, _ := getJogador(req.JogadorID)
+	JsonResp(w, 200, map[string]any{
+		"sucesso":  true,
+		"mensagem": fmt.Sprintf("+1 %s!", req.Atributo),
+		"jogador":  atualizado,
 	})
 }
 

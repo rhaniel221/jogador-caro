@@ -431,14 +431,14 @@ func getJogador(id int) (*JogadorData, error) {
 		       pontos_fama, vitorias, derrotas, avatar, capacidade_mochila,
 		       moedas, cooldown_premium, titulo, avatares_premium, itens_fama, tutorial_step,
 		       codigo_amigo, inventario_publico, posicao, titulos, COALESCE(pvp_streak, 0),
-		       COALESCE(clube_id,0), COALESCE(numero_camisa,0)
+		       COALESCE(clube_id,0), COALESCE(numero_camisa,0), COALESCE(pontos_atributo,0)
 		FROM jogadores WHERE id = $1`, id).Scan(
 		&j.ID, &j.Nome, &j.Nivel, &j.XP, &j.XPProximo, &j.Energia, &j.EnergiaMax,
 		&j.Vitalidade, &j.VitalidadeMax, &j.Saude, &j.SaudeMax, &j.Forca, &j.Velocidade,
 		&j.Habilidade, &j.DinheiroMao, &j.DinheiroBanco, &j.PontosFama, &j.Vitorias, &j.Derrotas, &j.Avatar,
 		&j.CapacidadeMochila, &j.Moedas, &j.CooldownPremium, &j.Titulo, &j.AvataresPremium, &j.ItensFama, &j.TutorialStep,
 		&j.CodigoAmigo, &j.InventarioPublico, &j.Posicao, &j.Titulos, &j.PvpStreak,
-		&j.ClubeID, &j.NumeroCamisa)
+		&j.ClubeID, &j.NumeroCamisa, &j.PontosAtributo)
 	if err != nil {
 		return nil, err
 	}
@@ -460,14 +460,14 @@ func saveJogador(j *JogadorData) error {
 		vitorias=$16, derrotas=$17, avatar=$18, capacidade_mochila=$19,
 		moedas=$20, cooldown_premium=$21, titulo=$22, avatares_premium=$23, itens_fama=$24, tutorial_step=$25,
 		codigo_amigo=$26, inventario_publico=$27, posicao=$28, titulos=$29, pvp_streak=$30,
-		clube_id=$31, numero_camisa=$32, ultima_atualizacao=NOW()
-		WHERE id=$33`,
+		clube_id=$31, numero_camisa=$32, pontos_atributo=$33, ultima_atualizacao=NOW()
+		WHERE id=$34`,
 		j.Nivel, j.XP, j.XPProximo, j.Energia, j.EnergiaMax, j.Vitalidade, j.VitalidadeMax,
 		j.Saude, j.SaudeMax, j.Forca, j.Velocidade, j.Habilidade, j.DinheiroMao, j.DinheiroBanco,
 		j.PontosFama, j.Vitorias, j.Derrotas, j.Avatar, j.CapacidadeMochila,
 		j.Moedas, j.CooldownPremium, j.Titulo, j.AvataresPremium, j.ItensFama, j.TutorialStep,
 		j.CodigoAmigo, j.InventarioPublico, j.Posicao, j.Titulos, j.PvpStreak,
-		j.ClubeID, j.NumeroCamisa, j.ID)
+		j.ClubeID, j.NumeroCamisa, j.PontosAtributo, j.ID)
 	return err
 }
 

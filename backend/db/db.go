@@ -85,6 +85,7 @@ func createTables() {
 		`ALTER TABLE jogadores ADD CONSTRAINT jogadores_nome_unique UNIQUE (nome)`,
 		`ALTER TABLE cat_itens ADD COLUMN IF NOT EXISTS cooldown_minutos INT DEFAULT 0`,
 		`ALTER TABLE cat_itens ADD COLUMN IF NOT EXISTS preco_moedas INT DEFAULT 0`,
+		`ALTER TABLE jogadores ADD COLUMN IF NOT EXISTS pontos_atributo INT DEFAULT 0`,
 	} {
 		Conn.Exec(m)
 	}

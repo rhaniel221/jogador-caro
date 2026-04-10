@@ -158,6 +158,17 @@ export default function Perfil() {
   const consumiveis = inventario.filter(i => !i.equipado && i.item?.tipo === 'consumivel')
   const outrosItens = inventario.filter(i => !i.equipado && i.item?.tipo !== 'consumivel')
   const winRate = jogador.vitorias + jogador.derrotas > 0 ? Math.round((jogador.vitorias / (jogador.vitorias + jogador.derrotas)) * 100) : 0
+  const temPontos = jogador.pontos_atributo > 0
+
+  async function distribuirPonto(atributo) {
+    const res = await API.post('/api/distribuir-ponto', { jogador_id: jogadorID, atributo })
+    if (res.sucesso) {
+      setJogador(res.jogador)
+      mostrarNotificacao(res.mensagem, 'sucesso')
+    } else {
+      mostrarNotificacao(res.mensagem, 'erro')
+    }
+  }
 
   return (
     <div className="pf" data-tutorial="perfil-area">
@@ -227,10 +238,24 @@ export default function Perfil() {
       </div>
 
       {/* === STATS GRID === */}
+      {temPontos && (
+        <div className="pf-pontos-banner">
+          🎯 Você tem <strong>{jogador.pontos_atributo}</strong> ponto{jogador.pontos_atributo > 1 ? 's' : ''} de atributo para distribuir!
+        </div>
+      )}
       <div className="pf-stats">
-        <div className="pf-stat"><span className="pf-stat-icon">💪</span><span className="pf-stat-val">{jogador.forca}</span><span className="pf-stat-lbl">Força</span></div>
-        <div className="pf-stat"><span className="pf-stat-icon">🏃</span><span className="pf-stat-val">{jogador.velocidade}</span><span className="pf-stat-lbl">Velocidade</span></div>
-        <div className="pf-stat"><span className="pf-stat-icon">⚽</span><span className="pf-stat-val">{jogador.habilidade}</span><span className="pf-stat-lbl">Habilidade</span></div>
+        <div className="pf-stat">
+          <span className="pf-stat-icon">💪</span><span className="pf-stat-val">{jogador.forca}</span><span className="pf-stat-lbl">Força</span>
+          {temPontos && <button className="pf-stat-plus" onClick={() => distribuirPonto('forca')}>+</button>}
+        </div>
+        <div className="pf-stat">
+          <span className="pf-stat-icon">🏃</span><span className="pf-stat-val">{jogador.velocidade}</span><span className="pf-stat-lbl">Velocidade</span>
+          {temPontos && <button className="pf-stat-plus" onClick={() => distribuirPonto('velocidade')}>+</button>}
+        </div>
+        <div className="pf-stat">
+          <span className="pf-stat-icon">⚽</span><span className="pf-stat-val">{jogador.habilidade}</span><span className="pf-stat-lbl">Habilidade</span>
+          {temPontos && <button className="pf-stat-plus" onClick={() => distribuirPonto('habilidade')}>+</button>}
+        </div>
         <div className="pf-stat"><span className="pf-stat-icon">💰</span><span className="pf-stat-val">R${fmt(jogador.dinheiro_mao)}</span><span className="pf-stat-lbl">Dinheiro</span></div>
         <div className="pf-stat"><span className="pf-stat-icon">⭐</span><span className="pf-stat-val">{jogador.pontos_fama}</span><span className="pf-stat-lbl">Fama</span></div>
         <div className="pf-stat"><span className="pf-stat-icon">⚔️</span><span className="pf-stat-val">{jogador.vitorias}V/{jogador.derrotas}D</span><span className="pf-stat-lbl">{winRate}% Win</span></div>
