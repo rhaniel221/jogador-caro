@@ -3841,9 +3841,9 @@ func HandleWeeklyRanking(w http.ResponseWriter, r *http.Request) {
 // ========================
 
 var casasConfig = map[string]CasaConfig{
-	"basica": {Tipo: "basica", Nome: "Casa Alugada", Preco: 0, PrecoMoedas: 0, XPHora: 10, EnQuant: 1, EnIntMin: 60},
-	"media":  {Tipo: "media", Nome: "Casa Própria", Preco: 120000, PrecoMoedas: 15, XPHora: 20, EnQuant: 2, EnIntMin: 60},
-	"top":    {Tipo: "top", Nome: "Mansão do Craque", Preco: 450000, PrecoMoedas: 40, XPHora: 30, EnQuant: 3, EnIntMin: 60},
+	"basica": {Tipo: "basica", Nome: "Casa Alugada", Preco: 0, PrecoMoedas: 0, XPHora: 8, EnQuant: 1, EnIntMin: 90},
+	"media":  {Tipo: "media", Nome: "Casa Própria", Preco: 120000, PrecoMoedas: 15, XPHora: 25, EnQuant: 3, EnIntMin: 60},
+	"top":    {Tipo: "top", Nome: "Mansão do Craque", Preco: 450000, PrecoMoedas: 40, XPHora: 40, EnQuant: 5, EnIntMin: 60},
 }
 
 var casasOrdem = map[string]int{"": 0, "basica": 1, "media": 2, "top": 3}
@@ -4101,6 +4101,35 @@ func HandleCasaColetar(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Casa alugada: cobra aluguel proporcional ao tempo acumulado
+	aluguel := 0
+	if tipo == "basica" {
+		aluguelHora := aluguelBasicaPreco(jogador.Nivel) / 24 // aluguel diário / 24 = por hora
+		if aluguelHora < 10 {
+			aluguelHora = 10
+		}
+		aluguel = int(horas * float64(aluguelHora))
+		if aluguel < 1 {
+			aluguel = 1
+		}
+		totalDinheiro := jogador.DinheiroMao + jogador.DinheiroBanco
+		if totalDinheiro < aluguel {
+			JsonResp(w, 200, map[string]interface{}{
+				"sucesso":  false,
+				"mensagem": fmt.Sprintf("Aluguel de R$ %d pendente! Você não tem dinheiro suficiente.", aluguel),
+			})
+			return
+		}
+		// Desconta aluguel (mão primeiro, depois banco)
+		if jogador.DinheiroMao >= aluguel {
+			jogador.DinheiroMao -= aluguel
+		} else {
+			restante := aluguel - jogador.DinheiroMao
+			jogador.DinheiroMao = 0
+			jogador.DinheiroBanco -= restante
+		}
+	}
+
 	jogador.XP += xpGanho
 	jogador.Energia += enGanho // recompensa passiva: transborda além do máximo
 
@@ -4124,11 +4153,16 @@ func HandleCasaColetar(w http.ResponseWriter, r *http.Request) {
 	updateCombinedProgress(req.JogadorID, "CASA_COLETA", 1)
 
 	atualizado, _ := getJogador(req.JogadorID)
+	msg := fmt.Sprintf("Coletou +%d XP e +%d Energia!", xpGanho, enGanho)
+	if aluguel > 0 {
+		msg += fmt.Sprintf(" (Aluguel: -R$ %d)", aluguel)
+	}
 	JsonResp(w, 200, map[string]interface{}{
 		"sucesso":    true,
-		"mensagem":   fmt.Sprintf("Coletou +%d XP e +%d Energia da casa!", xpGanho, enGanho),
+		"mensagem":   msg,
 		"xp_ganho":   xpGanho,
 		"en_ganho":   enGanho,
+		"aluguel":    aluguel,
 		"level_up":   levelUp,
 		"novo_nivel": novoNivel,
 		"jogador":    atualizado,

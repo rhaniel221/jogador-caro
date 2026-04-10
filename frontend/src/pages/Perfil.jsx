@@ -969,15 +969,28 @@ function CasaCard({ jogadorID, jogador, setJogador, mostrarNotificacao, setLevel
             <img src={CASA_IMGS[casa.tipo]} alt={CASA_NOMES[casa.tipo]} className="casa-img-perfil"
               onError={e => { e.target.style.display = 'none' }} />
             <div className="casa-card-info">
-              <div className="casa-card-nome">{CASA_NOMES[casa.tipo]}</div>
+              <div className="casa-card-nome">
+                {CASA_NOMES[casa.tipo]}
+                {casa.tipo === 'basica'
+                  ? <span style={{ fontSize: 10, color: '#c0392b', marginLeft: 6, fontWeight: 700 }}>ALUGADA</span>
+                  : <span style={{ fontSize: 10, color: '#27ae60', marginLeft: 6, fontWeight: 700 }}>PRÓPRIA</span>}
+              </div>
               <div className="casa-card-acumulado">
                 {casa.xp_disponivel > 0 && <span className="casa-reward">📊 +{casa.xp_disponivel} XP</span>}
                 {casa.energia_disponivel > 0 && <span className="casa-reward">⚡ +{casa.energia_disponivel}</span>}
                 {!temRecompensa && <span style={{ color: '#888', fontSize: 11 }}>Acumulando ganhos...</span>}
               </div>
+              {casa.tipo === 'basica' && temRecompensa && (
+                <div style={{ fontSize: 10, color: '#c0392b', fontWeight: 700 }}>💸 Aluguel será cobrado ao coletar</div>
+              )}
               {temRecompensa && (
                 <button className="btn-work btn-verde btn-small" onClick={coletar} disabled={loading}>
                   {loading ? '...' : '🎁 Coletar'}
+                </button>
+              )}
+              {podeComprar && casa.tipo === 'basica' && (
+                <button className="btn-work btn-azul btn-small" onClick={() => setShowModal(true)} style={{ marginTop: 4, fontSize: 10 }}>
+                  🏠 Comprar Casa Própria
                 </button>
               )}
             </div>
