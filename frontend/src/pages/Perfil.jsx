@@ -238,11 +238,6 @@ export default function Perfil() {
       </div>
 
       {/* === STATS GRID === */}
-      {temPontos && (
-        <div className="pf-pontos-banner">
-          🎯 Você tem <strong>{jogador.pontos_atributo}</strong> ponto{jogador.pontos_atributo > 1 ? 's' : ''} de atributo para distribuir!
-        </div>
-      )}
       <div className="pf-stats">
         <div className="pf-stat">
           <span className="pf-stat-icon">💪</span><span className="pf-stat-val">{jogador.forca}</span><span className="pf-stat-lbl">Força</span>
@@ -259,6 +254,23 @@ export default function Perfil() {
         <div className="pf-stat"><span className="pf-stat-icon">💰</span><span className="pf-stat-val">R${fmt(jogador.dinheiro_mao)}</span><span className="pf-stat-lbl">Dinheiro</span></div>
         <div className="pf-stat"><span className="pf-stat-icon">⭐</span><span className="pf-stat-val">{jogador.pontos_fama}</span><span className="pf-stat-lbl">Fama</span></div>
         <div className="pf-stat"><span className="pf-stat-icon">⚔️</span><span className="pf-stat-val">{jogador.vitorias}V/{jogador.derrotas}D</span><span className="pf-stat-lbl">{winRate}% Win</span></div>
+      </div>
+
+      {/* === PONTOS DE ATRIBUTO === */}
+      <div className="pf-section">
+        <div className="pf-section-header"><h3>🎯 PONTOS DE ATRIBUTO</h3></div>
+        <div className="pf-pontos-info">
+          <div className="pf-pontos-disponiveis">
+            <span className="pf-pontos-num">{jogador.pontos_atributo || 0}</span>
+            <span className="pf-pontos-lbl">ponto{(jogador.pontos_atributo || 0) !== 1 ? 's' : ''} disponíve{(jogador.pontos_atributo || 0) !== 1 ? 'is' : 'l'}</span>
+          </div>
+          <div className="pf-pontos-progresso">
+            <div className="pf-pontos-bar-bg">
+              <div className="pf-pontos-bar-fill" style={{ width: `${((jogador.vitorias % 20) / 20) * 100}%` }} />
+            </div>
+            <span className="pf-pontos-bar-txt">{jogador.vitorias % 20}/20 vitórias para o próximo ponto</span>
+          </div>
+        </div>
       </div>
 
       {/* === PATRIMÔNIO === */}

@@ -3490,12 +3490,25 @@ input, select, textarea {
 }
 .pf-stat-plus:hover { background: #219a52; }
 @keyframes pulsePlus { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15); } }
-.pf-pontos-banner {
-  background: #e8f5e9; border: 2px solid #27ae60; border-radius: 10px;
-  padding: 8px 14px; text-align: center; margin-bottom: 10px;
-  font-size: 13px; font-weight: 700; color: #1b5e20;
-  animation: pulsePlus 2s ease-in-out infinite;
+.pf-pontos-info {
+  display: flex; align-items: center; gap: 14px; padding: 2px 0;
 }
+.pf-pontos-disponiveis {
+  display: flex; flex-direction: column; align-items: center; min-width: 70px;
+}
+.pf-pontos-num {
+  font-family: var(--font-titulo); font-size: 32px; font-weight: 900; color: #27ae60; line-height: 1;
+}
+.pf-pontos-lbl { font-size: 10px; font-weight: 700; color: #556; }
+.pf-pontos-progresso { flex: 1; min-width: 0; }
+.pf-pontos-bar-bg {
+  height: 10px; background: #e0e0e0; border-radius: 6px; overflow: hidden; border: 1px solid #ccc;
+}
+.pf-pontos-bar-fill {
+  height: 100%; background: linear-gradient(90deg, #27ae60, #2ecc71); border-radius: 6px;
+  transition: width 0.3s ease;
+}
+.pf-pontos-bar-txt { font-size: 11px; font-weight: 700; color: #666; margin-top: 3px; display: block; }
 
 /* Section */
 .pf-section {
