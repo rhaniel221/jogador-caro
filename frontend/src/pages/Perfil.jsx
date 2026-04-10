@@ -785,13 +785,15 @@ function CasaCard({ jogadorID, jogador, setJogador, mostrarNotificacao, setLevel
   const [casas, setCasas] = useState([])
   const [showModal, setShowModal] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [loaded, setLoaded] = useState(false)
 
   const carregar = useCallback(() => {
     if (!jogadorID) return
     API.get('/api/casa/' + jogadorID).then(res => {
       setCasa(res.casa || { tipo: '' })
       if (res.casas_disponiveis) setCasas(res.casas_disponiveis)
-    }).catch(() => { setCasa({ tipo: '' }) })
+      setLoaded(true)
+    }).catch(() => { setCasa({ tipo: '' }); setLoaded(true) })
   }, [jogadorID])
 
   useEffect(() => { carregar() }, [carregar])
@@ -803,14 +805,14 @@ function CasaCard({ jogadorID, jogador, setJogador, mostrarNotificacao, setLevel
   const podeComprar = jogador?.nivel >= 30 // só na Série B em diante
 
   useEffect(() => {
-    if (!casa || !jogador) return
+    if (!loaded || !casa || !jogador) return
     const temCasa = casa.tipo && casa.tipo !== ''
     if (jogador.nivel >= 30 && casa.tipo === 'basica') {
       setShowModal(true)
     } else if (jogador.nivel >= 20 && !temCasa) {
       setShowModal(true)
     }
-  }, [casa, jogador?.nivel])
+  }, [loaded, casa, jogador?.nivel])
 
   // Só mostra a partir da Série C (nível 20+)
   if (!jogador || jogador.nivel < 20) return null
