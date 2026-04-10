@@ -3147,7 +3147,7 @@ func HandleMinigameResultado(w http.ResponseWriter, r *http.Request) {
 	jogador.Moedas += moedas
 	jogador.XP += xp
 	if energia > 0 {
-		jogador.Energia = clampInt(jogador.Energia+energia, 0, jogador.EnergiaMax)
+		jogador.Energia += energia // recompensa passiva: transborda além do máximo
 	}
 
 	// Item pro inventário
@@ -3642,7 +3642,7 @@ func HandleStreakColetar(w http.ResponseWriter, r *http.Request) {
 	// Apply rewards
 	jogador.XP += recompensa.XP
 	if recompensa.Energia > 0 {
-		jogador.Energia = clampInt(jogador.Energia+recompensa.Energia, 0, jogador.EnergiaMax)
+		jogador.Energia += recompensa.Energia // recompensa passiva: transborda além do máximo
 	}
 	if recompensa.ItemID > 0 {
 		db.Conn.Exec(`INSERT INTO inventario (jogador_id, item_id, quantidade)
@@ -4086,7 +4086,7 @@ func HandleCasaColetar(w http.ResponseWriter, r *http.Request) {
 	}
 
 	jogador.XP += xpGanho
-	jogador.Energia = clampInt(jogador.Energia+enGanho, 0, jogador.EnergiaMax)
+	jogador.Energia += enGanho // recompensa passiva: transborda além do máximo
 
 	// Level up check
 	levelUp := false

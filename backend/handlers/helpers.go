@@ -1394,12 +1394,9 @@ func AplicarEventoTrabalho(jogador *JogadorData, eventoID, opcaoID string, ganho
 		}
 	}
 	if resultado.BonusEnergia != 0 {
-		jogador.Energia += resultado.BonusEnergia
+		jogador.Energia += resultado.BonusEnergia // recompensa passiva: transborda além do máximo
 		if jogador.Energia < 0 {
 			jogador.Energia = 0
-		}
-		if jogador.Energia > jogador.EnergiaMax {
-			jogador.Energia = jogador.EnergiaMax
 		}
 	}
 	if resultado.PerdaSaude != 0 {
