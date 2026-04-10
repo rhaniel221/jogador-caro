@@ -519,70 +519,114 @@ func seedCatalogos() {
 		{82, 50000, 72, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, "Elixir Rápido", "Energia instantânea", "consumivel", "🌟"},
 		{83, 300000, 72, 0, 0, 0, 0, 0, 0, 0, 40, 0, 0, "Soro do GOAT", "Energia dos deuses", "consumivel", "🏆"},
 		{84, 300000, 72, 0, 0, 0, 0, 0, 0, 0, 0, 150, 0, "Terapia Genética", "Saúde máxima", "consumivel", "🧬"},
-		// Equipamentos — nível baixo
-		{6, 15, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "Camisa do Time", "Necessária para trabalhar no estádio", "equipamento", "👕"},
-		{7, 20, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, "Chuteira Básica", "Uma chuteira simples pra dar os primeiros chutes", "equipamento", "👟"},
-		{10, 12, 1, 0, 0, 0, 0, 10, 0, 0, 0, 0, 0, "Protetor de Canela", "Protege da entrada dura dos rivais", "equipamento", "🦵"},
-		{9, 30, 3, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, "Luva do Goleiro", "Protege as mãos e aumenta a vitalidade", "equipamento", "🥊"},
-		{18, 22, 3, 0, 0, 0, 0, 15, 0, 0, 0, 0, 0, "Joelheira", "Protege os joelhos nas divididas", "equipamento", "🦿"},
-		// Equipamentos — nível médio
-		{12, 60, 5, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, "Tênis de Corrida", "Para correr mais rápido que os adversários", "equipamento", "🏃"},
-		{11, 80, 5, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, "Kit de Musculação", "Treino de força para se tornar mais poderoso", "equipamento", "💪"},
-		{19, 45, 5, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, "Meias de Compressão", "Melhora o desempenho nas corridas", "equipamento", "🧦"},
-		{8, 120, 8, 0, 0, 1, 3, 0, 0, 0, 0, 0, 0, "Chuteira Profissional", "Chuteira dos grandes jogadores", "equipamento", "⚽"},
-		{20, 250, 10, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, "Colete Tático", "Equipamento dos treinadores profissionais", "equipamento", "🦺"},
-		{21, 450, 15, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, "Capacete de Treino", "Proteção máxima nos treinamentos pesados", "equipamento", "⛑️"},
+		// ============================================================
+		// EQUIPAMENTOS — Progressão por nível com slots de corpo
+		// Cada tier tem 6 itens de loja (1 por slot) + itens de missão
+		// Stats escalam: nv1=3 → nv10=6 → nv20=10 → nv30=16 → nv40=24 → nv50=32 → nv60=40 → nv70=50 → nv80=60
+		// ============================================================
+
+		// === NÍVEL 1-9 (Garoto) — ~3 stats, preço 10-25 ===
+		{200, 10, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, "Bandana de Rua", "Estilo de moleque do bairro", "equipamento", "🎀"},
+		{6, 15, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, "Camisa do Time", "Necessária pra trabalhar no estádio", "equipamento", "👕"},
+		{201, 10, 1, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, "Munhequeira Básica", "Acessório do jogador de rua", "equipamento", "💪"},
+		{202, 10, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, "Shorts de Pelada", "Bermuda leve pra correr", "equipamento", "🩳"},
+		{203, 10, 1, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, "Meião Escolar", "Protege a canela no mínimo", "equipamento", "🧦"},
+		{7, 20, 1, 0, 0, 2, 1, 0, 0, 0, 0, 0, 0, "Chuteira Básica", "Primeiros chutes com estilo", "equipamento", "👟"},
+		// Missão Raro (nv 5-8)
+		{43, 0, 5, 0, 2, 1, 1, 0, 0, 0, 0, 0, 0, "Chuteira Raio Street", "Lendária das ruas", "equipamento", "👟"},
+		{44, 0, 8, 0, 1, 2, 2, 0, 0, 0, 0, 0, 0, "Fita de Drible", "Domínio total na bola", "equipamento", "✨"},
+
+		// === NÍVEL 10-19 (Amador) — ~6 stats, preço 50-150 ===
+		{204, 50, 10, 0, 2, 2, 1, 0, 0, 0, 0, 0, 0, "Faixa de Capitão", "Liderança no campo", "equipamento", "©️"},
+		{205, 80, 10, 0, 2, 2, 2, 0, 0, 0, 0, 0, 0, "Colete Tático", "Equipamento de treino sério", "equipamento", "🦺"},
+		{206, 60, 10, 0, 3, 1, 2, 0, 0, 0, 0, 0, 0, "Luvas de Treino", "Proteção e aderência", "equipamento", "🧤"},
+		{207, 60, 10, 0, 1, 3, 2, 0, 0, 0, 0, 0, 0, "Bermuda Training", "Tecido leve e flexível", "equipamento", "🩳"},
+		{208, 50, 10, 0, 2, 3, 1, 0, 0, 0, 0, 0, 0, "Caneleira Pro", "Proteção profissional", "equipamento", "🛡️"},
+		{209, 70, 10, 0, 1, 3, 2, 0, 0, 0, 0, 0, 0, "Tênis de Corrida", "Velocidade no gramado", "equipamento", "🏃"},
+		// Missão Raro/Épico (nv 10-18)
+		{48, 0, 10, 0, 3, 2, 2, 0, 0, 0, 0, 0, 0, "Chuteira Copa Street", "A favorita dos craques", "equipamento", "👟"},
+		{49, 0, 15, 0, 2, 3, 3, 0, 0, 0, 0, 0, 0, "Luva Predator", "Reflexos sobre-humanos", "equipamento", "🧤"},
+		{50, 0, 18, 0, 3, 3, 3, 0, 0, 0, 0, 0, 0, "Uniforme Sub-20", "Orgulho nacional", "equipamento", "🇧🇷"},
+
+		// === NÍVEL 20-29 (Série C/B) — ~10 stats, preço 500-2000 ===
+		{210, 600, 20, 0, 4, 3, 3, 0, 0, 0, 0, 0, 0, "Capacete de Treino", "Proteção nos treinamentos pesados", "equipamento", "⛑️"},
+		{8, 800, 20, 0, 3, 4, 3, 0, 0, 0, 0, 0, 0, "Chuteira Profissional", "Chuteira dos grandes jogadores", "equipamento", "⚽"},
+		{211, 700, 20, 0, 3, 4, 3, 0, 0, 0, 0, 0, 0, "Relógio GPS Esportivo", "Monitora velocidade em campo", "equipamento", "⌚"},
+		{212, 600, 20, 0, 3, 4, 3, 0, 0, 0, 0, 0, 0, "Shorts Oficial", "Uniforme regulamentado", "equipamento", "🩳"},
+		{213, 600, 20, 0, 3, 4, 3, 0, 0, 0, 0, 0, 0, "Meião Profissional", "Conforto de craque", "equipamento", "🧦"},
+		{35, 1200, 25, 0, 3, 3, 4, 0, 0, 0, 0, 0, 0, "Uniforme de Clube", "Uniforme oficial. Libera trabalhos Série B+", "equipamento", "🎽"},
+		// Missão Raro/Épico (nv 22-30)
+		{54, 0, 22, 0, 4, 4, 4, 0, 0, 0, 0, 0, 0, "Chuteira Mercurial", "Velocidade mortal", "equipamento", "⚡"},
+		{55, 0, 28, 0, 3, 5, 4, 0, 0, 0, 0, 0, 0, "Braçadeira Joga Bonito", "Drible e estilo", "equipamento", "🌟"},
+		{56, 0, 30, 0, 5, 4, 4, 0, 0, 0, 0, 0, 0, "Uniforme Real Madrid", "Galáctico", "equipamento", "⚪"},
+
+		// === NÍVEL 30-39 (Série A) — ~16 stats, preço 3000-10000 ===
+		{214, 3500, 30, 0, 5, 5, 6, 0, 0, 0, 0, 0, 0, "Visor Tático", "Visão de jogo apurada", "equipamento", "🥽"},
+		{215, 5000, 30, 0, 6, 5, 5, 0, 0, 0, 0, 0, 0, "Camisa Titular", "Camisa 10 do time", "equipamento", "👕"},
+		{216, 4000, 30, 0, 6, 4, 6, 0, 0, 0, 0, 0, 0, "Braçadeira de Capitão", "Liderança no vestiário", "equipamento", "💎"},
+		{217, 3500, 30, 0, 5, 6, 5, 0, 0, 0, 0, 0, 0, "Shorts de Jogo", "Material de elite", "equipamento", "🩳"},
+		{218, 3500, 30, 0, 5, 6, 5, 0, 0, 0, 0, 0, 0, "Meião da Copa", "Usado nas decisões", "equipamento", "🧦"},
+		{219, 6000, 30, 0, 6, 5, 5, 0, 0, 0, 0, 0, 0, "Chuteira Série A", "Precisão nos chutes", "equipamento", "👟"},
+		// Missão Raro/Épico (nv 35-38)
+		{57, 0, 35, 0, 6, 6, 6, 0, 0, 0, 0, 0, 0, "Chuteira Phantom GT", "Precisão letal", "equipamento", "👻"},
+		{59, 0, 38, 0, 7, 6, 6, 0, 0, 0, 0, 0, 0, "Armadura do Capitão", "Blindagem e poder", "equipamento", "🛡️"},
+
+		// === NÍVEL 40-49 (Copa/Liberta) — ~24 stats, preço 10000-40000 ===
+		{220, 12000, 40, 0, 8, 8, 8, 0, 0, 0, 0, 0, 0, "Viseira Champion", "Estilo de campeão", "equipamento", "😎"},
+		{221, 15000, 40, 0, 8, 8, 8, 0, 0, 0, 0, 0, 0, "Uniforme Champion", "Usado nas finais", "equipamento", "👕"},
+		{36, 12000, 40, 0, 8, 9, 8, 0, 0, 0, 0, 0, 0, "Chuteira de Elite", "Libera trabalhos Europa. Precisão extrema", "equipamento", "👟"},
+		{222, 12000, 40, 0, 9, 7, 8, 0, 0, 0, 0, 0, 0, "Luva de Ouro", "Toque perfeito", "equipamento", "🧤"},
+		{223, 10000, 40, 0, 8, 8, 8, 0, 0, 0, 0, 0, 0, "Shorts Champion", "Conforto de elite", "equipamento", "🩳"},
+		{224, 10000, 40, 0, 8, 9, 7, 0, 0, 0, 0, 0, 0, "Meião Elite", "Performance máxima", "equipamento", "🧦"},
+		// Missão Raro/Lendário (nv 42-45)
+		{58, 0, 42, 0, 9, 9, 8, 0, 0, 0, 0, 0, 0, "Luvas El Pibe", "Magia pura nas mãos", "equipamento", "🐐"},
+		{60, 0, 45, 0, 10, 9, 9, 0, 0, 0, 0, 0, 0, "Chuteira CR7 Dourada", "A arma do GOAT", "equipamento", "👑"},
+
+		// === NÍVEL 50-59 (Europa) — ~32 stats, preço 40000-120000 ===
+		{225, 45000, 50, 0, 10, 11, 11, 0, 0, 0, 0, 0, 0, "Máscara Predator", "Intimidação pura", "equipamento", "😈"},
+		{226, 60000, 50, 0, 11, 10, 11, 0, 0, 0, 0, 0, 0, "Uniforme Europa", "O mais desejado do mundo", "equipamento", "👕"},
+		{227, 50000, 50, 0, 10, 11, 11, 0, 0, 0, 0, 0, 0, "Braçadeira UEFA", "Símbolo de excelência", "equipamento", "💎"},
+		{228, 45000, 50, 0, 10, 11, 11, 0, 0, 0, 0, 0, 0, "Shorts Europa", "Material de alta performance", "equipamento", "🩳"},
+		{229, 45000, 50, 0, 10, 11, 11, 0, 0, 0, 0, 0, 0, "Meião Continental", "Usado nas grandes ligas", "equipamento", "🧦"},
+		{230, 70000, 50, 0, 11, 11, 10, 0, 0, 0, 0, 0, 0, "Chuteira Europa", "Top de linha europeu", "equipamento", "👟"},
+		// Missão Lendário (nv 55)
+		{61, 0, 55, 0, 12, 12, 12, 0, 0, 0, 0, 0, 0, "Manto Sagrado", "Usado pelos imortais", "equipamento", "🦸"},
+
+		// === NÍVEL 60-69 (Champions) — ~40 stats, preço 120000-400000 ===
+		{231, 150000, 60, 0, 13, 13, 14, 0, 0, 0, 0, 0, 0, "Coroa do Craque", "Só os melhores usam", "equipamento", "👑"},
+		{232, 200000, 60, 0, 14, 13, 13, 0, 0, 0, 0, 0, 0, "Uniforme Champions", "O auge do futebol", "equipamento", "👕"},
+		{233, 160000, 60, 0, 13, 14, 13, 0, 0, 0, 0, 0, 0, "Luvas Bola de Ouro", "Toque divino", "equipamento", "🧤"},
+		{234, 150000, 60, 0, 13, 13, 14, 0, 0, 0, 0, 0, 0, "Shorts Champions", "Performance absoluta", "equipamento", "🩳"},
+		{235, 150000, 60, 0, 13, 14, 13, 0, 0, 0, 0, 0, 0, "Meião Champions", "Estilo de final", "equipamento", "🧦"},
+		{37, 200000, 60, 0, 14, 14, 13, 0, 0, 0, 0, 0, 0, "Chuteira Dourada", "Libera Liga dos Craques. Lendária", "equipamento", "⭐"},
+		// Missão Lendário (nv 70)
+		{62, 0, 70, 0, 15, 15, 14, 0, 0, 0, 0, 0, 0, "Kit Rei do Campo", "A lenda das lendas", "equipamento", "🏆"},
+
+		// === NÍVEL 70-79 (Seleção) — ~50 stats, preço 400000-1500000 ===
+		{236, 500000, 70, 0, 16, 17, 17, 0, 0, 0, 0, 0, 0, "Capacete Gladiador", "Guerreiro do campo", "equipamento", "⚔️"},
+		{237, 700000, 70, 0, 17, 16, 17, 0, 0, 0, 0, 0, 0, "Uniforme Seleção", "A camisa do país", "equipamento", "👕"},
+		{238, 500000, 70, 0, 17, 17, 16, 0, 0, 0, 0, 0, 0, "Braçadeira Mundial", "Capitão da seleção", "equipamento", "💎"},
+		{239, 450000, 70, 0, 16, 17, 17, 0, 0, 0, 0, 0, 0, "Shorts Seleção", "Honra nacional", "equipamento", "🩳"},
+		{240, 450000, 70, 0, 17, 17, 16, 0, 0, 0, 0, 0, 0, "Meião Seleção", "Cores da pátria", "equipamento", "🧦"},
+		{241, 800000, 70, 0, 17, 17, 16, 0, 0, 0, 0, 0, 0, "Chuteira Mundial", "Usada na Copa do Mundo", "equipamento", "👟"},
+
+		// === NÍVEL 80+ (Lenda) — ~60 stats, preço 1500000+ ===
+		{242, 2000000, 80, 0, 20, 20, 20, 0, 0, 0, 0, 0, 0, "Máscara do GOAT", "Imortalidade no campo", "equipamento", "🐐"},
+		{38, 2500000, 80, 0, 20, 20, 20, 0, 0, 0, 0, 0, 0, "Uniforme da Seleçoca", "Libera Seleçoca/Mundialito. Sagrado", "equipamento", "🇧🇷"},
+		{243, 2000000, 80, 0, 20, 20, 20, 0, 0, 0, 0, 0, 0, "Luvas do GOAT", "Mãos de ouro", "equipamento", "🧤"},
+		{244, 1800000, 80, 0, 20, 20, 20, 0, 0, 0, 0, 0, 0, "Shorts do GOAT", "Perfeição absoluta", "equipamento", "🩳"},
+		{245, 1800000, 80, 0, 20, 20, 20, 0, 0, 0, 0, 0, 0, "Meião do GOAT", "Lenda viva", "equipamento", "🧦"},
+		{246, 3000000, 80, 0, 20, 20, 20, 0, 0, 0, 0, 0, 0, "Chuteira do GOAT", "A melhor já criada", "equipamento", "👟"},
+
 		// Mochilas
-		{22, 40, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, "Mochila Escolar", "Comporta mais itens que o bolso. Capacidade: 8 tipos", "mochila", "🎒"},
-		{23, 150, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 12, "Mochila Esportiva", "A mochila do atleta amador. Capacidade: 12 tipos", "mochila", "👜"},
-		{24, 600, 12, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16, "Mochila do Profissional", "Espaço de sobra para os itens do craque. Capacidade: 16 tipos", "mochila", "💼"},
-		{25, 2000, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 22, "Mochila do Craque", "A maior mochila do jogo. Capacidade: 22 tipos", "mochila", "🏅"},
-		// Equipamentos de tier alto — necessários para trabalhos Craque+
-		{35, 2500, 25, 0, 0, 1, 2, 0, 0, 0, 0, 0, 0, "Uniforme de Clube", "Uniforme oficial de clube profissional. Libera: Titular, Seleçoca Sub-23.", "equipamento", "🎽"},
-		{36, 12000, 40, 0, 0, 2, 3, 0, 0, 0, 0, 0, 0, "Chuteira de Elite", "Chuteira das grandes ligas europeias. Libera: Liga Europeia.", "equipamento", "👟"},
-		{37, 50000, 60, 0, 0, 3, 4, 0, 0, 0, 0, 0, 0, "Chuteira Dourada", "Usada pelos maiores craques do mundo. Libera: Liga dos Craques.", "equipamento", "⭐"},
-		{38, 180000, 80, 0, 1, 3, 5, 0, 0, 0, 0, 0, 0, "Uniforme da Seleçoca", "O uniforme sagrado do país. Libera: Seleçoca, Mundialito.", "equipamento", "🇧🇷"},
-		// Level 1-10 (Garoto/Base) - Comum
-		{40, 10, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, "Munhequeira", "Acessório básico do jogador de rua", "equipamento", "🏋️"},
-		{41, 15, 3, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, "Faixa de Cabeça", "Estilo e velocidade", "equipamento", "🎀"},
-		{42, 25, 5, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, "Bola de Treino", "Melhora o domínio de bola", "equipamento", "⚽"},
-		// Level 1-10 - Raro (missão)
-		{43, 0, 5, 0, 2, 1, 0, 0, 0, 0, 0, 0, 0, "Chuteira Raio Street", "Lendária das ruas. +2 Força +1 Velocidade", "equipamento", "👟"},
-		{44, 0, 8, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, "Kit Drible Mágico", "Domínio total. +2 Velocidade +2 Habilidade", "equipamento", "✨"},
-		// Level 10-20 (Amador) - Comum
-		{45, 50, 10, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, "Faixa de Capitão", "Liderança no campo. +2 Força", "equipamento", "©️"},
-		{46, 70, 12, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, "Tornozeleira Pro", "Agilidade profissional", "equipamento", "🦶"},
-		{47, 90, 15, 0, 0, 0, 2, 10, 0, 0, 0, 0, 0, "Caneleira Reforçada", "Proteção e habilidade", "equipamento", "🛡️"},
-		// Level 10-20 - Raro (missão)
-		{48, 0, 10, 0, 3, 2, 0, 0, 0, 0, 0, 0, 0, "Chuteira Listrada Copa", "A favorita dos craques. +3 Força +2 Velocidade", "equipamento", "👟"},
-		{49, 0, 15, 0, 0, 3, 3, 0, 0, 0, 0, 0, 0, "Luva Predator", "Reflexos sobre-humanos. +3 Vel +3 Hab", "equipamento", "🧤"},
-		// Level 10-20 - Épico (missão)
-		{50, 0, 18, 0, 3, 3, 3, 0, 0, 0, 0, 0, 0, "Uniforme Seleçoca Sub-20", "Orgulho nacional. +3 em tudo", "equipamento", "🇧🇷"},
-		// Level 20-35 (Profissional) - Comum
-		{51, 200, 20, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, "Suplemento Whey", "Força máxima no treino", "equipamento", "💊"},
-		{52, 300, 25, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, "Relógio GPS", "Controla sua velocidade em campo", "equipamento", "⌚"},
-		{53, 400, 28, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, "Bola Oficial Pro", "Toque perfeito. +3 Habilidade", "equipamento", "⚽"},
-		// Level 20-35 - Raro (missão)
-		{54, 0, 22, 0, 4, 3, 0, 0, 0, 0, 0, 0, 0, "Chuteira Mercurial", "Velocidade mortal. +4 Força +3 Vel", "equipamento", "⚡"},
-		{55, 0, 28, 0, 0, 4, 4, 0, 0, 0, 0, 0, 0, "Kit Joga Bonito", "Drible e estilo. +4 Vel +4 Hab", "equipamento", "🌟"},
-		// Level 20-35 - Épico (missão)
-		{56, 0, 30, 0, 5, 4, 4, 0, 0, 0, 0, 0, 0, "Uniforme Real Madrid", "Galáctico. +5F +4V +4H", "equipamento", "⚪"},
-		// Level 35-50 (Craque/Elite) - Raro (missão)
-		{57, 0, 35, 0, 5, 5, 3, 0, 0, 0, 0, 0, 0, "Chuteira Phantom GT", "Precisão letal. +5F +5V +3H", "equipamento", "👻"},
-		{58, 0, 42, 0, 4, 6, 5, 0, 0, 0, 0, 0, 0, "Kit El Pibe", "Magia pura. +4F +6V +5H", "equipamento", "🐐"},
-		// Level 35-50 - Épico (missão)
-		{59, 0, 38, 0, 6, 5, 5, 0, 0, 0, 0, 0, 0, "Armadura do Capitão", "+6F +5V +5H", "equipamento", "🛡️"},
-		// Level 35-50 - Lendário (missão)
-		{60, 0, 45, 0, 7, 6, 6, 0, 0, 0, 0, 0, 0, "Chuteira CR7 Dourada", "A arma do GOAT. +7F +6V +6H", "equipamento", "👑"},
-		// Level 50+ - Lendário (missão)
-		{61, 0, 55, 0, 8, 7, 7, 0, 0, 0, 0, 0, 0, "Manto Sagrado", "Usado pelos imortais. +8F +7V +7H", "equipamento", "🦸"},
-		{62, 0, 70, 0, 10, 8, 8, 0, 0, 0, 0, 0, 0, "Kit Rei do Campo", "A lenda das lendas. +10F +8V +8H", "equipamento", "🏆"},
-		// === ITENS DE CLASSE (desbloqueiam trabalho top de cada tier) ===
-		// Garoto: bebidas já pede item 6 (Camisa R$15)
-		// Base: pelada já pede item 7 (Chuteira R$20)
-		// === ITENS DE CLASSE (desbloqueiam trabalho top de cada tier) ===
+		{22, 40, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, "Mochila Escolar", "Capacidade: 8 tipos", "mochila", "🎒"},
+		{23, 150, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 12, "Mochila Esportiva", "Capacidade: 12 tipos", "mochila", "👜"},
+		{24, 600, 12, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16, "Mochila do Profissional", "Capacidade: 16 tipos", "mochila", "💼"},
+		{25, 2000, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 22, "Mochila do Craque", "Capacidade: 22 tipos", "mochila", "🏅"},
+
+		// === CONTRATOS (desbloqueiam trabalhos) ===
 		{100, 50, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "Colete de Flanelinha", "Necessário pra trabalhar no estádio", "equipamento", "🦺"},
-		{101, 200, 10, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, "Crachá de Olheiro", "Credencial de captador amador", "equipamento", "🪪"},
+		{101, 200, 10, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, "Crachá de Olheiro", "Credencial de captador amador", "equipamento", "🪪"},
 		{102, 600, 18, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, "Contrato Série C", "Vínculo com clube da 3ª divisão", "equipamento", "📋"},
 		{103, 1500, 24, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, "Contrato Série B", "Vínculo com clube da 2ª divisão", "equipamento", "📋"},
 		{104, 3500, 30, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, "Contrato Série A", "Contrato profissional 1ª divisão", "equipamento", "📝"},
@@ -628,13 +672,14 @@ func seedCatalogos() {
 			 bonus_vit_max, recupera_energia, recupera_saude, slots_mochila)
 			VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17)
 			ON CONFLICT (id) DO UPDATE SET
-				nome=EXCLUDED.nome,
-				descricao=EXCLUDED.descricao,
-				preco=EXCLUDED.preco,
-				nivel_min=EXCLUDED.nivel_min,
-				nivel_max=EXCLUDED.nivel_max,
-				recupera_energia=EXCLUDED.recupera_energia,
-				recupera_saude=EXCLUDED.recupera_saude`,
+				nome=EXCLUDED.nome, descricao=EXCLUDED.descricao, preco=EXCLUDED.preco,
+				tipo=EXCLUDED.tipo, icone=EXCLUDED.icone,
+				nivel_min=EXCLUDED.nivel_min, nivel_max=EXCLUDED.nivel_max,
+				bonus_forca=EXCLUDED.bonus_forca, bonus_velocidade=EXCLUDED.bonus_velocidade,
+				bonus_habilidade=EXCLUDED.bonus_habilidade, bonus_saude_max=EXCLUDED.bonus_saude_max,
+				bonus_energia_max=EXCLUDED.bonus_energia_max, bonus_vit_max=EXCLUDED.bonus_vit_max,
+				recupera_energia=EXCLUDED.recupera_energia, recupera_saude=EXCLUDED.recupera_saude,
+				slots_mochila=EXCLUDED.slots_mochila`,
 			it.id, it.nome, it.descricao, it.preco, it.tipo, it.icone,
 			it.nivelMin, it.nivelMax, it.bonusForca, it.bonusVelocidade, it.bonusHabilidade,
 			it.bonusSaudeMax, it.bonusEnergiaMax, it.bonusVitMax,
@@ -703,11 +748,12 @@ func seedCatalogos() {
 	// Slot assignments for equipment (MU Online-style slots)
 	Conn.Exec(`ALTER TABLE cat_itens ADD COLUMN IF NOT EXISTS slot VARCHAR(20) DEFAULT ''`)
 	slotUpdates := map[string][]int{
-		"cabeca":   {21, 41, 45},
-		"camisa":   {6, 20, 35, 38, 50, 56, 59, 61},
-		"bracos":   {9, 11, 40, 42, 44, 49, 51, 52, 53, 55, 58, 62},
-		"meiao":    {10, 18, 19, 46, 47},
-		"chuteira": {7, 8, 12, 36, 37, 43, 48, 54, 57, 60},
+		"cabeca":   {200, 204, 210, 214, 220, 225, 231, 236, 242},
+		"camisa":   {6, 205, 35, 215, 221, 226, 232, 237, 38, 50, 56, 59, 61},
+		"bracos":   {201, 44, 206, 49, 211, 55, 216, 222, 58, 227, 233, 62, 238, 243},
+		"shorts":   {202, 207, 212, 217, 223, 228, 234, 239, 244},
+		"meiao":    {203, 208, 213, 218, 224, 229, 235, 240, 245},
+		"chuteira": {7, 43, 209, 48, 8, 54, 219, 57, 36, 60, 230, 37, 241, 246},
 		"contrato": {100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112},
 	}
 	for slot, ids := range slotUpdates {
