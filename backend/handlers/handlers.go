@@ -3813,9 +3813,9 @@ func HandleWeeklyRanking(w http.ResponseWriter, r *http.Request) {
 // ========================
 
 var casasConfig = map[string]CasaConfig{
-	"basica": {Tipo: "basica", Nome: "Casa Alugada", Preco: 0, PrecoMoedas: 0, XPHora: 10, EnQuant: 5, EnIntMin: 15},
-	"media":  {Tipo: "media", Nome: "Casa Própria", Preco: 120000, PrecoMoedas: 15, XPHora: 20, EnQuant: 10, EnIntMin: 30},
-	"top":    {Tipo: "top", Nome: "Mansão do Craque", Preco: 450000, PrecoMoedas: 40, XPHora: 30, EnQuant: 15, EnIntMin: 30},
+	"basica": {Tipo: "basica", Nome: "Casa Alugada", Preco: 0, PrecoMoedas: 0, XPHora: 10, EnQuant: 1, EnIntMin: 60},
+	"media":  {Tipo: "media", Nome: "Casa Própria", Preco: 120000, PrecoMoedas: 15, XPHora: 20, EnQuant: 2, EnIntMin: 60},
+	"top":    {Tipo: "top", Nome: "Mansão do Craque", Preco: 450000, PrecoMoedas: 40, XPHora: 30, EnQuant: 3, EnIntMin: 60},
 }
 
 var casasOrdem = map[string]int{"": 0, "basica": 1, "media": 2, "top": 3}
