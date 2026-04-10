@@ -3564,7 +3564,7 @@ input, select, textarea {
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   min-width: 100px; gap: 4px;
 }
-.eq-avatar-emoji { font-size: 64px; filter: drop-shadow(0 2px 8px rgba(255,255,255,0.2)); }
+.eq-avatar-img { height: 180px; object-fit: contain; filter: drop-shadow(0 0 12px rgba(255,255,255,0.15)); }
 .eq-avatar-name { font-size: 12px; font-weight: 900; color: #fff; text-align: center; }
 .eq-avatar-stats { display: flex; gap: 8px; font-size: 11px; font-weight: 900; }
 
@@ -3605,7 +3605,7 @@ input, select, textarea {
 @media (max-width: 600px) {
   .eq-panel { grid-template-columns: 1fr 1fr; gap: 8px; padding: 12px; }
   .eq-avatar { grid-column: 1 / -1; order: -1; flex-direction: row; gap: 10px; min-height: auto; padding: 6px 0; }
-  .eq-avatar-emoji { font-size: 40px; }
+  .eq-avatar-img { height: 120px; }
   .eq-slot { min-height: 48px; padding: 6px 8px; }
   .eq-slot-item-icon { font-size: 18px; }
   .eq-slot-icon-placeholder { font-size: 18px; }

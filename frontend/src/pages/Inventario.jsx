@@ -90,7 +90,7 @@ function SlotBox({ slot, equipped, onEquipar, onDesequipar, inventario }) {
 }
 
 export default function Inventario() {
-  const { jogador, setJogador, jogadorID, mostrarNotificacao, recarregarJogador, getAvatar } = useGame()
+  const { jogador, setJogador, jogadorID, mostrarNotificacao, recarregarJogador } = useGame()
   const [inventario, setInventario] = useState([])
 
   const carregar = () => {
@@ -190,7 +190,7 @@ export default function Inventario() {
           ))}
         </div>
         <div className="eq-avatar">
-          <div className="eq-avatar-emoji">{getAvatar(jogador.avatar)}</div>
+          <img src="/personagem-inventario.png" alt="Personagem" className="eq-avatar-img" />
           <div className="eq-avatar-name">{jogador.nome}</div>
           <div className="eq-avatar-stats">
             <span style={{ color: '#e63946' }}>💪{jogador.forca}</span>
