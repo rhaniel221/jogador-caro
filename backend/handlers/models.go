@@ -25,7 +25,7 @@ type Item struct {
 	RecuperaSaude    int    `json:"recupera_saude"`
 	SlotsMochila     int    `json:"slots_mochila"` // apenas para tipo "mochila"
 	CooldownMinutos  int    `json:"cooldown_minutos"`
-	Slot             string `json:"slot"` // cabeca, camisa, bracos, shorts, meiao, chuteira, contrato
+	Slot             string `json:"slot"` // cabeca, camisa, bracos, luva, shorts, meiao, chuteira, bola, contrato
 }
 
 type Trabalho struct {

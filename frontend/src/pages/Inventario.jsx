@@ -27,11 +27,13 @@ const SLOTS_ESQ = [
   { id: 'cabeca', nome: 'Cabeça', icone: '⛑️' },
   { id: 'camisa', nome: 'Camisa', icone: '👕' },
   { id: 'bracos', nome: 'Braços', icone: '💪' },
+  { id: 'luva', nome: 'Luva', icone: '🧤' },
 ]
 const SLOTS_DIR = [
   { id: 'shorts', nome: 'Shorts', icone: '🩳' },
   { id: 'meiao', nome: 'Meião', icone: '🧦' },
   { id: 'chuteira', nome: 'Chuteira', icone: '👟' },
+  { id: 'bola', nome: 'Bola', icone: '⚽' },
 ]
 
 function SlotBox({ slot, equipped, onEquipar, onDesequipar, inventario }) {
