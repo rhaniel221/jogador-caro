@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { useGame } from '../context/GameContext'
 import API from '../api'
+import PageGuide from '../components/PageGuide'
 
 
 function formatRestante(segs) {
@@ -163,6 +164,12 @@ export default function Treino() {
           Escolha um treino e entre em cooldown. Quanto mais forte o treino, maior o cooldown. Sua build, sua estratégia.
         </p>
       </div>
+      <PageGuide
+        pageKey="treino"
+        icone="🏋️"
+        titulo="Centro de Treinamento"
+        texto="Treine para aumentar Força, Velocidade e Habilidade! Cada treino tem cooldown. Treinos mais fortes dão mais stats mas demoram mais. Monte sua build!"
+      />
 
       <div style={{
         display: 'flex',

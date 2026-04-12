@@ -11,6 +11,7 @@ import {
   calcularBonusVariedade,
   calcFatorMaestria
 } from '../utils'
+import PageGuide from '../components/PageGuide'
 
 const TIERS = [
   'Garoto', 'Base', 'Amador', 'Série C', 'Série B', 'Série A',
@@ -104,7 +105,7 @@ function VariedadePanel({ diferentesHoje, config, tier }) {
   const faltam = proximoMilestone ? proximoMilestone.n - diferentesHoje : 0
 
   return (
-    <div className={`variedade-panel${bonusPct > 0 ? ' variedade-bonus-on' : ''}`}>
+    <div className={`variedade-panel${bonusPct > 0 ? ' variedade-bonus-on' : ''}`} data-tutorial="variedade-panel">
       {bonusPct > 0 && (
         <div className="vp-bonus-banner">
           <span className="vp-bonus-icon">✨</span>
@@ -285,6 +286,12 @@ export default function Trabalhos() {
   return (
     <>
       <h2 className="page-title">⚽ TRABALHOS</h2>
+      <PageGuide
+        pageKey="trabalhos"
+        icone="⚽"
+        titulo="Bem-vindo aos Trabalhos!"
+        texto="Faça trabalhos para ganhar dinheiro e XP. Varie entre trabalhos diferentes para ganhar bônus! Maestria alta reduz rendimento, então alterne sempre."
+      />
       <p className="subtitle">
         Faça trabalhos para ganhar dinheiro e XP. Maestria alta reduz o rendimento — varie seus trabalhos!
       </p>

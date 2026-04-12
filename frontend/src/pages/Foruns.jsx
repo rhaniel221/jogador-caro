@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useGame } from '../context/GameContext'
 import API from '../api'
+import PageGuide from '../components/PageGuide'
 
 export default function Foruns() {
   const { jogador, jogadorID, mostrarNotificacao } = useGame()
@@ -35,6 +36,12 @@ export default function Foruns() {
   return (
     <>
       <h2 className="page-title">💬 FÓRUNS</h2>
+      <PageGuide
+        pageKey="foruns"
+        icone="💬"
+        titulo="Fóruns da Comunidade"
+        texto="Converse com outros jogadores! Troque dicas, estratégias e faça amizades. Respeite os outros jogadores."
+      />
       <p className="subtitle">Converse com outros jogadores. Troque dicas e estratégias!</p>
 
       {jogador && (

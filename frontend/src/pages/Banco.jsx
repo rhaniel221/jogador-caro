@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useGame } from '../context/GameContext'
 import API from '../api'
 import { fmt } from '../utils'
+import PageGuide from '../components/PageGuide'
 
 export default function Banco() {
   const { jogador, setJogador, jogadorID, mostrarNotificacao } = useGame()
@@ -120,6 +121,12 @@ export default function Banco() {
   return (
     <>
       <h2 className="page-title">🏦 BANCO</h2>
+      <PageGuide
+        pageKey="banco"
+        icone="🏦"
+        titulo="Banco Seguro"
+        texto="Dinheiro no banco NÃO pode ser roubado em combates! Deposite sempre que puder. A partir do nível 20, você também recebe boletos e pode investir em CDB."
+      />
       <p className="subtitle">Guarde seu dinheiro com seguranca. Taxa de 10% no deposito. Dinheiro no banco fica seguro de roubos!</p>
 
       <div className="bank-container" data-tutorial="banco-area">

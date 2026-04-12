@@ -87,7 +87,7 @@ export default function Header() {
         </div>
 
         {/* Inventário shortcut */}
-        <Link to="/inventario" className="stat stat-inv">
+        <Link to="/inventario" className="stat stat-inv" data-tutorial="header-inventario">
           <span className="stat-icon-big">🎒</span>
           <div className="stat-info">
             <span className="stat-label">Inventário</span>

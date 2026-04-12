@@ -7,66 +7,57 @@ const TutorialContext = createContext(null)
 
 // tipo: 'nav' = deve clicar no elemento, 'info' = lê e clica Entendi
 const STEPS = [
-  // Fase 1: Historia (nível < 4, página /)
+  // ============================================
+  // ONBOARDING (level 1-3, página / = Historia)
+  // ============================================
   { id: 1, tipo: 'info', page: '/', target: '[data-tutorial="missoes-lista"]',
     titulo: 'Bem-vindo ao Joga Craque! ⚽',
-    texto: 'Sua jornada começa aqui! Complete as missões da história para avançar. Cada missão dá XP e dinheiro!' },
+    texto: 'Sua jornada começa aqui! Complete as missões da história para ganhar XP, dinheiro e subir de nível!' },
 
-  { id: 2, tipo: 'info', page: '/', target: '[data-tutorial="stat-energia"]',
+  { id: 2, tipo: 'info', page: null, target: '[data-tutorial="stat-energia"]',
     titulo: '⚡ Energia',
-    texto: 'Algumas missões gastam Energia. Ela regenera sozinha com o tempo. Quando acabar, descanse ou use um consumível!' },
+    texto: 'Missões e trabalhos gastam Energia. Ela regenera sozinha com o tempo. Se acabar, compre consumíveis na Loja!' },
 
-  { id: 3, tipo: 'info', page: '/', target: '[data-tutorial="stat-xp"]',
+  { id: 3, tipo: 'info', page: null, target: '[data-tutorial="stat-xp"]',
     titulo: '📊 XP e Nível',
-    texto: 'Ganhe XP completando missões para subir de nível! Cada nível desbloqueia novas fases e aumenta seus atributos.' },
+    texto: 'Ganhe XP para subir de nível! Cada nível desbloqueia trabalhos novos, equipamentos e áreas!' },
 
-  { id: 4, tipo: 'info', page: '/', target: '[data-tutorial="stat-dinheiro"]',
+  { id: 4, tipo: 'info', page: null, target: '[data-tutorial="stat-dinheiro"]',
     titulo: '💰 Dinheiro',
-    texto: 'Use dinheiro pra comprar equipamentos e consumíveis na Loja. Guarde no Banco pra não perder em combates!' },
+    texto: 'Use dinheiro pra comprar itens na Loja. Agora complete as missões da história para avançar!' },
 
-  // Fase 2: Estádio
-  { id: 5, tipo: 'nav', page: null, target: '[data-tutorial="nav-estadio"]', destino: '/estadio',
-    titulo: '🏟️ Conheça o Estádio!',
-    texto: 'Clique em "Estádio" para conhecer a arena de combate!' },
+  // step 5 = estado dormindo (não aparece, espera nível 4)
 
-  { id: 6, tipo: 'info', page: '/estadio', target: '[data-tutorial="combat-area"]',
-    titulo: '⚔️ Arena de Combate',
-    texto: 'Aqui você desafia outros jogadores. Vencer dá Fama e você rouba parte do dinheiro do adversário!' },
+  // ============================================
+  // TUTORIAL DE ENERGIA (level 4+, Trabalhos)
+  // ============================================
+  { id: 20, tipo: 'info', page: null, target: '[data-tutorial="stat-energia"]',
+    titulo: '⚡ Sua Energia Acabou!',
+    texto: 'Parabéns por completar a história! Agora você é um profissional. Mas sua energia está baixa... Vamos à Loja comprar um suprimento!' },
 
-  { id: 7, tipo: 'info', page: '/estadio', target: '[data-tutorial="stat-vitalidade"]',
-    titulo: '💚 Vitalidade',
-    texto: 'Cada combate gasta Vitalidade. Sem vitalidade, não pode lutar. Ela regenera com o tempo.' },
+  { id: 21, tipo: 'nav', page: null, target: '[data-tutorial="nav-loja"]', destino: '/loja',
+    titulo: '🛒 Vá à Loja!',
+    texto: 'Clique em "Loja" para comprar um item de energia!' },
 
-  { id: 8, tipo: 'info', page: '/estadio', target: '[data-tutorial="stat-saude"]',
-    titulo: '❤️ Saúde',
-    texto: 'Ao perder, sua Saúde diminui. Se chegar a 0, fica vulnerável. Recupere com itens da Loja!' },
+  { id: 22, tipo: 'info', page: '/loja', target: '[data-tutorial="loja-energia-section"]',
+    titulo: '⚡ Compre Energia!',
+    texto: 'A aba "Energia" já está selecionada. Compre uma Água Mineral — é barata e recupera energia pra você voltar a trabalhar!' },
 
-  // Fase 3: Loja
-  { id: 9, tipo: 'nav', page: null, target: '[data-tutorial="nav-loja"]', destino: '/inventario',
-    titulo: '🛒 Visite a Loja!',
-    texto: 'Clique em "Loja" para se equipar com itens que te deixam mais forte!' },
+  { id: 23, tipo: 'nav', page: null, target: '[data-tutorial="header-inventario"]', destino: '/inventario',
+    titulo: '🎒 Abra o Inventário!',
+    texto: 'Agora clique no Inventário para usar o item que você comprou!' },
 
-  { id: 10, tipo: 'info', page: '/inventario', target: '[data-tutorial="shop-area"]',
-    titulo: '🎒 Loja de Itens',
-    texto: 'Consumíveis recuperam energia e saúde. Equipamentos aumentam atributos. Alguns trabalhos exigem equipamentos!' },
+  { id: 24, tipo: 'info', page: '/inventario', target: '[data-tutorial="inv-consumiveis"]',
+    titulo: '🧪 Use o Item de Energia!',
+    texto: 'Encontre o item de energia e clique em "Usar" para recuperar sua energia! Depois vamos voltar aos trabalhos.' },
 
-  // Fase 4: Perfil
-  { id: 11, tipo: 'nav', page: null, target: '[data-tutorial="nav-perfil"]', destino: '/inicio',
-    titulo: '👤 Veja seu Perfil!',
-    texto: 'Clique em "Perfil" para ver seus atributos e inventário.' },
+  { id: 25, tipo: 'nav', page: null, target: '[data-tutorial="nav-trabalhos"]', destino: '/',
+    titulo: '⚽ Volte aos Trabalhos!',
+    texto: 'Energia recuperada! Agora volte aos Trabalhos para ganhar dinheiro e XP!' },
 
-  { id: 12, tipo: 'info', page: '/inicio', target: '[data-tutorial="perfil-area"]',
-    titulo: '📋 Painel do Jogador',
-    texto: 'Aqui você vê tudo: atributos, itens equipados, tarefas diárias e conquistas!' },
-
-  // Fase 5: Banco
-  { id: 13, tipo: 'nav', page: null, target: '[data-tutorial="nav-banco"]', destino: '/banco',
-    titulo: '🏦 Último passo!',
-    texto: 'Clique em "Banco" para proteger seu dinheiro!' },
-
-  { id: 14, tipo: 'info', page: '/banco', target: '[data-tutorial="banco-area"]',
-    titulo: '💵 Banco Seguro',
-    texto: 'Dinheiro no banco não pode ser roubado! Deposite sempre. Tutorial completo — boa sorte, craque! 🏆' },
+  { id: 26, tipo: 'info', page: '/', target: '[data-tutorial="variedade-panel"]',
+    titulo: '⭐ Bônus de Variedade!',
+    texto: 'Trabalhe em 3 trabalhos DIFERENTES no mesmo dia para ganhar +10% de XP bônus! Quanto mais variar, mais XP você ganha. Boa sorte, craque!' },
 ]
 
 const TOTAL_STEPS = STEPS.length
@@ -82,8 +73,8 @@ export function TutorialProvider({ children }) {
   useEffect(() => {
     if (!jogador) return
     if (jogador.tutorial_step === -1) { setStep(-1); return }
-    // Veteranos pulam
-    if (jogador.tutorial_step === 0 && jogador.nivel > 3) {
+    // Veteranos pulam (nível > 5 e nunca iniciou)
+    if (jogador.tutorial_step === 0 && jogador.nivel > 5) {
       API.post('/api/tutorial-step', { jogador_id: jogador.id, step: -1 })
       setStep(-1)
       return
@@ -95,19 +86,34 @@ export function TutorialProvider({ children }) {
 
   useEffect(() => { stepRef.current = step }, [step])
 
+  // Ativa tutorial de energia quando dormindo (step 5) e nível >= 4
+  useEffect(() => {
+    if (step !== 5 || !jogador) return
+    if (jogador.nivel >= 4 && location.pathname === '/') {
+      // Delay pra dar tempo da página carregar
+      const timer = setTimeout(() => {
+        setStep(20)
+        stepRef.current = 20
+        if (jogadorID) {
+          API.post('/api/tutorial-step', { jogador_id: jogadorID, step: 20 })
+        }
+      }, 1500)
+      return () => clearTimeout(timer)
+    }
+  }, [step, jogador?.nivel, location.pathname, jogadorID])
+
   const currentStep = STEPS.find(s => s.id === step) || null
-  const isActive = step > 0 && currentStep !== null
+  const isActive = step > 0 && step !== 5 && currentStep !== null
 
   // Auto-avança steps 'nav' quando chega na página certa
   useEffect(() => {
     if (!currentStep || currentStep.tipo !== 'nav') return
     if (currentStep.destino && location.pathname === currentStep.destino) {
-      const nextId = stepRef.current + 1
-      const nextExists = STEPS.find(s => s.id === nextId)
-      const newStep = nextExists ? nextId : -1
-      setStep(newStep)
+      const nextId = getNextStep(stepRef.current)
+      setStep(nextId)
+      stepRef.current = nextId
       if (jogadorID) {
-        API.post('/api/tutorial-step', { jogador_id: jogadorID, step: newStep })
+        API.post('/api/tutorial-step', { jogador_id: jogadorID, step: nextId })
       }
     }
   }, [location.pathname, currentStep?.id])
@@ -134,13 +140,13 @@ export function TutorialProvider({ children }) {
           width: rect.width,
           height: rect.height,
         })
-      } else if (attempts < 20) {
+      } else if (attempts < 30) {
         attempts++
-        setTimeout(tryFind, 250)
+        setTimeout(tryFind, 300)
       }
     }
 
-    setTimeout(tryFind, 200)
+    setTimeout(tryFind, 300)
 
     const handleLayout = () => {
       const el = document.querySelector(currentStep.target)
@@ -164,27 +170,49 @@ export function TutorialProvider({ children }) {
     }
   }, [step, location.pathname])
 
-  const advance = useCallback(() => {
-    const nextId = stepRef.current + 1
+  function getNextStep(current) {
+    // Onboarding step 4 → dormindo (5) pra esperar energia tutorial
+    if (current === 4) return 5
+    // Último step da energia tutorial → fim
+    if (current === 26) return -1
+    // Normal: próximo step
+    const nextId = current + 1
     const nextExists = STEPS.find(s => s.id === nextId)
-    const newStep = nextExists ? nextId : -1
-    setStep(newStep)
+    return nextExists ? nextId : -1
+  }
+
+  const advance = useCallback(() => {
+    const nextId = getNextStep(stepRef.current)
+    setStep(nextId)
+    stepRef.current = nextId
     setTargetRect(null)
     if (jogadorID) {
-      API.post('/api/tutorial-step', { jogador_id: jogadorID, step: newStep })
+      API.post('/api/tutorial-step', { jogador_id: jogadorID, step: nextId })
     }
   }, [jogadorID])
 
   const skip = useCallback(() => {
     setStep(-1)
+    stepRef.current = -1
     setTargetRect(null)
     if (jogadorID) {
       API.post('/api/tutorial-step', { jogador_id: jogadorID, step: -1 })
     }
   }, [jogadorID])
 
+  // Conta visual de steps por fase (onboarding = 4, energia = 7)
+  const faseInfo = (() => {
+    if (step >= 1 && step <= 4) return { num: step, total: 4, fase: 'Primeiros Passos' }
+    if (step >= 20 && step <= 26) return { num: step - 19, total: 7, fase: 'Energia & Trabalhos' }
+    return { num: 0, total: 0, fase: '' }
+  })()
+
   return (
-    <TutorialContext.Provider value={{ currentStep, targetRect, isActive, advance, skip, step, totalSteps: TOTAL_STEPS }}>
+    <TutorialContext.Provider value={{
+      currentStep, targetRect, isActive, advance, skip, step,
+      totalSteps: TOTAL_STEPS,
+      faseInfo,
+    }}>
       {children}
     </TutorialContext.Provider>
   )

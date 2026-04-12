@@ -3,7 +3,7 @@ import { useTutorial } from '../context/TutorialContext'
 import { useGame } from '../context/GameContext'
 
 export default function TutorialOverlay() {
-  const { currentStep, targetRect, isActive, advance, skip, step, totalSteps } = useTutorial()
+  const { currentStep, targetRect, isActive, advance, skip, faseInfo } = useTutorial()
   const { activeDialog } = useGame()
 
   // Para steps 'nav': eleva o z-index do elemento alvo acima do spotlight
@@ -47,6 +47,8 @@ export default function TutorialOverlay() {
     }
   }
 
+  const { num, total, fase } = faseInfo
+
   return (
     <>
       {/* Spotlight: cria o fundo escuro com recorte via box-shadow */}
@@ -71,7 +73,11 @@ export default function TutorialOverlay() {
 
       {/* Tooltip */}
       <div className="tutorial-tooltip" style={tooltipStyle}>
-        <div className="tutorial-step-badge">{step}/{totalSteps}</div>
+        {total > 0 && (
+          <div className="tutorial-step-badge">
+            {fase} — {num}/{total}
+          </div>
+        )}
         <div className="tutorial-titulo">{currentStep.titulo}</div>
         <div className="tutorial-texto">{currentStep.texto}</div>
 
@@ -84,7 +90,7 @@ export default function TutorialOverlay() {
           <div className="tutorial-actions">
             <span className="tutorial-skip" onClick={skip}>Pular tutorial</span>
             <button className="btn-work btn-verde tutorial-btn" onClick={advance}>
-              {step === totalSteps ? '🏆 Finalizar!' : 'Entendi! →'}
+              {num === total ? '🏆 Finalizar!' : 'Entendi! →'}
             </button>
           </div>
         )}

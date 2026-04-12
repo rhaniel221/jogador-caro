@@ -3,6 +3,7 @@ import { useGame } from '../context/GameContext'
 import { useSearchParams } from 'react-router-dom'
 import API from '../api'
 import { fmt, itemStats } from '../utils'
+import PageGuide from '../components/PageGuide'
 
 export default function Loja() {
   const { jogador, setJogador, jogadorID, mostrarNotificacao } = useGame()
@@ -160,6 +161,12 @@ export default function Loja() {
   return (
     <>
       <h2 className="page-title" data-tutorial="shop-area">🛒 LOJA</h2>
+      <PageGuide
+        pageKey="loja"
+        icone="🛒"
+        titulo="Loja de Itens"
+        texto="Compre equipamentos para ficar mais forte e consumíveis para recuperar energia e saúde. Use dinheiro ou moedas premium!"
+      />
       <p className="subtitle">Nível {nivel} — R$ {fmt(jogador?.dinheiro_mao || 0)} · 🪙 {jogador?.moedas || 0} moedas</p>
 
       {/* === SEÇÃO DINHEIRO === */}
@@ -180,7 +187,7 @@ export default function Loja() {
       </div>
 
       {isDinheiroTab && <>
-        {tab === 'energia' && renderGrid(energiaItems)}
+        {tab === 'energia' && <div data-tutorial="loja-energia-section">{renderGrid(energiaItems)}</div>}
         {tab === 'equip' && renderGrid(equipamentos)}
         {tab === 'mochila' && renderGrid(mochilas)}
 

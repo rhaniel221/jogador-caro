@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useGame } from '../context/GameContext'
 import API from '../api'
 import { gerarDescricaoItem } from '../utils'
+import PageGuide from '../components/PageGuide'
 
 const MATERIAL_ICONES = {
   Madeira: '🪵', Prego: '🔩', Gesso: '⬜', Cal: '🧱', Semente: '🌱', Adubo: '💩',
@@ -170,6 +171,12 @@ export default function Missoes() {
   return (
     <>
       <h2 className="page-title">🎯 MISSÕES</h2>
+      <PageGuide
+        pageKey="missoes"
+        icone="🎯"
+        titulo="Missões e Conquistas"
+        texto="Complete missões para ganhar itens exclusivos, materiais de construção e XP! Tem missões diárias, semanais e de habilidade. Sempre verifique o que tem de novo!"
+      />
       <p className="subtitle">
         Complete missões para ganhar itens exclusivos, materiais e XP!
         {jogador && <strong> (Seu nível: {jogador.nivel})</strong>}

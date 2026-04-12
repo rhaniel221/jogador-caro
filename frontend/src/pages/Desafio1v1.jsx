@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useGame } from '../context/GameContext'
 import API from '../api'
+import PageGuide from '../components/PageGuide'
 
 const DIRECOES = ['esquerda', 'centro', 'direita']
 const DIR_EMOJI = { esquerda: '⬅️', centro: '⬆️', direita: '➡️' }
@@ -106,6 +107,12 @@ function TelaAcao({ titulo, subtitulo, modo, onFinalizar, onCancelar, loading })
   return (
     <>
       <h2 className="page-title">⚽ DESAFIO 1v1</h2>
+      <PageGuide
+        pageKey="desafio1v1"
+        icone="⚽"
+        titulo="Desafio de Pênaltis"
+        texto="Desafie outro jogador para uma disputa de pênaltis! Escolha onde chutar e onde defender. O melhor cobra-faltas vence!"
+      />
       <p className="subtitle">{titulo}</p>
       {subtitulo && <p style={{ fontSize: 12, fontWeight: 700, color: '#556', marginBottom: 8 }}>{subtitulo}</p>}
 

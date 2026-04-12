@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useGame } from '../context/GameContext'
 import API from '../api'
 import { fmt, gerarDescricaoItem } from '../utils'
+import PageGuide from '../components/PageGuide'
 
 function BotaoCooldown({ ts, onUsar }) {
   const calc = () => { const d = (ts || 0) - Math.floor(Date.now() / 1000); return d > 0 ? d : 0 }
@@ -171,6 +172,12 @@ export default function Inventario() {
   return (
     <>
       <h2 className="page-title">🎒 INVENTÁRIO</h2>
+      <PageGuide
+        pageKey="inventario"
+        icone="🎒"
+        titulo="Seu Inventário"
+        texto="Aqui ficam todos os seus itens. Equipe armaduras e chuteiras nos slots, use consumíveis para recuperar energia/saúde, e venda itens que não precisa mais."
+      />
       <div className="inv-page-header">
         <span className="inv-page-slots">{slotsUsados}/{jogador.capacidade_mochila} slots</span>
         <label className="inv-toggle">
@@ -232,7 +239,7 @@ export default function Inventario() {
 
       {/* Consumíveis */}
       {consumiveis.length > 0 && (
-        <div className="pf-section">
+        <div className="pf-section" data-tutorial="inv-consumiveis">
           <div className="pf-section-header"><h3>🍎 CONSUMÍVEIS ({consumiveis.length})</h3></div>
           <div className="pf-inv-grid">{consumiveis.map(inv => renderCard(inv, 'consumivel'))}</div>
         </div>

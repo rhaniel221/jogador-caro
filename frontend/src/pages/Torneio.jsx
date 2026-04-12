@@ -1,9 +1,16 @@
 import React from 'react'
+import PageGuide from '../components/PageGuide'
 
 export default function Torneio() {
   return (
     <>
       <h2 className="page-title">🏆 TORNEIO</h2>
+      <PageGuide
+        pageKey="torneio"
+        icone="🏆"
+        titulo="Torneios"
+        texto="Em breve! Participe de torneios semanais para competir com outros jogadores e ganhar prêmios exclusivos."
+      />
       <div style={{
         textAlign: 'center',
         padding: '60px 20px',

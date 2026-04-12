@@ -3,6 +3,7 @@ import { useGame } from '../context/GameContext'
 import { Link } from 'react-router-dom'
 import API from '../api'
 import { fmt, gerarDescricaoItem } from '../utils'
+import PageGuide from '../components/PageGuide'
 
 // Componente do botão com timer (motorzinho local para o tempo do Go)
 function BotaoCooldown({ ts, onUsar }) {
@@ -172,6 +173,12 @@ export default function Perfil() {
 
   return (
     <div className="pf" data-tutorial="perfil-area">
+      <PageGuide
+        pageKey="perfil"
+        icone="👤"
+        titulo="Painel do Jogador"
+        texto="Aqui você vê tudo: atributos, equipamentos, tarefas diárias e conquistas. Equipe itens para ficar mais forte e complete tarefas para ganhar recompensas!"
+      />
 
       {/* === CARD DO JOGADOR === */}
       <div className={`pf-hero pf-elo-${bordaTier}`}>

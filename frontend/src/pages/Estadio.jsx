@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useGame } from '../context/GameContext'
 import API from '../api'
 import { fmt } from '../utils'
+import PageGuide from '../components/PageGuide'
 
 export default function Estadio() {
   const { jogador, setJogador, jogadorID, mostrarNotificacao } = useGame()
@@ -73,6 +74,12 @@ export default function Estadio() {
   return (
     <>
       <h2 className="page-title">⚔️ ESTÁDIO</h2>
+      <PageGuide
+        pageKey="estadio"
+        icone="⚔️"
+        titulo="Arena de Combate"
+        texto="Desafie outros jogadores! Cada combate gasta Vitalidade. Vencer dá Fama e você rouba dinheiro do adversário. Se perder, perde Saúde."
+      />
       <p className="subtitle">Desafie outros jogadores em batalhas épicas. Vença para ganhar fama e dinheiro!</p>
 
       {saudeBaixa && (
