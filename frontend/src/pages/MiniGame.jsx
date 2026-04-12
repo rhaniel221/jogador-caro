@@ -17,6 +17,7 @@ export default function MiniGame() {
   const [score, setScore] = useState(0)
   const [moves, setMoves] = useState(25)
   const [combo, setCombo] = useState(0)
+  const [maxCombo, setMaxCombo] = useState(0)
   const [resultado, setResultado] = useState(null)
   const [podeJogar, setPodeJogar] = useState(null)
   const [cooldownSeg, setCooldownSeg] = useState(0)
@@ -63,6 +64,7 @@ export default function MiniGame() {
     setScore(0)
     setMoves(25)
     setCombo(0)
+    setMaxCombo(0)
     setShowRewards(false)
 
     setTimeout(() => {
@@ -83,20 +85,21 @@ export default function MiniGame() {
 
       gameRef.current.events.on('ready', () => {
         const scene = gameRef.current.scene.getScene('Match3Scene')
-        scene.onUpdate = ({ score: s, moves: m, combo: c }) => {
-          setScore(s); setMoves(m); setCombo(c)
+        scene.onUpdate = ({ score: s, moves: m, combo: c, maxCombo: mc }) => {
+          setScore(s); setMoves(m); setCombo(c); setMaxCombo(mc)
         }
         scene.onGameOver = async (fs) => {
+          const mc = gameRef.current?.scene?.getScene('Match3Scene')?.maxCombo || 0
           if (gameRef.current) { gameRef.current.destroy(true); gameRef.current = null }
-          await finalizarJogo(fs)
+          await finalizarJogo(fs, mc)
         }
       })
     }, 100)
   }
 
-  async function finalizarJogo(finalScore) {
+  async function finalizarJogo(finalScore, finalMaxCombo) {
     try {
-      const res = await API.post('/api/minigame/resultado', { jogador_id: jogadorID, score: finalScore })
+      const res = await API.post('/api/minigame/resultado', { jogador_id: jogadorID, score: finalScore, max_combo: finalMaxCombo || 0 })
       if (res.sucesso) {
         if (res.jogador) setJogador(res.jogador)
         setResultado(res)

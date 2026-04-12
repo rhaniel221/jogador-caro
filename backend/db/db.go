@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"math/rand"
+	"strings"
 
 	_ "github.com/lib/pq"
 )
@@ -918,24 +919,48 @@ func seedCatalogos() {
 			f.id, f.nome, f.descricao, f.preco, f.famaGanha, f.icone, f.categoria, f.limite)
 	}
 
-	// Seed cat_tasks_diarias
+	// Seed cat_tasks_diarias — pool grande pra rotação diária
 	type taskSeed struct {
 		id, nome, descricao, tipo, dificuldade string
 		objetivo, recompensaDinheiro, recompensaXP, recompensaFama int
 	}
 	tasks := []taskSeed{
-		{"t_trabalhos_3", "Suado no Treino", "Faça 3 trabalhos hoje", "trabalhos", "facil", 3, 200, 1, 5},
-		{"t_trabalhos_8", "Jornada Completa", "Faça 8 trabalhos hoje", "trabalhos", "medio", 8, 600, 1, 15},
-		{"t_dinheiro_500", "Ganhador do Dia", "Ganhe R$ 500 trabalhando", "ganho_dinheiro", "facil", 500, 300, 1, 5},
-		{"t_dinheiro_3000", "Empresário de Si Mesmo", "Ganhe R$ 3.000 trabalhando", "ganho_dinheiro", "medio", 3000, 1000, 1, 20},
-		{"t_combate_1", "Hora do Duelo", "Participe de 1 combate", "combates", "facil", 1, 400, 1, 25},
-		{"t_combate_3", "Guerreiro", "Participe de 3 combates", "combates", "dificil", 3, 1500, 1, 80},
+		// Trabalhos
+		{"t_trabalhos_3", "Suado no Treino", "Faça 3 trabalhos hoje", "trabalhos", "facil", 3, 200, 0, 5},
+		{"t_trabalhos_5", "Dedicação Total", "Faça 5 trabalhos hoje", "trabalhos", "facil", 5, 350, 0, 8},
+		{"t_trabalhos_8", "Jornada Completa", "Faça 8 trabalhos hoje", "trabalhos", "medio", 8, 600, 0, 15},
+		{"t_trabalhos_12", "Workaholic", "Faça 12 trabalhos hoje", "trabalhos", "dificil", 12, 1000, 0, 25},
+		// Ganho de dinheiro
+		{"t_dinheiro_500", "Ganhador do Dia", "Ganhe R$ 500 trabalhando", "ganho_dinheiro", "facil", 500, 300, 0, 5},
+		{"t_dinheiro_1500", "Bolso Cheio", "Ganhe R$ 1.500 trabalhando", "ganho_dinheiro", "medio", 1500, 600, 0, 12},
+		{"t_dinheiro_3000", "Empresário de Si Mesmo", "Ganhe R$ 3.000 trabalhando", "ganho_dinheiro", "medio", 3000, 1000, 0, 20},
+		{"t_dinheiro_6000", "Magnata", "Ganhe R$ 6.000 trabalhando", "ganho_dinheiro", "dificil", 6000, 2000, 0, 35},
+		// Combates PvP
+		{"t_combate_1", "Hora do Duelo", "Participe de 1 combate", "combates", "facil", 1, 400, 0, 25},
+		{"t_combate_3", "Guerreiro", "Participe de 3 combates", "combates", "medio", 3, 1000, 0, 50},
+		{"t_vitorias_1", "Vitória Diária", "Vença 1 combate PvP", "vitorias_pvp", "facil", 1, 500, 0, 30},
+		{"t_vitorias_2", "Imbatível", "Vença 2 combates PvP", "vitorias_pvp", "medio", 2, 1200, 0, 60},
+		// Minigame
+		{"t_minigame_1", "Hora do Match-3", "Jogue 1 partida do minigame", "minigame", "facil", 1, 200, 0, 10},
+		// Pênalti
+		{"t_penalti_1", "Cobrador Oficial", "Jogue 1 disputa de pênaltis", "penaltis", "facil", 1, 300, 0, 15},
+		{"t_penalti_2", "Artilheiro", "Jogue 2 disputas de pênaltis", "penaltis", "medio", 2, 700, 0, 25},
+		// Coleta de casa
+		{"t_coleta_1", "Dono de Casa", "Colete recompensas da casa 1 vez", "coletas", "facil", 1, 150, 0, 5},
+		{"t_coleta_2", "Administrador", "Colete recompensas da casa 2 vezes", "coletas", "medio", 2, 350, 0, 10},
 	}
+	// Limpa tasks antigas que foram removidas do pool
+	taskIDs := make([]string, len(tasks))
+	for i, t := range tasks {
+		taskIDs[i] = "'" + t.id + "'"
+	}
+	Conn.Exec(`DELETE FROM cat_tasks_diarias WHERE id NOT IN (` + strings.Join(taskIDs, ",") + `)`)
 	for _, t := range tasks {
 		Conn.Exec(`INSERT INTO cat_tasks_diarias
 			(id, nome, descricao, tipo, objetivo, recompensa_dinheiro, recompensa_xp, recompensa_fama, dificuldade)
 			VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
-			ON CONFLICT (id) DO NOTHING`,
+			ON CONFLICT (id) DO UPDATE SET
+				nome=$2, descricao=$3, tipo=$4, objetivo=$5, recompensa_dinheiro=$6, recompensa_xp=$7, recompensa_fama=$8, dificuldade=$9`,
 			t.id, t.nome, t.descricao, t.tipo, t.objetivo, t.recompensaDinheiro, t.recompensaXP, t.recompensaFama, t.dificuldade)
 	}
 

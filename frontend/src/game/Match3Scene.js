@@ -16,6 +16,7 @@ export default class Match3Scene extends Phaser.Scene {
     this.score = 0
     this.moves = 25
     this.combo = 0
+    this.maxCombo = 0
     this.onUpdate = null
     this.onGameOver = null
   }
@@ -255,6 +256,7 @@ export default class Match3Scene extends Phaser.Scene {
     }
 
     this.combo++
+    if (this.combo > this.maxCombo) this.maxCombo = this.combo
     const pts = matches.size * 10 * this.combo
     this.score += pts
     this.emitUpdate()
@@ -388,6 +390,6 @@ export default class Match3Scene extends Phaser.Scene {
   }
 
   emitUpdate() {
-    if (this.onUpdate) this.onUpdate({ score: this.score, moves: this.moves, combo: this.combo })
+    if (this.onUpdate) this.onUpdate({ score: this.score, moves: this.moves, combo: this.combo, maxCombo: this.maxCombo })
   }
 }

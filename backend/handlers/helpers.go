@@ -572,6 +572,70 @@ func atualizarProgressoTask(jogadorID int, tipo string, quantidade int) {
 	}
 }
 
+// getTasksDoDia retorna IDs das 5 tarefas diárias selecionadas pra data.
+// Usa hash da data como seed pra garantir que todos vejam as mesmas tasks no dia,
+// mas variando todo dia. Pega todas as tasks do catálogo, embaralha deterministicamente
+// e pega as 5 primeiras.
+func getTasksDoDia(dataStr string) []string {
+	var allIDs []string
+	rows, err := db.Conn.Query(`SELECT id FROM cat_tasks_diarias ORDER BY id`)
+	if err != nil {
+		return nil
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var id string
+		rows.Scan(&id)
+		allIDs = append(allIDs, id)
+	}
+	if len(allIDs) == 0 {
+		return nil
+	}
+
+	// Seed determinístico baseado na data
+	var seed int64
+	for _, c := range dataStr {
+		seed = seed*31 + int64(c)
+	}
+	rng := rand.New(rand.NewSource(seed))
+
+	// Shuffle determinístico
+	for i := len(allIDs) - 1; i > 0; i-- {
+		j := rng.Intn(i + 1)
+		allIDs[i], allIDs[j] = allIDs[j], allIDs[i]
+	}
+
+	// Seleciona 5 (ou menos se pool for menor)
+	n := 5
+	if len(allIDs) < n {
+		n = len(allIDs)
+	}
+	return allIDs[:n]
+}
+
+// calcXPTaskDiaria calcula XP de recompensa proporcional ao nível do jogador.
+// Não é muito, mas o suficiente pra motivar fazer as diárias.
+// ~3-5% do XP necessário pro próximo nível por task (fácil=3%, médio=4%, difícil=5%)
+func calcXPTaskDiaria(nivel int, dificuldade string) int {
+	xpProximo := calcularXPProximo(nivel)
+	var pct float64
+	switch dificuldade {
+	case "facil":
+		pct = 0.03
+	case "medio":
+		pct = 0.04
+	case "dificil":
+		pct = 0.05
+	default:
+		pct = 0.03
+	}
+	xp := int(float64(xpProximo) * pct)
+	if xp < 1 {
+		xp = 1
+	}
+	return xp
+}
+
 // maestriaThresholds são os limites de vezes que definem cada nível de maestria
 var maestriaThresholds = [5]int{10, 25, 50, 100, 200}
 

@@ -971,6 +971,7 @@ func HandleCombate(w http.ResponseWriter, r *http.Request) {
 	// Combined missions: PVP_WIN (only on win)
 	if vencedorID == atacante.ID {
 		updateCombinedProgress(atacante.ID, "PVP_WIN", 1)
+		atualizarProgressoTask(atacante.ID, "vitorias_pvp", 1)
 	}
 
 	atualizado, _ := getJogador(atacante.ID)
@@ -1680,26 +1681,35 @@ func HandleTasksDiarias(w http.ResponseWriter, r *http.Request) {
 		ErrResp(w, 400, "ID inválido")
 		return
 	}
+
+	jogador, err := getJogador(jogadorID)
+	if err != nil {
+		ErrResp(w, 404, "Jogador não encontrado")
+		return
+	}
+
 	hoje := hojeJogo()
+	tasksSelecionadas := getTasksDoDia(hoje)
+
 	type TaskStatus struct {
 		TaskDiaria
 		Progresso  int  `json:"progresso"`
 		Completada bool `json:"completada"`
 	}
 	var resultado []TaskStatus
-	taskRows, err := db.Conn.Query(`SELECT id, nome, descricao, tipo, objetivo, recompensa_dinheiro, recompensa_xp, recompensa_fama, dificuldade FROM cat_tasks_diarias`)
-	if err != nil {
-		ErrResp(w, 500, "Erro ao buscar tasks")
-		return
-	}
-	defer taskRows.Close()
-	for taskRows.Next() {
+	for _, taskID := range tasksSelecionadas {
 		var task TaskDiaria
-		taskRows.Scan(&task.ID, &task.Nome, &task.Descricao, &task.Tipo, &task.Objetivo, &task.RecompensaDinheiro, &task.RecompensaXP, &task.RecompensaFama, &task.Dificuldade)
+		err := db.Conn.QueryRow(`SELECT id, nome, descricao, tipo, objetivo, recompensa_dinheiro, recompensa_xp, recompensa_fama, dificuldade FROM cat_tasks_diarias WHERE id=$1`, taskID).Scan(
+			&task.ID, &task.Nome, &task.Descricao, &task.Tipo, &task.Objetivo, &task.RecompensaDinheiro, &task.RecompensaXP, &task.RecompensaFama, &task.Dificuldade)
+		if err != nil {
+			continue
+		}
 		var progresso int
 		var completada bool
 		db.Conn.QueryRow(`SELECT progresso, completada FROM tasks_progresso WHERE jogador_id=$1 AND task_id=$2 AND data=$3`,
 			jogadorID, task.ID, hoje).Scan(&progresso, &completada)
+		// XP proporcional ao nível do jogador
+		task.RecompensaXP = calcXPTaskDiaria(jogador.Nivel, task.Dificuldade)
 		resultado = append(resultado, TaskStatus{task, progresso, completada})
 	}
 	JsonResp(w, 200, resultado)
@@ -1740,8 +1750,10 @@ func HandleCompletarTask(w http.ResponseWriter, r *http.Request) {
 		ErrResp(w, 404, "Jogador não encontrado")
 		return
 	}
+	// XP proporcional ao nível do jogador
+	xpRecompensa := calcXPTaskDiaria(jogador.Nivel, task.Dificuldade)
 	jogador.DinheiroMao += task.RecompensaDinheiro
-	jogador.XP += task.RecompensaXP
+	jogador.XP += xpRecompensa
 	jogador.PontosFama += task.RecompensaFama
 	levelUp := false
 	novoNivel := jogador.Nivel
@@ -1762,7 +1774,7 @@ func HandleCompletarTask(w http.ResponseWriter, r *http.Request) {
 	saveJogador(jogador)
 	JsonResp(w, 200, map[string]any{
 		"sucesso":    true,
-		"mensagem":   fmt.Sprintf("🎉 Task concluída! +R$%d, +%dXP, +%d Fama", task.RecompensaDinheiro, task.RecompensaXP, task.RecompensaFama),
+		"mensagem":   fmt.Sprintf("🎉 Task concluída! +R$%d, +%dXP, +%d Fama", task.RecompensaDinheiro, xpRecompensa, task.RecompensaFama),
 		"jogador":    jogador,
 		"level_up":   levelUp,
 		"novo_nivel": novoNivel,
@@ -2988,6 +3000,7 @@ func HandleResponderDesafio1v1(w http.ResponseWriter, r *http.Request) {
 
 	// Skill missions: penalti acertos (desafiante = kicker, gols = goals scored)
 	updateSkillProgress(desafianteID, "PENALTI_ACERTOS", gols)
+	atualizarProgressoTask(desafianteID, "penaltis", 1)
 
 	// Combined missions: PENALTI_GOL
 	if gols > 0 {
@@ -3211,6 +3224,7 @@ func HandleMinigameResultado(w http.ResponseWriter, r *http.Request) {
 
 	// Combined missions: MINIGAME_PLAY
 	updateCombinedProgress(req.JogadorID, "MINIGAME_PLAY", 1)
+	atualizarProgressoTask(req.JogadorID, "minigame", 1)
 
 	atualizado, _ := getJogador(req.JogadorID)
 	JsonResp(w, 200, map[string]any{
@@ -4151,6 +4165,7 @@ func HandleCasaColetar(w http.ResponseWriter, r *http.Request) {
 
 	// Combined missions: CASA_COLETA
 	updateCombinedProgress(req.JogadorID, "CASA_COLETA", 1)
+	atualizarProgressoTask(req.JogadorID, "coletas", 1)
 
 	atualizado, _ := getJogador(req.JogadorID)
 	msg := fmt.Sprintf("Coletou +%d XP e +%d Energia!", xpGanho, enGanho)
