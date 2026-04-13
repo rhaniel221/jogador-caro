@@ -33,7 +33,7 @@ const STEPS = [
   // ============================================
   { id: 20, tipo: 'info', page: null, target: '[data-tutorial="stat-energia"]',
     titulo: '⚡ Sua Energia Acabou!',
-    texto: 'Parabéns por completar a história! Agora você é um profissional. Mas sua energia está baixa... Vamos à Loja comprar um suprimento!' },
+    texto: 'Você ficou sem energia e não consegue trabalhar! Mas calma, tem solução. Vamos à Loja comprar um item que recupera energia!' },
 
   { id: 21, tipo: 'nav', page: null, target: '[data-tutorial="nav-loja"]', destino: '/loja',
     titulo: '🛒 Vá à Loja!',
@@ -86,21 +86,23 @@ export function TutorialProvider({ children }) {
 
   useEffect(() => { stepRef.current = step }, [step])
 
-  // Ativa tutorial de energia quando dormindo (step 5) e nível >= 4
+  // Ativa tutorial de energia quando dormindo (step 5), nível 4+ e energia baixa
+  // O jogador está no nível 4, trabalhou até acabar a energia, não consegue mais trabalhar
   useEffect(() => {
     if (step !== 5 || !jogador) return
-    if (jogador.nivel >= 4 && location.pathname === '/') {
-      // Delay pra dar tempo da página carregar
-      const timer = setTimeout(() => {
-        setStep(20)
-        stepRef.current = 20
-        if (jogadorID) {
-          API.post('/api/tutorial-step', { jogador_id: jogadorID, step: 20 })
-        }
-      }, 1500)
-      return () => clearTimeout(timer)
-    }
-  }, [step, jogador?.nivel, location.pathname, jogadorID])
+    if (jogador.nivel < 4 || location.pathname !== '/') return
+    // Energia baixa = não consegue fazer nenhum trabalho (custo mínimo ~2-3)
+    if (jogador.energia > 3) return
+    // Delay pra dar tempo da página carregar e o jogador perceber que não pode trabalhar
+    const timer = setTimeout(() => {
+      setStep(20)
+      stepRef.current = 20
+      if (jogadorID) {
+        API.post('/api/tutorial-step', { jogador_id: jogadorID, step: 20 })
+      }
+    }, 2000)
+    return () => clearTimeout(timer)
+  }, [step, jogador?.nivel, jogador?.energia, location.pathname, jogadorID])
 
   const currentStep = STEPS.find(s => s.id === step) || null
   const isActive = step > 0 && step !== 5 && currentStep !== null
