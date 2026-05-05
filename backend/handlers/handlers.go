@@ -292,6 +292,17 @@ func HandleTrabalhar(w http.ResponseWriter, r *http.Request) {
 		ganhoXP += bonusFamaXP
 	}
 
+	// Bônus/penalidade de moral (±20% baseado no moral do jogador)
+	multMoral := moralMultiplier(jogador.Moral)
+	ganhoXP = int(float64(ganhoXP) * multMoral)
+	ganho = int(float64(ganho) * multMoral)
+	if ganhoXP < 1 {
+		ganhoXP = 1
+	}
+	if ganho < 1 {
+		ganho = 1
+	}
+
 	jogador.Energia -= custoEnergia
 	db.Conn.Exec("UPDATE jogadores SET energia_gasta_total = COALESCE(energia_gasta_total, 0) + $1 WHERE id=$2", custoEnergia, req.JogadorID)
 	jogador.DinheiroMao += ganho
@@ -337,6 +348,14 @@ func HandleTrabalhar(w http.ResponseWriter, r *http.Request) {
 
 	// Combined missions: TRABALHO
 	updateCombinedProgress(req.JogadorID, "TRABALHO", 1)
+
+	// Moral: +3 por trabalho (motivação de trabalhar)
+	novoMoral := ajustarMoral(req.JogadorID, 3)
+	jogador.Moral = novoMoral
+
+	// Objetivos do clube
+	trackClubeObjetivo(req.JogadorID, "trabalhos", 1)
+	trackClubeObjetivo(req.JogadorID, "dinheiro_trabalho", ganho)
 
 	jogador.ProximaEnergiaEm = regenerarEnergia(jogador)
 
@@ -3007,6 +3026,21 @@ func HandleResponderDesafio1v1(w http.ResponseWriter, r *http.Request) {
 		updateCombinedProgress(desafianteID, "PENALTI_GOL", gols)
 	}
 
+	// Nota por partida
+	notaDesafiante := calcNotaPartida(gols)    // atacante: gols marcados
+	notaDesafiado := calcNotaPartida(defesas)  // goleiro: defesas feitas
+
+	// Moral: ajustar baseado na nota da partida
+	ajustarMoral(desafianteID, deltaMoralPorNota(notaDesafiante))
+	ajustarMoral(desafiadoID, deltaMoralPorNota(notaDesafiado))
+
+	// Objetivos do clube: vitorias_1v1
+	if vencedorID == desafianteID {
+		trackClubeObjetivo(desafianteID, "vitorias_1v1", 1)
+	} else if vencedorID == desafiadoID {
+		trackClubeObjetivo(desafiadoID, "vitorias_1v1", 1)
+	}
+
 	// Aplica XP pra ambos
 	desafiante.XP += xpDesafiante
 	for desafiante.XP >= desafiante.XPProximo {
@@ -3048,9 +3082,10 @@ func HandleResponderDesafio1v1(w http.ResponseWriter, r *http.Request) {
 			VencedorID: vencedorID, Status: "concluido",
 			NomeDesafiante: desafiante.Nome, NomeDesafiado: desafiado.Nome,
 		},
-		Jogador:   atualizado,
-		LevelUp:   levelUp,
-		NovoNivel: novoNivel,
+		Jogador:     atualizado,
+		LevelUp:     levelUp,
+		NovoNivel:   novoNivel,
+		NotaPartida: notaDesafiado,
 	})
 }
 
@@ -5129,6 +5164,154 @@ func HandleEscolherCamisa(w http.ResponseWriter, r *http.Request) {
 		"sucesso":  true,
 		"mensagem": fmt.Sprintf("Camisa %d escolhida!", req.Numero),
 		"jogador":  jogador,
+	})
+}
+
+// ========================
+// OBJETIVOS DO CLUBE
+// ========================
+
+// GET /api/clube/objetivos/{jogador_id}
+func HandleClubeObjetivos(w http.ResponseWriter, r *http.Request) {
+	parts := strings.Split(r.URL.Path, "/")
+	jogadorID, err := strconv.Atoi(parts[len(parts)-1])
+	if err != nil {
+		ErrResp(w, 400, "ID inválido")
+		return
+	}
+
+	mes := mesAtual()
+
+	rows, err := db.Conn.Query(`
+		SELECT o.id, o.nome, o.descricao, o.tipo, o.objetivo, o.recompensa_dinheiro, o.recompensa_xp, o.recompensa_moedas, o.icone,
+		       COALESCE(p.progresso, 0), COALESCE(p.coletado, FALSE)
+		FROM clube_objetivos o
+		LEFT JOIN clube_objetivos_progresso p
+		       ON p.objetivo_id = o.id AND p.jogador_id = $1 AND p.mes = $2
+		ORDER BY o.id`, jogadorID, mes)
+	if err != nil {
+		ErrResp(w, 500, "Erro ao buscar objetivos")
+		return
+	}
+	defer rows.Close()
+
+	var lista []ClubeObjetivo
+	for rows.Next() {
+		var obj ClubeObjetivo
+		rows.Scan(&obj.ID, &obj.Nome, &obj.Descricao, &obj.Tipo, &obj.Objetivo,
+			&obj.RecompensaDinheiro, &obj.RecompensaXP, &obj.RecompensaMoedas, &obj.Icone,
+			&obj.Progresso, &obj.Coletado)
+		lista = append(lista, obj)
+	}
+	if lista == nil {
+		lista = []ClubeObjetivo{}
+	}
+
+	JsonResp(w, 200, map[string]interface{}{
+		"sucesso":   true,
+		"objetivos": lista,
+		"mes":       mes,
+	})
+}
+
+// POST /api/clube/objetivos/coletar
+func HandleClubeObjetivosColetar(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		ErrResp(w, 405, "Método não permitido")
+		return
+	}
+
+	var req struct {
+		JogadorID  int    `json:"jogador_id"`
+		ObjetivoID string `json:"objetivo_id"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		ErrResp(w, 400, "Dados inválidos")
+		return
+	}
+
+	mes := mesAtual()
+
+	// Busca objetivo
+	var obj ClubeObjetivo
+	err := db.Conn.QueryRow(`SELECT id, nome, objetivo, recompensa_dinheiro, recompensa_xp, recompensa_moedas, icone
+		FROM clube_objetivos WHERE id=$1`, req.ObjetivoID).Scan(
+		&obj.ID, &obj.Nome, &obj.Objetivo, &obj.RecompensaDinheiro, &obj.RecompensaXP, &obj.RecompensaMoedas, &obj.Icone)
+	if err != nil {
+		ErrResp(w, 404, "Objetivo não encontrado")
+		return
+	}
+
+	// Busca progresso
+	var progresso int
+	var coletado bool
+	db.Conn.QueryRow(`SELECT COALESCE(progresso,0), COALESCE(coletado,FALSE)
+		FROM clube_objetivos_progresso
+		WHERE jogador_id=$1 AND objetivo_id=$2 AND mes=$3`,
+		req.JogadorID, req.ObjetivoID, mes).Scan(&progresso, &coletado)
+
+	if coletado {
+		ErrResp(w, 400, "Recompensa já coletada este mês!")
+		return
+	}
+	if progresso < obj.Objetivo {
+		ErrResp(w, 400, fmt.Sprintf("Objetivo não concluído! (%d/%d)", progresso, obj.Objetivo))
+		return
+	}
+
+	// Marca como coletado
+	db.Conn.Exec(`INSERT INTO clube_objetivos_progresso (jogador_id, objetivo_id, mes, progresso, coletado)
+		VALUES ($1,$2,$3,$4,TRUE)
+		ON CONFLICT (jogador_id, objetivo_id, mes) DO UPDATE SET coletado=TRUE`,
+		req.JogadorID, req.ObjetivoID, mes, progresso)
+
+	// Dá recompensa
+	jogador, err := getJogador(req.JogadorID)
+	if err != nil {
+		ErrResp(w, 404, "Jogador não encontrado")
+		return
+	}
+
+	jogador.DinheiroMao += obj.RecompensaDinheiro
+	jogador.XP += obj.RecompensaXP
+	jogador.Moedas += obj.RecompensaMoedas
+
+	// Check level up
+	levelUp := false
+	novoNivel := jogador.Nivel
+	for jogador.XP >= jogador.XPProximo {
+		jogador.XP -= jogador.XPProximo
+		jogador.Nivel++
+		jogador.XPProximo = calcularXPProximo(jogador.Nivel)
+		jogador.EnergiaMax = calcEnergiaMaxBase(jogador.Nivel)
+		jogador.Energia = jogador.EnergiaMax
+		levelUp = true
+		novoNivel = jogador.Nivel
+	}
+
+	// Bônus de moral por completar objetivo
+	ajustarMoral(req.JogadorID, 10)
+
+	saveJogador(jogador)
+	atualizado, _ := getJogador(req.JogadorID)
+
+	partes := []string{}
+	if obj.RecompensaDinheiro > 0 {
+		partes = append(partes, fmt.Sprintf("R$ %d", obj.RecompensaDinheiro))
+	}
+	if obj.RecompensaXP > 0 {
+		partes = append(partes, fmt.Sprintf("+%d XP", obj.RecompensaXP))
+	}
+	if obj.RecompensaMoedas > 0 {
+		partes = append(partes, fmt.Sprintf("+%d moedas", obj.RecompensaMoedas))
+	}
+
+	JsonResp(w, 200, map[string]interface{}{
+		"sucesso":   true,
+		"mensagem":  fmt.Sprintf("%s %s! Recompensa: %s", obj.Icone, obj.Nome, strings.Join(partes, " · ")),
+		"jogador":   atualizado,
+		"level_up":  levelUp,
+		"novo_nivel": novoNivel,
 	})
 }
 

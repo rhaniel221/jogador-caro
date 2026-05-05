@@ -289,6 +289,14 @@ export default function Perfil() {
       {/* === CAMPINHO === */}
       <CampinhoSection jogadorID={jogadorID} jogador={jogador} setJogador={setJogador} mostrarNotificacao={mostrarNotificacao} setLevelUp={setLevelUp} />
 
+      {/* === MORAL === */}
+      <MoralSection jogador={jogador} jogadorID={jogadorID} setJogador={setJogador} mostrarNotificacao={mostrarNotificacao} />
+
+      {/* === OBJETIVOS DO CLUBE === */}
+      {jogador.clube_id > 0 && (
+        <ClubeObjetivosSection jogadorID={jogadorID} setJogador={setJogador} mostrarNotificacao={mostrarNotificacao} setLevelUp={setLevelUp} />
+      )}
+
       {/* === FAMA & PATROCÍNIO === */}
       <FamaCard jogadorID={jogadorID} jogador={jogador} setJogador={setJogador} mostrarNotificacao={mostrarNotificacao} />
 
@@ -813,6 +821,136 @@ function PatrimonioSection({ jogadorID }) {
           </div>
         )
       })}
+    </div>
+  )
+}
+
+// ========================
+// MORAL SECTION
+// ========================
+
+function getMoralInfo(moral) {
+  if (moral >= 81) return { label: 'Em Chamas!', cor: '#f39c12', bg: '#fdf8e8', border: '#f0c040', emoji: '🔥' }
+  if (moral >= 61) return { label: 'Motivado', cor: '#27ae60', bg: '#eafaf1', border: '#82e0aa', emoji: '😊' }
+  if (moral >= 31) return { label: 'Normal', cor: '#2980b9', bg: '#eaf4fd', border: '#85c1e9', emoji: '😐' }
+  return { label: 'Desmotivado', cor: '#e74c3c', bg: '#fdecea', border: '#f1948a', emoji: '😞' }
+}
+
+function MoralSection({ jogador, jogadorID, mostrarNotificacao }) {
+  if (!jogador) return null
+  const moral = jogador.moral ?? 70
+  const info = getMoralInfo(moral)
+  const mult = (0.80 + (moral / 100) * 0.40).toFixed(2)
+  const pct = moral
+
+  return (
+    <div className="pf-section">
+      <div className="pf-section-header">
+        <h3>🧠 MORAL</h3>
+        <span className="pf-section-badge" style={{ color: info.cor }}>{info.emoji} {info.label}</span>
+      </div>
+      <div style={{
+        background: info.bg, border: `2px solid ${info.border}`, borderRadius: 12, padding: '12px 16px',
+      }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+          <span style={{ fontSize: 28, fontWeight: 900, color: info.cor }}>{moral}</span>
+          <span style={{ fontSize: 12, fontWeight: 700, color: '#556' }}>
+            Multiplicador de ganhos: <strong style={{ color: info.cor }}>{mult}x</strong>
+          </span>
+        </div>
+        <div style={{ background: '#e0e0e0', borderRadius: 8, height: 12, overflow: 'hidden' }}>
+          <div style={{ width: `${pct}%`, height: '100%', background: info.cor, borderRadius: 8, transition: 'width 0.4s' }} />
+        </div>
+        <div style={{ marginTop: 8, fontSize: 11, color: '#777', lineHeight: 1.5 }}>
+          Sobe ao trabalhar (+3) e vencer desafios. Cai em derrotas e notas baixas.
+          {moral < 31 && <span style={{ color: '#e74c3c', fontWeight: 900 }}> Moral baixo! Seus ganhos estao reduzidos.</span>}
+          {moral >= 81 && <span style={{ color: '#f39c12', fontWeight: 900 }}> Moral maximo! Ganhos aumentados em 20%!</span>}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ========================
+// OBJETIVOS DO CLUBE
+// ========================
+
+function ClubeObjetivosSection({ jogadorID, setJogador, mostrarNotificacao, setLevelUp }) {
+  const [objetivos, setObjetivos] = useState([])
+  const [loading, setLoading] = useState(null)
+
+  const carregar = useCallback(() => {
+    if (!jogadorID) return
+    API.get('/api/clube/objetivos/' + jogadorID).then(res => {
+      setObjetivos(res.objetivos || [])
+    }).catch(() => {})
+  }, [jogadorID])
+
+  useEffect(() => { carregar() }, [carregar])
+
+  async function coletar(objetivoID) {
+    setLoading(objetivoID)
+    try {
+      const res = await API.post('/api/clube/objetivos/coletar', { jogador_id: jogadorID, objetivo_id: objetivoID })
+      if (res.sucesso) {
+        if (res.jogador) setJogador(res.jogador)
+        mostrarNotificacao(res.mensagem, 'sucesso')
+        if (res.level_up) setLevelUp(res.novo_nivel)
+        carregar()
+      } else {
+        mostrarNotificacao(res.mensagem, 'erro')
+      }
+    } catch { mostrarNotificacao('Erro de conexao', 'erro') }
+    setLoading(null)
+  }
+
+  if (!objetivos.length) return null
+
+  return (
+    <div className="pf-section">
+      <div className="pf-section-header"><h3>🏆 OBJETIVOS DO CLUBE</h3></div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+        {objetivos.map(obj => {
+          const pct = Math.min(100, Math.round((obj.progresso / obj.objetivo) * 100))
+          const completo = obj.progresso >= obj.objetivo
+          const recompensas = []
+          if (obj.recompensa_dinheiro > 0) recompensas.push(`R$ ${fmt(obj.recompensa_dinheiro)}`)
+          if (obj.recompensa_xp > 0) recompensas.push(`+${obj.recompensa_xp} XP`)
+          if (obj.recompensa_moedas > 0) recompensas.push(`+${obj.recompensa_moedas} moedas`)
+
+          return (
+            <div key={obj.id} style={{
+              background: obj.coletado ? '#f5f5f5' : completo ? '#eafaf1' : '#f9f9f9',
+              border: `2px solid ${obj.coletado ? '#ccc' : completo ? '#82e0aa' : '#ddd'}`,
+              borderRadius: 12, padding: '12px 14px', opacity: obj.coletado ? 0.6 : 1
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
+                <div>
+                  <span style={{ fontSize: 18 }}>{obj.icone}</span>
+                  <span style={{ fontWeight: 900, fontSize: 13, marginLeft: 6 }}>{obj.nome}</span>
+                </div>
+                <span style={{ fontSize: 11, color: '#888', whiteSpace: 'nowrap' }}>
+                  {obj.progresso}/{obj.objetivo}
+                </span>
+              </div>
+              <div style={{ fontSize: 11, color: '#666', marginBottom: 8 }}>{obj.descricao}</div>
+              <div style={{ background: '#e0e0e0', borderRadius: 6, height: 8, overflow: 'hidden', marginBottom: 8 }}>
+                <div style={{ width: `${pct}%`, height: '100%', background: completo ? '#27ae60' : '#2980b9', borderRadius: 6, transition: 'width 0.4s' }} />
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontSize: 11, fontWeight: 700, color: '#27ae60' }}>{recompensas.join(' · ')}</span>
+                {completo && !obj.coletado && (
+                  <button className="btn-work btn-verde btn-small" onClick={() => coletar(obj.id)} disabled={loading === obj.id}>
+                    {loading === obj.id ? '...' : 'Coletar'}
+                  </button>
+                )}
+                {obj.coletado && <span style={{ fontSize: 11, color: '#27ae60', fontWeight: 700 }}>Coletado</span>}
+              </div>
+            </div>
+          )
+        })}
+      </div>
+      <div style={{ fontSize: 11, color: '#888', marginTop: 8, textAlign: 'center' }}>Objetivos renovam todo mes</div>
     </div>
   )
 }

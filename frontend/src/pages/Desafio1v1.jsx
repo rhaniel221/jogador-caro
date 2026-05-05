@@ -49,6 +49,39 @@ function ResultadoChute({ num, chute, defesa, gol }) {
   )
 }
 
+function NotaPartidaCard({ nota, ganhei }) {
+  const getNotaInfo = (n) => {
+    if (n >= 9.0) return { label: 'Lendário!', cor: '#f39c12', emoji: '🌟' }
+    if (n >= 8.0) return { label: 'Excelente!', cor: '#27ae60', emoji: '🏆' }
+    if (n >= 7.0) return { label: 'Boa Partida', cor: '#2980b9', emoji: '👏' }
+    if (n >= 6.0) return { label: 'Regular', cor: '#8e44ad', emoji: '😐' }
+    if (n >= 5.0) return { label: 'Fraco', cor: '#e67e22', emoji: '😕' }
+    return { label: 'Horrível', cor: '#e74c3c', emoji: '😞' }
+  }
+  const info = getNotaInfo(nota)
+  return (
+    <div style={{
+      background: `linear-gradient(135deg, ${info.cor}22, ${info.cor}11)`,
+      border: `3px solid ${info.cor}`,
+      borderRadius: 16, padding: '18px 20px', marginBottom: 12,
+      textAlign: 'center'
+    }}>
+      <div style={{ fontSize: 13, fontWeight: 700, color: '#556', marginBottom: 4 }}>
+        {info.emoji} SUA NOTA NA PARTIDA
+      </div>
+      <div style={{ fontSize: 56, fontWeight: 900, color: info.cor, lineHeight: 1 }}>
+        {nota.toFixed(1)}
+      </div>
+      <div style={{ fontSize: 16, fontWeight: 900, color: info.cor, marginTop: 4 }}>
+        {info.label}
+      </div>
+      <div style={{ fontSize: 11, color: '#777', marginTop: 6 }}>
+        {ganhei ? '+moral pela vitória' : 'moral afetado pela nota'}
+      </div>
+    </div>
+  )
+}
+
 function MatchResult({ desafio, jogadorID }) {
   const ganhei = desafio.vencedor_id === jogadorID
   const empate = desafio.vencedor_id === 0
@@ -145,6 +178,7 @@ export default function Desafio1v1() {
   const [adversario, setAdversario] = useState(null)
   const [desafioAtivo, setDesafioAtivo] = useState(null)
   const [resultado, setResultado] = useState(null)
+  const [notaPartida, setNotaPartida] = useState(null)
   const [loading, setLoading] = useState(false)
   const [enviado, setEnviado] = useState(false)
 
@@ -203,6 +237,7 @@ export default function Desafio1v1() {
       if (res.sucesso) {
         if (res.jogador) setJogador(res.jogador)
         setResultado(res.desafio)
+        setNotaPartida(res.nota_partida || null)
         setModo('resultado')
         mostrarNotificacao(res.mensagem, res.desafio?.vencedor_id === jogadorID ? 'sucesso' : 'erro')
         if (res.level_up) setLevelUp(res.novo_nivel)
@@ -220,13 +255,16 @@ export default function Desafio1v1() {
     setAdversario(null)
     setDesafioAtivo(null)
     setResultado(null)
+    setNotaPartida(null)
     setEnviado(false)
   }
 
   if (modo === 'resultado' && resultado) {
+    const ganhei = resultado.vencedor_id === jogadorID
     return (
       <>
         <h2 className="page-title">⚽ DESAFIO 1v1</h2>
+        {notaPartida && <NotaPartidaCard nota={notaPartida} ganhei={ganhei} />}
         <MatchResult desafio={resultado} jogadorID={jogadorID} />
         <button className="btn-work btn-verde" onClick={voltar} style={{ marginTop: 16 }}>Voltar</button>
       </>

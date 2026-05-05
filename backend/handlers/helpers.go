@@ -431,14 +431,15 @@ func getJogador(id int) (*JogadorData, error) {
 		       pontos_fama, vitorias, derrotas, avatar, capacidade_mochila,
 		       moedas, cooldown_premium, titulo, avatares_premium, itens_fama, tutorial_step,
 		       codigo_amigo, inventario_publico, posicao, titulos, COALESCE(pvp_streak, 0),
-		       COALESCE(clube_id,0), COALESCE(numero_camisa,0), COALESCE(pontos_atributo,0)
+		       COALESCE(clube_id,0), COALESCE(numero_camisa,0), COALESCE(pontos_atributo,0),
+		       COALESCE(moral,70)
 		FROM jogadores WHERE id = $1`, id).Scan(
 		&j.ID, &j.Nome, &j.Nivel, &j.XP, &j.XPProximo, &j.Energia, &j.EnergiaMax,
 		&j.Vitalidade, &j.VitalidadeMax, &j.Saude, &j.SaudeMax, &j.Forca, &j.Velocidade,
 		&j.Habilidade, &j.DinheiroMao, &j.DinheiroBanco, &j.PontosFama, &j.Vitorias, &j.Derrotas, &j.Avatar,
 		&j.CapacidadeMochila, &j.Moedas, &j.CooldownPremium, &j.Titulo, &j.AvataresPremium, &j.ItensFama, &j.TutorialStep,
 		&j.CodigoAmigo, &j.InventarioPublico, &j.Posicao, &j.Titulos, &j.PvpStreak,
-		&j.ClubeID, &j.NumeroCamisa, &j.PontosAtributo)
+		&j.ClubeID, &j.NumeroCamisa, &j.PontosAtributo, &j.Moral)
 	if err != nil {
 		return nil, err
 	}
@@ -460,14 +461,14 @@ func saveJogador(j *JogadorData) error {
 		vitorias=$16, derrotas=$17, avatar=$18, capacidade_mochila=$19,
 		moedas=$20, cooldown_premium=$21, titulo=$22, avatares_premium=$23, itens_fama=$24, tutorial_step=$25,
 		codigo_amigo=$26, inventario_publico=$27, posicao=$28, titulos=$29, pvp_streak=$30,
-		clube_id=$31, numero_camisa=$32, pontos_atributo=$33, ultima_atualizacao=NOW()
-		WHERE id=$34`,
+		clube_id=$31, numero_camisa=$32, pontos_atributo=$33, moral=$34, ultima_atualizacao=NOW()
+		WHERE id=$35`,
 		j.Nivel, j.XP, j.XPProximo, j.Energia, j.EnergiaMax, j.Vitalidade, j.VitalidadeMax,
 		j.Saude, j.SaudeMax, j.Forca, j.Velocidade, j.Habilidade, j.DinheiroMao, j.DinheiroBanco,
 		j.PontosFama, j.Vitorias, j.Derrotas, j.Avatar, j.CapacidadeMochila,
 		j.Moedas, j.CooldownPremium, j.Titulo, j.AvataresPremium, j.ItensFama, j.TutorialStep,
 		j.CodigoAmigo, j.InventarioPublico, j.Posicao, j.Titulos, j.PvpStreak,
-		j.ClubeID, j.NumeroCamisa, j.PontosAtributo, j.ID)
+		j.ClubeID, j.NumeroCamisa, j.PontosAtributo, j.Moral, j.ID)
 	return err
 }
 
@@ -821,6 +822,104 @@ func Cors(next http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 		next(w, r)
+	}
+}
+
+// ========================
+// MORAL — helpers
+// ========================
+
+// ajustarMoral altera o moral de um jogador (clampado entre 0-100) e retorna o novo valor.
+func ajustarMoral(jogadorID, delta int) int {
+	var moral int
+	db.Conn.QueryRow("SELECT COALESCE(moral, 70) FROM jogadores WHERE id=$1", jogadorID).Scan(&moral)
+	moral += delta
+	if moral > 100 {
+		moral = 100
+	}
+	if moral < 0 {
+		moral = 0
+	}
+	db.Conn.Exec("UPDATE jogadores SET moral=$1 WHERE id=$2", moral, jogadorID)
+	return moral
+}
+
+// moralMultiplier retorna um multiplicador de 0.80 (moral=0) a 1.20 (moral=100).
+// moral=50 → 1.00 (neutro).
+func moralMultiplier(moral int) float64 {
+	return 0.80 + float64(moral)/100.0*0.40
+}
+
+// ========================
+// NOTA POR PARTIDA — helpers
+// ========================
+
+// calcNotaPartida calcula a nota de 4.0 a 10.0 baseada em acertos (gols ou defesas).
+func calcNotaPartida(acertos int) float64 {
+	base := []float64{4.0, 5.0, 5.5, 7.0, 8.5, 10.0}
+	if acertos < 0 {
+		acertos = 0
+	}
+	if acertos > 5 {
+		acertos = 5
+	}
+	nota := base[acertos]
+	// variação aleatória ±0.3
+	variacao := (float64(rand.Intn(61)) - 30.0) / 100.0
+	nota += variacao
+	if nota < 4.0 {
+		nota = 4.0
+	}
+	if nota > 10.0 {
+		nota = 10.0
+	}
+	// arredonda para 1 decimal
+	return float64(int(nota*10+0.5)) / 10.0
+}
+
+// deltaMoralPorNota retorna o delta de moral baseado na nota da partida.
+func deltaMoralPorNota(nota float64) int {
+	switch {
+	case nota >= 8.0:
+		return 15
+	case nota >= 7.0:
+		return 8
+	case nota >= 6.0:
+		return 3
+	case nota >= 5.0:
+		return 0
+	default:
+		return -8
+	}
+}
+
+// ========================
+// OBJETIVOS DO CLUBE — helpers
+// ========================
+
+func mesAtual() string {
+	return time.Now().Format("2006-01")
+}
+
+// trackClubeObjetivo registra progresso em objetivos do clube do tipo dado.
+func trackClubeObjetivo(jogadorID int, tipo string, quantidade int) {
+	mes := mesAtual()
+	rows, err := db.Conn.Query(`SELECT id, objetivo FROM clube_objetivos WHERE tipo=$1`, tipo)
+	if err != nil {
+		return
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var id string
+		var objetivo int
+		rows.Scan(&id, &objetivo)
+		db.Conn.Exec(`
+			INSERT INTO clube_objetivos_progresso (jogador_id, objetivo_id, mes, progresso, coletado)
+			VALUES ($1, $2, $3, $4, FALSE)
+			ON CONFLICT (jogador_id, objetivo_id, mes)
+			DO UPDATE SET progresso = LEAST(clube_objetivos_progresso.progresso + $4, $5)
+			WHERE clube_objetivos_progresso.coletado = FALSE`,
+			jogadorID, id, mes, quantidade, objetivo)
 	}
 }
 

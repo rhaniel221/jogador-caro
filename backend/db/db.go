@@ -87,6 +87,7 @@ func createTables() {
 		`ALTER TABLE cat_itens ADD COLUMN IF NOT EXISTS cooldown_minutos INT DEFAULT 0`,
 		`ALTER TABLE cat_itens ADD COLUMN IF NOT EXISTS preco_moedas INT DEFAULT 0`,
 		`ALTER TABLE jogadores ADD COLUMN IF NOT EXISTS pontos_atributo INT DEFAULT 0`,
+		`ALTER TABLE jogadores ADD COLUMN IF NOT EXISTS moral INT DEFAULT 70`,
 	} {
 		Conn.Exec(m)
 	}
@@ -451,9 +452,52 @@ func createTables() {
 		    treino_migrado = TRUE
 		WHERE treino_migrado = FALSE OR treino_migrado IS NULL`)
 
+	// ========================
+	// MORAL & OBJETIVOS DO CLUBE
+	// ========================
+	Conn.Exec(`CREATE TABLE IF NOT EXISTS clube_objetivos (
+		id VARCHAR(50) PRIMARY KEY,
+		nome VARCHAR(200) NOT NULL,
+		descricao TEXT DEFAULT '',
+		tipo VARCHAR(50) NOT NULL,
+		objetivo INT DEFAULT 0,
+		recompensa_dinheiro INT DEFAULT 0,
+		recompensa_xp INT DEFAULT 0,
+		recompensa_moedas INT DEFAULT 0,
+		icone VARCHAR(20) DEFAULT ''
+	)`)
+
+	Conn.Exec(`CREATE TABLE IF NOT EXISTS clube_objetivos_progresso (
+		jogador_id INT REFERENCES jogadores(id),
+		objetivo_id VARCHAR(50),
+		mes VARCHAR(7) NOT NULL,
+		progresso INT DEFAULT 0,
+		coletado BOOLEAN DEFAULT FALSE,
+		PRIMARY KEY (jogador_id, objetivo_id, mes)
+	)`)
+
+	seedClubeObjetivos()
+
 	seedCatalogos()
 
 	fmt.Println("Tabelas verificadas!")
+}
+
+func seedClubeObjetivos() {
+	objetivos := []struct {
+		id, nome, descricao, tipo, icone string
+		objetivo, din, xp, moedas       int
+	}{
+		{"obj_trabalhos_mes", "Trabalhador do Mês", "Faça 30 trabalhos este mês", "trabalhos", "💼", 30, 15000, 0, 0},
+		{"obj_vitorias_1v1_mes", "Guerreiro do 1v1", "Vença 5 desafios 1v1 este mês", "vitorias_1v1", "⚔️", 5, 10000, 100, 0},
+		{"obj_dinheiro_trabalho_mes", "Salário do Craque", "Ganhe R$200.000 em trabalhos este mês", "dinheiro_trabalho", "💰", 200000, 5000, 0, 2},
+	}
+	for _, o := range objetivos {
+		Conn.Exec(`INSERT INTO clube_objetivos (id, nome, descricao, tipo, objetivo, recompensa_dinheiro, recompensa_xp, recompensa_moedas, icone)
+			VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
+			ON CONFLICT (id) DO NOTHING`,
+			o.id, o.nome, o.descricao, o.tipo, o.objetivo, o.din, o.xp, o.moedas, o.icone)
+	}
 }
 
 func GerarCodigoAmigo() string {

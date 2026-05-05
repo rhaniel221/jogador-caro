@@ -77,6 +77,7 @@ type JogadorData struct {
 	Rank                       string `json:"rank"`
 	PvpStreak                  int    `json:"pvp_streak"`
 	PontosAtributo             int    `json:"pontos_atributo"`
+	Moral                      int    `json:"moral"`
 	ClubeID                    int    `json:"clube_id"`
 	NumeroCamisa               int    `json:"numero_camisa"`
 	ProximaEnergiaEm           int64  `json:"proxima_energia_em"`
@@ -393,12 +394,31 @@ type Desafio1v1 struct {
 }
 
 type Desafio1v1Response struct {
-	Sucesso  bool         `json:"sucesso"`
-	Mensagem string       `json:"mensagem"`
-	Desafio  *Desafio1v1  `json:"desafio"`
-	Jogador  *JogadorData `json:"jogador"`
-	LevelUp  bool         `json:"level_up"`
-	NovoNivel int         `json:"novo_nivel"`
+	Sucesso      bool         `json:"sucesso"`
+	Mensagem     string       `json:"mensagem"`
+	Desafio      *Desafio1v1  `json:"desafio"`
+	Jogador      *JogadorData `json:"jogador"`
+	LevelUp      bool         `json:"level_up"`
+	NovoNivel    int          `json:"novo_nivel"`
+	NotaPartida  float64      `json:"nota_partida"`
+}
+
+// ========================
+// OBJETIVOS DO CLUBE
+// ========================
+
+type ClubeObjetivo struct {
+	ID                 string `json:"id"`
+	Nome               string `json:"nome"`
+	Descricao          string `json:"descricao"`
+	Tipo               string `json:"tipo"`
+	Objetivo           int    `json:"objetivo"`
+	RecompensaDinheiro int    `json:"recompensa_dinheiro"`
+	RecompensaXP       int    `json:"recompensa_xp"`
+	RecompensaMoedas   int    `json:"recompensa_moedas"`
+	Icone              string `json:"icone"`
+	Progresso          int    `json:"progresso"`
+	Coletado           bool   `json:"coletado"`
 }
 
 // ========================
