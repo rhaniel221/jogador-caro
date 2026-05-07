@@ -382,6 +382,28 @@ body::before {
     border-bottom: 2px solid var(--dourado);
 }
 
+.nav-count-badge {
+    font-size: 9px;
+    font-weight: 900;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: 9px;
+    margin-left: 4px;
+    background: #ef4444;
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    box-shadow: 0 2px 8px rgba(239,68,68,0.4);
+    animation: nav-badge-pop 2s infinite;
+}
+@keyframes nav-badge-pop {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+}
+
 .nav-new-badge {
     font-size: 8px;
     font-weight: 900;
@@ -391,11 +413,7 @@ body::before {
     background: linear-gradient(135deg, #D6A84F, #f1c76a);
     color: #0a1929;
     letter-spacing: 0.5px;
-    animation: nav-pulse 2s infinite;
-}
-@keyframes nav-pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.6; }
+    animation: nav-badge-pop 2s infinite;
 }
 
 .main-menu a:hover:not(.active) {
