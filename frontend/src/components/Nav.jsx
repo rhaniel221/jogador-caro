@@ -33,28 +33,28 @@ export default function Nav() {
   const nivel = jogador?.nivel || 1
   const location = useLocation()
   const [badges, setBadges] = useState({})
+  // Usar jogador.xp como "versao" — muda sempre que setJogador e chamado (apos coleta, trabalho, etc)
+  const jogadorVersion = jogador ? `${jogador.xp}-${jogador.dinheiro_mao}-${jogador.energia}` : ''
 
   const carregarBadges = useCallback(async () => {
     if (!jogadorID) return
     try {
       const counts = {}
 
-      // Coletas em /vida (casa + campinho)
-      const [casaRes, campRes] = await Promise.all([
+      const [casaRes, campRes, famaRes, tasksRes] = await Promise.all([
         API.get('/api/casa/' + jogadorID).catch(() => null),
         API.get('/api/campinho/' + jogadorID).catch(() => null),
+        API.get('/api/fama/' + jogadorID).catch(() => null),
+        API.get('/api/tasks/' + jogadorID).catch(() => []),
       ])
+
       let vidaCount = 0
       if (casaRes?.casa?.xp_disponivel > 0 || casaRes?.casa?.energia_disponivel > 0) vidaCount++
       if (campRes?.campinho && !campRes.campinho.bonus_hoje) vidaCount++
       if (vidaCount > 0) counts['/vida'] = vidaCount
 
-      // Patrocinio em /jogador
-      const famaRes = await API.get('/api/fama/' + jogadorID).catch(() => null)
       if (famaRes?.patrocinio_acumulado > 0) counts['/jogador'] = (counts['/jogador'] || 0) + 1
 
-      // Tasks prontas em /missoes
-      const tasksRes = await API.get('/api/tasks/' + jogadorID).catch(() => [])
       const prontas = Array.isArray(tasksRes) ? tasksRes.filter(t => !t.completada && !t.coletada && t.progresso >= t.objetivo).length : 0
       if (prontas > 0) counts['/missoes'] = prontas
 
@@ -62,15 +62,15 @@ export default function Nav() {
     } catch {}
   }, [jogadorID])
 
-  // Carrega ao montar e quando muda de pagina (pode ter coletado algo)
+  // Recarrega quando: monta, muda de pagina, OU jogador muda (coleta, trabalho, etc)
   useEffect(() => {
     carregarBadges()
-  }, [carregarBadges, location.pathname])
+  }, [carregarBadges, location.pathname, jogadorVersion])
 
-  // Refresh a cada 30s
+  // Refresh a cada 60s como fallback
   useEffect(() => {
     if (!jogadorID) return
-    const id = setInterval(carregarBadges, 30000)
+    const id = setInterval(carregarBadges, 60000)
     return () => clearInterval(id)
   }, [jogadorID, carregarBadges])
 
