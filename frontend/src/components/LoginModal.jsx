@@ -25,7 +25,7 @@ export default function LoginModal() {
   return (
     <div id="modal-login" style={{ display: 'flex' }}>
       <div className="modal-login-box">
-        <img src="/logo.png" alt="Joga Craque" className="ml-logo-img" />
+        <img src="/logo-novo.png" alt="Joga Craque" className="ml-logo-img" />
         <h2>JOGA CRAQUE</h2>
         <p>Bem-vindo ao campo! Digite seu apelido para entrar no jogo.</p>
         <input

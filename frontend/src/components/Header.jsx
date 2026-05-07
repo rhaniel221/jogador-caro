@@ -47,7 +47,7 @@ export default function Header() {
 
   if (!jogador) return (
     <header className="top-bar">
-      <div className="logo"><img src="/logo.png" alt="Joga Craque" className="logo-img" /></div>
+      <div className="logo"><img src="/logo-novo.png" alt="Joga Craque" className="logo-img" /></div>
     </header>
   )
 
@@ -57,7 +57,7 @@ export default function Header() {
   return (
     <header className="top-bar">
       <div className="logo">
-        <img src="/logo.png" alt="Joga Craque" className="logo-img" />
+        <img src="/logo-novo.png" alt="Joga Craque" className="logo-img" />
       </div>
 
       <div className="stats-panel">
