@@ -11,16 +11,16 @@ const MATERIAL_ICONES = {
 }
 
 const RARIDADE_CORES = {
-  comum: '#555',
-  raro: '#2980b9',
-  epico: '#8e44ad',
-  lendario: '#f39c12',
+  comum: '#94a3b8',
+  raro: '#43a7ff',
+  epico: '#c084fc',
+  lendario: '#f1c76a',
 }
 const RARIDADE_BG = {
-  comum: '#f0f0f0',
-  raro: '#ebf5fb',
-  epico: '#f5eef8',
-  lendario: '#fef9e7',
+  comum: 'rgba(255,255,255,0.04)',
+  raro: 'rgba(67,167,255,0.1)',
+  epico: 'rgba(192,132,252,0.1)',
+  lendario: 'rgba(241,199,106,0.1)',
 }
 
 function QuestCard({ quest, onResgatar, loading, itensMap }) {

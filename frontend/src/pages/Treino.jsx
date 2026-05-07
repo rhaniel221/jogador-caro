@@ -17,7 +17,7 @@ function formatRestante(segs) {
 function StatBadge({ label, value, color }) {
   if (!value) return null
   return (
-    <span className="treino-bonus-badge" style={{ background: color }}>
+    <span style={{ background: color, color: '#f8fafc', padding: '2px 8px', borderRadius: 8, fontSize: 11, fontWeight: 800 }}>
       +{value} {label}
     </span>
   )
@@ -40,44 +40,45 @@ function TreinoCard({ treino, agora, loading, onTreinar }) {
       className="treino-card"
       style={{
         opacity: nivelOK ? 1 : 0.55,
-        background: '#fff',
-        border: '2px solid #d4d8d0',
-        borderRadius: 12,
-        padding: 14,
+        background: 'rgba(13,30,54,0.8)',
+        border: '1px solid rgba(255,255,255,0.06)',
+        borderRadius: 16,
+        padding: 16,
         marginBottom: 10,
         display: 'flex',
-        gap: 12,
-        alignItems: 'center'
+        gap: 14,
+        alignItems: 'center',
+        transition: 'border-color 0.2s',
       }}
     >
-      <div style={{ fontSize: 36 }}>{treino.icone}</div>
+      <div style={{ fontSize: 36, width: 48, height: 48, borderRadius: 14, background: 'rgba(255,255,255,0.04)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{treino.icone}</div>
 
       <div style={{ flex: 1, minWidth: 0 }}>
-        <h3 style={{ margin: '0 0 4px 0', fontSize: 16, color: '#1a3a1a' }}>
+        <h3 style={{ margin: '0 0 4px 0', fontSize: 16, color: '#f8fafc', fontWeight: 900 }}>
           {treino.nome}
         </h3>
-        <p style={{ margin: '0 0 6px 0', fontSize: 12, color: '#5a5a5a' }}>
+        <p style={{ margin: '0 0 6px 0', fontSize: 12, color: '#94a3b8' }}>
           {treino.descricao}
         </p>
 
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 6 }}>
-          <StatBadge label="Força" value={treino.bonus_forca} color="#e63946" />
-          <StatBadge label="Velocidade" value={treino.bonus_velocidade} color="#1d72c2" />
-          <StatBadge label="Habilidade" value={treino.bonus_habilidade} color="#9c27b0" />
+          <StatBadge label="Forca" value={treino.bonus_forca} color="rgba(239,68,68,0.15)" />
+          <StatBadge label="Velocidade" value={treino.bonus_velocidade} color="rgba(30,111,255,0.15)" />
+          <StatBadge label="Habilidade" value={treino.bonus_habilidade} color="rgba(168,85,247,0.15)" />
         </div>
 
-        <div style={{ fontSize: 11, color: '#666' }}>
-          ⏱ cooldown {cooldownTxt}
-          {treino.vezes_feito > 0 && <> • feito {treino.vezes_feito}x</>}
+        <div style={{ fontSize: 11, color: '#64748b' }}>
+          cooldown {cooldownTxt}
+          {treino.vezes_feito > 0 && <> . feito {treino.vezes_feito}x</>}
         </div>
       </div>
 
       <div style={{ minWidth: 110, textAlign: 'center' }}>
         {!nivelOK ? (
-          <div style={{ fontSize: 12, color: '#999' }}>🔒 Nível {treino.nivel_min}</div>
+          <div style={{ fontSize: 12, color: '#475569' }}>Nivel {treino.nivel_min}</div>
         ) : onCooldown ? (
-          <div style={{ fontSize: 12, color: '#c47a00', fontWeight: 700 }}>
-            ⏳ {formatRestante(restante)}
+          <div style={{ fontSize: 12, color: '#f1c76a', fontWeight: 700 }}>
+            {formatRestante(restante)}
           </div>
         ) : (
           <button

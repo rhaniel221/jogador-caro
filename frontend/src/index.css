@@ -4923,9 +4923,9 @@ input, select, textarea {
   padding: 2px 8px;
   border-radius: 8px;
 }
-.quest-reward-mat { background: #ede7f6; color: #4527a0; }
-.quest-reward-xp { background: #e8f5e9; color: var(--verde); }
-.quest-reward-money { background: var(--card-bg)8e1; color: #f57f17; }
+.quest-reward-mat { background: rgba(168,85,247,0.12); color: #c084fc; }
+.quest-reward-xp { background: rgba(34,197,94,0.12); color: var(--verde); }
+.quest-reward-money { background: rgba(214,168,79,0.12); color: #f1c76a; }
 
 .quest-btn { align-self: flex-start; }
 
