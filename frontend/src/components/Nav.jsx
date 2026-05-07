@@ -5,8 +5,8 @@ import { useGame } from '../context/GameContext'
 const links = [
   { to: '/', label: 'Inicio', icon: '🏠', end: true },
   { to: '/carreira', label: 'Carreira', icon: '⚽' },
-  { to: '/jogador', label: 'Meu Jogador', icon: '👤' },
-  { to: '/vida', label: 'Minha Vida', icon: '🏡' },
+  { to: '/jogador', label: 'Jogador', icon: '👤' },
+  { to: '/vida', label: 'Vida', icon: '🏡' },
   { to: '/missoes', label: 'Missoes', icon: '📖' },
   { to: '/treino', label: 'Treino', icon: '🏋️' },
   { to: '/loja', label: 'Loja', icon: '🛒' },
@@ -28,7 +28,7 @@ export default function Nav() {
             <li key={l.to}>
               {locked ? (
                 <span className="nav-locked">
-                  {l.icon} {l.label} 🔒{l.minLevel}
+                  {l.icon} {l.label} 🔒
                 </span>
               ) : (
                 <NavLink
@@ -36,7 +36,7 @@ export default function Nav() {
                   end={l.end}
                   className={({ isActive }) => isActive ? 'active' : ''}
                 >
-                  {l.icon} {l.label}
+                  <span style={{ fontSize: 14 }}>{l.icon}</span> {l.label}
                 </NavLink>
               )}
             </li>
