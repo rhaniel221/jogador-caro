@@ -2,41 +2,48 @@ import React, { useEffect, useState, useCallback } from 'react'
 import { useGame } from '../context/GameContext'
 import API from '../api'
 import { fmt } from '../utils'
+import './MeuJogador.css'
+
+const AVATAR_IMGS = [1,2,3,4,5,6,7,8,9,10,11]
+
+function SectionHeader({ icon, title, right }) {
+  return (
+    <div className="jc-section-header">
+      <div className="jc-section-title-wrap">
+        {icon && <span className="jc-section-icon">{icon}</span>}
+        <h3>{title}</h3>
+      </div>
+      {right && <div className="jc-section-right">{right}</div>}
+    </div>
+  )
+}
+
+function AvatarDisplay({ avatarId, size }) {
+  const imgId = typeof avatarId === 'number' && avatarId >= 1 && avatarId <= 11 ? avatarId : null
+  if (imgId) return <img src={`/avatar/${imgId}.png`} alt="Avatar" />
+  return <span style={{ fontSize: size || 70 }}>⚽</span>
+}
 
 // ========================
-// FAMA & PATROCINIO
+// FAMA
 // ========================
 
 const RANK_CORES = {
-  'Desconhecido': '#888',
-  'Promessa': '#27ae60',
-  'Famoso': '#2980b9',
-  'Estrela': '#8e44ad',
-  'Idolo': '#f39c12',
-  'Lenda Viva': '#e74c3c',
+  'Desconhecido': '#64748b', 'Promessa': '#22c55e', 'Famoso': '#43a7ff',
+  'Estrela': '#a855f7', 'Idolo': '#f1c76a', 'Lenda Viva': '#ef4444',
 }
 
 function FamaCard({ jogadorID, jogador, setJogador, mostrarNotificacao }) {
   const [famaData, setFamaData] = useState(null)
   const [loading, setLoading] = useState(false)
-
-  const carregar = useCallback(() => {
-    if (!jogadorID) return
-    API.get('/api/fama/' + jogadorID).then(setFamaData).catch(() => {})
-  }, [jogadorID])
-
+  const carregar = useCallback(() => { if (!jogadorID) return; API.get('/api/fama/' + jogadorID).then(setFamaData).catch(() => {}) }, [jogadorID])
   useEffect(() => { carregar() }, [carregar])
-
   if (!famaData || !jogador) return null
 
-  const rank = famaData.rank
-  const ranks = famaData.ranks || []
-  const fama = famaData.fama || 0
-  const corRank = RANK_CORES[rank.rank] || '#888'
-
+  const rank = famaData.rank, ranks = famaData.ranks || [], fama = famaData.fama || 0
+  const corRank = RANK_CORES[rank.rank] || '#64748b'
   const rangeRank = rank.max - rank.min + 1
   const progressoRank = Math.min(100, Math.round(((fama - rank.min) / rangeRank) * 100))
-
   const idxAtual = ranks.findIndex(r => r.rank === rank.rank)
   const proximoRank = idxAtual < ranks.length - 1 ? ranks[idxAtual + 1] : null
   const faltaProximo = proximoRank ? proximoRank.min - fama : 0
@@ -45,104 +52,55 @@ function FamaCard({ jogadorID, jogador, setJogador, mostrarNotificacao }) {
     setLoading(true)
     try {
       const res = await API.post('/api/fama/coletar-patrocinio', { jogador_id: jogadorID })
-      if (res.sucesso) {
-        if (res.jogador) setJogador(res.jogador)
-        mostrarNotificacao(res.mensagem, 'sucesso')
-        carregar()
-      } else {
-        mostrarNotificacao(res.mensagem, 'erro')
-      }
+      if (res.sucesso) { if (res.jogador) setJogador(res.jogador); mostrarNotificacao(res.mensagem, 'sucesso'); carregar() }
+      else mostrarNotificacao(res.mensagem, 'erro')
     } catch { mostrarNotificacao('Erro de conexao', 'erro') }
     setLoading(false)
   }
 
   return (
-    <div className="pf-section">
-      <div className="pf-section-header"><h3>FAMA & PATROCINIO</h3></div>
-
-      <div className="fama-rank-card" style={{ borderColor: corRank }}>
-        <div className="fama-rank-top">
-          <span className="fama-rank-nome" style={{ color: corRank }}>{rank.rank}</span>
-          <span className="fama-pontos">{fmt(fama)} Fama</span>
+    <section className="jc-section">
+      <SectionHeader icon="⭐" title="Fama & Patrocinio" />
+      <div style={{ padding: '14px', borderRadius: 14, border: `1px solid ${corRank}33`, background: `${corRank}0a` }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+          <span style={{ color: corRank, fontWeight: 900, fontSize: 18 }}>{rank.rank}</span>
+          <span style={{ color: '#94a3b8', fontSize: 13, fontWeight: 800 }}>{fmt(fama)} Fama</span>
         </div>
-
-        <div className="fama-bar-container">
-          <div className="fama-bar">
-            <div className="fama-bar-fill" style={{ width: progressoRank + '%', background: corRank }} />
-          </div>
-          {proximoRank && (
-            <div className="fama-proximo">
-              Faltam <strong>{fmt(faltaProximo)}</strong> para{' '}
-              <span style={{ color: RANK_CORES[proximoRank.rank] || '#888' }}>{proximoRank.rank}</span>
-            </div>
-          )}
+        <div className="jc-progress" style={{ marginBottom: 8 }}><div style={{ width: progressoRank + '%', background: corRank }} /></div>
+        {proximoRank && <div style={{ fontSize: 12, color: '#94a3b8', marginBottom: 10 }}>Faltam <strong style={{ color: '#fff' }}>{fmt(faltaProximo)}</strong> para <span style={{ color: RANK_CORES[proximoRank.rank] || '#94a3b8' }}>{proximoRank.rank}</span></div>}
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+          {rank.bonus_xp > 0 && <span className="jc-badge-blue" style={{ padding: '4px 10px', borderRadius: 8, fontSize: 11, fontWeight: 800, background: 'rgba(30,111,255,0.12)', color: '#43a7ff' }}>+{Math.round(rank.bonus_xp * 100)}% XP</span>}
+          {rank.renda_hora > 0 && <span style={{ padding: '4px 10px', borderRadius: 8, fontSize: 11, fontWeight: 800, background: 'rgba(34,197,94,0.12)', color: '#22c55e' }}>R$ {fmt(rank.renda_hora)}/hora</span>}
         </div>
-
-        <div className="fama-bonus-grid">
-          {rank.bonus_xp > 0 && (
-            <div className="fama-bonus-item">
-              <span className="fama-bonus-icon">📊</span>
-              <span>+{Math.round(rank.bonus_xp * 100)}% XP</span>
-            </div>
-          )}
-          {rank.renda_hora > 0 && (
-            <div className="fama-bonus-item">
-              <span className="fama-bonus-icon">💰</span>
-              <span>R$ {fmt(rank.renda_hora)}/hora</span>
-            </div>
-          )}
-          {rank.moedas_dia > 0 && (
-            <div className="fama-bonus-item">
-              <span className="fama-bonus-icon">🪙</span>
-              <span>+{rank.moedas_dia} moeda/dia</span>
-            </div>
-          )}
-          {rank.bonus_xp === 0 && rank.renda_hora === 0 && (
-            <div className="fama-bonus-item" style={{ color: '#999' }}>
-              Alcance 500 fama para desbloquear bonus!
-            </div>
-          )}
-        </div>
-
         {rank.patrocinio && (
-          <div className="fama-patrocinio">
-            <div className="fama-patrocinio-nome">Patrocinio: <strong>{rank.patrocinio}</strong></div>
+          <div style={{ marginTop: 12, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+            <span style={{ fontSize: 12, color: '#94a3b8' }}>Patrocinio: <strong style={{ color: '#fff' }}>{rank.patrocinio}</strong></span>
             {famaData.patrocinio_acumulado > 0 && (
-              <button className="btn-work btn-verde btn-small" onClick={coletarPatrocinio} disabled={loading}>
+              <button className="jc-btn jc-btn-primary" style={{ minHeight: 32, fontSize: 11 }} onClick={coletarPatrocinio} disabled={loading}>
                 {loading ? '...' : `Coletar R$ ${fmt(famaData.patrocinio_acumulado)}`}
               </button>
             )}
-            {!famaData.patrocinio_acumulado && (
-              <span style={{ fontSize: 11, color: '#64748b' }}>Acumulando renda...</span>
-            )}
           </div>
         )}
-
-        <div className="fama-protecao">
-          {famaData.protegido
-            ? <span style={{ color: 'var(--verde)' }}>Protegido! Fez PvP hoje — sem decaimento.</span>
-            : <span style={{ color: '#c0392b' }}>Faca PvP hoje para evitar perda de fama!</span>
-          }
+        <div style={{ marginTop: 10, fontSize: 11, fontWeight: 700, color: famaData.protegido ? '#22c55e' : '#ef4444' }}>
+          {famaData.protegido ? 'Protegido! Fez PvP hoje.' : 'Faca PvP hoje para evitar perda de fama!'}
         </div>
       </div>
-
-      <div className="fama-ranks-lista">
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 12 }}>
         {ranks.map(r => {
-          const ativo = r.rank === rank.rank
-          const cor = RANK_CORES[r.rank] || '#888'
-          const atingido = fama >= r.min
+          const ativo = r.rank === rank.rank, cor = RANK_CORES[r.rank] || '#64748b', atingido = fama >= r.min
           return (
-            <div key={r.rank}
-              className={`fama-rank-pill${ativo ? ' fama-rank-ativo' : ''}${!atingido ? ' fama-rank-locked' : ''}`}
-              style={ativo ? { borderColor: cor, background: cor + '18' } : {}}>
-              <span className="fama-pill-nome" style={{ color: atingido ? cor : '#aaa' }}>{r.rank}</span>
-              <span className="fama-pill-min">{fmt(r.min)}+</span>
-              {r.bonus_xp > 0 && <span className="fama-pill-bonus">+{Math.round(r.bonus_xp * 100)}% XP</span>}
+            <div key={r.rank} style={{
+              padding: '4px 10px', borderRadius: 8, fontSize: 10, fontWeight: 800, textTransform: 'uppercase',
+              background: ativo ? `${cor}22` : 'rgba(255,255,255,0.03)', border: `1px solid ${ativo ? cor + '44' : 'rgba(255,255,255,0.06)'}`,
+              color: atingido ? cor : '#475569', letterSpacing: 0.5,
+            }}>
+              {r.rank} {r.bonus_xp > 0 && `+${Math.round(r.bonus_xp * 100)}%`}
             </div>
           )
         })}
       </div>
-    </div>
+    </section>
   )
 }
 
@@ -151,41 +109,30 @@ function FamaCard({ jogadorID, jogador, setJogador, mostrarNotificacao }) {
 // ========================
 
 function getMoralInfo(moral) {
-  if (moral >= 81) return { label: 'Em Chamas!', cor: '#f39c12', bg: '#fdf8e8', border: '#f0c040', emoji: '🔥' }
-  if (moral >= 61) return { label: 'Motivado', cor: '#27ae60', bg: '#eafaf1', border: '#82e0aa', emoji: '😊' }
-  if (moral >= 31) return { label: 'Normal', cor: '#2980b9', bg: '#eaf4fd', border: '#85c1e9', emoji: '😐' }
-  return { label: 'Desmotivado', cor: '#e74c3c', bg: '#fdecea', border: '#f1948a', emoji: '😞' }
+  if (moral >= 81) return { label: 'Em Chamas!', cor: '#D6A84F', bg: 'rgba(214,168,79,0.08)', border: 'rgba(214,168,79,0.2)', emoji: '🔥' }
+  if (moral >= 61) return { label: 'Motivado', cor: '#22c55e', bg: 'rgba(34,197,94,0.08)', border: 'rgba(34,197,94,0.2)', emoji: '😊' }
+  if (moral >= 31) return { label: 'Normal', cor: '#43a7ff', bg: 'rgba(67,167,255,0.08)', border: 'rgba(67,167,255,0.2)', emoji: '😐' }
+  return { label: 'Desmotivado', cor: '#ef4444', bg: 'rgba(239,68,68,0.08)', border: 'rgba(239,68,68,0.2)', emoji: '😞' }
 }
 
 function MoralSection({ jogador }) {
   if (!jogador) return null
-  const moral = jogador.moral ?? 70
-  const info = getMoralInfo(moral)
+  const moral = jogador.moral ?? 70, info = getMoralInfo(moral)
   const mult = (0.80 + (moral / 100) * 0.40).toFixed(2)
-
   return (
-    <div className="pf-section">
-      <div className="pf-section-header">
-        <h3>MORAL</h3>
-        <span className="pf-section-badge" style={{ color: info.cor }}>{info.emoji} {info.label}</span>
-      </div>
-      <div style={{ background: info.bg, border: `2px solid ${info.border}`, borderRadius: 12, padding: '12px 16px' }}>
+    <section className="jc-section">
+      <SectionHeader icon="🧠" title="Moral" right={<span style={{ color: info.cor }}>{info.emoji} {info.label}</span>} />
+      <div style={{ background: info.bg, border: `1px solid ${info.border}`, borderRadius: 14, padding: '14px 16px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-          <span style={{ fontSize: 28, fontWeight: 900, color: info.cor }}>{moral}</span>
-          <span style={{ fontSize: 12, fontWeight: 700, color: '#94A3B8' }}>
-            Multiplicador: <strong style={{ color: info.cor }}>{mult}x</strong>
-          </span>
+          <span style={{ fontSize: 32, fontWeight: 900, color: info.cor, fontFamily: "'Teko', sans-serif" }}>{moral}</span>
+          <span style={{ fontSize: 12, fontWeight: 700, color: '#94a3b8' }}>Multiplicador: <strong style={{ color: info.cor }}>{mult}x</strong></span>
         </div>
-        <div style={{ background: 'rgba(255,255,255,0.08)', borderRadius: 8, height: 12, overflow: 'hidden' }}>
-          <div style={{ width: `${moral}%`, height: '100%', background: info.cor, borderRadius: 8, transition: 'width 0.4s' }} />
-        </div>
+        <div className="jc-progress"><div style={{ width: `${moral}%`, background: info.cor }} /></div>
         <div style={{ marginTop: 8, fontSize: 11, color: '#64748b', lineHeight: 1.5 }}>
           Sobe ao trabalhar (+3) e vencer desafios. Cai em derrotas e notas baixas.
-          {moral < 31 && <span style={{ color: '#e74c3c', fontWeight: 900 }}> Moral baixo! Seus ganhos estao reduzidos.</span>}
-          {moral >= 81 && <span style={{ color: '#f39c12', fontWeight: 900 }}> Moral maximo! Ganhos aumentados em 20%!</span>}
         </div>
       </div>
-    </div>
+    </section>
   )
 }
 
@@ -196,81 +143,52 @@ function MoralSection({ jogador }) {
 function ClubeObjetivosSection({ jogadorID, setJogador, mostrarNotificacao, setLevelUp }) {
   const [objetivos, setObjetivos] = useState([])
   const [loading, setLoading] = useState(null)
-
-  const carregar = useCallback(() => {
-    if (!jogadorID) return
-    API.get('/api/clube/objetivos/' + jogadorID).then(res => {
-      setObjetivos(res.objetivos || [])
-    }).catch(() => {})
-  }, [jogadorID])
-
+  const carregar = useCallback(() => { if (!jogadorID) return; API.get('/api/clube/objetivos/' + jogadorID).then(res => setObjetivos(res.objetivos || [])).catch(() => {}) }, [jogadorID])
   useEffect(() => { carregar() }, [carregar])
 
   async function coletar(objetivoID) {
     setLoading(objetivoID)
     try {
       const res = await API.post('/api/clube/objetivos/coletar', { jogador_id: jogadorID, objetivo_id: objetivoID })
-      if (res.sucesso) {
-        if (res.jogador) setJogador(res.jogador)
-        mostrarNotificacao(res.mensagem, 'sucesso')
-        if (res.level_up) setLevelUp(res.novo_nivel)
-        carregar()
-      } else {
-        mostrarNotificacao(res.mensagem, 'erro')
-      }
+      if (res.sucesso) { if (res.jogador) setJogador(res.jogador); mostrarNotificacao(res.mensagem, 'sucesso'); if (res.level_up) setLevelUp(res.novo_nivel); carregar() }
+      else mostrarNotificacao(res.mensagem, 'erro')
     } catch { mostrarNotificacao('Erro de conexao', 'erro') }
     setLoading(null)
   }
 
   if (!objetivos.length) return null
-
   return (
-    <div className="pf-section">
-      <div className="pf-section-header"><h3>OBJETIVOS DO CLUBE</h3></div>
+    <section className="jc-section">
+      <SectionHeader icon="🏆" title="Objetivos do Clube" />
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
         {objetivos.map(obj => {
-          const pct = Math.min(100, Math.round((obj.progresso / obj.objetivo) * 100))
-          const completo = obj.progresso >= obj.objetivo
+          const pct = Math.min(100, Math.round((obj.progresso / obj.objetivo) * 100)), completo = obj.progresso >= obj.objetivo
           const recompensas = []
           if (obj.recompensa_dinheiro > 0) recompensas.push(`R$ ${fmt(obj.recompensa_dinheiro)}`)
           if (obj.recompensa_xp > 0) recompensas.push(`+${obj.recompensa_xp} XP`)
           if (obj.recompensa_moedas > 0) recompensas.push(`+${obj.recompensa_moedas} moedas`)
-
           return (
             <div key={obj.id} style={{
-              background: obj.coletado ? '#f5f5f5' : completo ? '#eafaf1' : '#f9f9f9',
-              border: `2px solid ${obj.coletado ? '#ccc' : completo ? '#82e0aa' : '#ddd'}`,
-              borderRadius: 12, padding: '12px 14px', opacity: obj.coletado ? 0.6 : 1,
+              background: obj.coletado ? 'rgba(255,255,255,0.02)' : completo ? 'rgba(34,197,94,0.06)' : 'rgba(255,255,255,0.03)',
+              border: `1px solid ${obj.coletado ? 'rgba(255,255,255,0.06)' : completo ? 'rgba(34,197,94,0.2)' : 'rgba(255,255,255,0.06)'}`,
+              borderRadius: 14, padding: '12px 14px', opacity: obj.coletado ? 0.5 : 1,
             }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
-                <div>
-                  <span style={{ fontSize: 18 }}>{obj.icone}</span>
-                  <span style={{ fontWeight: 900, fontSize: 13, marginLeft: 6 }}>{obj.nome}</span>
-                </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+                <div><span style={{ fontSize: 18 }}>{obj.icone}</span> <span style={{ fontWeight: 900, fontSize: 13 }}>{obj.nome}</span></div>
                 <span style={{ fontSize: 11, color: '#64748b' }}>{obj.progresso}/{obj.objetivo}</span>
               </div>
-              <div style={{ fontSize: 11, color: '#94A3B8', marginBottom: 8 }}>{obj.descricao}</div>
-              <div style={{ background: 'rgba(255,255,255,0.08)', borderRadius: 6, height: 8, overflow: 'hidden', marginBottom: 8 }}>
-                <div style={{
-                  width: `${pct}%`, height: '100%',
-                  background: completo ? '#27ae60' : '#2980b9', borderRadius: 6, transition: 'width 0.4s',
-                }} />
-              </div>
+              <div style={{ fontSize: 11, color: '#94a3b8', marginBottom: 8 }}>{obj.descricao}</div>
+              <div className="jc-progress" style={{ marginBottom: 8 }}><div style={{ width: `${pct}%`, background: completo ? '#22c55e' : '#1e6fff' }} /></div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: 11, fontWeight: 700, color: '#27ae60' }}>{recompensas.join(' · ')}</span>
-                {completo && !obj.coletado && (
-                  <button className="btn-work btn-verde btn-small" onClick={() => coletar(obj.id)} disabled={loading === obj.id}>
-                    {loading === obj.id ? '...' : 'Coletar'}
-                  </button>
-                )}
-                {obj.coletado && <span style={{ fontSize: 11, color: '#27ae60', fontWeight: 700 }}>Coletado</span>}
+                <span style={{ fontSize: 11, fontWeight: 700, color: '#22c55e' }}>{recompensas.join(' . ')}</span>
+                {completo && !obj.coletado && <button className="jc-btn jc-btn-primary" style={{ minHeight: 30, fontSize: 11 }} onClick={() => coletar(obj.id)} disabled={loading === obj.id}>{loading === obj.id ? '...' : 'Coletar'}</button>}
+                {obj.coletado && <span style={{ fontSize: 11, color: '#22c55e', fontWeight: 700 }}>Coletado</span>}
               </div>
             </div>
           )
         })}
       </div>
-      <div style={{ fontSize: 11, color: '#64748b', marginTop: 8, textAlign: 'center' }}>Objetivos renovam todo mes</div>
-    </div>
+    </section>
   )
 }
 
@@ -281,183 +199,142 @@ function ClubeObjetivosSection({ jogadorID, setJogador, mostrarNotificacao, setL
 export default function MeuJogador() {
   const { jogador, setJogador, jogadorID, mostrarNotificacao, setLevelUp, avatares, getAvatar } = useGame()
   const [clube, setClube] = useState(null)
+  const [showAvatarPicker, setShowAvatarPicker] = useState(false)
 
-  useEffect(() => {
-    if (jogadorID) API.get('/api/clube/atual/' + jogadorID).then(setClube).catch(() => {})
-  }, [jogadorID])
+  useEffect(() => { if (jogadorID) API.get('/api/clube/atual/' + jogadorID).then(setClube).catch(() => {}) }, [jogadorID])
 
   async function selecionarAvatar(id) {
     const res = await API.post('/api/jogador/' + jogadorID, { avatar: id })
     setJogador(res)
     mostrarNotificacao('Avatar atualizado!', 'sucesso')
+    setShowAvatarPicker(false)
   }
 
   async function distribuirPonto(atributo) {
     const res = await API.post('/api/distribuir-ponto', { jogador_id: jogadorID, atributo })
-    if (res.sucesso) {
-      setJogador(res.jogador)
-      mostrarNotificacao(res.mensagem, 'sucesso')
-    } else {
-      mostrarNotificacao(res.mensagem, 'erro')
-    }
+    if (res.sucesso) { setJogador(res.jogador); mostrarNotificacao(res.mensagem, 'sucesso') }
+    else mostrarNotificacao(res.mensagem, 'erro')
   }
 
   if (!jogador) return null
 
   const xpPct = Math.min(100, Math.round((jogador.xp / jogador.xp_proximo) * 100))
-
   const getBordaTier = (nivel) => {
-    if (nivel >= 190) return 'desafiante'
-    if (nivel >= 160) return 'grao-mestre'
-    if (nivel >= 135) return 'mestre'
-    if (nivel >= 100) return 'diamante'
-    if (nivel >= 72) return 'esmeralda'
-    if (nivel >= 50) return 'platina'
-    if (nivel >= 30) return 'ouro'
-    if (nivel >= 20) return 'prata'
-    if (nivel >= 10) return 'bronze'
-    return 'ferro'
+    if (nivel >= 190) return 'Desafiante'; if (nivel >= 160) return 'Grao-Mestre'; if (nivel >= 135) return 'Mestre'
+    if (nivel >= 100) return 'Diamante'; if (nivel >= 72) return 'Esmeralda'; if (nivel >= 50) return 'Platina'
+    if (nivel >= 30) return 'Ouro'; if (nivel >= 20) return 'Prata'; if (nivel >= 10) return 'Bronze'; return 'Ferro'
   }
   const bordaTier = getBordaTier(jogador.nivel)
-  const TIER_NOMES = {
-    ferro: 'Ferro', bronze: 'Bronze', prata: 'Prata', ouro: 'Ouro',
-    platina: 'Platina', esmeralda: 'Esmeralda', diamante: 'Diamante',
-    mestre: 'Mestre', 'grao-mestre': 'Grao-Mestre', desafiante: 'Desafiante',
-  }
-
-  const desbloqueados = (jogador.avatares_premium || '')
-    .split(',').filter(Boolean).map(Number)
-
-  const winRate = jogador.vitorias + jogador.derrotas > 0
-    ? Math.round((jogador.vitorias / (jogador.vitorias + jogador.derrotas)) * 100) : 0
+  const desbloqueados = (jogador.avatares_premium || '').split(',').filter(Boolean).map(Number)
+  const winRate = jogador.vitorias + jogador.derrotas > 0 ? Math.round((jogador.vitorias / (jogador.vitorias + jogador.derrotas)) * 100) : 0
   const temPontos = jogador.pontos_atributo > 0
 
   return (
-    <div className="pf" data-tutorial="perfil-area">
-      <h2 className="page-title">MEU JOGADOR</h2>
-
-      {/* === CARD DO JOGADOR === */}
-      <div className={`pf-hero pf-elo-${bordaTier}`}>
-        <div className="pf-hero-inner">
-          <div className="pf-hero-bg" />
-          <div className="pf-hero-content">
-            <div className="pf-avatar-frame">
-              <img
-                src={`/elos/${bordaTier}.png`}
-                alt={TIER_NOMES[bordaTier]}
-                className="pf-elo-img"
-                onError={e => { e.target.style.display = 'none' }}
-              />
-              <div className="pf-avatar">{getAvatar(jogador.avatar)}</div>
-              <div className={`pf-elo-tag pf-elo-tag-${bordaTier}`}>{TIER_NOMES[bordaTier]}</div>
-            </div>
-            <div className="pf-avatar-selector">
+    <main className="jc-profile">
+      {/* Avatar Picker */}
+      {showAvatarPicker && (
+        <div className="jc-avatar-picker-overlay" onClick={() => setShowAvatarPicker(false)}>
+          <div className="jc-avatar-picker" onClick={e => e.stopPropagation()}>
+            <button className="jc-avatar-picker-close" onClick={() => setShowAvatarPicker(false)}>x</button>
+            <h3>Escolha seu Avatar</h3>
+            <p>Selecione a imagem que representa seu jogador.</p>
+            <div className="jc-avatar-grid">
+              {AVATAR_IMGS.map(id => (
+                <div key={id} className={`jc-avatar-option ${jogador.avatar === id ? 'selected' : ''}`} onClick={() => selecionarAvatar(id)}>
+                  <img src={`/avatar/${id}.png`} alt={`Avatar ${id}`} />
+                  {jogador.avatar === id && <div className="jc-avatar-selected-mark">✓</div>}
+                </div>
+              ))}
               {avatares.filter(a => a.tipo === 'comum').map(a => (
-                <span key={a.id} className={`pf-av-opt${jogador.avatar === a.id ? ' sel' : ''}`}
-                  onClick={() => selecionarAvatar(a.id)}>{a.icone}</span>
+                <div key={`e${a.id}`} className={`jc-avatar-option ${jogador.avatar === a.id ? 'selected' : ''}`} onClick={() => selecionarAvatar(a.id)}>
+                  <div className="jc-avatar-emoji">{a.icone}</div>
+                  {jogador.avatar === a.id && <div className="jc-avatar-selected-mark">✓</div>}
+                </div>
               ))}
               {desbloqueados.map(id => {
                 const av = avatares.find(a => a.id === id)
-                return av ? <span key={id} className={`pf-av-opt prem${jogador.avatar === id ? ' sel' : ''}`}
-                  onClick={() => selecionarAvatar(id)}>{av.icone}</span> : null
+                return av ? (
+                  <div key={`p${id}`} className={`jc-avatar-option ${jogador.avatar === id ? 'selected' : ''}`} onClick={() => selecionarAvatar(id)}>
+                    <div className="jc-avatar-emoji">{av.icone}</div>
+                    {jogador.avatar === id && <div className="jc-avatar-selected-mark">✓</div>}
+                  </div>
+                ) : null
               })}
             </div>
-            <div className="pf-hero-info">
-              <div className="pf-nome">{jogador.nome}</div>
-              {jogador.titulo && <div className="pf-titulo">{jogador.titulo}</div>}
-              <div className="pf-rank-row">
-                <span className="pf-rank">{jogador.rank || 'Peladeiro'}</span>
-                {jogador.posicao && <span className="pf-pos-badge">{
-                  { GK: 'Goleiro', DEF: 'Defensor', MED: 'Meia', ATA: 'Atacante' }[jogador.posicao] || jogador.posicao
-                }</span>}
-              </div>
-              {clube && clube.tem_clube && (
-                <div className="pf-clube-row">
-                  <span className="pf-clube-badge" style={{ background: `linear-gradient(135deg, ${clube.cor1}, ${clube.cor2})` }}>
-                    {clube.icone} {clube.nome}
-                  </span>
-                  {clube.camisa > 0 && <span className="pf-camisa-badge">#{clube.camisa}</span>}
-                </div>
-              )}
-              <div className="pf-level-row">
-                <span className="pf-level-chip">LVL {jogador.nivel}</span>
-                <span className="pf-xp-text">{jogador.xp}/{jogador.xp_proximo} XP</span>
-              </div>
-              <div className="pf-xp-bar"><div className="pf-xp-fill" style={{ width: xpPct + '%' }} /></div>
-              <div className="pf-code">Codigo: <strong>{jogador.codigo_amigo}</strong></div>
-            </div>
           </div>
-          {jogador.titulos && (
-            <div className="pf-hero-titulos">
-              <div className="pf-hero-titulos-label">Titulos</div>
-              <div className="pf-hero-titulos-list">
+        </div>
+      )}
+
+      {/* Hero Card */}
+      <div className="jc-profile-hero">
+        <div className="jc-profile-hero-overlay" />
+        <div className="jc-profile-hero-gold" />
+        <div className="jc-profile-hero-content">
+          <div className="jc-profile-avatar-area">
+            <div className="jc-profile-avatar">
+              <AvatarDisplay avatarId={jogador.avatar} />
+            </div>
+            <div><span className="jc-profile-elo-tag">{bordaTier}</span></div>
+            <button className="jc-profile-change-btn" onClick={() => setShowAvatarPicker(true)}>Trocar Avatar</button>
+          </div>
+          <div className="jc-profile-info">
+            <div className="jc-profile-name">{jogador.nome}</div>
+            {jogador.titulo && <div className="jc-profile-titulo">{jogador.titulo}</div>}
+            <div className="jc-profile-tags">
+              <span className="jc-ptag jc-ptag-rank">{jogador.rank || 'Peladeiro'}</span>
+              {jogador.posicao && <span className="jc-ptag jc-ptag-pos">{{ GK: 'Goleiro', DEF: 'Defensor', MED: 'Meia', ATA: 'Atacante' }[jogador.posicao] || jogador.posicao}</span>}
+              {clube && clube.tem_clube && <span className="jc-ptag jc-ptag-clube">{clube.icone} {clube.nome}{clube.camisa > 0 ? ` #${clube.camisa}` : ''}</span>}
+            </div>
+            {jogador.titulos && (
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginBottom: 10 }}>
                 {jogador.titulos.split(',').filter(Boolean).map((t, i) => (
-                  <span key={i} className={`pf-hero-titulo-badge${t === jogador.titulo ? ' pf-hero-titulo-ativo' : ''}`}>{t}</span>
+                  <span key={i} style={{ padding: '3px 8px', borderRadius: 6, fontSize: 10, fontWeight: 800, background: t === jogador.titulo ? 'rgba(214,168,79,0.15)' : 'rgba(255,255,255,0.04)', color: t === jogador.titulo ? '#f1c76a' : '#64748b', border: `1px solid ${t === jogador.titulo ? 'rgba(214,168,79,0.2)' : 'rgba(255,255,255,0.06)'}` }}>{t}</span>
                 ))}
               </div>
+            )}
+            <div className="jc-profile-xp">
+              <div className="jc-profile-xp-top">
+                <div className="jc-profile-level">LVL <span>{jogador.nivel}</span></div>
+                <div className="jc-profile-xp-text">{jogador.xp}/{jogador.xp_proximo} XP</div>
+              </div>
+              <div className="jc-profile-xp-bar"><div className="jc-profile-xp-fill" style={{ width: xpPct + '%' }} /></div>
             </div>
-          )}
-        </div>
-      </div>
-
-      {/* === STATS GRID === */}
-      <div className="pf-stats">
-        <div className="pf-stat">
-          <span className="pf-stat-icon">💪</span><span className="pf-stat-val">{jogador.forca}</span><span className="pf-stat-lbl">Forca</span>
-          {temPontos && <button className="pf-stat-plus" onClick={() => distribuirPonto('forca')}>+</button>}
-        </div>
-        <div className="pf-stat">
-          <span className="pf-stat-icon">🏃</span><span className="pf-stat-val">{jogador.velocidade}</span><span className="pf-stat-lbl">Velocidade</span>
-          {temPontos && <button className="pf-stat-plus" onClick={() => distribuirPonto('velocidade')}>+</button>}
-        </div>
-        <div className="pf-stat">
-          <span className="pf-stat-icon">⚽</span><span className="pf-stat-val">{jogador.habilidade}</span><span className="pf-stat-lbl">Habilidade</span>
-          {temPontos && <button className="pf-stat-plus" onClick={() => distribuirPonto('habilidade')}>+</button>}
-        </div>
-        <div className="pf-stat"><span className="pf-stat-icon">💰</span><span className="pf-stat-val">R${fmt(jogador.dinheiro_mao)}</span><span className="pf-stat-lbl">Dinheiro</span></div>
-        <div className="pf-stat"><span className="pf-stat-icon">⭐</span><span className="pf-stat-val">{jogador.pontos_fama}</span><span className="pf-stat-lbl">Fama</span></div>
-        <div className="pf-stat"><span className="pf-stat-icon">⚔️</span><span className="pf-stat-val">{jogador.vitorias}V/{jogador.derrotas}D</span><span className="pf-stat-lbl">{winRate}% Win</span></div>
-      </div>
-
-      {/* === PONTOS DE ATRIBUTO === */}
-      <div className="pf-section">
-        <div className="pf-section-header"><h3>PONTOS DE ATRIBUTO</h3></div>
-        <div className="pf-pontos-info">
-          <div className="pf-pontos-disponiveis">
-            <span className="pf-pontos-num">{jogador.pontos_atributo || 0}</span>
-            <span className="pf-pontos-lbl">
-              ponto{(jogador.pontos_atributo || 0) !== 1 ? 's' : ''} disponive{(jogador.pontos_atributo || 0) !== 1 ? 'is' : 'l'}
-            </span>
-          </div>
-          <div className="pf-pontos-progresso">
-            <div className="pf-pontos-bar-bg">
-              <div className="pf-pontos-bar-fill" style={{ width: `${((jogador.vitorias % 20) / 20) * 100}%` }} />
-            </div>
-            <span className="pf-pontos-bar-txt">{jogador.vitorias % 20}/20 vitorias para o proximo ponto</span>
+            <div className="jc-profile-code">Codigo: <strong>{jogador.codigo_amigo}</strong></div>
           </div>
         </div>
       </div>
 
-      {/* === MORAL === */}
+      {/* Stats */}
+      <div className="jc-stats-grid">
+        {[
+          { icon: '💪', val: jogador.forca, label: 'Forca', attr: 'forca' },
+          { icon: '🏃', val: jogador.velocidade, label: 'Velocidade', attr: 'velocidade' },
+          { icon: '⚽', val: jogador.habilidade, label: 'Habilidade', attr: 'habilidade' },
+          { icon: '💰', val: `R$${fmt(jogador.dinheiro_mao)}`, label: 'Dinheiro' },
+          { icon: '⭐', val: jogador.pontos_fama, label: 'Fama' },
+          { icon: '⚔️', val: `${jogador.vitorias}V/${jogador.derrotas}D`, label: `${winRate}% Win` },
+        ].map(({ icon, val, label, attr }) => (
+          <div key={label} className="jc-stat-card">
+            <div className="jc-stat-icon">{icon}</div>
+            <div className="jc-stat-info">
+              <div className="jc-stat-value">{val}</div>
+              <div className="jc-stat-label">{label}</div>
+            </div>
+            {temPontos && attr && <button className="jc-stat-plus" onClick={() => distribuirPonto(attr)}>+</button>}
+          </div>
+        ))}
+      </div>
+
+      {/* Pontos */}
+      <section className="jc-section" style={{ marginBottom: 18 }}>
+        <SectionHeader icon="🎯" title="Pontos de Atributo" right={`${jogador.pontos_atributo || 0} disponivel(is)`} />
+        <div className="jc-progress" style={{ marginBottom: 6 }}><div style={{ width: `${((jogador.vitorias % 20) / 20) * 100}%`, background: '#1e6fff' }} /></div>
+        <div style={{ fontSize: 11, color: '#94a3b8', fontWeight: 700 }}>{jogador.vitorias % 20}/20 vitorias para o proximo ponto</div>
+      </section>
+
       <MoralSection jogador={jogador} />
-
-      {/* === FAMA & PATROCINIO === */}
-      <FamaCard
-        jogadorID={jogadorID}
-        jogador={jogador}
-        setJogador={setJogador}
-        mostrarNotificacao={mostrarNotificacao}
-      />
-
-      {/* === OBJETIVOS DO CLUBE === */}
-      {jogador.clube_id > 0 && (
-        <ClubeObjetivosSection
-          jogadorID={jogadorID}
-          setJogador={setJogador}
-          mostrarNotificacao={mostrarNotificacao}
-          setLevelUp={setLevelUp}
-        />
-      )}
-    </div>
+      <FamaCard jogadorID={jogadorID} jogador={jogador} setJogador={setJogador} mostrarNotificacao={mostrarNotificacao} />
+      {jogador.clube_id > 0 && <ClubeObjetivosSection jogadorID={jogadorID} setJogador={setJogador} mostrarNotificacao={mostrarNotificacao} setLevelUp={setLevelUp} />}
+    </main>
   )
 }
