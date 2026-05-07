@@ -12,6 +12,27 @@ function getMoralInfo(moral) {
   return { label: 'Desmotivado', cor: '#ef4444', emoji: '😞' }
 }
 
+const POSICAO_LABEL = { GK: 'GOL', DEF: 'ZAG', MED: 'MEI', ATA: 'ATA' }
+
+function getBordaTier(nivel) {
+  if (nivel >= 190) return 'Desafiante'
+  if (nivel >= 160) return 'Grao-Mestre'
+  if (nivel >= 135) return 'Mestre'
+  if (nivel >= 100) return 'Diamante'
+  if (nivel >= 72)  return 'Esmeralda'
+  if (nivel >= 50)  return 'Platina'
+  if (nivel >= 30)  return 'Ouro'
+  if (nivel >= 20)  return 'Prata'
+  if (nivel >= 10)  return 'Bronze'
+  return 'Ferro'
+}
+
+const TIER_COR = {
+  'Ferro': '#64748b', 'Bronze': '#a16207', 'Prata': '#94a3b8', 'Ouro': '#D6A84F',
+  'Platina': '#22d3ee', 'Esmeralda': '#22c55e', 'Diamante': '#43a7ff',
+  'Mestre': '#a855f7', 'Grao-Mestre': '#ef4444', 'Desafiante': '#fbbf24',
+}
+
 function gerarNoticias(jogador, historico, progressaoHoje) {
   const noticias = []
   const nome = jogador.nome
@@ -148,29 +169,45 @@ export default function Dashboard() {
     { icon: '👤', label: 'Meu Jogador', to: '/jogador' },
   ].filter(Boolean).slice(0, 6)
 
+  // Carta do Craque: overall = média de FOR/VEL/HAB
+  const overall = Math.round(((jogador.forca || 0) + (jogador.velocidade || 0) + (jogador.habilidade || 0)) / 3)
+  const bordaTier = getBordaTier(jogador.nivel)
+  const corTier = TIER_COR[bordaTier] || '#D6A84F'
+  const posLabel = POSICAO_LABEL[jogador.posicao] || 'JOG'
+
   return (
     <main className="jc-dashboard">
-      {/* Hero */}
-      <div className="jc-hero">
+      {/* Carta do Craque */}
+      <div className="jc-hero jc-card">
         <div className="jc-hero-overlay" />
-        <div className="jc-hero-gold-line" />
+        <div className="jc-card-shine" />
         <div className="jc-hero-content">
-          <div className="jc-hero-top">
-            <div className="jc-hero-avatar">{getAvatar(jogador.avatar)}</div>
-            <div className="jc-hero-info">
-              <div className="jc-hero-name">{jogador.nome}</div>
+          <div className="jc-card-top">
+            <div className="jc-card-rating" style={{ borderColor: corTier + '55' }}>
+              <div className="jc-card-overall" style={{ color: corTier }}>{overall || '-'}</div>
+              <div className="jc-card-pos">{posLabel}</div>
+              <div className="jc-card-tier" style={{ color: corTier, borderColor: corTier + '44' }}>{bordaTier}</div>
+            </div>
+
+            <div className="jc-card-avatar">
+              {getAvatar(jogador.avatar)}
+            </div>
+
+            <div className="jc-card-info">
+              <div className="jc-card-name">{jogador.nome}</div>
               <div className="jc-hero-meta">
                 <span className="jc-hero-tag rank">{jogador.rank || 'Peladeiro'}</span>
-                <span className="jc-hero-tag level">Nivel {jogador.nivel}</span>
+                <span className="jc-hero-tag level">Lv {jogador.nivel}</span>
                 {jogador.clube_nome && <span className="jc-hero-tag clube">{jogador.clube_nome}</span>}
               </div>
-            </div>
-            <div className="jc-moral-area">
-              <div className="jc-moral-ring" style={{ border: `3px solid ${moralInfo.cor}`, boxShadow: `0 0 20px ${moralInfo.cor}22` }}>
-                <div className="jc-moral-num">{moral}</div>
-                <div className="jc-moral-label">Moral</div>
+              <div className="jc-card-attrs">
+                <div className="jc-card-attr"><span>FOR</span><strong>{jogador.forca || 0}</strong></div>
+                <div className="jc-card-attr"><span>VEL</span><strong>{jogador.velocidade || 0}</strong></div>
+                <div className="jc-card-attr"><span>HAB</span><strong>{jogador.habilidade || 0}</strong></div>
+                <div className="jc-card-attr jc-card-moral" style={{ color: moralInfo.cor }}>
+                  <span>MOR</span><strong>{moralInfo.emoji} {moral}</strong>
+                </div>
               </div>
-              <div className="jc-moral-status" style={{ color: moralInfo.cor }}>{moralInfo.emoji} {moralInfo.label}</div>
             </div>
           </div>
 
@@ -229,22 +266,39 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* O QUE FAZER AGORA */}
+      {/* PRÓXIMO PASSO — CTA principal */}
       {proximosPassos.length > 0 && (
         <section className="jc-section" style={{ marginBottom: 18 }}>
-          <SectionHeader icon="🎯" title="O Que Fazer Agora" />
-          <div className="jc-proximos-grid">
-            {proximosPassos.slice(0, 3).map((p, i) => (
-              <Link key={i} to={p.link} className="jc-proximo-card" style={{ borderLeftColor: p.cor, textDecoration: 'none' }}>
-                <span className="jc-proximo-icon">{p.icone}</span>
-                <div style={{ flex: 1 }}>
-                  <div className="jc-proximo-titulo">{p.titulo}</div>
-                  <div className="jc-proximo-desc">{p.desc}</div>
-                </div>
-                <span className="jc-proximo-arrow">→</span>
-              </Link>
-            ))}
-          </div>
+          <SectionHeader icon="🎯" title="Sua Próxima Jogada" />
+          <Link
+            to={proximosPassos[0].link}
+            className="jc-cta-principal"
+            style={{ borderColor: proximosPassos[0].cor + '55', boxShadow: `0 6px 24px ${proximosPassos[0].cor}22` }}
+          >
+            <div className="jc-cta-icon-wrap" style={{ background: proximosPassos[0].cor + '22', color: proximosPassos[0].cor }}>
+              <span>{proximosPassos[0].icone}</span>
+            </div>
+            <div className="jc-cta-content">
+              <div className="jc-cta-titulo">{proximosPassos[0].titulo}</div>
+              <div className="jc-cta-desc">{proximosPassos[0].desc}</div>
+            </div>
+            <span className="jc-cta-btn" style={{ background: proximosPassos[0].cor }}>JOGAR →</span>
+          </Link>
+
+          {proximosPassos.length > 1 && (
+            <div className="jc-proximos-grid" style={{ marginTop: 10 }}>
+              {proximosPassos.slice(1, 3).map((p, i) => (
+                <Link key={i} to={p.link} className="jc-proximo-card" style={{ borderLeftColor: p.cor, textDecoration: 'none' }}>
+                  <span className="jc-proximo-icon">{p.icone}</span>
+                  <div style={{ flex: 1 }}>
+                    <div className="jc-proximo-titulo">{p.titulo}</div>
+                    <div className="jc-proximo-desc">{p.desc}</div>
+                  </div>
+                  <span className="jc-proximo-arrow">→</span>
+                </Link>
+              ))}
+            </div>
+          )}
         </section>
       )}
 

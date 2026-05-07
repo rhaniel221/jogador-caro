@@ -28,6 +28,202 @@
   pointer-events: none;
 }
 
+/* === Carta do Craque (FIFA-inspired) === */
+.jc-card { min-height: 260px; }
+
+.jc-card-shine {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at top right, rgba(214,168,79,0.12), transparent 60%),
+    linear-gradient(120deg, transparent 40%, rgba(255,255,255,0.04) 50%, transparent 60%);
+  pointer-events: none;
+}
+
+.jc-card-top {
+  display: grid;
+  grid-template-columns: auto auto 1fr;
+  gap: 18px;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.jc-card-rating {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 10px;
+  border-radius: 14px;
+  border: 2px solid rgba(214,168,79,0.3);
+  background: rgba(0,0,0,0.35);
+  min-width: 80px;
+  backdrop-filter: blur(6px);
+}
+
+.jc-card-overall {
+  font-family: 'Teko', sans-serif;
+  font-size: 56px;
+  font-weight: 700;
+  line-height: 0.85;
+  letter-spacing: -1px;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.4);
+}
+
+.jc-card-pos {
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+  color: #fff;
+  text-transform: uppercase;
+}
+
+.jc-card-tier {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid;
+  text-transform: uppercase;
+}
+
+.jc-card-avatar {
+  width: 110px;
+  height: 110px;
+  border-radius: 18px;
+  background: rgba(6,17,31,0.6);
+  border: 2px solid rgba(214,168,79,0.25);
+  box-shadow: 0 8px 28px rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 60px;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+.jc-card-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+.jc-card-info {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.jc-card-name {
+  font-family: 'Teko', sans-serif;
+  font-weight: 700;
+  font-size: 30px;
+  letter-spacing: 1px;
+  line-height: 1;
+  text-transform: uppercase;
+  color: #fff;
+}
+
+.jc-card-attrs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.jc-card-attr {
+  background: rgba(0,0,0,0.3);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 8px;
+  padding: 6px 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  backdrop-filter: blur(4px);
+}
+
+.jc-card-attr span {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: #94a3b8;
+  text-transform: uppercase;
+}
+
+.jc-card-attr strong {
+  font-family: 'Teko', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1;
+  color: #fff;
+}
+
+.jc-card-moral strong { font-size: 14px; }
+
+/* === CTA Principal "Próxima Jogada" === */
+.jc-cta-principal {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 20px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(15,34,56,0.95), rgba(10,24,41,0.95));
+  border: 2px solid;
+  text-decoration: none;
+  color: #f8fafc;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.jc-cta-principal:hover {
+  transform: translateY(-2px);
+}
+
+.jc-cta-icon-wrap {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  flex-shrink: 0;
+}
+
+.jc-cta-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.jc-cta-titulo {
+  font-family: 'Teko', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  line-height: 1;
+  text-transform: uppercase;
+  color: #fff;
+  margin-bottom: 4px;
+}
+
+.jc-cta-desc {
+  font-size: 12px;
+  color: #94a3b8;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.jc-cta-btn {
+  font-family: 'Teko', sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: 1.5px;
+  padding: 10px 18px;
+  border-radius: 10px;
+  color: #fff;
+  white-space: nowrap;
+  text-transform: uppercase;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.3);
+  flex-shrink: 0;
+}
+
 .jc-hero-gold-line {
   position: absolute;
   top: 0;
@@ -343,6 +539,42 @@
   .jc-quick-grid { grid-template-columns: repeat(2, 1fr); }
   .jc-moral-ring { width: 56px; height: 56px; }
   .jc-moral-num { font-size: 24px; }
+
+  /* Carta no mobile: rating empilhado em cima do avatar */
+  .jc-card-top {
+    grid-template-columns: auto 1fr;
+    gap: 12px;
+  }
+  .jc-card-rating {
+    grid-row: span 1;
+    flex-direction: row;
+    min-width: 0;
+    padding: 8px 10px;
+    gap: 8px;
+  }
+  .jc-card-overall { font-size: 36px; }
+  .jc-card-avatar { width: 80px; height: 80px; font-size: 44px; }
+  .jc-card-name { font-size: 24px; }
+  .jc-card-attrs { grid-template-columns: repeat(4, 1fr); gap: 4px; }
+  .jc-card-attr { padding: 4px 2px; }
+  .jc-card-attr strong { font-size: 18px; }
+  .jc-card-moral strong { font-size: 12px; }
+
+  /* CTA empilha botão embaixo */
+  .jc-cta-principal { flex-wrap: wrap; padding: 14px 16px; }
+  .jc-cta-btn { width: 100%; text-align: center; }
+}
+
+/* Mobile bem pequeno: carta vira coluna */
+@media (max-width: 480px) {
+  .jc-card-top {
+    grid-template-columns: 1fr;
+    text-align: center;
+    justify-items: center;
+  }
+  .jc-card-rating { flex-direction: row; }
+  .jc-card-info { align-items: center; width: 100%; }
+  .jc-hero-meta { justify-content: center; }
 }
 
 /* Proximos Passos */
