@@ -6465,3 +6465,112 @@ input.game-input::placeholder { color: #475569; }
   background: linear-gradient(90deg, transparent, rgba(214,168,79,0.25), transparent);
   margin: 16px 0;
 }
+
+/* ================================================================
+   OVERLAYS PREMIUM (jc-overlay, jc-levelup, jc-dialog, jc-capitulo)
+================================================================ */
+.jc-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,8,20,0.8);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 9999;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    animation: jc-overlay-in 0.3s ease;
+}
+@keyframes jc-overlay-in { from { opacity: 0; } to { opacity: 1; } }
+
+@keyframes jc-confetti-fall {
+    0%   { transform: translateY(-5vh) rotate(0deg); opacity: 1; }
+    80%  { opacity: 0.8; }
+    100% { transform: translateY(110vh) rotate(540deg); opacity: 0; }
+}
+.jc-confetti {
+    position: fixed; top: 0; pointer-events: none; z-index: 10000;
+    border-radius: 2px; animation: jc-confetti-fall linear forwards;
+}
+
+@keyframes jc-card-pop { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+@keyframes jc-nivel-bounce { from { transform: scale(0); } to { transform: scale(1); } }
+@keyframes jc-icon-pulse { 0% { transform: scale(0); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
+
+.jc-levelup-card {
+    position: relative; background: linear-gradient(180deg, rgba(13,30,54,0.95), rgba(6,17,31,0.98));
+    border: 1px solid rgba(214,168,79,0.25); padding: 36px 32px; text-align: center;
+    border-radius: 24px; max-width: 380px; width: 90vw; z-index: 10001;
+    animation: jc-card-pop 0.5s cubic-bezier(0.34,1.56,0.64,1); overflow: hidden;
+}
+.jc-levelup-glow {
+    position: absolute; top: -60px; left: 50%; transform: translateX(-50%);
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(214,168,79,0.15) 0%, transparent 70%); pointer-events: none;
+}
+.jc-levelup-badge {
+    display: inline-block; font-family: var(--font-titulo); font-size: 14px; font-weight: 700;
+    letter-spacing: 4px; color: #D6A84F; background: rgba(214,168,79,0.1);
+    border: 1px solid rgba(214,168,79,0.2); padding: 4px 18px; border-radius: 8px; margin-bottom: 12px;
+}
+.jc-levelup-nivel {
+    font-family: var(--font-titulo); font-size: 88px; font-weight: 700; color: #fff;
+    line-height: 1; margin: 8px 0 12px; text-shadow: 0 4px 20px rgba(30,111,255,0.3);
+    animation: jc-nivel-bounce 0.6s cubic-bezier(0.34,1.56,0.64,1) 0.3s both;
+}
+.jc-levelup-desc { color: #94a3b8; font-size: 13px; font-weight: 700; margin-bottom: 14px; line-height: 1.5; }
+.jc-levelup-unlocks {
+    background: rgba(34,197,94,0.08); border: 1px solid rgba(34,197,94,0.2);
+    border-radius: 14px; padding: 12px 16px; margin-bottom: 10px;
+    animation: jc-nivel-bounce 0.6s cubic-bezier(0.34,1.56,0.64,1) 0.6s both;
+}
+.jc-levelup-unlocks-title { font-family: var(--font-titulo); font-size: 13px; font-weight: 700; letter-spacing: 2px; color: #22c55e; margin-bottom: 8px; }
+.jc-levelup-unlock-item { color: #f8fafc; font-size: 12px; font-weight: 700; padding: 4px 0; }
+
+.jc-dialog-card {
+    position: relative; background: linear-gradient(180deg, rgba(13,30,54,0.95), rgba(6,17,31,0.98));
+    border: 1px solid rgba(30,111,255,0.2); padding: 28px 24px; text-align: center;
+    border-radius: 20px; max-width: 380px; width: 90vw; z-index: 10001;
+    animation: jc-card-pop 0.4s cubic-bezier(0.34,1.56,0.64,1);
+}
+.jc-dialog-icon { font-size: 48px; margin-bottom: 10px; animation: jc-icon-pulse 0.6s ease; }
+.jc-dialog-title { font-family: var(--font-titulo); font-size: 22px; font-weight: 700; color: #fff; letter-spacing: 1px; margin-bottom: 8px; }
+.jc-dialog-text { color: #94a3b8; font-size: 14px; font-weight: 600; line-height: 1.6; margin-bottom: 18px; }
+
+.jc-capitulo-card {
+    position: relative; background: linear-gradient(180deg, rgba(13,30,54,0.95), rgba(6,17,31,0.98));
+    border: 1px solid rgba(214,168,79,0.2); padding: 32px 28px; text-align: center;
+    border-radius: 24px; max-width: 440px; width: 92vw; z-index: 10001;
+    animation: jc-card-pop 0.5s cubic-bezier(0.34,1.56,0.64,1); overflow: hidden;
+}
+.jc-capitulo-glow {
+    position: absolute; top: -40px; left: 50%; transform: translateX(-50%);
+    width: 250px; height: 250px;
+    background: radial-gradient(circle, rgba(214,168,79,0.12) 0%, transparent 70%); pointer-events: none;
+}
+.jc-capitulo-badge {
+    display: inline-block; font-size: 10px; font-weight: 900; letter-spacing: 3px;
+    color: #D6A84F; background: rgba(214,168,79,0.1); border: 1px solid rgba(214,168,79,0.2);
+    padding: 4px 14px; border-radius: 6px; margin-bottom: 10px;
+}
+.jc-capitulo-fase { font-family: var(--font-titulo); font-size: 16px; font-weight: 700; color: #43a7ff; letter-spacing: 3px; margin-bottom: 6px; }
+.jc-capitulo-titulo { font-family: var(--font-titulo); font-size: 32px; font-weight: 700; color: #fff; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 14px; }
+.jc-capitulo-arte { width: 100%; max-width: 300px; border-radius: 14px; margin: 10px auto; display: block; border: 1px solid rgba(255,255,255,0.08); }
+.jc-capitulo-desbloqueio { color: #22c55e; font-size: 14px; font-weight: 900; margin-top: 10px; padding: 8px 14px; border-radius: 10px; background: rgba(34,197,94,0.08); border: 1px solid rgba(34,197,94,0.15); }
+
+/* Tutorial tooltip premium */
+.tutorial-tooltip {
+  position: fixed; z-index: 9998; pointer-events: auto;
+  background: rgba(13,30,54,0.95); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(30,111,255,0.3); border-radius: 16px; padding: 18px 20px 16px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+  animation: tut-tooltip-in 0.35s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.tutorial-titulo { font-family: var(--font-titulo); font-size: 18px; color: #fff; margin-bottom: 6px; line-height: 1.2; letter-spacing: 0.5px; }
+.tutorial-texto { font-size: 13px; font-weight: 600; color: #94a3b8; line-height: 1.5; margin-bottom: 14px; }
+.tutorial-badge { display: inline-block; background: rgba(30,111,255,0.15); color: #43a7ff; font-size: 10px; font-weight: 900; padding: 3px 10px; border-radius: 8px; margin-bottom: 8px; letter-spacing: 0.5px; border: 1px solid rgba(30,111,255,0.2); }
+.tutorial-btn { border-radius: 10px !important; min-height: 36px !important; }
+.tutorial-skip { color: #475569; font-size: 11px; font-weight: 700; cursor: pointer; }
+.tutorial-skip:hover { color: #94a3b8; }
+.tutorial-hint { color: #f1c76a; font-size: 11px; font-weight: 800; }
+.tutorial-highlight { border: 2px solid rgba(30,111,255,0.5); border-radius: 10px; box-shadow: 0 0 20px rgba(30,111,255,0.2); }
