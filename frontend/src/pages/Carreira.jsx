@@ -1,13 +1,15 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, Suspense, lazy } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useGame } from '../context/GameContext'
 import Trabalhos from './Trabalhos'
 import Desafio1v1 from './Desafio1v1'
 import Torneio from './Torneio'
 import Estadio from './Estadio'
+const MiniGame = lazy(() => import('./MiniGame'))
 
 const ABAS = [
   { id: 'trabalhos', label: 'Trabalhos', icon: '⚽', minLevel: 1 },
+  { id: 'minigame', label: 'MiniGame', icon: '🎮', minLevel: 15 },
   { id: 'desafio', label: 'Desafio 1v1', icon: '🥊', minLevel: 12 },
   { id: 'estadio', label: 'Estadio PvP', icon: '⚔️', minLevel: 10 },
   { id: 'torneio', label: 'Torneio', icon: '🏆', minLevel: 1 },
@@ -66,6 +68,11 @@ export default function Carreira() {
 
       {/* Conteudo da aba ativa */}
       {abaAtiva === 'trabalhos' && <Trabalhos />}
+      {abaAtiva === 'minigame' && (
+        <Suspense fallback={<div style={{ textAlign: 'center', padding: 40, fontWeight: 900 }}>Carregando MiniGame...</div>}>
+          <MiniGame />
+        </Suspense>
+      )}
       {abaAtiva === 'desafio' && <Desafio1v1 />}
       {abaAtiva === 'estadio' && <Estadio />}
       {abaAtiva === 'torneio' && <Torneio />}

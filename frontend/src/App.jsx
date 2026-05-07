@@ -25,7 +25,6 @@ import Foruns from './pages/Foruns'
 import Banco from './pages/Banco'
 import Performance from './pages/Performance'
 import Treino from './pages/Treino'
-const MiniGame = React.lazy(() => import('./pages/MiniGame'))
 
 export default function App() {
   return (
@@ -55,11 +54,7 @@ export default function App() {
             <Route path="/banco" element={<Banco />} />
             <Route path="/performance" element={<Performance />} />
             <Route path="/treino" element={<Treino />} />
-            <Route path="/minigame" element={
-              <React.Suspense fallback={<div style={{ textAlign: 'center', padding: 40, fontWeight: 900 }}>Carregando MiniGame...</div>}>
-                <MiniGame />
-              </React.Suspense>
-            } />
+            <Route path="/minigame" element={<Navigate to="/carreira?aba=minigame" replace />} />
             {/* Rotas legadas — redireciona para novos destinos */}
             <Route path="/inicio" element={<Navigate to="/jogador" replace />} />
             <Route path="/desafio" element={<Navigate to="/carreira?aba=desafio" replace />} />

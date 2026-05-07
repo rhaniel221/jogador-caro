@@ -13,7 +13,6 @@ const links = [
   { to: '/banco', label: 'Banco', icon: '💰' },
   { to: '/top-craques', label: 'Rankings', icon: '📊' },
   { to: '/foruns', label: 'Forums', icon: '💬' },
-  { to: '/minigame', label: 'MiniGame', icon: '🎮', minLevel: 15 },
 ]
 
 export default function Nav() {

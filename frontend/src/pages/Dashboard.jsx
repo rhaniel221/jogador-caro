@@ -175,10 +175,10 @@ export default function Dashboard() {
 
   const ACESSO_RAPIDO = [
     { icon: '⚽', label: 'Trabalhar', to: '/carreira' },
+    { icon: '🎮', label: 'MiniGame', to: '/carreira?aba=minigame' },
     { icon: '🥊', label: 'Desafio 1v1', to: '/carreira?aba=desafio' },
     { icon: '🏋️', label: 'Treino', to: '/treino' },
     { icon: '👤', label: 'Meu Jogador', to: '/jogador' },
-    { icon: '🏡', label: 'Minha Vida', to: '/vida' },
     { icon: '🛒', label: 'Loja', to: '/loja' },
   ]
 
