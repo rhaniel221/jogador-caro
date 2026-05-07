@@ -4,8 +4,10 @@ import { useSearchParams } from 'react-router-dom'
 import API from '../api'
 import { fmt, itemStats } from '../utils'
 import PageGuide from '../components/PageGuide'
+import Inventario from './Inventario'
 
 export default function Loja() {
+  const [abaOuter, setAbaOuter] = useState('loja')
   const { jogador, setJogador, jogadorID, mostrarNotificacao } = useGame()
   const [searchParams, setSearchParams] = useSearchParams()
   const [itensLoja, setItensLoja] = useState([])
@@ -160,12 +162,43 @@ export default function Loja() {
 
   return (
     <>
-      <h2 className="page-title" data-tutorial="shop-area">🛒 LOJA</h2>
+      <h2 className="page-title" data-tutorial="shop-area">LOJA</h2>
+
+      {/* Outer tabs: Loja | Inventario */}
+      <div style={{
+        display: 'flex', gap: 4, marginBottom: 16,
+        borderBottom: '2px solid #e0e0e0', paddingBottom: 0,
+      }}>
+        {[
+          { id: 'loja', label: 'Comprar', icon: '🛒' },
+          { id: 'inventario', label: 'Inventario', icon: '🎒' },
+        ].map(aba => {
+          const ativa = abaOuter === aba.id
+          return (
+            <button
+              key={aba.id}
+              onClick={() => setAbaOuter(aba.id)}
+              style={{
+                padding: '10px 18px', border: 'none', cursor: 'pointer', background: 'transparent',
+                borderBottom: ativa ? '3px solid var(--azul)' : '3px solid transparent',
+                color: ativa ? 'var(--azul)' : '#555',
+                fontWeight: ativa ? 900 : 700, fontSize: 13,
+                transition: 'all 0.2s', marginBottom: -2,
+              }}
+            >
+              {aba.icon} {aba.label}
+            </button>
+          )
+        })}
+      </div>
+
+      {abaOuter === 'inventario' && <Inventario />}
+      {abaOuter === 'loja' && <>
       <PageGuide
         pageKey="loja"
         icone="🛒"
         titulo="Loja de Itens"
-        texto="Compre equipamentos para ficar mais forte e consumíveis para recuperar energia e saúde. Use dinheiro ou moedas premium!"
+        texto="Compre equipamentos para ficar mais forte e consumiveis para recuperar energia e saude. Use dinheiro ou moedas premium!"
       />
       <p className="subtitle">Nível {nivel} — R$ {fmt(jogador?.dinheiro_mao || 0)} · 🪙 {jogador?.moedas || 0} moedas</p>
 
@@ -270,6 +303,7 @@ export default function Loja() {
           </div>
         )}
       </>}
-    </>
+    </>}
+  </>
   )
 }

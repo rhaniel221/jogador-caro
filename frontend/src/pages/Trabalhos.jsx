@@ -241,7 +241,7 @@ export default function Trabalhos() {
           icone: '🏠',
           texto: res.mensagem,
         })
-        setTimeout(() => navigate('/inicio'), 300)
+        setTimeout(() => navigate('/vida'), 300)
       } else {
         mostrarNotificacao(res.mensagem || 'Não foi possível trabalhar.', 'erro')
       }
