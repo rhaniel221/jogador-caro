@@ -41,7 +41,7 @@ export default function Carreira() {
       {/* Tabs de navegacao */}
       <div style={{
         display: 'flex', gap: 6, marginBottom: 18, overflowX: 'auto',
-        padding: '6px', background: '#f0f2f5', borderRadius: 14,
+        padding: '6px', background: '#0D1B2F', borderRadius: 14, border: '1px solid rgba(255,255,255,0.06)',
       }}>
         {ABAS.map(aba => {
           const bloqueada = nivel < aba.minLevel
@@ -53,10 +53,10 @@ export default function Carreira() {
               disabled={bloqueada}
               style={{
                 padding: '12px 18px', border: 'none', cursor: bloqueada ? 'not-allowed' : 'pointer',
-                background: ativa ? '#fff' : 'transparent',
-                boxShadow: ativa ? '0 2px 8px rgba(0,0,0,0.12)' : 'none',
+                background: ativa ? '#0F5FD6' : 'transparent',
+                boxShadow: ativa ? '0 2px 8px rgba(15,95,214,0.3)' : 'none',
                 borderRadius: 10,
-                color: bloqueada ? '#bbb' : ativa ? 'var(--azul)' : '#555',
+                color: bloqueada ? '#475569' : ativa ? '#fff' : '#94A3B8',
                 fontWeight: 900, fontSize: 13, whiteSpace: 'nowrap',
                 transition: 'all 0.2s', flex: '1 1 0',
                 textAlign: 'center', opacity: bloqueada ? 0.5 : 1,
@@ -64,7 +64,7 @@ export default function Carreira() {
             >
               <div style={{ fontSize: 20, marginBottom: 2 }}>{aba.icon}</div>
               <div>{aba.label}</div>
-              {bloqueada && <div style={{ fontSize: 9, color: '#aaa', marginTop: 2 }}>Nv.{aba.minLevel}</div>}
+              {bloqueada && <div style={{ fontSize: 9, color: '#475569', marginTop: 2 }}>Nv.{aba.minLevel}</div>}
             </button>
           )
         })}

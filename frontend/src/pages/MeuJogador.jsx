@@ -113,7 +113,7 @@ function FamaCard({ jogadorID, jogador, setJogador, mostrarNotificacao }) {
               </button>
             )}
             {!famaData.patrocinio_acumulado && (
-              <span style={{ fontSize: 11, color: '#888' }}>Acumulando renda...</span>
+              <span style={{ fontSize: 11, color: '#64748b' }}>Acumulando renda...</span>
             )}
           </div>
         )}
@@ -172,14 +172,14 @@ function MoralSection({ jogador }) {
       <div style={{ background: info.bg, border: `2px solid ${info.border}`, borderRadius: 12, padding: '12px 16px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
           <span style={{ fontSize: 28, fontWeight: 900, color: info.cor }}>{moral}</span>
-          <span style={{ fontSize: 12, fontWeight: 700, color: '#556' }}>
+          <span style={{ fontSize: 12, fontWeight: 700, color: '#94A3B8' }}>
             Multiplicador: <strong style={{ color: info.cor }}>{mult}x</strong>
           </span>
         </div>
-        <div style={{ background: '#e0e0e0', borderRadius: 8, height: 12, overflow: 'hidden' }}>
+        <div style={{ background: 'rgba(255,255,255,0.08)', borderRadius: 8, height: 12, overflow: 'hidden' }}>
           <div style={{ width: `${moral}%`, height: '100%', background: info.cor, borderRadius: 8, transition: 'width 0.4s' }} />
         </div>
-        <div style={{ marginTop: 8, fontSize: 11, color: '#777', lineHeight: 1.5 }}>
+        <div style={{ marginTop: 8, fontSize: 11, color: '#64748b', lineHeight: 1.5 }}>
           Sobe ao trabalhar (+3) e vencer desafios. Cai em derrotas e notas baixas.
           {moral < 31 && <span style={{ color: '#e74c3c', fontWeight: 900 }}> Moral baixo! Seus ganhos estao reduzidos.</span>}
           {moral >= 81 && <span style={{ color: '#f39c12', fontWeight: 900 }}> Moral maximo! Ganhos aumentados em 20%!</span>}
@@ -247,10 +247,10 @@ function ClubeObjetivosSection({ jogadorID, setJogador, mostrarNotificacao, setL
                   <span style={{ fontSize: 18 }}>{obj.icone}</span>
                   <span style={{ fontWeight: 900, fontSize: 13, marginLeft: 6 }}>{obj.nome}</span>
                 </div>
-                <span style={{ fontSize: 11, color: '#888' }}>{obj.progresso}/{obj.objetivo}</span>
+                <span style={{ fontSize: 11, color: '#64748b' }}>{obj.progresso}/{obj.objetivo}</span>
               </div>
-              <div style={{ fontSize: 11, color: '#666', marginBottom: 8 }}>{obj.descricao}</div>
-              <div style={{ background: '#e0e0e0', borderRadius: 6, height: 8, overflow: 'hidden', marginBottom: 8 }}>
+              <div style={{ fontSize: 11, color: '#94A3B8', marginBottom: 8 }}>{obj.descricao}</div>
+              <div style={{ background: 'rgba(255,255,255,0.08)', borderRadius: 6, height: 8, overflow: 'hidden', marginBottom: 8 }}>
                 <div style={{
                   width: `${pct}%`, height: '100%',
                   background: completo ? '#27ae60' : '#2980b9', borderRadius: 6, transition: 'width 0.4s',
@@ -269,7 +269,7 @@ function ClubeObjetivosSection({ jogadorID, setJogador, mostrarNotificacao, setL
           )
         })}
       </div>
-      <div style={{ fontSize: 11, color: '#888', marginTop: 8, textAlign: 'center' }}>Objetivos renovam todo mes</div>
+      <div style={{ fontSize: 11, color: '#64748b', marginTop: 8, textAlign: 'center' }}>Objetivos renovam todo mes</div>
     </div>
   )
 }

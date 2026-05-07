@@ -495,7 +495,7 @@ function CampinhoSection({ jogadorID, jogador, setJogador, mostrarNotificacao, s
       )}
 
       {prox && !reqCompletos && (
-        <div style={{ marginTop: 10, fontSize: 12, fontWeight: 700, color: '#556' }}>
+        <div style={{ marginTop: 10, fontSize: 12, fontWeight: 700, color: '#94A3B8' }}>
           Complete os desafios acima para desbloquear a construcao do proximo campo.
         </div>
       )}

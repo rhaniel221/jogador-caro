@@ -5,17 +5,16 @@ import API from '../api'
 import { fmt } from '../utils'
 
 function getMoralInfo(moral) {
-  if (moral >= 81) return { label: 'Em Chamas!', cor: '#f39c12', emoji: '🔥' }
-  if (moral >= 61) return { label: 'Motivado', cor: '#27ae60', emoji: '😊' }
-  if (moral >= 31) return { label: 'Normal', cor: '#2980b9', emoji: '😐' }
-  return { label: 'Desmotivado', cor: '#e74c3c', emoji: '😞' }
+  if (moral >= 81) return { label: 'Em Chamas!', cor: '#D6A84F', emoji: '🔥' }
+  if (moral >= 61) return { label: 'Motivado', cor: '#22c55e', emoji: '😊' }
+  if (moral >= 31) return { label: 'Normal', cor: '#38A8F8', emoji: '😐' }
+  return { label: 'Desmotivado', cor: '#ef4444', emoji: '😞' }
 }
 
 function gerarNoticias(jogador, historico, progressaoHoje) {
   const noticias = []
   const nome = jogador.nome
 
-  // Combates recentes
   if (historico && historico.length > 0) {
     const recentes = historico.slice(0, 2)
     recentes.forEach(c => {
@@ -29,7 +28,6 @@ function gerarNoticias(jogador, historico, progressaoHoje) {
     })
   }
 
-  // Estado de moral
   const moral = jogador.moral ?? 70
   if (moral >= 81) {
     noticias.push({ icone: '🔥', texto: `${nome} está em chamas! Moral nas alturas após sequência impressionante.` })
@@ -37,19 +35,11 @@ function gerarNoticias(jogador, historico, progressaoHoje) {
     noticias.push({ icone: '😟', texto: `Fontes próximas revelam que ${nome} passa por um momento de reflexão.` })
   }
 
-  // Rank
   const rank = jogador.rank
   if (rank && rank !== 'Peladeiro' && rank !== 'Desconhecido') {
     noticias.push({ icone: '⭐', texto: `${nome}, ${rank} do futebol nacional, é destaque nas redes sociais esta semana.` })
   }
 
-  // Level marco
-  const nivel = jogador.nivel
-  if (nivel >= 10 && nivel % 5 === 0) {
-    noticias.push({ icone: '📈', texto: `${nome} alcança o nível ${nivel} e chama atenção de olheiros da região!` })
-  }
-
-  // Trabalho produtivo
   if (progressaoHoje) {
     const total = Object.values(progressaoHoje.trabalhos_hoje || {}).reduce((a, b) => a + b, 0)
     if (total >= 5) {
@@ -57,14 +47,13 @@ function gerarNoticias(jogador, historico, progressaoHoje) {
     }
   }
 
-  // Filler baseado no dia da semana
   const FILLERS = [
-    { icone: '📰', texto: 'Mercado de craques esquenta: agentes monitoram jogadores da regiao.' },
-    { icone: '🏟️', texto: 'Federacao anuncia novos torneios regionais para a proxima semana.' },
-    { icone: '⚽', texto: 'Especialistas analisam o cenario do futebol amador nacional.' },
-    { icone: '🥇', texto: 'Temporada promete ser historica para jogadores em ascensao.' },
+    { icone: '📰', texto: 'Mercado de craques esquenta: agentes monitoram jogadores da região.' },
+    { icone: '🏟️', texto: 'Federação anuncia novos torneios regionais para a próxima semana.' },
+    { icone: '⚽', texto: 'Especialistas analisam o cenário do futebol amador nacional.' },
+    { icone: '🥇', texto: 'Temporada promete ser histórica para jogadores em ascensão.' },
     { icone: '📊', texto: 'Ranking semanal atualizado: confira as maiores subidas!' },
-    { icone: '🎯', texto: 'Treinadores recomendam foco em atributos fisicos nesta fase da temporada.' },
+    { icone: '🎯', texto: 'Treinadores recomendam foco em atributos físicos nesta fase.' },
     { icone: '💰', texto: 'Patrocinadores aumentam investimentos no futebol nacional.' },
   ]
   const dia = new Date().getDay()
@@ -72,6 +61,35 @@ function gerarNoticias(jogador, historico, progressaoHoje) {
   if (noticias.length < 4) noticias.push(FILLERS[(dia + 2) % FILLERS.length])
 
   return noticias.slice(0, 5)
+}
+
+const S = {
+  card: {
+    background: '#0D1B2F',
+    border: '1px solid rgba(255,255,255,0.08)',
+    borderRadius: 12,
+    marginBottom: 16,
+    overflow: 'hidden',
+  },
+  cardHead: {
+    display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+    padding: '14px 18px 10px',
+    borderBottom: '1px solid rgba(255,255,255,0.06)',
+  },
+  cardTitle: {
+    fontFamily: "'Teko', sans-serif",
+    fontWeight: 600, fontSize: 17, textTransform: 'uppercase',
+    letterSpacing: 2, color: '#F8FAFC',
+  },
+  cardTitleBar: {
+    width: 3, height: 16, background: '#D6A84F',
+    borderRadius: 2, display: 'inline-block', marginRight: 8, verticalAlign: 'middle',
+  },
+  cardBody: { padding: '8px 18px 16px' },
+  badge: {
+    fontSize: 10, fontWeight: 800, padding: '3px 10px',
+    borderRadius: 6, textTransform: 'uppercase', letterSpacing: 0.5,
+  },
 }
 
 export default function Dashboard() {
@@ -106,7 +124,6 @@ export default function Dashboard() {
   const moral = jogador.moral ?? 70
   const moralInfo = getMoralInfo(moral)
 
-  // Pendencias
   const casaData = pendencias.casa?.casa
   const campinhoData = pendencias.campinho?.campinho
   const famaData = pendencias.fama
@@ -116,7 +133,6 @@ export default function Dashboard() {
   const patrocinioPendente = (famaData?.patrocinio_acumulado || 0) > 0
   const temPendencias = casaPendente || campinhoPendente || patrocinioPendente
 
-  // Agenda
   const totalTrabalhos = progressaoHoje
     ? Object.values(progressaoHoje.trabalhos_hoje || {}).reduce((a, b) => a + b, 0)
     : 0
@@ -125,49 +141,23 @@ export default function Dashboard() {
     {
       feito: totalTrabalhos > 0,
       label: totalTrabalhos > 0 ? `Trabalhou hoje (${totalTrabalhos}x)` : 'Trabalhar hoje',
-      link: '/carreira',
-      icone: '⚽',
+      link: '/carreira', icone: '⚽',
     },
   ]
   if (campinhoData) {
-    agendaItems.push({
-      feito: campinhoData.bonus_hoje === true,
-      label: 'Bonus do campinho coletado',
-      link: '/vida',
-      icone: '🏟️',
-    })
+    agendaItems.push({ feito: campinhoData.bonus_hoje === true, label: 'Bonus do campinho coletado', link: '/vida', icone: '🏟️' })
   }
   if (casaData?.tipo) {
-    agendaItems.push({
-      feito: !casaPendente,
-      label: 'Bonus da casa coletado',
-      link: '/vida',
-      icone: '🏠',
-    })
+    agendaItems.push({ feito: !casaPendente, label: 'Bonus da casa coletado', link: '/vida', icone: '🏠' })
   }
   if (famaData?.rank?.patrocinio) {
-    agendaItems.push({
-      feito: !patrocinioPendente,
-      label: 'Patrocinio coletado',
-      link: '/jogador',
-      icone: '⭐',
-    })
+    agendaItems.push({ feito: !patrocinioPendente, label: 'Patrocinio coletado', link: '/jogador', icone: '⭐' })
   }
   const tasksDiarias = tasks.filter(t => !t.completada && !t.coletada)
   if (tasksDiarias.length > 0) {
-    agendaItems.push({
-      feito: tasksDiarias.length === 0,
-      label: `${tasksDiarias.length} tarefa(s) pendente(s)`,
-      link: '/missoes',
-      icone: '📋',
-    })
+    agendaItems.push({ feito: false, label: `${tasksDiarias.length} tarefa(s) pendente(s)`, link: '/missoes', icone: '📋' })
   } else if (tasks.length > 0) {
-    agendaItems.push({
-      feito: true,
-      label: 'Todas as tarefas do dia concluidas',
-      link: '/missoes',
-      icone: '📋',
-    })
+    agendaItems.push({ feito: true, label: 'Todas as tarefas concluidas', link: '/missoes', icone: '📋' })
   }
 
   const noticias = gerarNoticias(jogador, historico, progressaoHoje)
@@ -183,80 +173,86 @@ export default function Dashboard() {
   ]
 
   return (
-    <div style={{ maxWidth: 620, margin: '0 auto' }}>
+    <div style={{ maxWidth: 660, margin: '0 auto' }}>
 
       {/* === HERO CARD === */}
       <div style={{
-        background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)',
-        borderRadius: 16, padding: '20px 22px', marginBottom: 14, color: '#fff',
+        background: 'linear-gradient(135deg, #0D1B2F 0%, #0B1E3A 60%, #112740 100%)',
+        borderRadius: 16, padding: '24px 22px', marginBottom: 16, color: '#F8FAFC',
         position: 'relative', overflow: 'hidden',
+        border: '1px solid rgba(255,255,255,0.06)',
       }}>
-        <div style={{ position: 'absolute', top: -20, right: -20, fontSize: 80, opacity: 0.06 }}>⚽</div>
+        {/* Glow decorativo */}
+        <div style={{ position: 'absolute', top: -60, right: -40, width: 200, height: 200, background: 'radial-gradient(circle, rgba(15,95,214,0.1) 0%, transparent 70%)', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', bottom: -40, left: 20, width: 150, height: 150, background: 'radial-gradient(circle, rgba(214,168,79,0.06) 0%, transparent 70%)', pointerEvents: 'none' }} />
 
-        {/* Nome + Moral */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 16 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 18, position: 'relative', zIndex: 1 }}>
           <div style={{
-            fontSize: 40, background: 'rgba(255,255,255,0.1)', borderRadius: '50%',
-            width: 56, height: 56, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+            fontSize: 40, background: 'rgba(15,95,214,0.15)', borderRadius: 14,
+            width: 60, height: 60, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+            border: '2px solid rgba(15,95,214,0.2)',
           }}>
             {getAvatar(jogador.avatar)}
           </div>
           <div style={{ flex: 1 }}>
-            <div style={{ fontWeight: 900, fontSize: 17, fontFamily: 'var(--font-titulo)' }}>{jogador.nome}</div>
-            <div style={{ fontSize: 11, color: '#90cdf4', fontWeight: 700 }}>
-              {jogador.rank || 'Peladeiro'} · Nivel {jogador.nivel}
+            <div style={{ fontFamily: "'Teko', sans-serif", fontWeight: 700, fontSize: 28, letterSpacing: 1, lineHeight: 1, textTransform: 'uppercase' }}>
+              {jogador.nome}
+            </div>
+            <div style={{ fontSize: 11, color: '#94A3B8', fontWeight: 700, marginTop: 3 }}>
+              {jogador.rank || 'Peladeiro'} &middot; Nivel {jogador.nivel}
             </div>
             {jogador.clube_nome && (
-              <div style={{ fontSize: 11, color: '#68d391', marginTop: 2 }}>{jogador.clube_nome}</div>
+              <div style={{ fontSize: 11, color: '#22c55e', marginTop: 2 }}>{jogador.clube_nome}</div>
             )}
           </div>
           <div style={{ textAlign: 'right', flexShrink: 0 }}>
-            <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: 1 }}>Moral</div>
-            <div style={{ fontSize: 22, fontWeight: 900, color: moralInfo.cor }}>{moralInfo.emoji} {moral}</div>
-            <div style={{ fontSize: 10, color: moralInfo.cor, fontWeight: 700 }}>{moralInfo.label}</div>
+            <div style={{
+              width: 68, height: 68, borderRadius: '50%', border: `3px solid ${moralInfo.cor}`,
+              display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+              boxShadow: `0 0 20px ${moralInfo.cor}22`,
+            }}>
+              <div style={{ fontFamily: "'Teko', sans-serif", fontSize: 28, fontWeight: 700, lineHeight: 1, color: '#fff' }}>{moral}</div>
+              <div style={{ fontSize: 7, textTransform: 'uppercase', letterSpacing: 1, color: '#94A3B8' }}>Moral</div>
+            </div>
+            <div style={{ fontSize: 10, color: moralInfo.cor, fontWeight: 700, marginTop: 3 }}>{moralInfo.emoji} {moralInfo.label}</div>
           </div>
         </div>
 
-        {/* Barras de status */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
+        <div style={{ display: 'flex', gap: 10, position: 'relative', zIndex: 1 }}>
           {[
-            { label: 'Energia', icon: '⚡', val: jogador.energia, max: jogador.energia_max, cor: '#f6e05e' },
-            { label: 'Saude', icon: '❤️', val: jogador.saude, max: 100, cor: '#fc8181' },
-            { label: 'XP', icon: '📊', val: jogador.xp, max: jogador.xp_proximo, cor: '#68d391' },
+            { label: 'Energia', icon: '⚡', val: jogador.energia, max: jogador.energia_max, cor: '#D6A84F' },
+            { label: 'Saude', icon: '❤️', val: jogador.saude, max: 100, cor: '#ef4444' },
+            { label: 'XP', icon: '📊', val: jogador.xp, max: jogador.xp_proximo, cor: '#0F5FD6' },
           ].map(({ label, icon, val, max, cor }) => {
             const pct = Math.min(100, Math.round((val / max) * 100))
             return (
-              <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <span style={{ fontSize: 12, width: 68, flexShrink: 0, color: 'rgba(255,255,255,0.65)' }}>
-                  {icon} {label}
-                </span>
-                <div style={{ flex: 1, background: 'rgba(255,255,255,0.1)', borderRadius: 6, height: 7, overflow: 'hidden' }}>
-                  <div style={{ width: pct + '%', height: '100%', background: cor, borderRadius: 6, transition: 'width 0.4s' }} />
+              <div key={label} style={{ flex: 1, background: 'rgba(0,0,0,0.25)', borderRadius: 8, padding: '10px 12px', border: '1px solid rgba(255,255,255,0.04)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, fontWeight: 700, marginBottom: 5, textTransform: 'uppercase', letterSpacing: 0.5, color: '#94A3B8' }}>
+                  <span>{icon} {label}</span>
+                  <span style={{ color: '#F8FAFC' }}>{val}/{max}</span>
                 </div>
-                <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', width: 52, textAlign: 'right', flexShrink: 0 }}>
-                  {val}/{max}
-                </span>
+                <div style={{ height: 5, background: 'rgba(255,255,255,0.06)', borderRadius: 4, overflow: 'hidden' }}>
+                  <div style={{ width: pct + '%', height: '100%', background: cor, borderRadius: 4, transition: 'width 0.6s' }} />
+                </div>
               </div>
             )
           })}
         </div>
       </div>
 
-      {/* === BANNER HISTORIA (nivel < 4) === */}
+      {/* === HISTORIA BANNER === */}
       {mostrarHistoria && (
         <div style={{
-          background: 'linear-gradient(135deg, #ff7a00, #e74c3c)',
-          borderRadius: 12, padding: '14px 16px', marginBottom: 14, color: '#fff',
+          background: 'linear-gradient(135deg, #0F5FD6, #0B4DB8)',
+          borderRadius: 12, padding: '14px 16px', marginBottom: 16, color: '#fff',
           display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12,
         }}>
           <div>
             <div style={{ fontWeight: 900, fontSize: 14 }}>Missao de origem pendente!</div>
-            <div style={{ fontSize: 11, marginTop: 3, opacity: 0.9 }}>
-              Complete a historia para desbloquear o jogo completo.
-            </div>
+            <div style={{ fontSize: 11, marginTop: 3, opacity: 0.8 }}>Complete a historia para desbloquear o jogo completo.</div>
           </div>
           <Link to="/historia" style={{
-            background: '#fff', color: '#e74c3c', fontWeight: 900, fontSize: 12,
+            background: '#fff', color: '#0F5FD6', fontWeight: 900, fontSize: 12,
             padding: '8px 14px', borderRadius: 8, textDecoration: 'none', whiteSpace: 'nowrap',
           }}>
             Jogar agora
@@ -264,76 +260,80 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* === COLETAS PENDENTES === */}
+      {/* === COLETAS === */}
       {temPendencias && (
-        <div style={{ marginBottom: 14 }}>
-          <div style={{
-            fontSize: 11, fontWeight: 900, color: '#888', marginBottom: 8,
-            textTransform: 'uppercase', letterSpacing: 1,
-          }}>
-            Coletas disponiveis
-          </div>
-          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-            {casaPendente && (
-              <Link to="/vida" style={{
-                background: 'linear-gradient(135deg, #27ae60, #2ecc71)', color: '#fff',
-                borderRadius: 10, padding: '8px 14px', textDecoration: 'none',
-                fontSize: 12, fontWeight: 900, display: 'flex', alignItems: 'center', gap: 5,
-              }}>
-                🏠 Bonus da Casa
-              </Link>
-            )}
-            {campinhoPendente && (
-              <Link to="/vida" style={{
-                background: 'linear-gradient(135deg, #2980b9, #3498db)', color: '#fff',
-                borderRadius: 10, padding: '8px 14px', textDecoration: 'none',
-                fontSize: 12, fontWeight: 900, display: 'flex', alignItems: 'center', gap: 5,
-              }}>
-                🏟️ Bonus Campinho
-              </Link>
-            )}
-            {patrocinioPendente && (
-              <Link to="/jogador" style={{
-                background: 'linear-gradient(135deg, #f39c12, #e67e22)', color: '#fff',
-                borderRadius: 10, padding: '8px 14px', textDecoration: 'none',
-                fontSize: 12, fontWeight: 900, display: 'flex', alignItems: 'center', gap: 5,
-              }}>
-                ⭐ Patrocinio R$ {fmt(famaData?.patrocinio_acumulado || 0)}
-              </Link>
-            )}
-          </div>
+        <div style={{ display: 'flex', gap: 10, marginBottom: 16 }}>
+          {casaPendente && (
+            <Link to="/vida" style={{
+              flex: 1, display: 'flex', alignItems: 'center', gap: 10, padding: '12px 14px',
+              background: '#0D1B2F', borderRadius: 10, border: '1px solid rgba(255,255,255,0.08)',
+              borderLeft: '3px solid #22c55e', textDecoration: 'none', color: '#F8FAFC',
+            }}>
+              <span style={{ fontSize: 22 }}>🏠</span>
+              <div>
+                <div style={{ fontSize: 10, fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase' }}>Casa</div>
+                <div style={{ fontFamily: "'Teko', sans-serif", fontWeight: 600, fontSize: 16, color: '#22c55e' }}>Coletar</div>
+              </div>
+            </Link>
+          )}
+          {campinhoPendente && (
+            <Link to="/vida" style={{
+              flex: 1, display: 'flex', alignItems: 'center', gap: 10, padding: '12px 14px',
+              background: '#0D1B2F', borderRadius: 10, border: '1px solid rgba(255,255,255,0.08)',
+              borderLeft: '3px solid #0F5FD6', textDecoration: 'none', color: '#F8FAFC',
+            }}>
+              <span style={{ fontSize: 22 }}>🏟️</span>
+              <div>
+                <div style={{ fontSize: 10, fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase' }}>Campinho</div>
+                <div style={{ fontFamily: "'Teko', sans-serif", fontWeight: 600, fontSize: 16, color: '#38A8F8' }}>Coletar</div>
+              </div>
+            </Link>
+          )}
+          {patrocinioPendente && (
+            <Link to="/jogador" style={{
+              flex: 1, display: 'flex', alignItems: 'center', gap: 10, padding: '12px 14px',
+              background: '#0D1B2F', borderRadius: 10, border: '1px solid rgba(255,255,255,0.08)',
+              borderLeft: '3px solid #D6A84F', textDecoration: 'none', color: '#F8FAFC',
+            }}>
+              <span style={{ fontSize: 22 }}>⭐</span>
+              <div>
+                <div style={{ fontSize: 10, fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase' }}>Patrocinio</div>
+                <div style={{ fontFamily: "'Teko', sans-serif", fontWeight: 600, fontSize: 16, color: '#D6A84F' }}>R$ {fmt(famaData?.patrocinio_acumulado || 0)}</div>
+              </div>
+            </Link>
+          )}
         </div>
       )}
 
       {/* === AGENDA DO DIA === */}
-      <div className="pf-section" style={{ marginBottom: 14 }}>
-        <div className="pf-section-header">
-          <h3>AGENDA DO DIA</h3>
-          <span className="pf-section-badge">
-            {agendaItems.filter(a => a.feito).length}/{agendaItems.length} concluidos
+      <div style={S.card}>
+        <div style={S.cardHead}>
+          <div style={S.cardTitle}><span style={S.cardTitleBar} />Agenda do Dia</div>
+          <span style={{ ...S.badge, background: 'rgba(34,197,94,0.12)', color: '#22c55e' }}>
+            {agendaItems.filter(a => a.feito).length}/{agendaItems.length}
           </span>
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
+        <div style={S.cardBody}>
           {agendaItems.map((item, i) => (
             <Link key={i} to={item.link} style={{ textDecoration: 'none' }}>
               <div style={{
-                display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px',
-                background: item.feito ? '#eafaf1' : '#f9f9f9',
-                border: `2px solid ${item.feito ? '#82e0aa' : '#e0e0e0'}`,
-                borderRadius: 10, transition: 'border-color 0.2s',
+                display: 'flex', alignItems: 'center', gap: 12, padding: '11px 0',
+                borderTop: i > 0 ? '1px solid rgba(255,255,255,0.04)' : 'none',
               }}>
                 <div style={{
-                  width: 22, height: 22, borderRadius: '50%', flexShrink: 0,
-                  background: item.feito ? '#27ae60' : '#e0e0e0',
+                  width: 24, height: 24, borderRadius: '50%', flexShrink: 0,
+                  background: item.feito ? '#22c55e' : 'transparent',
+                  border: item.feito ? '2px solid #22c55e' : '2px dashed #475569',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: 13, color: '#fff', fontWeight: 900,
+                  fontSize: 11, color: '#fff', fontWeight: 900,
+                  boxShadow: item.feito ? '0 0 8px rgba(34,197,94,0.3)' : 'none',
                 }}>
                   {item.feito ? '✓' : ''}
                 </div>
-                <span style={{ fontSize: 13, fontWeight: 700, color: item.feito ? '#27ae60' : '#333', flex: 1 }}>
+                <span style={{ fontSize: 13, fontWeight: 600, color: item.feito ? '#22c55e' : '#94A3B8', flex: 1 }}>
                   {item.icone} {item.label}
                 </span>
-                {!item.feito && <span style={{ fontSize: 12, color: '#bbb' }}>→</span>}
+                {!item.feito && <span style={{ fontSize: 14, color: '#475569' }}>›</span>}
               </div>
             </Link>
           ))}
@@ -341,45 +341,46 @@ export default function Dashboard() {
       </div>
 
       {/* === JORNAL ESPORTIVO === */}
-      <div className="pf-section" style={{ marginBottom: 14 }}>
-        <div className="pf-section-header">
-          <h3>JORNAL ESPORTIVO</h3>
-          <span className="pf-section-badge" style={{
-            background: '#e74c3c', color: '#fff', borderRadius: 6, padding: '2px 7px', fontSize: 10,
-          }}>
-            AO VIVO
-          </span>
+      <div style={S.card}>
+        <div style={S.cardHead}>
+          <div style={S.cardTitle}><span style={S.cardTitleBar} />Jornal Esportivo</div>
+          <span style={{ ...S.badge, background: 'rgba(239,68,68,0.12)', color: '#ef4444' }}>AO VIVO</span>
         </div>
-        <div>
+        <div style={S.cardBody}>
           {noticias.map((n, i) => (
             <div key={i} style={{
-              display: 'flex', gap: 10, padding: '10px 2px',
-              borderBottom: i < noticias.length - 1 ? '1px solid #f0f0f0' : 'none',
+              display: 'flex', gap: 10, padding: '11px 0',
+              borderTop: i > 0 ? '1px solid rgba(255,255,255,0.04)' : 'none',
               alignItems: 'flex-start',
             }}>
-              <span style={{ fontSize: 18, flexShrink: 0 }}>{n.icone}</span>
-              <span style={{ fontSize: 12, color: '#333', lineHeight: 1.6 }}>{n.texto}</span>
+              <span style={{ fontSize: 20, flexShrink: 0 }}>{n.icone}</span>
+              <span style={{ fontSize: 12, color: '#94A3B8', lineHeight: 1.6 }}>{n.texto}</span>
             </div>
           ))}
         </div>
       </div>
 
       {/* === ACESSO RAPIDO === */}
-      <div className="pf-section">
-        <div className="pf-section-header"><h3>ACESSO RAPIDO</h3></div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
-          {ACESSO_RAPIDO.map(({ icon, label, to }) => (
-            <Link key={to} to={to} style={{ textDecoration: 'none' }}>
-              <div style={{
-                background: '#f8f9fa', border: '2px solid #e9ecef', borderRadius: 12,
-                padding: '14px 8px', textAlign: 'center',
-                transition: 'border-color 0.2s, background 0.2s',
-              }}>
-                <div style={{ fontSize: 26, marginBottom: 5 }}>{icon}</div>
-                <div style={{ fontSize: 11, fontWeight: 900, color: '#333' }}>{label}</div>
-              </div>
-            </Link>
-          ))}
+      <div style={S.card}>
+        <div style={S.cardHead}>
+          <div style={S.cardTitle}><span style={S.cardTitleBar} />Acesso Rapido</div>
+        </div>
+        <div style={{ padding: '12px 18px 16px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10 }}>
+            {ACESSO_RAPIDO.map(({ icon, label, to }) => (
+              <Link key={to} to={to} style={{ textDecoration: 'none' }}>
+                <div style={{
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
+                  padding: '16px 8px', background: '#112740', borderRadius: 10,
+                  border: '1px solid rgba(255,255,255,0.06)',
+                  transition: 'all 0.2s', cursor: 'pointer',
+                }}>
+                  <div style={{ fontSize: 28 }}>{icon}</div>
+                  <div style={{ fontSize: 10, fontWeight: 800, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: 0.5 }}>{label}</div>
+                </div>
+              </Link>
+            ))}
+          </div>
         </div>
       </div>
 

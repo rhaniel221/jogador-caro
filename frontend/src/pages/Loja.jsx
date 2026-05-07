@@ -167,7 +167,7 @@ export default function Loja() {
       {/* Outer tabs: Loja | Inventario */}
       <div style={{
         display: 'flex', gap: 6, marginBottom: 18,
-        padding: '6px', background: '#f0f2f5', borderRadius: 14,
+        padding: '6px', background: '#0D1B2F', borderRadius: 14, border: '1px solid rgba(255,255,255,0.06)',
       }}>
         {[
           { id: 'loja', label: 'Comprar', icon: '🛒' },
@@ -180,10 +180,10 @@ export default function Loja() {
               onClick={() => setAbaOuter(aba.id)}
               style={{
                 padding: '12px 18px', border: 'none', cursor: 'pointer',
-                background: ativa ? '#fff' : 'transparent',
-                boxShadow: ativa ? '0 2px 8px rgba(0,0,0,0.12)' : 'none',
+                background: ativa ? '#0F5FD6' : 'transparent',
+                boxShadow: ativa ? '0 2px 8px rgba(15,95,214,0.3)' : 'none',
                 borderRadius: 10,
-                color: ativa ? 'var(--azul)' : '#555',
+                color: ativa ? '#fff' : '#94A3B8',
                 fontWeight: 900, fontSize: 14, flex: '1 1 0',
                 transition: 'all 0.2s', textAlign: 'center',
               }}
