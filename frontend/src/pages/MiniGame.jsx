@@ -5,8 +5,6 @@ import { useGame } from '../context/GameContext'
 import { useNavigate } from 'react-router-dom'
 import API from '../api'
 
-const PIECES = ['⚽', '👟', '🏆', '🟨', '🧤']
-
 export default function MiniGame() {
   const { jogador, setJogador, mostrarNotificacao, jogadorID, setLevelUp } = useGame()
   const navigate = useNavigate()
@@ -258,11 +256,36 @@ export default function MiniGame() {
     <>
       <h2 className="page-title">🎮 MINIGAME</h2>
       <div className="mg-intro">
-        <div className="mg-intro-orb">
-          <div className="mg-intro-pieces">
-            {PIECES.map((p, i) => (
-              <span key={i} className="mg-piece-float" style={{ animationDelay: (i * 0.15) + 's' }}>{p}</span>
+        <div className="mg-logo-stage">
+          <div className="mg-logo-aura" />
+
+          {/* Raios SVG — bolts radiando ao redor do logo */}
+          <svg className="mg-lightning" viewBox="-100 -100 200 200" aria-hidden="true">
+            <defs>
+              <filter id="mg-bolt-glow" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur stdDeviation="2.5" result="blur" />
+                <feMerge>
+                  <feMergeNode in="blur" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+            </defs>
+            {[0, 45, 90, 135, 180, 225, 270, 315].map((deg, i) => (
+              <g key={deg} transform={`rotate(${deg})`} className="mg-bolt-group" style={{ animationDelay: `${i * 0.18}s` }}>
+                <path className="mg-bolt mg-bolt-glow"
+                  d="M0,-58 L-6,-72 L6,-78 L-4,-94 L8,-100" filter="url(#mg-bolt-glow)" />
+                <path className="mg-bolt mg-bolt-mid"
+                  d="M0,-58 L-6,-72 L6,-78 L-4,-94 L8,-100" />
+                <path className="mg-bolt mg-bolt-core"
+                  d="M0,-58 L-6,-72 L6,-78 L-4,-94 L8,-100" />
+              </g>
             ))}
+          </svg>
+
+          {/* Logo 3D brilhante */}
+          <div className="mg-logo-3d">
+            <img src="/logo-mini-game.png" alt="MiniGame" className="mg-logo-img" />
+            <div className="mg-logo-sheen" />
           </div>
         </div>
         <h3>Match-3 Futebol!</h3>
