@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Gerador de Videos - Penalty Jogador Caro</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #06111f; color: #f8fafc; font-family: 'Segoe UI', sans-serif; padding: 20px; }
+  h1 { font-size: 24px; margin-bottom: 20px; }
+  .controls { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+  .controls button {
+    padding: 12px 24px; border: none; border-radius: 10px; font-size: 14px;
+    font-weight: 800; cursor: pointer; text-transform: uppercase;
+  }
+  .btn-gen { background: #1e6fff; color: #fff; }
+  .btn-gen:disabled { opacity: 0.5; cursor: wait; }
+  .btn-dl { background: #22c55e; color: #fff; display: none; }
+  .preview { display: flex; gap: 16px; flex-wrap: wrap; }
+  .preview-item { text-align: center; }
+  .preview-item h3 { margin: 8px 0 4px; font-size: 14px; color: #94a3b8; }
+  canvas { border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); }
+  #status { margin-top: 12px; color: #43a7ff; font-weight: 700; }
+  .info { margin-top: 16px; padding: 14px; background: rgba(30,111,255,0.1); border-radius: 10px; font-size: 13px; color: #94a3b8; line-height: 1.6; }
+</style>
+</head>
+<body>
+
+<h1>Gerador de Videos - Penalty</h1>
+
+<div class="controls">
+  <button class="btn-gen" id="btnGerar" onclick="gerarTodos()">Gerar 3 Videos</button>
+  <button class="btn-dl" id="dlCobranca" onclick="baixar('cobranca')">Baixar Cobranca</button>
+  <button class="btn-dl" id="dlDefesa" onclick="baixar('defesa')">Baixar Defesa</button>
+  <button class="btn-dl" id="dlGol" onclick="baixar('gol')">Baixar Gol</button>
+</div>
+
+<div id="status"></div>
+
+<div class="preview">
+  <div class="preview-item">
+    <canvas id="cvCobranca" width="640" height="360"></canvas>
+    <h3>1. Cobranca de Penalty</h3>
+  </div>
+  <div class="preview-item">
+    <canvas id="cvDefesa" width="640" height="360"></canvas>
+    <h3>2. Defesa do Goleiro</h3>
+  </div>
+  <div class="preview-item">
+    <canvas id="cvGol" width="640" height="360"></canvas>
+    <h3>3. Gol!</h3>
+  </div>
+</div>
+
+<div class="info">
+  <strong>Como usar:</strong><br>
+  1. Clique em "Gerar 3 Videos"<br>
+  2. Aguarde a renderizacao (5-10 segundos)<br>
+  3. Baixe cada video (.webm)<br>
+  4. Coloque em <code>frontend/public/videos/</code><br>
+  5. Use no Desafio1v1 com <code>&lt;video src="/videos/penalty-cobranca.webm"&gt;</code><br>
+  <br>
+  <strong>Resolucao:</strong> 640x360 | <strong>Duracao:</strong> ~3s cada | <strong>Formato:</strong> WebM
+</div>
+
+<script>
+const W = 640, H = 360
+const FPS = 30
+const DURACAO = 3 // segundos
+const TOTAL_FRAMES = FPS * DURACAO
+
+const videos = {}
+
+// Cores do tema
+const BG_DARK = '#06111f'
+const BG_FIELD = '#0a3d1a'
+const LINE_COLOR = 'rgba(255,255,255,0.3)'
+const GOLD = '#d6a84f'
+const BLUE = '#1e6fff'
+const WHITE = '#f8fafc'
+const NET_COLOR = 'rgba(255,255,255,0.15)'
+const GRASS_1 = '#0d5a22'
+const GRASS_2 = '#0a4a1c'
+
+function drawStadium(ctx, frame) {
+  // Ceu noturno
+  const skyGrad = ctx.createLinearGradient(0, 0, 0, H * 0.45)
+  skyGrad.addColorStop(0, '#020810')
+  skyGrad.addColorStop(1, '#0a1e3a')
+  ctx.fillStyle = skyGrad
+  ctx.fillRect(0, 0, W, H * 0.45)
+
+  // Arquibancada
+  ctx.fillStyle = '#0a1628'
+  ctx.fillRect(0, H * 0.25, W, H * 0.2)
+  // Luzes do estadio
+  for (let i = 0; i < 5; i++) {
+    const x = 60 + i * 140
+    const flicker = 0.7 + Math.sin(frame * 0.1 + i) * 0.3
+    ctx.beginPath()
+    ctx.arc(x, H * 0.15, 4, 0, Math.PI * 2)
+    ctx.fillStyle = `rgba(255,240,200,${flicker})`
+    ctx.fill()
+    // Glow
+    const glow = ctx.createRadialGradient(x, H * 0.15, 0, x, H * 0.15, 40)
+    glow.addColorStop(0, `rgba(255,240,200,${flicker * 0.15})`)
+    glow.addColorStop(1, 'transparent')
+    ctx.fillStyle = glow
+    ctx.fillRect(x - 40, H * 0.15 - 40, 80, 80)
+  }
+
+  // Gramado com listras
+  for (let i = 0; i < 8; i++) {
+    ctx.fillStyle = i % 2 === 0 ? GRASS_1 : GRASS_2
+    const y = H * 0.45 + i * (H * 0.55 / 8)
+    ctx.fillRect(0, y, W, H * 0.55 / 8)
+  }
+
+  // Linha do gramado (perspectiva)
+  ctx.strokeStyle = LINE_COLOR
+  ctx.lineWidth = 2
+  // Linha central area
+  ctx.beginPath()
+  ctx.moveTo(W * 0.2, H * 0.45)
+  ctx.lineTo(W * 0.1, H)
+  ctx.stroke()
+  ctx.beginPath()
+  ctx.moveTo(W * 0.8, H * 0.45)
+  ctx.lineTo(W * 0.9, H)
+  ctx.stroke()
+  // Marca do penalty
+  ctx.beginPath()
+  ctx.arc(W * 0.5, H * 0.65, 3, 0, Math.PI * 2)
+  ctx.fillStyle = WHITE
+  ctx.fill()
+}
+
+function drawGoal(ctx) {
+  const gx = W * 0.2, gw = W * 0.6, gy = H * 0.32, gh = H * 0.28
+  // Postes
+  ctx.strokeStyle = WHITE
+  ctx.lineWidth = 4
+  ctx.beginPath()
+  ctx.moveTo(gx, gy + gh)
+  ctx.lineTo(gx, gy)
+  ctx.lineTo(gx + gw, gy)
+  ctx.lineTo(gx + gw, gy + gh)
+  ctx.stroke()
+  // Rede
+  ctx.strokeStyle = NET_COLOR
+  ctx.lineWidth = 1
+  for (let i = 0; i < 12; i++) {
+    const x = gx + (gw / 12) * i
+    ctx.beginPath()
+    ctx.moveTo(x, gy)
+    ctx.lineTo(x - 10, gy - 20)
+    ctx.stroke()
+    ctx.beginPath()
+    ctx.moveTo(x, gy)
+    ctx.lineTo(x, gy + gh)
+    ctx.stroke()
+  }
+  for (let i = 0; i < 6; i++) {
+    const y = gy + (gh / 6) * i
+    ctx.beginPath()
+    ctx.moveTo(gx, y)
+    ctx.lineTo(gx + gw, y)
+    ctx.stroke()
+  }
+}
+
+function drawBall(ctx, x, y, size, rotation) {
+  ctx.save()
+  ctx.translate(x, y)
+  ctx.rotate(rotation)
+  // Sombra
+  ctx.beginPath()
+  ctx.ellipse(3, size + 2, size * 0.8, size * 0.3, 0, 0, Math.PI * 2)
+  ctx.fillStyle = 'rgba(0,0,0,0.3)'
+  ctx.fill()
+  // Bola
+  ctx.beginPath()
+  ctx.arc(0, 0, size, 0, Math.PI * 2)
+  const ballGrad = ctx.createRadialGradient(-size * 0.3, -size * 0.3, 0, 0, 0, size)
+  ballGrad.addColorStop(0, '#ffffff')
+  ballGrad.addColorStop(1, '#cccccc')
+  ctx.fillStyle = ballGrad
+  ctx.fill()
+  ctx.strokeStyle = '#333'
+  ctx.lineWidth = 1
+  ctx.stroke()
+  // Pentagonos
+  ctx.fillStyle = '#222'
+  for (let i = 0; i < 5; i++) {
+    const a = (Math.PI * 2 / 5) * i
+    const px = Math.cos(a) * size * 0.45
+    const py = Math.sin(a) * size * 0.45
+    ctx.beginPath()
+    ctx.arc(px, py, size * 0.15, 0, Math.PI * 2)
+    ctx.fill()
+  }
+  ctx.restore()
+}
+
+function drawPlayer(ctx, x, y, scale, kicking, color) {
+  ctx.save()
+  ctx.translate(x, y)
+  ctx.scale(scale, scale)
+  // Corpo
+  ctx.fillStyle = color || BLUE
+  ctx.fillRect(-12, -40, 24, 30) // camisa
+  // Cabeca
+  ctx.beginPath()
+  ctx.arc(0, -50, 12, 0, Math.PI * 2)
+  ctx.fillStyle = '#c68642'
+  ctx.fill()
+  // Cabelo
+  ctx.beginPath()
+  ctx.arc(0, -55, 12, Math.PI, Math.PI * 2)
+  ctx.fillStyle = '#1a1a1a'
+  ctx.fill()
+  // Short
+  ctx.fillStyle = '#fff'
+  ctx.fillRect(-10, -10, 20, 12)
+  // Pernas
+  if (kicking) {
+    // Perna de apoio
+    ctx.fillStyle = '#c68642'
+    ctx.fillRect(-8, 2, 6, 22)
+    // Perna chutando (levantada)
+    ctx.save()
+    ctx.translate(5, 2)
+    ctx.rotate(-0.8)
+    ctx.fillRect(-3, 0, 6, 22)
+    ctx.restore()
+    // Chuteira
+    ctx.fillStyle = '#111'
+    ctx.fillRect(-10, 22, 8, 4)
+  } else {
+    ctx.fillStyle = '#c68642'
+    ctx.fillRect(-8, 2, 6, 22)
+    ctx.fillRect(2, 2, 6, 22)
+    // Chuteiras
+    ctx.fillStyle = '#111'
+    ctx.fillRect(-10, 22, 8, 4)
+    ctx.fillRect(0, 22, 8, 4)
+  }
+  ctx.restore()
+}
+
+function drawGoalkeeper(ctx, x, y, scale, diving, direction) {
+  ctx.save()
+  ctx.translate(x, y)
+  ctx.scale(scale, scale)
+  if (diving) {
+    const dx = direction * 30
+    ctx.translate(dx, -10)
+    ctx.rotate(direction * 0.5)
+    // Corpo horizontal
+    ctx.fillStyle = '#f59e0b'
+    ctx.fillRect(-15, -20, 30, 25)
+    // Cabeca
+    ctx.beginPath()
+    ctx.arc(-20 * direction, -25, 10, 0, Math.PI * 2)
+    ctx.fillStyle = '#c68642'
+    ctx.fill()
+    // Luvas
+    ctx.fillStyle = '#22c55e'
+    ctx.fillRect(-25 * direction - 5, -35, 12, 8)
+    ctx.fillRect(-25 * direction + 5, -30, 12, 8)
+    // Pernas
+    ctx.fillStyle = '#1a1a1a'
+    ctx.fillRect(15 * direction, -10, 6, 20)
+    ctx.fillRect(15 * direction - 8, -5, 6, 20)
+  } else {
+    // Em pe
+    ctx.fillStyle = '#f59e0b'
+    ctx.fillRect(-12, -40, 24, 30)
+    ctx.beginPath()
+    ctx.arc(0, -50, 10, 0, Math.PI * 2)
+    ctx.fillStyle = '#c68642'
+    ctx.fill()
+    // Luvas
+    ctx.fillStyle = '#22c55e'
+    ctx.fillRect(-20, -35, 8, 8)
+    ctx.fillRect(12, -35, 8, 8)
+    // Pernas
+    ctx.fillStyle = '#1a1a1a'
+    ctx.fillRect(-8, -10, 6, 22)
+    ctx.fillRect(2, -10, 6, 22)
+  }
+  ctx.restore()
+}
+
+function drawText(ctx, text, x, y, size, color, alpha) {
+  ctx.save()
+  ctx.globalAlpha = alpha || 1
+  ctx.font = `900 ${size}px 'Segoe UI', sans-serif`
+  ctx.textAlign = 'center'
+  ctx.fillStyle = 'rgba(0,0,0,0.5)'
+  ctx.fillText(text, x + 2, y + 2)
+  ctx.fillStyle = color || WHITE
+  ctx.fillText(text, x, y)
+  ctx.restore()
+}
+
+function easeOut(t) { return 1 - Math.pow(1 - t, 3) }
+function easeIn(t) { return t * t * t }
+
+// =====================================
+// VIDEO 1: COBRANCA DE PENALTY
+// =====================================
+function renderCobranca(ctx, frame) {
+  const t = frame / TOTAL_FRAMES
+  drawStadium(ctx, frame)
+  drawGoal(ctx)
+
+  // Goleiro (fica parado, depois pula)
+  const gkDiving = t > 0.6
+  const gkDir = Math.random() > 0.5 ? 1 : -1 // pre-set
+  drawGoalkeeper(ctx, W * 0.5, H * 0.58, 0.9, gkDiving, 1)
+
+  // Jogador se aproxima e chuta
+  const playerX = W * 0.5
+  const playerBaseY = H * 0.85
+  const isKicking = t > 0.45
+
+  if (t < 0.3) {
+    // Correndo pra bola
+    const runT = t / 0.3
+    drawPlayer(ctx, playerX, playerBaseY - runT * 40, 1.1, false, BLUE)
+    drawBall(ctx, W * 0.5, H * 0.72, 10, 0)
+  } else if (t < 0.55) {
+    // Chutando
+    const kickT = (t - 0.3) / 0.25
+    drawPlayer(ctx, playerX, playerBaseY - 40, 1.1, true, BLUE)
+    if (kickT < 0.5) {
+      drawBall(ctx, W * 0.5, H * 0.72, 10, kickT * 4)
+    }
+  } else {
+    // Bola voando pro gol
+    drawPlayer(ctx, playerX, playerBaseY - 40, 1.1, false, BLUE)
+    const flyT = easeOut((t - 0.55) / 0.45)
+    const bx = W * 0.5 + (W * 0.15) * flyT
+    const by = H * 0.72 - (H * 0.32) * flyT
+    const bsize = 10 - flyT * 4
+    drawBall(ctx, bx, by, Math.max(4, bsize), frame * 0.3)
+  }
+
+  // Texto
+  if (t < 0.15) {
+    const alpha = easeOut(t / 0.15)
+    drawText(ctx, 'PENALTY!', W * 0.5, H * 0.2, 42, GOLD, alpha)
+  } else if (t > 0.5 && t < 0.7) {
+    const alpha = easeOut((t - 0.5) / 0.2)
+    drawText(ctx, 'CHUTOU!', W * 0.5, H * 0.18, 36, WHITE, alpha)
+  }
+
+  // Flash no momento do chute
+  if (t > 0.48 && t < 0.55) {
+    const flashAlpha = 1 - (t - 0.48) / 0.07
+    ctx.fillStyle = `rgba(255,255,255,${flashAlpha * 0.3})`
+    ctx.fillRect(0, 0, W, H)
+  }
+}
+
+// =====================================
+// VIDEO 2: DEFESA DO GOLEIRO
+// =====================================
+function renderDefesa(ctx, frame) {
+  const t = frame / TOTAL_FRAMES
+  drawStadium(ctx, frame)
+  drawGoal(ctx)
+
+  // Bola vindo
+  if (t < 0.4) {
+    const flyT = easeOut(t / 0.4)
+    const bx = W * 0.5 + 80 * flyT
+    const by = H * 0.85 - (H * 0.4) * flyT
+    drawBall(ctx, bx, by, 10 - flyT * 4, frame * 0.3)
+  }
+
+  // Goleiro pula e defende
+  const gkDiving = t > 0.25
+  const diveProg = gkDiving ? easeOut(Math.min(1, (t - 0.25) / 0.3)) : 0
+  drawGoalkeeper(ctx, W * 0.5 + diveProg * 60, H * 0.58, 0.9, gkDiving, 1)
+
+  // Bola rebatida
+  if (t > 0.4) {
+    const rebT = easeOut((t - 0.4) / 0.4)
+    const bx = W * 0.5 + 80 + rebT * 120
+    const by = H * 0.45 + rebT * 80
+    drawBall(ctx, bx, by, 6 + rebT * 3, -frame * 0.2)
+  }
+
+  // Textos
+  if (t > 0.45 && t < 0.95) {
+    const alpha = easeOut(Math.min(1, (t - 0.45) / 0.15))
+    drawText(ctx, 'DEFENDEU!', W * 0.5, H * 0.2, 44, '#22c55e', alpha)
+  }
+
+  // Particulas de impacto
+  if (t > 0.38 && t < 0.6) {
+    const pt = (t - 0.38) / 0.22
+    for (let i = 0; i < 8; i++) {
+      const angle = (Math.PI * 2 / 8) * i + pt * 2
+      const dist = pt * 60
+      const px = W * 0.58 + Math.cos(angle) * dist
+      const py = H * 0.48 + Math.sin(angle) * dist
+      ctx.beginPath()
+      ctx.arc(px, py, 3 * (1 - pt), 0, Math.PI * 2)
+      ctx.fillStyle = `rgba(34,197,94,${1 - pt})`
+      ctx.fill()
+    }
+  }
+}
+
+// =====================================
+// VIDEO 3: GOL!
+// =====================================
+function renderGol(ctx, frame) {
+  const t = frame / TOTAL_FRAMES
+  drawStadium(ctx, frame)
+  drawGoal(ctx)
+
+  // Goleiro pula pro lado errado
+  const gkDiving = t > 0.2
+  drawGoalkeeper(ctx, W * 0.5 - (gkDiving ? easeOut(Math.min(1, (t - 0.2) / 0.3)) * 80 : 0), H * 0.58, 0.9, gkDiving, -1)
+
+  // Bola entra no gol (lado oposto do goleiro)
+  if (t < 0.45) {
+    const flyT = easeOut(t / 0.45)
+    const bx = W * 0.5 + 60 * flyT
+    const by = H * 0.85 - (H * 0.45) * flyT
+    drawBall(ctx, bx, by, 10 - flyT * 5, frame * 0.3)
+  } else if (t < 0.55) {
+    // Bola dentro da rede (treme)
+    const shake = Math.sin(t * 80) * 3
+    drawBall(ctx, W * 0.6 + shake, H * 0.4, 5, frame * 0.1)
+  }
+
+  // Rede balancando
+  if (t > 0.4 && t < 0.8) {
+    const netT = (t - 0.4) / 0.4
+    ctx.strokeStyle = `rgba(255,255,255,${0.2 + Math.sin(netT * 20) * 0.1})`
+    ctx.lineWidth = 1
+    const gx = W * 0.2, gw = W * 0.6, gy = H * 0.32
+    for (let i = 4; i < 9; i++) {
+      const x = gx + (gw / 12) * i
+      const wave = Math.sin(netT * 15 + i) * (8 * (1 - netT))
+      ctx.beginPath()
+      ctx.moveTo(x, gy)
+      ctx.quadraticCurveTo(x + wave, gy + 40, x - 10, gy - 20)
+      ctx.stroke()
+    }
+  }
+
+  // Texto GOOOOL
+  if (t > 0.5) {
+    const alpha = easeOut(Math.min(1, (t - 0.5) / 0.15))
+    const scale = 1 + Math.sin(t * 15) * 0.05
+    ctx.save()
+    ctx.translate(W * 0.5, H * 0.2)
+    ctx.scale(scale, scale)
+    drawText(ctx, 'GOOOOL!', 0, 0, 52, GOLD, alpha)
+    ctx.restore()
+
+    // Sub texto
+    if (t > 0.7) {
+      const subAlpha = easeOut(Math.min(1, (t - 0.7) / 0.15))
+      drawText(ctx, 'BALANCOU A REDE!', W * 0.5, H * 0.3, 20, WHITE, subAlpha)
+    }
+  }
+
+  // Flash do gol
+  if (t > 0.43 && t < 0.52) {
+    const flashAlpha = 1 - (t - 0.43) / 0.09
+    ctx.fillStyle = `rgba(214,168,79,${flashAlpha * 0.25})`
+    ctx.fillRect(0, 0, W, H)
+  }
+
+  // Confete
+  if (t > 0.6) {
+    const confT = (t - 0.6) / 0.4
+    for (let i = 0; i < 20; i++) {
+      const cx = (W * 0.2) + (i * 31 % W) * 0.8
+      const cy = -20 + confT * (H + 40) + Math.sin(i * 7) * 30
+      const colors = ['#1e6fff', '#d6a84f', '#22c55e', '#ef4444', '#fff']
+      ctx.fillStyle = colors[i % colors.length]
+      ctx.globalAlpha = 1 - confT * 0.5
+      ctx.fillRect(cx, cy % H, 4 + (i % 3) * 2, 4 + (i % 2) * 3)
+    }
+    ctx.globalAlpha = 1
+  }
+}
+
+// =====================================
+// GRAVACAO
+// =====================================
+async function gravarVideo(canvasId, renderFn, nomeArquivo) {
+  const canvas = document.getElementById(canvasId)
+  const ctx = canvas.getContext('2d')
+  const stream = canvas.captureStream(FPS)
+  const recorder = new MediaRecorder(stream, { mimeType: 'video/webm; codecs=vp9', videoBitsPerSecond: 2000000 })
+  const chunks = []
+
+  recorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data) }
+
+  return new Promise(resolve => {
+    recorder.onstop = () => {
+      const blob = new Blob(chunks, { type: 'video/webm' })
+      videos[nomeArquivo] = URL.createObjectURL(blob)
+      resolve()
+    }
+
+    recorder.start()
+
+    let frame = 0
+    function tick() {
+      if (frame >= TOTAL_FRAMES) {
+        recorder.stop()
+        return
+      }
+      ctx.clearRect(0, 0, W, H)
+      renderFn(ctx, frame)
+      frame++
+      requestAnimationFrame(tick)
+    }
+    tick()
+  })
+}
+
+function baixar(tipo) {
+  const nomes = { cobranca: 'penalty-cobranca', defesa: 'penalty-defesa', gol: 'penalty-gol' }
+  const url = videos[nomes[tipo]]
+  if (!url) return
+  const a = document.createElement('a')
+  a.href = url
+  a.download = nomes[tipo] + '.webm'
+  a.click()
+}
+
+async function gerarTodos() {
+  const btn = document.getElementById('btnGerar')
+  const status = document.getElementById('status')
+  btn.disabled = true
+
+  status.textContent = 'Gerando video 1/3: Cobranca...'
+  await gravarVideo('cvCobranca', renderCobranca, 'penalty-cobranca')
+
+  status.textContent = 'Gerando video 2/3: Defesa...'
+  await gravarVideo('cvDefesa', renderDefesa, 'penalty-defesa')
+
+  status.textContent = 'Gerando video 3/3: Gol...'
+  await gravarVideo('cvGol', renderGol, 'penalty-gol')
+
+  status.textContent = 'Pronto! Clique nos botoes para baixar.'
+  btn.disabled = false
+  document.getElementById('dlCobranca').style.display = 'inline-block'
+  document.getElementById('dlDefesa').style.display = 'inline-block'
+  document.getElementById('dlGol').style.display = 'inline-block'
+}
+</script>
+</body>
+</html>

@@ -3687,7 +3687,8 @@ input, select, textarea {
 .pf-tasks { display: flex; flex-direction: column; gap: 6px; }
 .pf-task {
   display: flex; align-items: center; gap: 10px;
-  padding: 8px 10px; border-radius: 8px; background: #f8f9ff;
+  padding: 10px 12px; border-radius: 12px; background: rgba(15,34,56,0.6);
+  border: 1px solid rgba(255,255,255,0.06); margin-bottom: 6px;
 }
 .pf-task-done { opacity: 0.5; }
 .pf-task-info { flex: 1; min-width: 0; }
@@ -3695,7 +3696,7 @@ input, select, textarea {
 .pf-task-bar { height: 7px; background: rgba(255,255,255,0.08); border-radius: 4px; overflow: hidden; }
 .pf-task-fill { height: 100%; background: linear-gradient(90deg, var(--verde), var(--verde)); border-radius: 4px; }
 .pf-task-prog { font-size: 11px; font-weight: 900; color: var(--texto-muted); }
-.pf-task-rewards { font-size: 11px; font-weight: 700; color: #27ae60; display: block; margin-top: 2px; }
+.pf-task-rewards { font-size: 11px; font-weight: 700; color: var(--verde); display: block; margin-top: 2px; }
 
 /* =====================================================
    TOP CRAQUES NOVO + AMIGOS + PERFIL MODAL
@@ -4280,10 +4281,10 @@ input, select, textarea {
 
 /* Combined mission objectives */
 .cm-obj {
-  font-size: 10px; font-weight: 900; padding: 2px 6px;
-  border-radius: 6px; background: var(--card-bg)0f0; color: #c0392b; border: 1px solid #e74c3c;
+  font-size: 10px; font-weight: 900; padding: 3px 8px;
+  border-radius: 8px; background: rgba(239,68,68,0.1); color: #ff9b9b; border: 1px solid rgba(239,68,68,0.2);
 }
-.cm-obj.cm-done { background: #e8f5e9; color: var(--verde); border-color: #27ae60; }
+.cm-obj.cm-done { background: rgba(34,197,94,0.1); color: var(--verde); border-color: rgba(34,197,94,0.25); }
 
 /* =====================================================
    TUTORIAL SYSTEM

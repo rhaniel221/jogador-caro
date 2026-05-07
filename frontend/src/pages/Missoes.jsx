@@ -236,7 +236,7 @@ export default function Missoes() {
       {tab === 'nivel' && (
         <>
           {disponivelNivel.length === 0 && (
-            <p style={{ color: '#888', padding: 16, textAlign: 'center', fontWeight: 700 }}>
+            <p style={{ color: '#64748b', padding: 16, textAlign: 'center', fontWeight: 700 }}>
               Nenhuma missão disponível pro seu nível. Suba de nível!
             </p>
           )}
@@ -247,7 +247,7 @@ export default function Missoes() {
           </div>
           {completadaNivel.length > 0 && (
             <>
-              <h3 style={{ marginTop: 20, fontSize: 14, fontWeight: 900, color: '#555' }}>
+              <h3 style={{ marginTop: 20, fontSize: 14, fontWeight: 900, color: '#94a3b8' }}>
                 ✅ Completadas ({completadaNivel.length})
               </h3>
               <div className="quests-lista">
@@ -281,7 +281,7 @@ export default function Missoes() {
           </div>
           {completadaCamp.length > 0 && (
             <>
-              <h3 style={{ marginTop: 20, fontSize: 14, fontWeight: 900, color: '#555' }}>
+              <h3 style={{ marginTop: 20, fontSize: 14, fontWeight: 900, color: '#94a3b8' }}>
                 ✅ Completadas ({completadaCamp.length})
               </h3>
               <div className="quests-lista">
@@ -304,7 +304,7 @@ export default function Missoes() {
                 <div key={s.id} className={`pf-task${s.completada ? ' pf-task-done' : ''}`}>
                   <div className="pf-task-info">
                     <strong>{s.icone} {s.nome}</strong>
-                    <p style={{ fontSize: 10, color: '#888', margin: '2px 0' }}>{s.descricao}</p>
+                    <p style={{ fontSize: 10, color: '#64748b', margin: '2px 0' }}>{s.descricao}</p>
                     <div className="pf-task-bar"><div className="pf-task-fill" style={{ width: pct + '%' }} /></div>
                     <span className="pf-task-prog">{s.progresso}/{s.alvo} · +{s.recompensa_xp}XP +{s.recompensa_moedas}💎</span>
                   </div>
@@ -324,7 +324,7 @@ export default function Missoes() {
               <div key={m.id} className={`pf-task${m.completada ? ' pf-task-done' : ''}`}>
                 <div className="pf-task-info">
                   <strong>{m.icone} {m.nome}</strong>
-                  <p style={{ fontSize: 10, color: '#888', margin: '2px 0' }}>{m.descricao}</p>
+                  <p style={{ fontSize: 10, color: '#64748b', margin: '2px 0' }}>{m.descricao}</p>
                   <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 4 }}>
                     <span className={`cm-obj${m.obj1_progresso >= m.objetivo1_alvo ? ' cm-done' : ''}`}>
                       {m.objetivo1_tipo} {m.obj1_progresso}/{m.objetivo1_alvo}
