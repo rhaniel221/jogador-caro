@@ -203,7 +203,7 @@ body::before {
     gap: 8px;
     text-shadow: none;
 }
-.player-avatar { font-size: 28px; }
+.player-avatar { font-size: 28px; width: 36px; height: 36px; border-radius: 10px; overflow: hidden; display: flex; align-items: center; justify-content: center; }
 .player-details { display: flex; flex-direction: column; }
 .player-nome { font-size: 16px; font-weight: 900; font-family: var(--font-corpo); }
 .player-rank { font-size: 11px; color: var(--amarelo); font-weight: 700; }

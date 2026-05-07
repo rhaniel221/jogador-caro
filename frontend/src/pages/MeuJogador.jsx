@@ -4,7 +4,8 @@ import API from '../api'
 import { fmt } from '../utils'
 import './MeuJogador.css'
 
-const AVATAR_IMGS = [1,2,3,4,5,6,7,8,9,10,11]
+// IDs 101-111 para avatares de imagem (evita conflito com emojis do banco que usam IDs baixos)
+const AVATAR_IMGS = [101,102,103,104,105,106,107,108,109,110,111]
 
 function SectionHeader({ icon, title, right }) {
   return (
@@ -19,8 +20,10 @@ function SectionHeader({ icon, title, right }) {
 }
 
 function AvatarDisplay({ avatarId, size }) {
-  const imgId = typeof avatarId === 'number' && avatarId >= 1 && avatarId <= 11 ? avatarId : null
-  if (imgId) return <img src={`/avatar/${imgId}.png`} alt="Avatar" />
+  // IDs 101-111 mapeiam para /avatar/1.png - /avatar/11.png
+  if (typeof avatarId === 'number' && avatarId >= 101 && avatarId <= 111) {
+    return <img src={`/avatar/${avatarId - 100}.png`} alt="Avatar" />
+  }
   return <span style={{ fontSize: size || 70 }}>⚽</span>
 }
 
@@ -241,25 +244,11 @@ export default function MeuJogador() {
             <div className="jc-avatar-grid">
               {AVATAR_IMGS.map(id => (
                 <div key={id} className={`jc-avatar-option ${jogador.avatar === id ? 'selected' : ''}`} onClick={() => selecionarAvatar(id)}>
-                  <img src={`/avatar/${id}.png`} alt={`Avatar ${id}`} />
+                  <img src={`/avatar/${id - 100}.png`} alt={`Avatar ${id - 100}`} />
                   {jogador.avatar === id && <div className="jc-avatar-selected-mark">✓</div>}
                 </div>
               ))}
-              {avatares.filter(a => a.tipo === 'comum').map(a => (
-                <div key={`e${a.id}`} className={`jc-avatar-option ${jogador.avatar === a.id ? 'selected' : ''}`} onClick={() => selecionarAvatar(a.id)}>
-                  <div className="jc-avatar-emoji">{a.icone}</div>
-                  {jogador.avatar === a.id && <div className="jc-avatar-selected-mark">✓</div>}
-                </div>
-              ))}
-              {desbloqueados.map(id => {
-                const av = avatares.find(a => a.id === id)
-                return av ? (
-                  <div key={`p${id}`} className={`jc-avatar-option ${jogador.avatar === id ? 'selected' : ''}`} onClick={() => selecionarAvatar(id)}>
-                    <div className="jc-avatar-emoji">{av.icone}</div>
-                    {jogador.avatar === id && <div className="jc-avatar-selected-mark">✓</div>}
-                  </div>
-                ) : null
-              })}
+              {/* Apenas avatares de imagem - sem emojis genericos */}
             </div>
           </div>
         </div>
