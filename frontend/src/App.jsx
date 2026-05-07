@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
-import { GameProvider } from './context/GameContext'
+import { GameProvider, useGame } from './context/GameContext'
 import { TutorialProvider } from './context/TutorialContext'
 import Layout from './components/Layout'
 import LoadingScreen from './components/LoadingScreen'
@@ -27,48 +27,64 @@ import Banco from './pages/Banco'
 import Performance from './pages/Performance'
 import Treino from './pages/Treino'
 
-export default function App() {
+function AppContent() {
+  const { jogador } = useGame()
   const [loaded, setLoaded] = useState(false)
 
-  if (!loaded) return <LoadingScreen onDone={() => setLoaded(true)} />
+  // Loading screen: roda enquanto carrega dados do jogador
+  // Se ja ta logado (localStorage), espera o jogador carregar antes de liberar
+  if (!loaded) {
+    const hasSession = !!localStorage.getItem('jogadorID')
+    return (
+      <LoadingScreen
+        onDone={() => setLoaded(true)}
+        waitFor={hasSession ? !!jogador : true}
+      />
+    )
+  }
 
   return (
+    <TutorialProvider>
+      <LoginModal />
+      <Notificacao />
+      <LevelUpOverlay />
+      <DialogoOverlay />
+      <TutorialOverlay />
+      <PosicaoModal />
+      <StreakModal />
+      <EventBanner />
+      <ClubeModal />
+      <Layout>
+        <Routes>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/historia" element={<Historia />} />
+          <Route path="/jogador" element={<MeuJogador />} />
+          <Route path="/vida" element={<MinhaVida />} />
+          <Route path="/carreira" element={<Carreira />} />
+          <Route path="/missoes" element={<Missoes />} />
+          <Route path="/loja" element={<Loja />} />
+          <Route path="/inventario" element={<Inventario />} />
+          <Route path="/top-craques" element={<TopCraques />} />
+          <Route path="/foruns" element={<Foruns />} />
+          <Route path="/banco" element={<Banco />} />
+          <Route path="/performance" element={<Performance />} />
+          <Route path="/treino" element={<Treino />} />
+          <Route path="/minigame" element={<Navigate to="/carreira?aba=minigame" replace />} />
+          <Route path="/inicio" element={<Navigate to="/jogador" replace />} />
+          <Route path="/desafio" element={<Navigate to="/carreira?aba=desafio" replace />} />
+          <Route path="/estadio" element={<Navigate to="/carreira?aba=estadio" replace />} />
+          <Route path="/torneio" element={<Navigate to="/carreira?aba=torneio" replace />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </Layout>
+    </TutorialProvider>
+  )
+}
+
+export default function App() {
+  return (
     <GameProvider>
-      <TutorialProvider>
-        <LoginModal />
-        <Notificacao />
-        <LevelUpOverlay />
-        <DialogoOverlay />
-        <TutorialOverlay />
-        <PosicaoModal />
-        <StreakModal />
-        <EventBanner />
-        <ClubeModal />
-        <Layout>
-          <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/historia" element={<Historia />} />
-            <Route path="/jogador" element={<MeuJogador />} />
-            <Route path="/vida" element={<MinhaVida />} />
-            <Route path="/carreira" element={<Carreira />} />
-            <Route path="/missoes" element={<Missoes />} />
-            <Route path="/loja" element={<Loja />} />
-            <Route path="/inventario" element={<Inventario />} />
-            <Route path="/top-craques" element={<TopCraques />} />
-            <Route path="/foruns" element={<Foruns />} />
-            <Route path="/banco" element={<Banco />} />
-            <Route path="/performance" element={<Performance />} />
-            <Route path="/treino" element={<Treino />} />
-            <Route path="/minigame" element={<Navigate to="/carreira?aba=minigame" replace />} />
-            {/* Rotas legadas — redireciona para novos destinos */}
-            <Route path="/inicio" element={<Navigate to="/jogador" replace />} />
-            <Route path="/desafio" element={<Navigate to="/carreira?aba=desafio" replace />} />
-            <Route path="/estadio" element={<Navigate to="/carreira?aba=estadio" replace />} />
-            <Route path="/torneio" element={<Navigate to="/carreira?aba=torneio" replace />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </Layout>
-      </TutorialProvider>
+      <AppContent />
     </GameProvider>
   )
 }
