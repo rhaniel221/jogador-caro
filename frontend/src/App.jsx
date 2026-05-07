@@ -1,8 +1,9 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { GameProvider } from './context/GameContext'
 import { TutorialProvider } from './context/TutorialContext'
 import Layout from './components/Layout'
+import LoadingScreen from './components/LoadingScreen'
 import LoginModal from './components/LoginModal'
 import Notificacao from './components/Notificacao'
 import LevelUpOverlay from './components/LevelUpOverlay'
@@ -27,6 +28,10 @@ import Performance from './pages/Performance'
 import Treino from './pages/Treino'
 
 export default function App() {
+  const [loaded, setLoaded] = useState(false)
+
+  if (!loaded) return <LoadingScreen onDone={() => setLoaded(true)} />
+
   return (
     <GameProvider>
       <TutorialProvider>

@@ -5999,9 +5999,10 @@ input, select, textarea {
   .content { padding: 12px 10px; }
 
   /* Header mobile */
-  .top-bar { padding: 8px; flex-wrap: wrap; gap: 6px; }
-  .logo-img { height: 40px; }
-  .stats-panel { gap: 4px; flex-wrap: nowrap; overflow-x: auto; width: 100%; order: 3; }
+  .top-bar { padding: 6px 8px; flex-wrap: wrap; gap: 4px; }
+  .logo-img { height: 36px; }
+  .stats-panel { gap: 4px; flex-wrap: nowrap; overflow-x: auto; width: 100%; order: 3; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+  .stats-panel::-webkit-scrollbar { display: none; }
   .stat { padding: 5px 8px; gap: 4px; flex-shrink: 0; min-width: 0; }
   .stat-icon-big { font-size: 16px; }
   .stat-label { font-size: 8px; }
@@ -6023,14 +6024,18 @@ input, select, textarea {
   .bank-link { font-size: 10px; padding: 2px 6px; }
   .sair-btn { font-size: 9px; padding: 3px 8px; }
 
-  /* Nav */
-  .main-menu { padding: 0 4px; }
-  .main-menu ul { flex-wrap: wrap; justify-content: center; }
-  .main-menu li a {
-    padding: 6px 8px;
-    font-size: 9px;
-    letter-spacing: 0;
+  /* Nav mobile — scroll horizontal */
+  .main-menu { padding: 0 4px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .main-menu ul { flex-wrap: nowrap !important; justify-content: flex-start; gap: 2px; }
+  .main-menu li a, .nav-locked {
+    padding: 8px 10px !important;
+    font-size: 10px !important;
+    white-space: nowrap;
+    border-radius: 6px !important;
+    margin: 2px 0 !important;
   }
+  .nav-count-badge { min-width: 16px; height: 16px; font-size: 8px; }
+  .nav-new-badge { font-size: 7px; padding: 1px 4px; }
 
   /* Títulos */
   .page-title { font-size: 20px; letter-spacing: 1px; }
@@ -6592,3 +6597,160 @@ input.game-input::placeholder { color: #475569; }
 .tutorial-skip:hover { color: #94a3b8; }
 .tutorial-hint { color: #f1c76a; font-size: 11px; font-weight: 800; }
 .tutorial-highlight { border: 2px solid rgba(30,111,255,0.5); border-radius: 10px; box-shadow: 0 0 20px rgba(30,111,255,0.2); }
+
+/* ================================================================
+   LOADING SCREEN
+================================================================ */
+.jc-loading-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: #06111f;
+  background-image: url('/background.png');
+  background-size: cover;
+  background-position: center;
+  display: grid;
+  place-items: center;
+  transition: opacity 0.4s ease;
+}
+.jc-loading-screen::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(6,17,31,0.6) 0%, rgba(6,17,31,0.85) 100%);
+}
+.jc-loading-content {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  padding: 20px;
+  animation: jc-loading-fade 0.6s ease;
+}
+@keyframes jc-loading-fade {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.jc-loading-logo {
+  width: 180px;
+  max-width: 50vw;
+  margin-bottom: 16px;
+  filter: drop-shadow(0 4px 20px rgba(0,0,0,0.5));
+}
+.jc-loading-title {
+  font-family: 'Teko', sans-serif;
+  font-size: 42px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 6px;
+  text-transform: uppercase;
+  text-shadow: 0 2px 20px rgba(0,0,0,0.5);
+  margin-bottom: 4px;
+}
+.jc-loading-sub {
+  color: #94a3b8;
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 24px;
+}
+.jc-loading-bar-wrap {
+  width: 280px;
+  max-width: 80vw;
+  margin: 0 auto;
+}
+.jc-loading-bar {
+  height: 6px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+.jc-loading-fill {
+  height: 100%;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #1e6fff, #D6A84F);
+  transition: width 0.1s linear;
+  box-shadow: 0 0 12px rgba(30,111,255,0.3);
+}
+.jc-loading-pct {
+  font-family: 'Teko', sans-serif;
+  font-size: 18px;
+  color: #D6A84F;
+  font-weight: 600;
+}
+.jc-loading-tips {
+  margin-top: 16px;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 600;
+  min-height: 18px;
+}
+
+/* ================================================================
+   MOBILE FIXES GLOBAIS
+================================================================ */
+@media (max-width: 480px) {
+  body { background-attachment: scroll; }
+
+  .game-container { backdrop-filter: none; -webkit-backdrop-filter: none; background: rgba(11,30,58,0.92); }
+
+  .top-bar { padding: 6px; }
+  .logo-img { height: 32px; }
+  .profile-panel { padding: 4px 6px; }
+  .player-nome { font-size: 11px; }
+  .money-main { font-size: 11px; }
+  .money-coins { font-size: 10px; }
+  .bank-link { display: none; }
+  .sair-btn { font-size: 8px; padding: 2px 6px; }
+  .pos-badge-header { font-size: 8px; }
+
+  .content { padding: 8px 6px; }
+  .page-title { font-size: 18px; }
+
+  /* Botoes */
+  .btn-work { padding: 10px 16px; font-size: 12px; border-radius: 10px; }
+  .btn-small { padding: 6px 10px; font-size: 10px; }
+  .jc-btn { padding: 0 12px; min-height: 36px; font-size: 11px; }
+
+  /* Cards */
+  .pf-section { padding: 12px; border-radius: 14px; }
+  .jobs-list { border-radius: 14px; }
+  .shop-item { padding: 12px; border-radius: 12px; }
+  .shop-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; }
+  .inv-item { padding: 10px 12px; border-radius: 10px; }
+
+  /* Tabs */
+  .tabs { overflow-x: auto; flex-wrap: nowrap; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab { flex-shrink: 0; padding: 8px 12px; font-size: 10px; }
+
+  /* Modais */
+  .jc-overlay { padding: 10px; }
+  .jc-levelup-card, .jc-dialog-card, .jc-capitulo-card { padding: 24px 18px; border-radius: 18px; }
+  .jc-levelup-nivel { font-size: 64px; }
+  .jc-capitulo-titulo { font-size: 24px; }
+  .modal-login-box { padding: 20px 16px; border-radius: 16px; }
+  .ml-logo-img { max-width: 200px; }
+
+  /* Variedade panel */
+  .variedade-panel { padding: 10px; }
+
+  /* Bank */
+  .bank-balances { flex-direction: column; gap: 12px; }
+  .bank-actions { flex-direction: column; gap: 12px; }
+  .bank-balance-value { font-size: 22px; }
+
+  /* Evento modal */
+  .evento-modal { padding: 18px 14px; max-width: 92vw; }
+
+  /* Quest cards */
+  .quest-card { padding: 12px; }
+  .quest-rewards { gap: 4px; }
+  .quest-reward { font-size: 10px; padding: 2px 6px; }
+
+  /* Treino cards */
+  .treino-card { flex-direction: column !important; align-items: stretch !important; }
+
+  /* Overflow fix */
+  * { max-width: 100%; }
+  img { max-width: 100%; height: auto; }
+}
