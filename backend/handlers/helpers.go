@@ -1174,12 +1174,24 @@ func ColetarPatrocinio(jogadorID int) (int, int, error) {
 	}
 
 	agora := time.Now().Unix()
+	hojeInicio := time.Now().Truncate(24 * time.Hour).Unix()
+
+	// Limite de 1 coleta por dia
+	if ultimaColetaEpoch >= hojeInicio {
+		return 0, 0, fmt.Errorf("já coletou hoje")
+	}
+
 	if ultimaColetaEpoch == 0 {
 		// Primeira coleta: dá 1 hora de bônus
 		ultimaColetaEpoch = agora - 3600
 	}
 
-	diffSeg := agora - ultimaColetaEpoch
+	// Janela de acúmulo: a partir do MAX(ultima_coleta, hoje 00:00)
+	inicio := ultimaColetaEpoch
+	if inicio < hojeInicio {
+		inicio = hojeInicio
+	}
+	diffSeg := agora - inicio
 	if diffSeg < 60 {
 		return 0, 0, fmt.Errorf("coletado recentemente")
 	}

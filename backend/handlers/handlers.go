@@ -4332,15 +4332,22 @@ func HandleFamaStatus(w http.ResponseWriter, r *http.Request) {
 
 	rank := GetFamaRank(jogador.PontosFama)
 
-	// Calcula patrocínio acumulado
+	// Calcula patrocínio acumulado (1 coleta por dia)
 	var ultimaColetaEpoch int64
 	db.Conn.QueryRow(`SELECT COALESCE(EXTRACT(EPOCH FROM ultima_coleta_patrocinio)::BIGINT, 0)
 		FROM jogadores WHERE id=$1`, jogadorID).Scan(&ultimaColetaEpoch)
 
+	hojeInicio := time.Now().Truncate(24 * time.Hour).Unix()
+	jaColetouHoje := ultimaColetaEpoch >= hojeInicio
+
 	dinheiroAcumulado := 0
-	if rank.RendaHora > 0 && ultimaColetaEpoch > 0 {
+	if !jaColetouHoje && rank.RendaHora > 0 && ultimaColetaEpoch > 0 {
 		agora := time.Now().Unix()
-		diffSeg := agora - ultimaColetaEpoch
+		inicio := ultimaColetaEpoch
+		if inicio < hojeInicio {
+			inicio = hojeInicio
+		}
+		diffSeg := agora - inicio
 		if diffSeg > 12*3600 {
 			diffSeg = 12 * 3600
 		}
@@ -4362,6 +4369,7 @@ func HandleFamaStatus(w http.ResponseWriter, r *http.Request) {
 		"rank":                 rank,
 		"ranks":                GetAllFamaRanks(),
 		"patrocinio_acumulado": dinheiroAcumulado,
+		"coletado_hoje":        jaColetouHoje,
 		"fez_pvp_hoje":         fezPvpHoje,
 		"protegido":            fezPvpHoje,
 	})
@@ -4384,7 +4392,11 @@ func HandleColetarPatrocinio(w http.ResponseWriter, r *http.Request) {
 
 	dinheiro, moedas, err := ColetarPatrocinio(req.JogadorID)
 	if err != nil {
-		JsonResp(w, 200, map[string]interface{}{"sucesso": false, "mensagem": "Nada para coletar ainda."})
+		msg := "Nada para coletar ainda."
+		if err.Error() == "já coletou hoje" {
+			msg = "Você já coletou hoje! Volte amanhã."
+		}
+		JsonResp(w, 200, map[string]interface{}{"sucesso": false, "mensagem": msg})
 		return
 	}
 
