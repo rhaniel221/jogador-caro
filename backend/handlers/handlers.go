@@ -3958,23 +3958,36 @@ func HandleCasa(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Calculate accumulated rewards (capped at 12 hours)
-	agora := time.Now().Unix()
-	diffSeg := agora - ultimaColetaEpoch
-	if diffSeg < 0 {
-		diffSeg = 0
-	}
-	maxSeg := int64(12 * 3600)
-	if diffSeg > maxSeg {
-		diffSeg = maxSeg
-	}
-	horas := float64(diffSeg) / 3600.0
-	minutos := float64(diffSeg) / 60.0
+	// Limite de 1 coleta por dia: se já coletou hoje, zera disponível
+	hojeInicio := time.Now().Truncate(24 * time.Hour).Unix()
+	jaColetouHoje := ultimaColetaEpoch >= hojeInicio
 
-	xpAcumulado := int(horas * float64(cfg.XPHora))
+	xpAcumulado := 0
 	enAcumulado := 0
-	if cfg.EnIntMin > 0 {
-		enAcumulado = int(minutos/float64(cfg.EnIntMin)) * cfg.EnQuant
+	horas := 0.0
+
+	if !jaColetouHoje {
+		// Janela de acúmulo: a partir do MAX(ultima_coleta, hoje_00:00), capped em 12h
+		agora := time.Now().Unix()
+		inicio := ultimaColetaEpoch
+		if inicio < hojeInicio {
+			inicio = hojeInicio
+		}
+		diffSeg := agora - inicio
+		if diffSeg < 0 {
+			diffSeg = 0
+		}
+		maxSeg := int64(12 * 3600)
+		if diffSeg > maxSeg {
+			diffSeg = maxSeg
+		}
+		horas = float64(diffSeg) / 3600.0
+		minutos := float64(diffSeg) / 60.0
+
+		xpAcumulado = int(horas * float64(cfg.XPHora))
+		if cfg.EnIntMin > 0 {
+			enAcumulado = int(minutos/float64(cfg.EnIntMin)) * cfg.EnQuant
+		}
 	}
 
 	casa := Casa{
@@ -3988,6 +4001,7 @@ func HandleCasa(w http.ResponseWriter, r *http.Request) {
 	JsonResp(w, 200, map[string]interface{}{
 		"sucesso":           true,
 		"casa":              casa,
+		"coletado_hoje":     jaColetouHoje,
 		"casas_disponiveis": montaLista(),
 	})
 }
@@ -4127,8 +4141,19 @@ func HandleCasaColetar(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Limite de 1 coleta por dia
+	hojeInicio := time.Now().Truncate(24 * time.Hour).Unix()
+	if ultimaColetaEpoch >= hojeInicio {
+		JsonResp(w, 200, map[string]interface{}{"sucesso": false, "mensagem": "Você já coletou hoje! Volte amanhã."})
+		return
+	}
+
 	agora := time.Now().Unix()
-	diffSeg := agora - ultimaColetaEpoch
+	inicio := ultimaColetaEpoch
+	if inicio < hojeInicio {
+		inicio = hojeInicio
+	}
+	diffSeg := agora - inicio
 	if diffSeg < 0 {
 		diffSeg = 0
 	}
@@ -4443,9 +4468,10 @@ func HandlePatrimonio(w http.ResponseWriter, r *http.Request) {
 // BOLETOS (contas periódicas)
 // ========================
 
-// calcBoleto calcula o valor do boleto baseado no nível do jogador
-// 30% do ganho médio de ~8 sessões de trabalho no tier atual
-func calcBoleto(nivel int) (total int, itens []map[string]interface{}) {
+// calcBoleto calcula o valor do boleto baseado no nível e tipo de casa do jogador.
+// Casa alugada (basica): tem aluguel.
+// Casa própria/mansão: substitui aluguel por IPTU (mesmo peso, sem locador).
+func calcBoleto(nivel int, tipoCasa string) (total int, itens []map[string]interface{}) {
 	// Ganho base por sessão de trabalho no nível atual (média)
 	// Usando os mesmos fatores de calcRecompensaTrabalho com base genérica
 	lvl := float64(nivel)
@@ -4502,21 +4528,29 @@ func calcBoleto(nivel int) (total int, itens []map[string]interface{}) {
 	totalBoleto := int(ganho2Dias * 0.39)
 
 	// Divide em categorias proporcionais
-	aluguel := int(float64(totalBoleto) * 0.40)
+	moradia := int(float64(totalBoleto) * 0.40)
 	energia := int(float64(totalBoleto) * 0.18)
 	agua := int(float64(totalBoleto) * 0.12)
 	internet := int(float64(totalBoleto) * 0.15)
 	condominio := int(float64(totalBoleto) * 0.15)
 
+	// Casa própria/mansão: paga IPTU em vez de aluguel
+	moradiaNome := "Aluguel"
+	moradiaIcone := "🏠"
+	if tipoCasa != "" && tipoCasa != "basica" {
+		moradiaNome = "IPTU"
+		moradiaIcone = "🧾"
+	}
+
 	itens = []map[string]interface{}{
-		{"nome": "Aluguel", "icone": "🏠", "valor": aluguel},
+		{"nome": moradiaNome, "icone": moradiaIcone, "valor": moradia},
 		{"nome": "Energia Elétrica", "icone": "💡", "valor": energia},
 		{"nome": "Água", "icone": "🚿", "valor": agua},
 		{"nome": "Internet", "icone": "📡", "valor": internet},
 		{"nome": "Condomínio", "icone": "🏢", "valor": condominio},
 	}
 
-	total = aluguel + energia + agua + internet + condominio
+	total = moradia + energia + agua + internet + condominio
 	return
 }
 
@@ -4565,7 +4599,9 @@ func HandleBoletoVerificar(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	valorBase, itens := calcBoleto(jogador.Nivel)
+	var tipoCasa string
+	db.Conn.QueryRow(`SELECT COALESCE(tipo,'') FROM casas WHERE jogador_id=$1`, jogadorID).Scan(&tipoCasa)
+	valorBase, itens := calcBoleto(jogador.Nivel, tipoCasa)
 
 	// Juros: 5% por dia de atraso (após as 48h)
 	horasAtraso := diff.Hours() - 48
@@ -4621,7 +4657,9 @@ func HandleBoletoPagar(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	valorBase, _ := calcBoleto(jogador.Nivel)
+	var tipoCasa string
+	db.Conn.QueryRow(`SELECT COALESCE(tipo,'') FROM casas WHERE jogador_id=$1`, req.JogadorID).Scan(&tipoCasa)
+	valorBase, _ := calcBoleto(jogador.Nivel, tipoCasa)
 
 	// Juros: 5% por dia de atraso
 	horasAtraso := diff.Hours() - 48

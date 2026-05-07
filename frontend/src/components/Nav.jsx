@@ -12,7 +12,6 @@ const links = [
   { to: '/jogador',    label: 'Jogador',  icon: '👤', tid: 'nav-perfil' },
   { to: '/loja',       label: 'Loja',     icon: '🛒', tid: 'nav-loja' },
   { to: '/vida',       label: 'Vida',     icon: '🏡', tid: 'nav-vida', minLevel: 20 },
-  { to: '/banco',      label: 'Banco',    icon: '💰', tid: 'nav-banco', minLevel: 20 },
   { to: '/top-craques', label: 'Rankings', icon: '📊', tid: 'nav-top', minLevel: 10 },
   { to: '/foruns',     label: 'Forums',   icon: '💬', tid: 'nav-foruns', minLevel: 10 },
 ]

@@ -88,22 +88,25 @@ export default function Dashboard() {
   const [historico, setHistorico] = useState([])
   const [progressaoHoje, setProgressaoHoje] = useState(null)
   const [tasks, setTasks] = useState([])
+  const [boleto, setBoleto] = useState(null)
 
   const carregar = useCallback(async () => {
     if (!jogadorID) return
     try {
-      const [casa, campinho, fama, hist, prog, tsk] = await Promise.all([
+      const [casa, campinho, fama, hist, prog, tsk, bol] = await Promise.all([
         API.get('/api/casa/' + jogadorID).catch(() => null),
         API.get('/api/campinho/' + jogadorID).catch(() => null),
         API.get('/api/fama/' + jogadorID).catch(() => null),
         API.get('/api/combates/historico?jogador_id=' + jogadorID).catch(() => []),
         API.get('/api/progressao/hoje/' + jogadorID).catch(() => null),
         API.get('/api/tasks/' + jogadorID).catch(() => []),
+        API.get('/api/boletos/verificar/' + jogadorID).catch(() => null),
       ])
       setPendencias({ casa, campinho, fama })
       setHistorico(Array.isArray(hist) ? hist : [])
       setProgressaoHoje(prog)
       setTasks(Array.isArray(tsk) ? tsk : [])
+      setBoleto(bol && bol.tem_boleto ? bol : null)
     } catch (e) {}
   }, [jogadorID])
 
@@ -240,6 +243,20 @@ export default function Dashboard() {
           </div>
           <Link to="/historia">Jogar agora</Link>
         </div>
+      )}
+
+      {/* Aviso de contas atrasadas */}
+      {boleto && boleto.dias_atraso > 0 && (
+        <Link to="/banco" className="jc-alerta-contas">
+          <span className="jc-alerta-icon">⚠️</span>
+          <div className="jc-alerta-content">
+            <div className="jc-alerta-titulo">Contas em atraso!</div>
+            <div className="jc-alerta-desc">
+              {boleto.dias_atraso} dia{boleto.dias_atraso > 1 ? 's' : ''} em atraso · R$ {fmt(boleto.total)} (juros 5%/dia)
+            </div>
+          </div>
+          <span className="jc-alerta-cta">PAGAR →</span>
+        </Link>
       )}
 
       {/* Coletas */}
