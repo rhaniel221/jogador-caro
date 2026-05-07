@@ -4350,11 +4350,12 @@ input, select, textarea {
   position: fixed;
   z-index: 9998;
   pointer-events: auto;
-  background: var(--card-bg);
-  border: 2px solid var(--azul);
-  border-radius: 14px;
-  padding: 16px 18px 14px;
-  box-shadow: 0 6px 24px rgba(0,40,120,0.25), 0 2px 6px rgba(0,0,0,0.1);
+  background: rgba(13,30,54,0.95);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(30,111,255,0.3);
+  border-radius: 16px;
+  padding: 18px 20px 16px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.4);
   animation: tut-tooltip-in 0.35s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 @keyframes tut-tooltip-in {
@@ -4382,7 +4383,7 @@ input, select, textarea {
   top: 2px; left: -7px;
   border-left: 7px solid transparent;
   border-right: 7px solid transparent;
-  border-bottom: 8px solid #fff;
+  border-bottom: 8px solid #0d1e36;
 }
 .tutorial-arrow.arrow-bottom {
   bottom: -10px;
@@ -4394,7 +4395,7 @@ input, select, textarea {
   bottom: 2px; left: -7px;
   border-left: 7px solid transparent;
   border-right: 7px solid transparent;
-  border-top: 8px solid #fff;
+  border-top: 8px solid #0d1e36;
 }
 
 /* Badge de step */

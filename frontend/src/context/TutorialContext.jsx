@@ -15,67 +15,67 @@ const TutorialContext = createContext(null)
 */
 const STEPS = [
   // ============================================
-  // ONBOARDING (level 1-3, / = Historia)
+  // ONBOARDING (level 1-3, / = Dashboard)
   // ============================================
-  { id: 1, tipo: 'info', page: '/', target: '[data-tutorial="missoes-lista"]',
+  { id: 1, tipo: 'info', page: '/historia', target: '[data-tutorial="missoes-lista"]',
     delay: 1200,
-    titulo: 'Bem-vindo ao Joga Craque! ⚽',
-    texto: 'Sua jornada começa aqui! Complete as missões da história para ganhar XP, dinheiro e subir de nível!' },
+    titulo: 'Bem-vindo ao Jogador Caro!',
+    texto: 'Sua jornada comeca aqui! Complete as missoes da historia para ganhar XP, dinheiro e subir de nivel!' },
 
   { id: 2, tipo: 'info', page: null, target: '[data-tutorial="stat-energia"]',
     delay: 600,
-    titulo: '⚡ Energia',
-    texto: 'Missões e trabalhos gastam Energia. Ela regenera sozinha com o tempo. Se acabar, compre consumíveis na Loja!' },
+    titulo: 'Energia',
+    texto: 'Missoes e trabalhos gastam Energia. Ela regenera sozinha com o tempo. Se acabar, compre consumiveis na Loja!' },
 
   { id: 3, tipo: 'info', page: null, target: '[data-tutorial="stat-xp"]',
     delay: 500,
-    titulo: '📊 XP e Nível',
-    texto: 'Ganhe XP para subir de nível! Cada nível desbloqueia trabalhos novos, equipamentos e áreas!' },
+    titulo: 'XP e Nivel',
+    texto: 'Ganhe XP para subir de nivel! Cada nivel desbloqueia trabalhos novos, equipamentos e areas!' },
 
   { id: 4, tipo: 'info', page: null, target: '[data-tutorial="stat-dinheiro"]',
     delay: 500,
-    titulo: '💰 Dinheiro',
-    texto: 'Use dinheiro pra comprar itens na Loja. Agora complete as missões da história para avançar!' },
+    titulo: 'Dinheiro',
+    texto: 'Use dinheiro pra comprar itens na Loja. Agora complete as missoes da historia para avancar!' },
 
-  // step 5 = dormindo (espera nível 4 + energia baixa)
+  // step 5 = dormindo (espera nivel 4 + energia baixa)
 
   // ============================================
-  // TUTORIAL DE ENERGIA (level 4+, Trabalhos)
+  // TUTORIAL DE ENERGIA (level 4+, Carreira)
   // ============================================
   { id: 20, tipo: 'info', page: null, target: '[data-tutorial="stat-energia"]',
     delay: 800,
-    titulo: '⚡ Sua Energia Acabou!',
-    texto: 'Você ficou sem energia e não consegue trabalhar! Mas calma, tem solução. Vamos à Loja comprar um item que recupera energia!' },
+    titulo: 'Sua Energia Acabou!',
+    texto: 'Voce ficou sem energia e nao consegue trabalhar! Mas calma, tem solucao. Vamos a Loja comprar um item que recupera energia!' },
 
   { id: 21, tipo: 'nav', page: null, target: '[data-tutorial="nav-loja"]', destino: '/loja',
     delay: 500,
-    titulo: '🛒 Vá à Loja!',
+    titulo: 'Va a Loja!',
     texto: 'Clique em "Loja" para comprar um item de energia!' },
 
   { id: 22, tipo: 'info', page: '/loja', target: '[data-tutorial="loja-energia-section"]',
     delay: 800,
-    titulo: '⚡ Compre Energia!',
-    texto: 'A aba "Energia" já está selecionada. Compre uma Água Mineral — é barata e recupera energia pra você voltar a trabalhar!' },
+    titulo: 'Compre Energia!',
+    texto: 'A aba "Energia" ja esta selecionada. Compre uma Agua Mineral — e barata e recupera energia pra voce voltar a trabalhar!' },
 
   { id: 23, tipo: 'nav', page: null, target: '[data-tutorial="header-inventario"]', destino: '/inventario',
     delay: 600,
-    titulo: '🎒 Abra o Inventário!',
-    texto: 'Agora clique no Inventário para usar o item que você comprou!' },
+    titulo: 'Abra o Inventario!',
+    texto: 'Agora clique no Inventario para usar o item que voce comprou!' },
 
   { id: 24, tipo: 'info', page: '/inventario', target: '[data-tutorial="inv-consumiveis"]',
     delay: 800,
-    titulo: '🧪 Use o Item de Energia!',
+    titulo: 'Use o Item de Energia!',
     texto: 'Encontre o item de energia e clique em "Usar" para recuperar sua energia!' },
 
-  { id: 25, tipo: 'nav', page: null, target: '[data-tutorial="nav-trabalhos"]', destino: '/',
+  { id: 25, tipo: 'nav', page: null, target: '[data-tutorial="nav-trabalhos"]', destino: '/carreira',
     delay: 600,
-    titulo: '⚽ Volte aos Trabalhos!',
-    texto: 'Energia recuperada! Agora volte aos Trabalhos!' },
+    titulo: 'Va para a Carreira!',
+    texto: 'Energia recuperada! Agora va para a Carreira e comece a trabalhar!' },
 
-  { id: 26, tipo: 'info', page: '/', target: '[data-tutorial="variedade-panel"]',
+  { id: 26, tipo: 'info', page: '/carreira', target: '[data-tutorial="variedade-panel"]',
     delay: 800,
-    titulo: '⭐ Bônus de Variedade!',
-    texto: 'Trabalhe em 3 trabalhos DIFERENTES no mesmo dia para ganhar +10% de XP bônus! Quanto mais variar, mais XP. Boa sorte, craque!' },
+    titulo: 'Bonus de Variedade!',
+    texto: 'Trabalhe em 3 trabalhos DIFERENTES no mesmo dia para ganhar +10% de XP bonus! Quanto mais variar, mais XP. Boa sorte, craque!' },
 ]
 
 export function TutorialProvider({ children }) {
@@ -108,7 +108,7 @@ export function TutorialProvider({ children }) {
   // Ativa tutorial de energia: dormindo (5), nível 4+, energia baixa
   useEffect(() => {
     if (step !== 5 || !jogador) return
-    if (jogador.nivel < 4 || location.pathname !== '/') return
+    if (jogador.nivel < 4 || (location.pathname !== '/' && location.pathname !== '/carreira')) return
     if (jogador.energia > 3) return
     const timer = setTimeout(() => {
       goToStep(20)
