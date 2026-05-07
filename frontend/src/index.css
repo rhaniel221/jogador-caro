@@ -382,6 +382,22 @@ body::before {
     border-bottom: 2px solid var(--dourado);
 }
 
+.nav-new-badge {
+    font-size: 8px;
+    font-weight: 900;
+    padding: 1px 6px;
+    border-radius: 6px;
+    margin-left: 4px;
+    background: linear-gradient(135deg, #D6A84F, #f1c76a);
+    color: #0a1929;
+    letter-spacing: 0.5px;
+    animation: nav-pulse 2s infinite;
+}
+@keyframes nav-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+}
+
 .main-menu a:hover:not(.active) {
     background: rgba(255,255,255,0.04);
     color: #F8FAFC;

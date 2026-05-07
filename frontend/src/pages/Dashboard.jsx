@@ -113,6 +113,41 @@ export default function Dashboard() {
 
   const noticias = gerarNoticias(jogador, historico, progressaoHoje)
 
+  // === O QUE FAZER AGORA (priorizado) ===
+  const proximosPassos = []
+  if (jogador.saude < 30) {
+    proximosPassos.push({ icone: '❤️', titulo: 'Saude Critica!', desc: 'Va ate Minha Vida e faca um tratamento.', link: '/vida', cor: '#ef4444' })
+  }
+  if (jogador.energia <= 3) {
+    proximosPassos.push({ icone: '⚡', titulo: 'Energia Baixa!', desc: 'Compre energia na Loja para continuar.', link: '/loja', cor: '#D6A84F' })
+  }
+  if (totalTrabalhos === 0 && jogador.energia > 3) {
+    proximosPassos.push({ icone: '⚽', titulo: 'Hora de Trabalhar!', desc: 'Comece o dia na Carreira.', link: '/carreira', cor: '#1e6fff' })
+  }
+  const tasksPend = tasks.filter(t => !t.completada && !t.coletada && t.progresso >= t.objetivo)
+  if (tasksPend.length > 0) {
+    proximosPassos.push({ icone: '🎁', titulo: `${tasksPend.length} Recompensa(s)!`, desc: 'Tarefas prontas pra coletar.', link: '/missoes', cor: '#22c55e' })
+  }
+  if (temPendencias && proximosPassos.length < 3) {
+    proximosPassos.push({ icone: '📦', titulo: 'Coletas Disponiveis', desc: 'Colete bonus da casa, campinho ou patrocinio.', link: casaPendente ? '/vida' : '/jogador', cor: '#D6A84F' })
+  }
+  if (proximosPassos.length < 2) {
+    proximosPassos.push({ icone: '🏋️', titulo: 'Evoluir Atributos', desc: 'Treine para ficar mais forte.', link: '/treino', cor: '#43a7ff' })
+  }
+
+  // === ACESSO RAPIDO DINAMICO (por nivel) ===
+  const quickLinks = [
+    { icon: '⚽', label: 'Trabalhar', to: '/carreira' },
+    { icon: '🏋️', label: 'Treino', to: '/treino' },
+    { icon: '📖', label: 'Missoes', to: '/missoes' },
+    { icon: '🛒', label: 'Loja', to: '/loja' },
+    jogador.nivel >= 10 && { icon: '⚔️', label: 'Estadio', to: '/carreira?aba=estadio' },
+    jogador.nivel >= 12 && { icon: '🥊', label: 'Desafio 1v1', to: '/carreira?aba=desafio' },
+    jogador.nivel >= 15 && { icon: '🎮', label: 'MiniGame', to: '/carreira?aba=minigame' },
+    jogador.nivel >= 20 && { icon: '🏡', label: 'Minha Vida', to: '/vida' },
+    { icon: '👤', label: 'Meu Jogador', to: '/jogador' },
+  ].filter(Boolean).slice(0, 6)
+
   return (
     <main className="jc-dashboard">
       {/* Hero */}
@@ -194,6 +229,25 @@ export default function Dashboard() {
         </div>
       )}
 
+      {/* O QUE FAZER AGORA */}
+      {proximosPassos.length > 0 && (
+        <section className="jc-section" style={{ marginBottom: 18 }}>
+          <SectionHeader icon="🎯" title="O Que Fazer Agora" />
+          <div className="jc-proximos-grid">
+            {proximosPassos.slice(0, 3).map((p, i) => (
+              <Link key={i} to={p.link} className="jc-proximo-card" style={{ borderLeftColor: p.cor, textDecoration: 'none' }}>
+                <span className="jc-proximo-icon">{p.icone}</span>
+                <div style={{ flex: 1 }}>
+                  <div className="jc-proximo-titulo">{p.titulo}</div>
+                  <div className="jc-proximo-desc">{p.desc}</div>
+                </div>
+                <span className="jc-proximo-arrow">→</span>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+
       {/* Agenda + Jornal */}
       <div className="jc-grid-2">
         <section className="jc-section">
@@ -224,18 +278,11 @@ export default function Dashboard() {
         </section>
       </div>
 
-      {/* Acesso Rapido */}
+      {/* Acesso Rapido (dinamico por nivel) */}
       <section className="jc-section">
         <SectionHeader icon="⚡" title="Acesso Rapido" />
         <div className="jc-quick-grid">
-          {[
-            { icon: '⚽', label: 'Trabalhar', to: '/carreira' },
-            { icon: '🎮', label: 'MiniGame', to: '/carreira?aba=minigame' },
-            { icon: '🥊', label: 'Desafio 1v1', to: '/carreira?aba=desafio' },
-            { icon: '🏋️', label: 'Treino', to: '/treino' },
-            { icon: '👤', label: 'Meu Jogador', to: '/jogador' },
-            { icon: '🛒', label: 'Loja', to: '/loja' },
-          ].map(({ icon, label, to }) => (
+          {quickLinks.map(({ icon, label, to }) => (
             <Link key={to} to={to} className="jc-quick-btn">
               <span className="jc-quick-icon">{icon}</span>
               <span className="jc-quick-label">{label}</span>

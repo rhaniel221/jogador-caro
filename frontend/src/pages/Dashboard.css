@@ -344,3 +344,59 @@
   .jc-moral-ring { width: 56px; height: 56px; }
   .jc-moral-num { font-size: 24px; }
 }
+
+/* Proximos Passos */
+.jc-proximos-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.jc-proximo-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: rgba(15,34,56,0.6);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-left: 3px solid;
+  color: #f8fafc;
+  transition: transform 0.2s, border-color 0.2s, background 0.2s;
+}
+
+.jc-proximo-card:hover {
+  transform: translateX(4px);
+  background: rgba(15,34,56,0.8);
+}
+
+.jc-proximo-icon {
+  font-size: 26px;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.04);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.jc-proximo-titulo {
+  font-size: 14px;
+  font-weight: 900;
+  color: #f8fafc;
+  margin-bottom: 2px;
+}
+
+.jc-proximo-desc {
+  font-size: 12px;
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+.jc-proximo-arrow {
+  font-size: 20px;
+  color: #475569;
+  flex-shrink: 0;
+}
