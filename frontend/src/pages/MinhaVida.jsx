@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { useGame } from '../context/GameContext'
 import API from '../api'
 import { fmt } from '../utils'
+import './MinhaVida.css'
 
 // ========================
 // TRATAMENTO
@@ -10,42 +11,72 @@ import { fmt } from '../utils'
 
 const TRATAMENTOS = [
   {
-    id: 'meditacao', nome: 'Meditacao', icone: '🧘',
+    id: 'meditacao',
+    nome: 'Meditacao',
+    icone: '🧘',
     desc: 'Foco mental e vitalidade renovada.',
-    custoBase: 8000, custoNivel: 400,
-    ganhos: (n) => `+${5 + Math.floor(n / 5)} Saude · +${20 + Math.floor(n / 4)} Vitalidade`,
+    custoBase: 8000,
+    custoNivel: 400,
+    ganhos: (n) => `+${5 + Math.floor(n / 5)} Saude . +${20 + Math.floor(n / 4)} Vitalidade`,
   },
   {
-    id: 'nutricao', nome: 'Nutricionista', icone: '🥗',
+    id: 'nutricao',
+    nome: 'Nutricionista',
+    icone: '🥗',
     desc: 'Dieta equilibrada para o corpo.',
-    custoBase: 12000, custoNivel: 640,
-    ganhos: (n) => `+${8 + Math.floor(n / 4)} Saude · +${12 + Math.floor(n / 5)} Vitalidade · +${3 + Math.floor(n / 15)} Energia`,
+    custoBase: 12000,
+    custoNivel: 640,
+    ganhos: (n) => `+${8 + Math.floor(n / 4)} Saude . +${12 + Math.floor(n / 5)} Vitalidade . +${3 + Math.floor(n / 15)} Energia`,
   },
   {
-    id: 'psicologo', nome: 'Psicologo', icone: '🧠',
+    id: 'psicologo',
+    nome: 'Psicologo',
+    icone: '🧠',
     desc: 'Sessao de terapia para renovar a mente.',
-    custoBase: 16000, custoNivel: 800,
-    ganhos: (n) => `+${20 + Math.floor(n / 2)} Saude · +${10 + Math.floor(n / 5)} Vitalidade`,
+    custoBase: 16000,
+    custoNivel: 800,
+    ganhos: (n) => `+${20 + Math.floor(n / 2)} Saude . +${10 + Math.floor(n / 5)} Vitalidade`,
   },
   {
-    id: 'academia', nome: 'Academia', icone: '🏋️',
+    id: 'academia',
+    nome: 'Academia',
+    icone: '🏋️',
     desc: 'Treino pesado: recupera saude, forca e vitalidade.',
-    custoBase: 20000, custoNivel: 960,
-    ganhos: (n) => `+${10 + Math.floor(n / 3)} Saude · +1 Forca · +${15 + Math.floor(n / 5)} Vitalidade`,
+    custoBase: 20000,
+    custoNivel: 960,
+    ganhos: (n) => `+${10 + Math.floor(n / 3)} Saude . +1 Forca . +${15 + Math.floor(n / 5)} Vitalidade`,
   },
   {
-    id: 'fisioterapia', nome: 'Fisioterapia', icone: '💆',
+    id: 'fisioterapia',
+    nome: 'Fisioterapia',
+    icone: '💆',
     desc: 'Recuperacao corporal completa.',
-    custoBase: 28000, custoNivel: 1200,
-    ganhos: (n) => `+${15 + Math.floor(n / 3)} Saude · +${20 + Math.floor(n / 4)} Vitalidade · +${5 + Math.floor(n / 10)} Energia`,
+    custoBase: 28000,
+    custoNivel: 1200,
+    ganhos: (n) => `+${15 + Math.floor(n / 3)} Saude . +${20 + Math.floor(n / 4)} Vitalidade . +${5 + Math.floor(n / 10)} Energia`,
   },
   {
-    id: 'spa', nome: 'Day Spa', icone: '🧖',
+    id: 'spa',
+    nome: 'Day Spa',
+    icone: '🧖',
     desc: 'Relaxamento total: corpo e mente.',
-    custoBase: 40000, custoNivel: 1600,
-    ganhos: (n) => `+${25 + Math.floor(n / 2)} Saude · +${25 + Math.floor(n / 3)} Vitalidade · +${8 + Math.floor(n / 8)} Energia`,
+    custoBase: 40000,
+    custoNivel: 1600,
+    ganhos: (n) => `+${25 + Math.floor(n / 2)} Saude . +${25 + Math.floor(n / 3)} Vitalidade . +${8 + Math.floor(n / 8)} Energia`,
   },
 ]
+
+function SectionHeader({ icon, title, right }) {
+  return (
+    <div className="jc-section-header">
+      <div className="jc-section-title-wrap">
+        {icon && <span className="jc-section-icon">{icon}</span>}
+        <h3>{title}</h3>
+      </div>
+      {right && <div className="jc-section-right">{right}</div>}
+    </div>
+  )
+}
 
 function TratamentoSection({ jogadorID, jogador, setJogador, mostrarNotificacao }) {
   const [loading, setLoading] = useState(null)
@@ -66,7 +97,7 @@ function TratamentoSection({ jogadorID, jogador, setJogador, mostrarNotificacao 
         if (g.vitalidade > 0) parts.push(`+${g.vitalidade} Vitalidade`)
         if (g.forca > 0) parts.push(`+${g.forca} Forca`)
         if (g.energia > 0) parts.push(`+${g.energia} Energia`)
-        mostrarNotificacao(`${t.icone} ${parts.join(' · ')}`, 'sucesso')
+        mostrarNotificacao(`${t.icone} ${parts.join(' . ')}`, 'sucesso')
       } else {
         mostrarNotificacao(res.mensagem, 'erro')
       }
@@ -75,54 +106,41 @@ function TratamentoSection({ jogadorID, jogador, setJogador, mostrarNotificacao 
   }
 
   if (!jogador) return null
-
   const saudeBaixa = jogador.saude < 30
 
   return (
-    <div className="pf-section">
-      <div className="pf-section-header">
-        <h3>CENTRAL DE TRATAMENTO</h3>
-        <span className="pf-section-badge">❤️ {jogador.saude}/100 · 💚 {jogador.vitalidade}/{jogador.vitalidade_max}</span>
-      </div>
-
+    <section className="jc-section">
+      <SectionHeader
+        icon="❤️"
+        title="Central de Tratamento"
+        right={`${jogador.saude}/100 Saude . ${jogador.vitalidade}/${jogador.vitalidade_max} Vitalidade`}
+      />
       {saudeBaixa && (
-        <div style={{
-          background: '#ffeaea', border: '2px solid var(--vermelho)', borderRadius: 10,
-          padding: '10px 14px', marginBottom: 12, fontSize: 12, color: '#b00', fontWeight: 900,
-        }}>
-          Saude abaixo de 30! Voce nao pode trabalhar. Faca um tratamento!
+        <div className="jc-alert-danger">
+          Saude abaixo de 30! Voce nao pode trabalhar. Faca um tratamento.
         </div>
       )}
-
-      <div className="pf-inv-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))' }}>
+      <div className="jc-treatment-grid">
         {TRATAMENTOS.map(t => {
           const custo = t.custoBase + t.custoNivel * jogador.nivel
           const semDinheiro = jogador.dinheiro_mao < custo
           const isLoading = loading === t.id
           return (
-            <div key={t.id} className="pf-inv-card" style={{ borderColor: semDinheiro ? '#ccc' : 'var(--azul-claro)' }}>
-              <div className="pf-inv-top">
-                <span className="pf-inv-icon">{t.icone}</span>
+            <article key={t.id} className={`jc-treatment-card ${semDinheiro ? 'is-disabled' : ''}`}>
+              <div className="jc-treatment-icon">{t.icone}</div>
+              <div className="jc-treatment-content">
+                <h4>{t.nome}</h4>
+                <p>{t.desc}</p>
+                <strong>{t.ganhos(jogador.nivel)}</strong>
               </div>
-              <div className="pf-inv-name">{t.nome}</div>
-              <div className="pf-inv-desc">{t.desc}</div>
-              <div className="pf-inv-desc" style={{ color: 'var(--azul)', fontWeight: 900 }}>
-                {t.ganhos(jogador.nivel)}
-              </div>
-              <div className="pf-inv-actions">
-                <button
-                  className={`btn-work btn-small${semDinheiro ? '' : ' btn-verde'}`}
-                  onClick={() => fazerTratamento(t.id)}
-                  disabled={isLoading || semDinheiro}
-                >
-                  {isLoading ? '...' : `R$ ${fmt(custo)}`}
-                </button>
-              </div>
-            </div>
+              <button className="jc-btn jc-btn-primary" onClick={() => fazerTratamento(t.id)} disabled={isLoading || semDinheiro}>
+                {isLoading ? 'Aguarde...' : `R$ ${fmt(custo)}`}
+              </button>
+            </article>
           )
         })}
       </div>
-    </div>
+    </section>
   )
 }
 
@@ -130,11 +148,7 @@ function TratamentoSection({ jogadorID, jogador, setJogador, mostrarNotificacao 
 // CASA
 // ========================
 
-const CASA_IMGS = {
-  basica: '/casas/init-casa-simples.png',
-  media: '/casas/init-casa-media.png',
-  top: '/casas/initcasa-top.png',
-}
+const CASA_IMGS = { basica: '/casas/init-casa-simples.png', media: '/casas/init-casa-media.png', top: '/casas/initcasa-top.png' }
 const CASA_NOMES = { basica: 'Casa Alugada', media: 'Casa Propria', top: 'Mansao do Craque' }
 
 function CasaCard({ jogadorID, jogador, setJogador, mostrarNotificacao, setLevelUp }) {
@@ -170,151 +184,123 @@ function CasaCard({ jogadorID, jogador, setJogador, mostrarNotificacao, setLevel
 
   async function comprar(tipo, pagarCom) {
     setLoading(true)
-    const res = await API.post('/api/casa/comprar', { jogador_id: jogadorID, tipo, pagar_com: pagarCom })
-    if (res.sucesso) { if (res.jogador) setJogador(res.jogador); mostrarNotificacao(res.mensagem, 'sucesso'); carregar(); setShowModal(false) }
-    else mostrarNotificacao(res.mensagem, 'erro')
+    try {
+      const res = await API.post('/api/casa/comprar', { jogador_id: jogadorID, tipo, pagar_com: pagarCom })
+      if (res.sucesso) { if (res.jogador) setJogador(res.jogador); mostrarNotificacao(res.mensagem, 'sucesso'); carregar(); setShowModal(false) }
+      else mostrarNotificacao(res.mensagem, 'erro')
+    } catch { mostrarNotificacao('Erro de conexao', 'erro') }
     setLoading(false)
   }
 
   async function coletar() {
     setLoading(true)
-    const res = await API.post('/api/casa/coletar', { jogador_id: jogadorID })
-    if (res.sucesso) {
-      if (res.jogador) setJogador(res.jogador)
-      mostrarNotificacao(res.mensagem, 'sucesso')
-      if (res.level_up) setLevelUp(res.novo_nivel)
-      carregar()
-    } else mostrarNotificacao(res.mensagem, 'erro')
+    try {
+      const res = await API.post('/api/casa/coletar', { jogador_id: jogadorID })
+      if (res.sucesso) {
+        if (res.jogador) setJogador(res.jogador)
+        mostrarNotificacao(res.mensagem, 'sucesso')
+        if (res.level_up) setLevelUp(res.novo_nivel)
+        carregar()
+      } else mostrarNotificacao(res.mensagem, 'erro')
+    } catch { mostrarNotificacao('Erro de conexao', 'erro') }
     setLoading(false)
   }
 
   const temCasa = casa.tipo && casa.tipo !== ''
   const temRecompensa = casa.xp_disponivel > 0 || casa.energia_disponivel > 0
-
   const CASAS_ORDEM = { '': 0, basica: 1, media: 2, top: 3 }
   const tipoAtual = casa?.tipo || ''
   const casasDisponiveis = casas.filter(c => CASAS_ORDEM[c.tipo] > CASAS_ORDEM[tipoAtual])
-
   const CASA_DETALHES = {
-    basica: { bonus: '+1 Forca', desc: 'Casa alugada para morar enquanto sobe na carreira. Aluguel acessivel.' },
-    media: { bonus: '+2 Velocidade · +1 Forca', desc: 'Sua primeira casa propria. Liberada na Serie B.' },
-    top: { bonus: '+2 Habilidade · +2 Velocidade · +1 Forca', desc: 'A mansao dos craques. Maxima performance passiva.' },
+    basica: { bonus: '+1 Forca', desc: 'Casa alugada para morar enquanto sobe na carreira.' },
+    media: { bonus: '+2 Velocidade . +1 Forca', desc: 'Sua primeira casa propria. Liberada na Serie B.' },
+    top: { bonus: '+2 Habilidade . +2 Velocidade . +1 Forca', desc: 'A mansao dos craques. Maxima performance passiva.' },
   }
 
   return (
     <>
       {showModal && casasDisponiveis.length > 0 && (
-        <div className="modal-overlay">
-          <div className="casa-modal" onClick={e => e.stopPropagation()}>
-            {!obrigatorio && <button className="pm-close" onClick={() => setShowModal(false)}>x</button>}
-            <div className="casa-modal-header">
-              <span className="casa-modal-icon">🏠</span>
-              <h2 className="casa-modal-title">
-                {precisaUpgrade ? 'Hora de comprar sua casa!' : obrigatorio ? 'Hora de alugar sua casa!' : 'Sua moradia'}
-              </h2>
-              <p className="casa-modal-sub">
-                {precisaUpgrade
-                  ? 'Voce chegou a Serie B! Agora pode comprar uma casa propria — escolha abaixo.'
-                  : obrigatorio
-                  ? 'Para continuar trabalhando na Serie C, voce precisa alugar uma casa.'
-                  : 'Aqui voce pode alugar uma casa ou comprar a sua.'}
-              </p>
+        <div className="jc-modal-overlay">
+          <div className="jc-house-modal" onClick={e => e.stopPropagation()}>
+            {!obrigatorio && <button className="jc-modal-close" onClick={() => setShowModal(false)}>x</button>}
+            <div className="jc-house-modal-header">
+              <span>🏠</span>
+              <h2>{precisaUpgrade ? 'Hora de comprar sua casa!' : obrigatorio ? 'Hora de alugar sua casa!' : 'Sua moradia'}</h2>
+              <p>{precisaUpgrade ? 'Voce chegou a Serie B. Agora pode comprar uma casa propria.' : obrigatorio ? 'Para continuar trabalhando na Serie C, voce precisa alugar uma casa.' : 'Aqui voce pode alugar uma casa ou comprar a sua.'}</p>
             </div>
-            <div className="casa-modal-grid">
+            <div className="jc-house-modal-grid">
               {casasDisponiveis.map(c => {
                 const det = CASA_DETALHES[c.tipo] || {}
                 const isAluguel = c.tipo === 'basica'
                 const bloqueada = !isAluguel && !podeComprar
                 return (
-                  <div key={c.tipo} className="casa-modal-card" style={bloqueada ? { opacity: 0.55 } : null}>
-                    <img src={CASA_IMGS[c.tipo]} alt={c.nome} className="casa-modal-img"
-                      onError={e => { e.target.style.display = 'none' }} />
-                    <div className="casa-modal-card-body">
-                      <strong className="casa-modal-nome">{c.nome}</strong>
-                      <div className="casa-modal-desc">{det.desc}</div>
-                      <div className="casa-modal-stats">
-                        <span>📊 {c.xp_hora} XP/h · ⚡ +{c.energia_quant} a cada {c.energia_intervalo_min}min</span>
-                        <span className="casa-modal-bonus">{det.bonus}</span>
+                  <article key={c.tipo} className={`jc-house-option ${bloqueada ? 'is-disabled' : ''}`}>
+                    <img src={CASA_IMGS[c.tipo]} alt={c.nome} onError={e => { e.target.style.display = 'none' }} />
+                    <div className="jc-house-option-body">
+                      <h4>{c.nome}</h4>
+                      <p>{det.desc}</p>
+                      <div className="jc-house-option-stats">
+                        <span>{c.xp_hora} XP/h</span>
+                        <span>+{c.energia_quant} a cada {c.energia_intervalo_min}min</span>
+                        <strong>{det.bonus}</strong>
                       </div>
-                      <div className="casa-modal-preco">
+                      <div className="jc-house-price">
                         {isAluguel ? <>R$ {fmt(c.preco)}</> : <>R$ {fmt(c.preco)} ou 🪙 {c.preco_moedas}</>}
                       </div>
                       {bloqueada ? (
-                        <div className="btn-work" style={{ background: '#444', color: '#bbb', textAlign: 'center', fontSize: 11, marginTop: 4 }}>
-                          Liberada na Serie B (nv 30)
-                        </div>
+                        <div className="jc-blocked-label">Liberada na Serie B</div>
                       ) : isAluguel ? (
-                        <button className="btn-work btn-verde" onClick={() => comprar(c.tipo, 'dinheiro')} disabled={loading}
-                          style={{ width: '100%', fontSize: 11, marginTop: 4 }}>
-                          Alugar por R$ {fmt(c.preco)}
-                        </button>
+                        <button className="jc-btn jc-btn-primary jc-btn-full" onClick={() => comprar(c.tipo, 'dinheiro')} disabled={loading}>Alugar</button>
                       ) : (
-                        <div style={{ display: 'flex', gap: 6, marginTop: 4 }}>
-                          <button className="btn-work btn-verde" onClick={() => comprar(c.tipo, 'dinheiro')} disabled={loading}
-                            style={{ flex: 1, fontSize: 11 }}>
-                            R$ {fmt(c.preco)}
-                          </button>
-                          <button className="btn-work btn-azul" onClick={() => comprar(c.tipo, 'moedas')} disabled={loading}
-                            style={{ flex: 1, fontSize: 11 }}>
-                            🪙 {c.preco_moedas}
-                          </button>
+                        <div className="jc-actions-row">
+                          <button className="jc-btn jc-btn-primary" onClick={() => comprar(c.tipo, 'dinheiro')} disabled={loading}>Dinheiro</button>
+                          <button className="jc-btn jc-btn-premium" onClick={() => comprar(c.tipo, 'moedas')} disabled={loading}>Moedas</button>
                         </div>
                       )}
                     </div>
-                  </div>
+                  </article>
                 )
               })}
             </div>
-            {obrigatorio
-              ? <p className="casa-modal-nota" style={{ color: '#e74c3c', fontWeight: 900 }}>Obrigatorio para continuar trabalhando!</p>
-              : <p className="casa-modal-nota">Voce pode fechar e alugar depois em Minha Vida.</p>
-            }
+            {obrigatorio ? <p className="jc-modal-note danger">Obrigatorio para continuar trabalhando.</p> : <p className="jc-modal-note">Voce pode fechar e alugar depois em Minha Vida.</p>}
           </div>
         </div>
       )}
 
-      <div className="pf-section">
-        <div className="pf-section-header"><h3>MINHA CASA</h3></div>
-
+      <section className="jc-section">
+        <SectionHeader icon="🏠" title="Minha Casa" />
         {temCasa ? (
-          <div className="casa-card-perfil">
-            <img src={CASA_IMGS[casa.tipo]} alt={CASA_NOMES[casa.tipo]} className="casa-img-perfil"
-              onError={e => { e.target.style.display = 'none' }} />
-            <div className="casa-card-info">
-              <div className="casa-card-nome">
-                {CASA_NOMES[casa.tipo]}
-                {casa.tipo === 'basica'
-                  ? <span style={{ fontSize: 10, color: '#c0392b', marginLeft: 6, fontWeight: 700 }}>ALUGADA</span>
-                  : <span style={{ fontSize: 10, color: '#27ae60', marginLeft: 6, fontWeight: 700 }}>PROPRIA</span>}
-              </div>
-              <div className="casa-card-acumulado">
-                {casa.xp_disponivel > 0 && <span className="casa-reward">📊 +{casa.xp_disponivel} XP</span>}
-                {casa.energia_disponivel > 0 && <span className="casa-reward">⚡ +{casa.energia_disponivel}</span>}
-                {!temRecompensa && <span style={{ color: '#888', fontSize: 11 }}>Acumulando ganhos...</span>}
-              </div>
-              {casa.tipo === 'basica' && temRecompensa && (
-                <div style={{ fontSize: 10, color: '#c0392b', fontWeight: 700 }}>Aluguel sera cobrado ao coletar</div>
-              )}
-              {temRecompensa && (
-                <button className="btn-work btn-verde btn-small" onClick={coletar} disabled={loading}>
-                  {loading ? '...' : 'Coletar'}
-                </button>
-              )}
-              {podeComprar && casa.tipo === 'basica' && (
-                <button className="btn-work btn-azul btn-small" onClick={() => setShowModal(true)}
-                  style={{ marginTop: 4, fontSize: 10 }}>
-                  Comprar Casa Propria
-                </button>
-              )}
+          <article className="jc-life-card jc-house-card">
+            <div className="jc-card-image">
+              <img src={CASA_IMGS[casa.tipo]} alt={CASA_NOMES[casa.tipo]} onError={e => { e.target.style.display = 'none' }} />
             </div>
-          </div>
+            <div className="jc-card-body">
+              <div className="jc-card-kicker">Moradia</div>
+              <h4>
+                {CASA_NOMES[casa.tipo]}
+                {casa.tipo === 'basica' ? <span className="jc-badge danger">Alugada</span> : <span className="jc-badge success">Propria</span>}
+              </h4>
+              <p>Acumulando ganhos e construindo seu legado.</p>
+              <div className="jc-reward-row">
+                {casa.xp_disponivel > 0 && <span>+{casa.xp_disponivel} XP</span>}
+                {casa.energia_disponivel > 0 && <span>+{casa.energia_disponivel} Energia</span>}
+                {!temRecompensa && <span>Sem recompensa disponivel no momento.</span>}
+              </div>
+              <div className="jc-actions-row">
+                {temRecompensa && <button className="jc-btn jc-btn-primary" onClick={coletar} disabled={loading}>{loading ? 'Coletando...' : 'Coletar'}</button>}
+                {podeComprar && casa.tipo === 'basica' && <button className="jc-btn jc-btn-secondary" onClick={() => setShowModal(true)}>Comprar casa propria</button>}
+              </div>
+            </div>
+            <div className="jc-card-arrow">></div>
+          </article>
         ) : (
-          <div className="casa-sem" onClick={() => setShowModal(true)}>
-            <span className="casa-sem-icon">🏠</span>
-            <span className="casa-sem-text">Voce ainda nao tem casa. Toque para alugar!</span>
-          </div>
+          <button className="jc-empty-card" onClick={() => setShowModal(true)}>
+            <span>🏠</span>
+            <strong>Voce ainda nao tem casa.</strong>
+            <small>Toque para alugar uma moradia e continuar evoluindo.</small>
+          </button>
         )}
-      </div>
+      </section>
     </>
   )
 }
@@ -341,15 +327,9 @@ function CampinhoSection({ jogadorID, jogador, setJogador, mostrarNotificacao, s
   }, [jogadorID])
 
   useEffect(() => { carregar() }, [carregar])
-
   if (!campinho) return null
 
-  const MATERIAL_ICONES = {
-    Madeira: '🪵', Prego: '🔩', Gesso: '⬜', Cal: '🧱', Semente: '🌱', Adubo: '💩',
-    Metal: '🔧', Solda: '🔥', Fio: '🔌', Lampada: '💡', Poste: '🏗️',
-    Concreto: '🧱', Tinta: '🎨', Rede: '🥅',
-  }
-
+  const MATERIAL_ICONES = { Madeira: '🪵', Prego: '🔩', Gesso: '⬜', Cal: '🧱', Semente: '🌱', Adubo: '💩', Metal: '🔧', Solda: '🔥', Fio: '🔌', Lampada: '💡', Poste: '🏗️', Concreto: '🧱', Tinta: '🎨', Rede: '🥅' }
   const info = campinho.nivel_info
   const prox = campinho.proximo_nivel
   const podeColetar = !campinho.bonus_hoje && campinho.nivel >= 0
@@ -360,14 +340,8 @@ function CampinhoSection({ jogadorID, jogador, setJogador, mostrarNotificacao, s
     setLoading(true)
     try {
       const res = await API.post('/api/campinho/bonus', { jogador_id: jogadorID })
-      if (res.sucesso) {
-        if (res.jogador) setJogador(res.jogador)
-        mostrarNotificacao(res.mensagem, 'sucesso')
-        if (res.level_up) setLevelUp(res.novo_nivel)
-        carregar()
-      } else {
-        mostrarNotificacao(res.mensagem || 'Erro', 'erro')
-      }
+      if (res.sucesso) { if (res.jogador) setJogador(res.jogador); mostrarNotificacao(res.mensagem, 'sucesso'); if (res.level_up) setLevelUp(res.novo_nivel); carregar() }
+      else mostrarNotificacao(res.mensagem || 'Erro', 'erro')
     } catch { mostrarNotificacao('Erro de conexao', 'erro') }
     setLoading(false)
   }
@@ -376,134 +350,87 @@ function CampinhoSection({ jogadorID, jogador, setJogador, mostrarNotificacao, s
     setLoading(true)
     try {
       const res = await API.post('/api/campinho/upgrade', { jogador_id: jogadorID })
-      if (res.sucesso) {
-        mostrarNotificacao(res.mensagem, 'sucesso')
-        carregar()
-      } else {
-        mostrarNotificacao(res.mensagem || 'Materiais insuficientes', 'erro')
-      }
+      if (res.sucesso) { mostrarNotificacao(res.mensagem, 'sucesso'); carregar() }
+      else mostrarNotificacao(res.mensagem || 'Materiais insuficientes', 'erro')
     } catch { mostrarNotificacao('Erro de conexao', 'erro') }
     setLoading(false)
   }
 
-  const podeUpgrade = prox && prox.materiais && Object.entries(prox.materiais).every(
-    ([mat, qtd]) => (materiais[mat] || 0) >= qtd
-  )
-
+  const podeUpgrade = prox && prox.materiais && Object.entries(prox.materiais).every(([mat, qtd]) => (materiais[mat] || 0) >= qtd)
   let matCompletos = 0, matTotal = 0
-  if (prox?.materiais) {
-    const entries = Object.entries(prox.materiais)
-    matTotal = entries.length
-    matCompletos = entries.filter(([mat, qtd]) => (materiais[mat] || 0) >= qtd).length
-  }
+  if (prox?.materiais) { const entries = Object.entries(prox.materiais); matTotal = entries.length; matCompletos = entries.filter(([mat, qtd]) => (materiais[mat] || 0) >= qtd).length }
 
   return (
-    <div className="campinho-section">
-      <h3 className="campinho-titulo">MEU CAMPINHO</h3>
-
-      <div className="campinho-card">
-        <img
-          src={info?.arte || '/estadios/campo-simples.png'}
-          alt={info?.nome || 'Campo'}
-          className="campinho-arte"
-          onError={e => { e.target.src = '/estadios/campo-simples.png' }}
-        />
-        <div className="campinho-info">
-          <div className="campinho-nivel-badge">Nivel {campinho.nivel}</div>
-          <div className="campinho-nome">{info?.nome || 'Campo de Terra'}</div>
-          <div className="campinho-desc">{info?.descricao}</div>
-          <div className="campinho-progress">
-            <div className="campinho-progress-label">Evolucao do campinho</div>
-            <div className="campinho-progress-bar">
-              <div className="campinho-progress-fill" style={{ width: progressoPct + '%' }} />
-            </div>
-            <div className="campinho-progress-text">{campinho.nivel}/{totalNiveis - 1}</div>
+    <section className="jc-section">
+      <SectionHeader icon="🥅" title="Meu Campinho" right="Diario" />
+      <article className="jc-camp-card">
+        <div className="jc-camp-image">
+          <img src={info?.arte || '/estadios/campo-simples.png'} alt={info?.nome || 'Campo'} onError={e => { e.target.src = '/estadios/campo-simples.png' }} />
+          <div className="jc-level-shield"><small>Nivel</small><strong>{campinho.nivel}</strong></div>
+        </div>
+        <div className="jc-camp-info">
+          <h4>{info?.nome || 'Campo de Terra'}</h4>
+          <p>{info?.descricao}</p>
+          <div className="jc-progress-block">
+            <div className="jc-progress-top"><span>Evolucao do campinho</span><strong>{campinho.nivel}/{totalNiveis - 1}</strong></div>
+            <div className="jc-progress"><div style={{ width: progressoPct + '%' }} /></div>
           </div>
-          <div className="campinho-bonus-label">
-            Bonus diario: +{campinho.bonus_xp} XP ({info?.bonus_xp_pct || 10}% do XP necessario)
-          </div>
+          <div className="jc-bonus-strip"><span>⭐</span><strong>Bonus diario:</strong><em>+{campinho.bonus_xp} XP ({info?.bonus_xp_pct || 10}% do XP necessario)</em></div>
           {podeColetar ? (
-            <button className="btn-work btn-verde" onClick={coletarBonus} disabled={loading}>
-              {loading ? '...' : `Coletar +${campinho.bonus_xp} XP`}
-            </button>
+            <button className="jc-btn jc-btn-primary" onClick={coletarBonus} disabled={loading}>{loading ? 'Coletando...' : `Coletar +${campinho.bonus_xp} XP`}</button>
           ) : (
-            <div className="campinho-coletado">Bonus de hoje ja coletado!</div>
+            <div className="jc-collected"><span>✓</span>Bonus de hoje ja coletado.</div>
           )}
         </div>
-      </div>
+      </article>
 
       {requisitos.length > 0 && (
-        <div className="campinho-upgrade">
-          <h4>Desafios do Campo Atual</h4>
-          <p className="campinho-upgrade-desc">Complete todos os desafios para desbloquear a proxima evolucao.</p>
-          <div className="campinho-materiais">
+        <div className="jc-upgrade-panel">
+          <SectionHeader title="Desafios do Campo Atual" right={reqCompletos ? 'Completos' : 'Em andamento'} />
+          <p>Complete todos os desafios para desbloquear a proxima evolucao.</p>
+          <div className="jc-requirements-grid">
             {requisitos.map(rq => {
               const pct = Math.min(100, Math.round((rq.progresso / rq.objetivo) * 100))
               const ok = rq.progresso >= rq.objetivo
               return (
-                <div key={rq.tipo} className={`campinho-mat${ok ? ' mat-ok' : ' mat-falta'}`}>
-                  <div className="cm-top">
-                    <span>{rq.descricao}</span>
-                    <span className="cm-qtd">{Math.min(rq.progresso, rq.objetivo)}/{rq.objetivo}</span>
-                  </div>
-                  <div className="cm-bar">
-                    <div className="cm-bar-fill" style={{ width: pct + '%' }} />
-                  </div>
+                <div key={rq.tipo} className={`jc-requirement ${ok ? 'done' : ''}`}>
+                  <div><span>{rq.descricao}</span><strong>{Math.min(rq.progresso, rq.objetivo)}/{rq.objetivo}</strong></div>
+                  <div className="jc-mini-progress"><div style={{ width: pct + '%' }} /></div>
                 </div>
               )
             })}
           </div>
-          {reqCompletos && <div style={{ color: 'var(--verde)', fontWeight: 900, fontSize: 13, marginTop: 8 }}>Desafios completos!</div>}
         </div>
       )}
 
       {prox && reqCompletos && (
-        <div className="campinho-upgrade" style={{ marginTop: 12 }}>
-          <div className="campinho-upgrade-header">
-            <h4>Proxima evolucao: {prox.nome}</h4>
-            <span className="campinho-mat-count">{matCompletos}/{matTotal} materiais</span>
-          </div>
-          <p className="campinho-upgrade-desc">{prox.descricao}</p>
-          <div className="campinho-materiais">
+        <div className="jc-upgrade-panel">
+          <SectionHeader title={`Proxima evolucao: ${prox.nome}`} right={`${matCompletos}/${matTotal} materiais`} />
+          <p>{prox.descricao}</p>
+          <div className="jc-requirements-grid">
             {Object.entries(prox.materiais).map(([mat, qtd]) => {
               const tem = materiais[mat] || 0
               const ok = tem >= qtd
               const pct = Math.min(100, Math.round((tem / qtd) * 100))
               return (
-                <div key={mat} className={`campinho-mat${ok ? ' mat-ok' : ' mat-falta'}`}>
-                  <div className="cm-top">
-                    <span>{MATERIAL_ICONES[mat] || '📦'} {mat}</span>
-                    <span className="cm-qtd">{tem}/{qtd}</span>
-                  </div>
-                  <div className="cm-bar">
-                    <div className="cm-bar-fill" style={{ width: pct + '%' }} />
-                  </div>
+                <div key={mat} className={`jc-requirement ${ok ? 'done' : ''}`}>
+                  <div><span>{MATERIAL_ICONES[mat] || '📦'} {mat}</span><strong>{tem}/{qtd}</strong></div>
+                  <div className="jc-mini-progress"><div style={{ width: pct + '%' }} /></div>
                 </div>
               )
             })}
           </div>
           {podeUpgrade ? (
-            <button className="btn-work btn-verde campinho-build-btn" onClick={upgrade} disabled={loading}>
-              {loading ? '...' : 'Construir Agora!'}
-            </button>
+            <button className="jc-btn jc-btn-premium" onClick={upgrade} disabled={loading}>{loading ? 'Construindo...' : 'Construir agora'}</button>
           ) : (
-            <p className="campinho-hint">
-              Complete <Link to="/missoes">Missoes</Link> para ganhar os materiais!
-            </p>
+            <p className="jc-hint">Complete <Link to="/missoes">Missoes</Link> para ganhar os materiais.</p>
           )}
         </div>
       )}
 
-      {prox && !reqCompletos && (
-        <div style={{ marginTop: 10, fontSize: 12, fontWeight: 700, color: '#94A3B8' }}>
-          Complete os desafios acima para desbloquear a construcao do proximo campo.
-        </div>
-      )}
-
-      {!prox && (
-        <div className="campinho-completo">Campinho completo! Seu estadio e lendario!</div>
-      )}
-    </div>
+      {prox && !reqCompletos && <div className="jc-hint">Complete os desafios acima para desbloquear a construcao do proximo campo.</div>}
+      {!prox && <div className="jc-complete">Campinho completo! Seu estadio e lendario.</div>}
+    </section>
   )
 }
 
@@ -512,53 +439,43 @@ function CampinhoSection({ jogadorID, jogador, setJogador, mostrarNotificacao, s
 // ========================
 
 const CAT_ICONE = { moto: '🏍️', carro: '🚗', apartamento: '🏢' }
-const CAT_NOME = { moto: 'MOTOS', carro: 'CARROS', apartamento: 'IMOVEIS' }
+const CAT_NOME = { moto: 'Motos', carro: 'Carros', apartamento: 'Imoveis' }
 
 function PatrimonioSection({ jogadorID }) {
   const [dados, setDados] = useState(null)
-
-  useEffect(() => {
-    if (!jogadorID) return
-    API.get('/api/patrimonio/' + jogadorID).then(setDados).catch(() => {})
-  }, [jogadorID])
-
+  useEffect(() => { if (!jogadorID) return; API.get('/api/patrimonio/' + jogadorID).then(setDados).catch(() => {}) }, [jogadorID])
   if (!dados || !dados.itens || dados.itens.length === 0) return null
 
   const grupos = {}
-  dados.itens.forEach(item => {
-    const cat = item.categoria || 'outro'
-    if (!grupos[cat]) grupos[cat] = []
-    grupos[cat].push(item)
-  })
+  dados.itens.forEach(item => { const cat = item.categoria || 'outro'; if (!grupos[cat]) grupos[cat] = []; grupos[cat].push(item) })
 
   return (
-    <div className="pf-section">
-      <div className="pf-section-header">
-        <h3>MEU PATRIMONIO</h3>
-        <span className="pf-section-badge">R$ {fmt(dados.valor_total)}</span>
-      </div>
+    <section className="jc-section">
+      <SectionHeader icon="💰" title="Meu Patrimonio" right={<span className="jc-money-total">R$ {fmt(dados.valor_total)}<small>Valor total</small></span>} />
       {['moto', 'carro', 'apartamento'].map(cat => {
         const itens = grupos[cat]
         if (!itens || itens.length === 0) return null
         return (
-          <div key={cat} className="pat-grupo">
-            <div className="pat-grupo-titulo">{CAT_ICONE[cat]} {CAT_NOME[cat]}</div>
-            <div className="pat-grid">
+          <div key={cat} className="jc-patrimony-group">
+            <div className="jc-category-label"><span>{CAT_ICONE[cat]}</span>{CAT_NOME[cat]}</div>
+            <div className="jc-assets-grid">
               {itens.map(item => (
-                <div key={item.id} className="pat-card">
-                  <div className="pat-icone">{item.icone}</div>
-                  <div className="pat-info">
-                    <div className="pat-nome">{item.nome}{item.quantidade > 1 ? ` x${item.quantidade}` : ''}</div>
-                    <div className="pat-desc">{item.descricao}</div>
-                    <div className="pat-valor">R$ {fmt(item.preco)}</div>
+                <article key={item.id} className="jc-asset-card">
+                  <div className="jc-asset-icon">{item.icone}</div>
+                  <div className="jc-asset-info">
+                    <span>{CAT_NOME[cat]}</span>
+                    <h4>{item.nome}{item.quantidade > 1 ? ` x${item.quantidade}` : ''}</h4>
+                    <p>{item.descricao}</p>
+                    <strong>R$ {fmt(item.preco)}</strong>
                   </div>
-                </div>
+                  <div className="jc-card-arrow">></div>
+                </article>
               ))}
             </div>
           </div>
         )
       })}
-    </div>
+    </section>
   )
 }
 
@@ -568,37 +485,21 @@ function PatrimonioSection({ jogadorID }) {
 
 export default function MinhaVida() {
   const { jogador, setJogador, jogadorID, mostrarNotificacao, setLevelUp } = useGame()
-
   if (!jogador) return null
 
   return (
-    <div className="pf">
-      <h2 className="page-title">MINHA VIDA</h2>
-
+    <main className="jc-life-page">
+      <div className="jc-life-hero">
+        <div>
+          <span className="jc-page-kicker">Vida do jogador</span>
+          <h2>Minha Vida</h2>
+          <p>Seu patrimonio, sua casa, sua estrutura e o caminho para viver como craque.</p>
+        </div>
+      </div>
       <PatrimonioSection jogadorID={jogadorID} />
-
-      <CasaCard
-        jogadorID={jogadorID}
-        jogador={jogador}
-        setJogador={setJogador}
-        mostrarNotificacao={mostrarNotificacao}
-        setLevelUp={setLevelUp}
-      />
-
-      <CampinhoSection
-        jogadorID={jogadorID}
-        jogador={jogador}
-        setJogador={setJogador}
-        mostrarNotificacao={mostrarNotificacao}
-        setLevelUp={setLevelUp}
-      />
-
-      <TratamentoSection
-        jogadorID={jogadorID}
-        jogador={jogador}
-        setJogador={setJogador}
-        mostrarNotificacao={mostrarNotificacao}
-      />
-    </div>
+      <CasaCard jogadorID={jogadorID} jogador={jogador} setJogador={setJogador} mostrarNotificacao={mostrarNotificacao} setLevelUp={setLevelUp} />
+      <CampinhoSection jogadorID={jogadorID} jogador={jogador} setJogador={setJogador} mostrarNotificacao={mostrarNotificacao} setLevelUp={setLevelUp} />
+      <TratamentoSection jogadorID={jogadorID} jogador={jogador} setJogador={setJogador} mostrarNotificacao={mostrarNotificacao} />
+    </main>
   )
 }
