@@ -1,8 +1,8 @@
 /* =====================================================
-   JOGA CRAQUE — TEMA SUPER CAMPEÕES (CARTOON)
+   JOGADOR CARO — TEMA PREMIUM DARK
    ===================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Teko:wght@400;500;600;700&family=Nunito:wght@700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Teko:wght@400;500;600;700&family=Nunito:wght@600;700;800;900&display=swap');
 
 * {
     margin: 0;
@@ -39,6 +39,9 @@ html, body, #root {
 
 body {
     background: var(--bg-principal);
+    background-image: url('/background-wide.png');
+    background-size: cover;
+    background-position: center top;
     background-attachment: fixed;
     color: var(--preto);
     display: flex;
@@ -47,26 +50,30 @@ body {
     font-family: var(--font-corpo);
 }
 
-/* Textura sutil de fundo */
+/* Overlay escuro sobre o background do estadio */
 body::before {
     content: "";
     position: fixed;
     inset: 0;
     pointer-events: none;
     z-index: 0;
-    background:
-        radial-gradient(circle at 20% 10%, rgba(15,95,214,0.06) 0%, transparent 40%),
-        radial-gradient(circle at 80% 90%, rgba(56,168,248,0.04) 0%, transparent 40%);
+    background: linear-gradient(180deg,
+        rgba(6,17,31,0.5) 0%,
+        rgba(6,17,31,0.7) 40%,
+        rgba(6,17,31,0.85) 100%
+    );
 }
 
 .game-container {
     width: 100%;
     max-width: 1400px;
-    background: var(--bg-escuro);
+    background: rgba(11,30,58,0.65);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     min-height: 100vh;
-    border-left: var(--borda);
-    border-right: var(--borda);
-    box-shadow: var(--sombra-lg);
+    border-left: 1px solid rgba(214,168,79,0.08);
+    border-right: 1px solid rgba(214,168,79,0.08);
+    box-shadow: 0 0 60px rgba(0,0,0,0.5);
     position: relative;
     z-index: 1;
 }
@@ -78,22 +85,27 @@ body::before {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: rgba(6,17,31,0.95);
-    backdrop-filter: blur(12px);
-    padding: 8px 16px;
-    border-bottom: 1px solid rgba(255,255,255,0.06);
+    background: rgba(6,17,31,0.75);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    padding: 8px 20px;
+    border-bottom: 1px solid rgba(214,168,79,0.12);
     flex-wrap: wrap;
     gap: 8px;
     position: relative;
     z-index: 10;
 }
 
+/* Linha dourada fina no topo */
 .top-bar::before {
     content: "";
     position: absolute;
-    inset: 0;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
     pointer-events: none;
-    background: none;
+    background: linear-gradient(90deg, transparent, rgba(214,168,79,0.3), transparent);
 }
 
 .logo {
@@ -120,15 +132,16 @@ body::before {
     display: flex;
     align-items: center;
     gap: 8px;
-    background: var(--card-bg);
+    background: rgba(13,27,47,0.7);
+    border: 1px solid rgba(214,168,79,0.1);
     padding: 8px 14px;
-    border: var(--borda);
     border-radius: 10px;
-    box-shadow: var(--sombra);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.2);
     text-decoration: none;
     color: var(--preto);
+    backdrop-filter: blur(6px);
 }
-.stat-inv { background: var(--card-bg2); cursor: pointer; }
+.stat-inv { background: rgba(13,27,47,0.5); cursor: pointer; }
 .stat-inv:hover { background: rgba(15,95,214,0.15); }
 
 .stat-icon-big { font-size: 22px; }
@@ -289,19 +302,25 @@ body::before {
    NAV
 ======================== */
 .main-menu {
-    background: rgba(13,27,47,0.95);
+    background: rgba(6,17,31,0.6);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     padding: 0 10px;
-    border-bottom: 1px solid rgba(255,255,255,0.06);
+    border-bottom: 1px solid rgba(214,168,79,0.08);
     position: relative;
     z-index: 9;
 }
 
-.main-menu::before {
+/* Linha dourada sutil embaixo do nav */
+.main-menu::after {
     content: "";
     position: absolute;
-    inset: 0;
+    bottom: 0;
+    left: 5%;
+    right: 5%;
+    height: 1px;
     pointer-events: none;
-    background: none;
+    background: linear-gradient(90deg, transparent, rgba(214,168,79,0.15), transparent);
 }
 
 .main-menu ul {
@@ -346,10 +365,12 @@ body::before {
     background: rgba(15,95,214,0.2);
     color: var(--azul-claro);
     text-shadow: none;
+    border-bottom: 2px solid var(--dourado);
+    margin-bottom: -1px;
 }
 
 .main-menu a:hover:not(.active) {
-    background: rgba(255,255,255,0.06);
+    background: rgba(214,168,79,0.06);
     color: white;
 }
 
@@ -459,11 +480,12 @@ body::before {
    JOBS LIST
 ======================== */
 .jobs-list {
-    background: var(--card-bg);
-    border: var(--borda);
+    background: rgba(13,27,47,0.6);
+    border: 1px solid rgba(214,168,79,0.08);
     border-radius: var(--radius);
     overflow: hidden;
-    box-shadow: var(--sombra);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    backdrop-filter: blur(8px);
 }
 
 .job-header {
@@ -1789,39 +1811,55 @@ body::before {
     position: fixed;
     top: 0; left: 0;
     width: 100%; height: 100%;
-    background: rgba(0, 40, 100, 0.85);
+    background-color: #06111F;
+    background-image: url('/capa.png');
+    background-size: cover;
+    background-position: center;
     z-index: 9999;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
+/* Overlay escuro sobre a capa */
+#modal-login::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg,
+        rgba(6,17,31,0.3) 0%,
+        rgba(6,17,31,0.6) 50%,
+        rgba(6,17,31,0.9) 100%
+    );
+    pointer-events: none;
+}
+
 .modal-login-box {
-    background: linear-gradient(180deg, #cce0f5 0%, #b0d0ee 100%);
-    border: var(--borda);
+    background: rgba(11,30,58,0.8);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(214,168,79,0.15);
     padding: 30px 36px 36px;
     width: 490px;
     max-width: calc(100vw - 32px);
     text-align: center;
-    box-shadow: var(--sombra-lg);
-    border-radius: 24px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+    border-radius: 20px;
     position: relative;
     overflow: hidden;
+    z-index: 1;
 }
 
-/* Faixas diagonais decorativas */
+/* Linha dourada no topo do card */
 .modal-login-box::before {
     content: "";
     position: absolute;
-    inset: 0;
+    top: 0;
+    left: 10%;
+    right: 10%;
+    height: 2px;
     pointer-events: none;
-    background: repeating-linear-gradient(
-        -45deg,
-        transparent,
-        transparent 20px,
-        rgba(0,87,184,0.04) 20px,
-        rgba(0,87,184,0.04) 40px
-    );
+    background: linear-gradient(90deg, transparent, rgba(214,168,79,0.5), transparent);
 }
 
 .ml-logo-img {
@@ -1834,13 +1872,13 @@ body::before {
 }
 
 .modal-login-box h2 {
-    color: var(--preto);
+    color: #F8FAFC;
     font-size: 28px;
     font-family: var(--font-titulo);
     letter-spacing: 3px;
     margin-bottom: 6px;
     position: relative;
-    text-shadow: 2px 2px 0 rgba(0,87,184,0.2);
+    text-shadow: none;
 }
 
 .modal-login-box p {
@@ -1854,41 +1892,41 @@ body::before {
 
 .modal-login-box input {
     width: 100%;
-    padding: 12px;
-    background: var(--card-bg);
-    border: var(--borda);
-    color: var(--preto);
+    padding: 14px;
+    background: rgba(6,17,31,0.6);
+    border: 1px solid rgba(214,168,79,0.15);
+    color: #F8FAFC;
     font-size: 16px;
     font-weight: 900;
     text-align: center;
     margin-bottom: 12px;
     letter-spacing: 1px;
-    border-radius: 12px;
+    border-radius: 10px;
     font-family: var(--font-corpo);
     position: relative;
-    box-shadow: 3px 3px 0 var(--preto);
+    box-shadow: none;
 }
 
 .modal-login-box input:focus {
     outline: none;
-    border-color: var(--azul);
-    box-shadow: 3px 3px 0 var(--azul);
+    border-color: var(--dourado);
+    box-shadow: 0 0 12px rgba(214,168,79,0.15);
 }
 
 .ml-btn {
     width: 100%;
     padding: 14px;
-    background: linear-gradient(180deg, var(--amarelo) 0%, var(--laranja) 100%);
-    border: var(--borda);
-    color: var(--preto);
+    background: var(--azul);
+    border: none;
+    color: #fff;
     font-size: 16px;
     font-weight: 900;
     text-transform: uppercase;
     letter-spacing: 2px;
     cursor: pointer;
-    border-radius: 12px;
-    box-shadow: var(--sombra);
-    transition: transform 0.1s, box-shadow 0.1s;
+    border-radius: 10px;
+    box-shadow: 0 4px 16px rgba(15,95,214,0.3);
+    transition: transform 0.15s, box-shadow 0.15s;
     font-family: var(--font-titulo);
     position: relative;
 }
@@ -3506,8 +3544,9 @@ input, select, textarea {
 
 /* Section */
 .pf-section {
-  background: var(--card-bg); border: var(--borda); border-radius: var(--radius);
-  box-shadow: var(--sombra); padding: 16px; margin-bottom: 14px;
+  background: rgba(13,27,47,0.6); border: 1px solid rgba(214,168,79,0.08); border-radius: var(--radius);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2); padding: 16px; margin-bottom: 14px;
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
 }
 .pf-section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
 .pf-section-header h3 { font-family: var(--font-titulo); font-size: 18px; color: var(--preto); letter-spacing: 1px; margin: 0; }
@@ -3696,8 +3735,9 @@ input, select, textarea {
   backdrop-filter: blur(4px);
 }
 .pm-card {
-  background: linear-gradient(180deg, #fff 0%, #f0f5ff 100%);
-  border: 3px solid var(--azul); border-radius: 20px;
+  background: rgba(11,30,58,0.9);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(214,168,79,0.15); border-radius: 16px;
   max-width: 420px; width: 92vw; max-height: 90vh; overflow-y: auto;
   box-shadow: 0 16px 60px rgba(0,0,0,0.5);
   position: relative;

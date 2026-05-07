@@ -175,22 +175,25 @@ export default function Dashboard() {
   return (
     <div style={{ maxWidth: 660, margin: '0 auto' }}>
 
-      {/* === HERO CARD === */}
+      {/* === HERO COM CAPA === */}
       <div style={{
-        background: 'linear-gradient(135deg, #0D1B2F 0%, #0B1E3A 60%, #112740 100%)',
-        borderRadius: 16, padding: '24px 22px', marginBottom: 16, color: '#F8FAFC',
+        borderRadius: 16, marginBottom: 16, color: '#F8FAFC',
         position: 'relative', overflow: 'hidden',
-        border: '1px solid rgba(255,255,255,0.06)',
+        border: '1px solid rgba(214,168,79,0.1)',
+        backgroundImage: 'url(/capa.png)',
+        backgroundSize: 'cover', backgroundPosition: 'center',
+        minHeight: 200,
       }}>
-        {/* Glow decorativo */}
-        <div style={{ position: 'absolute', top: -60, right: -40, width: 200, height: 200, background: 'radial-gradient(circle, rgba(15,95,214,0.1) 0%, transparent 70%)', pointerEvents: 'none' }} />
-        <div style={{ position: 'absolute', bottom: -40, left: 20, width: 150, height: 150, background: 'radial-gradient(circle, rgba(214,168,79,0.06) 0%, transparent 70%)', pointerEvents: 'none' }} />
+        {/* Overlay escuro pra legibilidade */}
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg, rgba(6,17,31,0.85) 0%, rgba(6,17,31,0.6) 50%, rgba(6,17,31,0.4) 100%)', pointerEvents: 'none' }} />
+        {/* Linha dourada no topo */}
+        <div style={{ position: 'absolute', top: 0, left: '10%', right: '10%', height: 1, background: 'linear-gradient(90deg, transparent, rgba(214,168,79,0.4), transparent)', pointerEvents: 'none' }} />
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 18, position: 'relative', zIndex: 1 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 18, position: 'relative', zIndex: 1, padding: '24px 22px 0' }}>
           <div style={{
-            fontSize: 40, background: 'rgba(15,95,214,0.15)', borderRadius: 14,
-            width: 60, height: 60, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-            border: '2px solid rgba(15,95,214,0.2)',
+            fontSize: 40, background: 'rgba(6,17,31,0.6)', borderRadius: 14,
+            width: 64, height: 64, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+            border: '2px solid rgba(214,168,79,0.3)', boxShadow: '0 4px 16px rgba(0,0,0,0.3)',
           }}>
             {getAvatar(jogador.avatar)}
           </div>
@@ -218,7 +221,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div style={{ display: 'flex', gap: 10, position: 'relative', zIndex: 1 }}>
+        <div style={{ display: 'flex', gap: 10, position: 'relative', zIndex: 1, padding: '0 22px 22px' }}>
           {[
             { label: 'Energia', icon: '⚡', val: jogador.energia, max: jogador.energia_max, cor: '#D6A84F' },
             { label: 'Saude', icon: '❤️', val: jogador.saude, max: 100, cor: '#ef4444' },
