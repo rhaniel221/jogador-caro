@@ -102,7 +102,7 @@ const STEPS = [
 ]
 
 export function TutorialProvider({ children }) {
-  const { jogador, jogadorID } = useGame()
+  const { jogador, setJogador, jogadorID } = useGame()
   const location = useLocation()
   const [step, setStep] = useState(-1)
   const [visible, setVisible] = useState(false) // controla fade in/out
@@ -190,6 +190,8 @@ export function TutorialProvider({ children }) {
     transitionTimer.current = setTimeout(() => {
       setStep(nextId)
       stepRef.current = nextId
+      // sincroniza estado local pra outros components (NovatoGuard etc)
+      setJogador(prev => prev ? { ...prev, tutorial_step: nextId } : prev)
       if (jogadorID) {
         API.post('/api/tutorial-step', { jogador_id: jogadorID, step: nextId })
       }
@@ -207,6 +209,7 @@ export function TutorialProvider({ children }) {
     transitionTimer.current = setTimeout(() => {
       setStep(-1)
       stepRef.current = -1
+      setJogador(prev => prev ? { ...prev, tutorial_step: -1 } : prev)
       if (jogadorID) {
         API.post('/api/tutorial-step', { jogador_id: jogadorID, step: -1 })
       }

@@ -10,7 +10,7 @@ const FASES = {
     titulo: 'O Sonho',
     subtitulo: 'Capítulo Um',
     cor: '#1a7dff',
-    img: '/historia/fase-sonho.png',
+    img: '/historia-img/fase-sonho.png',
     fallbackIcone: '💭',
     abertura: {
       linhas: [
@@ -26,7 +26,7 @@ const FASES = {
     titulo: 'O Campinho',
     subtitulo: 'Capítulo Dois',
     cor: '#00b848',
-    img: '/historia/fase-campinho.png',
+    img: '/historia-img/fase-campinho.png',
     fallbackIcone: '🏟️',
     desbloqueio: 'Campinho liberado!',
     abertura: {
@@ -42,7 +42,7 @@ const FASES = {
     titulo: 'O Estádio',
     subtitulo: 'Capítulo Três',
     cor: '#ff7a00',
-    img: '/historia/fase-estadio.png',
+    img: '/historia-img/fase-estadio.png',
     fallbackIcone: '🏟️',
     desbloqueio: 'Acesso ao estádio!',
     abertura: {
@@ -120,7 +120,7 @@ function MissaoCard({ missao, onExecutar, onPular, loading, indice, faseCor }) {
   if (tipo === 'timer' && inicio_em && disponivel) btnLabel = 'Concluir'
   if (completada) btnLabel = 'Concluída'
 
-  const pngImg = `/historia/missao-${missao.id}.png`
+  const pngImg = `/historia-img/missao-${missao.id}.png`
 
   return (
     <article
