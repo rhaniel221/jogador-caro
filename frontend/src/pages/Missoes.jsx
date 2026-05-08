@@ -203,34 +203,53 @@ export default function Missoes() {
       </div>
 
       {tab === 'diarias' && (
-        <div className="pf-section">
-          <div className="pf-tasks">
-            {tasks.length === 0 && <p className="pf-empty">Nenhuma task disponível hoje.</p>}
+        <>
+          {tasks.length === 0 && (
+            <p style={{ color: '#64748b', padding: 16, textAlign: 'center', fontWeight: 700 }}>
+              Nenhuma task disponível hoje.
+            </p>
+          )}
+          <div className="quests-lista">
             {tasks.map(t => {
               const pct = Math.min(100, Math.round((t.progresso / t.objetivo) * 100))
-              const recompensas = []
-              if (t.recompensa_xp > 0) recompensas.push(`+${t.recompensa_xp} XP`)
-              if (t.recompensa_dinheiro > 0) recompensas.push(`+R$${t.recompensa_dinheiro}`)
-              if (t.recompensa_fama > 0) recompensas.push(`+${t.recompensa_fama} Fama`)
+              const pronta = !t.completada && t.progresso >= t.objetivo
               return (
-                <div key={t.id} className={`pf-task${t.completada ? ' pf-task-done' : ''}`}>
-                  <div className="pf-task-info">
-                    <strong>{t.nome}</strong>
-                    <div className="pf-task-bar"><div className="pf-task-fill" style={{ width: pct + '%' }} /></div>
-                    <span className="pf-task-prog">{t.progresso}/{t.objetivo}</span>
-                    {recompensas.length > 0 && (
-                      <span className="pf-task-rewards">{recompensas.join(' · ')}</span>
-                    )}
+                <div key={t.id} className={`quest-card${t.completada ? ' quest-completa' : pronta ? ' quest-pronta' : ''}`}>
+                  <div className="quest-header">
+                    <span className="quest-icone">📋</span>
+                    <div className="quest-info">
+                      <h3 className="quest-nome">{t.nome}</h3>
+                      <p className="quest-desc">{t.descricao || 'Tarefa diária'}</p>
+                      {t.dificuldade && (
+                        <span className="quest-nivel-tag">{t.dificuldade.toUpperCase()}</span>
+                      )}
+                    </div>
+                    {t.completada && <span className="quest-check">✅</span>}
                   </div>
-                  {!t.completada && t.progresso >= t.objetivo && (
-                    <button className="btn-work btn-small btn-verde" onClick={() => coletarTask(t.id)}>Coletar</button>
+
+                  <div className="quest-progress">
+                    <div className="quest-bar">
+                      <div className="quest-bar-fill" style={{ width: pct + '%' }} />
+                    </div>
+                    <span className="quest-bar-text">{Math.min(t.progresso, t.objetivo)}/{t.objetivo}</span>
+                  </div>
+
+                  <div className="quest-rewards">
+                    {t.recompensa_xp > 0 && <span className="quest-reward quest-reward-xp">+{t.recompensa_xp} XP</span>}
+                    {t.recompensa_dinheiro > 0 && <span className="quest-reward quest-reward-money">+R$ {t.recompensa_dinheiro}</span>}
+                    {t.recompensa_fama > 0 && <span className="quest-reward quest-reward-fama">+{t.recompensa_fama} Fama</span>}
+                  </div>
+
+                  {pronta && (
+                    <button className="btn-work btn-verde quest-btn" onClick={() => coletarTask(t.id)}>
+                      🎁 Coletar Recompensa!
+                    </button>
                   )}
-                  {t.completada && <span>✅</span>}
                 </div>
               )
             })}
           </div>
-        </div>
+        </>
       )}
 
       {tab === 'nivel' && (
@@ -295,56 +314,93 @@ export default function Missoes() {
       )}
 
       {tab === 'skill' && (
-        <div className="pf-section">
-          <div className="pf-tasks">
-            {skillMissions.length === 0 && <p className="pf-empty">Nenhuma missão de habilidade.</p>}
+        <>
+          {skillMissions.length === 0 && (
+            <p style={{ color: '#64748b', padding: 16, textAlign: 'center', fontWeight: 700 }}>
+              Nenhuma missão de habilidade.
+            </p>
+          )}
+          <div className="quests-lista">
             {skillMissions.map(s => {
               const pct = Math.min(100, Math.round((s.progresso / s.alvo) * 100))
               return (
-                <div key={s.id} className={`pf-task${s.completada ? ' pf-task-done' : ''}`}>
-                  <div className="pf-task-info">
-                    <strong>{s.icone} {s.nome}</strong>
-                    <p style={{ fontSize: 10, color: '#64748b', margin: '2px 0' }}>{s.descricao}</p>
-                    <div className="pf-task-bar"><div className="pf-task-fill" style={{ width: pct + '%' }} /></div>
-                    <span className="pf-task-prog">{s.progresso}/{s.alvo} · +{s.recompensa_xp}XP +{s.recompensa_moedas}💎</span>
+                <div key={s.id} className={`quest-card${s.completada ? ' quest-completa' : ''}`}>
+                  <div className="quest-header">
+                    <span className="quest-icone">{s.icone || '🎯'}</span>
+                    <div className="quest-info">
+                      <h3 className="quest-nome">{s.nome}</h3>
+                      <p className="quest-desc">{s.descricao}</p>
+                    </div>
+                    {s.completada && <span className="quest-check">✅</span>}
                   </div>
-                  {s.completada && <span>✅</span>}
+                  <div className="quest-progress">
+                    <div className="quest-bar">
+                      <div className="quest-bar-fill" style={{ width: pct + '%' }} />
+                    </div>
+                    <span className="quest-bar-text">{Math.min(s.progresso, s.alvo)}/{s.alvo}</span>
+                  </div>
+                  <div className="quest-rewards">
+                    {s.recompensa_xp > 0 && <span className="quest-reward quest-reward-xp">+{s.recompensa_xp} XP</span>}
+                    {s.recompensa_moedas > 0 && <span className="quest-reward quest-reward-money">+{s.recompensa_moedas} 💎</span>}
+                  </div>
                 </div>
               )
             })}
           </div>
-        </div>
+        </>
       )}
 
       {tab === 'combinadas' && (
-        <div className="pf-section">
-          <div className="pf-tasks">
-            {combinedMissions.length === 0 && <p className="pf-empty">Nenhuma missão combinada hoje.</p>}
-            {combinedMissions.map(m => (
-              <div key={m.id} className={`pf-task${m.completada ? ' pf-task-done' : ''}`}>
-                <div className="pf-task-info">
-                  <strong>{m.icone} {m.nome}</strong>
-                  <p style={{ fontSize: 10, color: '#64748b', margin: '2px 0' }}>{m.descricao}</p>
-                  <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 4 }}>
+        <>
+          {combinedMissions.length === 0 && (
+            <p style={{ color: '#64748b', padding: 16, textAlign: 'center', fontWeight: 700 }}>
+              Nenhuma missão combinada hoje.
+            </p>
+          )}
+          <div className="quests-lista">
+            {combinedMissions.map(m => {
+              const totalAlvo = (m.objetivo1_alvo || 0) + (m.objetivo2_alvo || 0) + (m.objetivo3_alvo || 0)
+              const totalProg = (m.obj1_progresso || 0) + (m.obj2_progresso || 0) + (m.obj3_progresso || 0)
+              const pct = totalAlvo > 0 ? Math.min(100, Math.round((totalProg / totalAlvo) * 100)) : 0
+              return (
+                <div key={m.id} className={`quest-card${m.completada ? ' quest-completa' : ''}`}>
+                  <div className="quest-header">
+                    <span className="quest-icone">{m.icone || '🔗'}</span>
+                    <div className="quest-info">
+                      <h3 className="quest-nome">{m.nome}</h3>
+                      <p className="quest-desc">{m.descricao}</p>
+                    </div>
+                    {m.completada && <span className="quest-check">✅</span>}
+                  </div>
+                  <div className="quest-progress">
+                    <div className="quest-bar">
+                      <div className="quest-bar-fill" style={{ width: pct + '%' }} />
+                    </div>
+                    <span className="quest-bar-text">{totalProg}/{totalAlvo}</span>
+                  </div>
+                  <div className="combinada-objetivos">
                     <span className={`cm-obj${m.obj1_progresso >= m.objetivo1_alvo ? ' cm-done' : ''}`}>
-                      {m.objetivo1_tipo} {m.obj1_progresso}/{m.objetivo1_alvo}
+                      {m.obj1_progresso >= m.objetivo1_alvo ? '✓' : '•'} {m.objetivo1_tipo} {m.obj1_progresso}/{m.objetivo1_alvo}
                     </span>
                     <span className={`cm-obj${m.obj2_progresso >= m.objetivo2_alvo ? ' cm-done' : ''}`}>
-                      {m.objetivo2_tipo} {m.obj2_progresso}/{m.objetivo2_alvo}
+                      {m.obj2_progresso >= m.objetivo2_alvo ? '✓' : '•'} {m.objetivo2_tipo} {m.obj2_progresso}/{m.objetivo2_alvo}
                     </span>
                     {m.objetivo3_tipo && (
                       <span className={`cm-obj${m.obj3_progresso >= m.objetivo3_alvo ? ' cm-done' : ''}`}>
-                        {m.objetivo3_tipo} {m.obj3_progresso}/{m.objetivo3_alvo}
+                        {m.obj3_progresso >= m.objetivo3_alvo ? '✓' : '•'} {m.objetivo3_tipo} {m.obj3_progresso}/{m.objetivo3_alvo}
                       </span>
                     )}
                   </div>
-                  <span className="pf-task-prog">+{m.recompensa_xp}XP +R${m.recompensa_dinheiro} +{m.recompensa_moedas}💎</span>
+                  <div className="quest-rewards">
+                    {m.recompensa_xp > 0 && <span className="quest-reward quest-reward-xp">+{m.recompensa_xp} XP</span>}
+                    {m.recompensa_dinheiro > 0 && <span className="quest-reward quest-reward-money">+R$ {m.recompensa_dinheiro}</span>}
+                    {m.recompensa_moedas > 0 && <span className="quest-reward quest-reward-money">+{m.recompensa_moedas} 💎</span>}
+                  </div>
                 </div>
-                {m.completada && <span>✅</span>}
-              </div>
-            ))}
+              )
+            })}
           </div>
-        </div>
+        </>
       )}
     </>
   )

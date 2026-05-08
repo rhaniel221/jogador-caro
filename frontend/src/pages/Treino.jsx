@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useCallback, useRef } from 'react'
 import { useGame } from '../context/GameContext'
 import API from '../api'
 import PageGuide from '../components/PageGuide'
-
 
 function formatRestante(segs) {
   if (segs <= 0) return 'pronto'
@@ -14,83 +13,123 @@ function formatRestante(segs) {
   return `${s}s`
 }
 
-function StatBadge({ label, value, color }) {
-  if (!value) return null
-  return (
-    <span style={{ background: color, color: '#f8fafc', padding: '2px 8px', borderRadius: 8, fontSize: 11, fontWeight: 800 }}>
-      +{value} {label}
-    </span>
-  )
+function flavorEsforco(cooldownMin) {
+  if (cooldownMin <= 5) return 'Aquecimento — leve, rápido.'
+  if (cooldownMin <= 15) return 'Treino moderado, sente o esforço.'
+  if (cooldownMin <= 30) return 'Pesado — vai cansar bem.'
+  if (cooldownMin <= 60) return 'Sessão dura, descanso obrigatório.'
+  return 'Devastador — fica off por um tempão.'
 }
 
-function TreinoCard({ treino, agora, loading, onTreinar }) {
+function TreinoCard({ treino, agora, loading, onTreinar, animState }) {
   const proximoEm = treino.proximo_em || 0
   const restante = proximoEm > 0 ? proximoEm - agora : 0
   const onCooldown = restante > 0
   const nivelOK = treino.nivel_ok
   const disponivel = nivelOK && !onCooldown
   const isLoading = loading === treino.id
+  const cor = treino.bonus_forca >= treino.bonus_velocidade && treino.bonus_forca >= treino.bonus_habilidade ? '#ef4444'
+            : treino.bonus_velocidade >= treino.bonus_habilidade ? '#38a8f8' : '#a855f7'
 
   const cooldownTxt = Math.floor(treino.cooldown_minutos / 60) > 0
     ? `${Math.floor(treino.cooldown_minutos / 60)}h${treino.cooldown_minutos % 60 > 0 ? ` ${treino.cooldown_minutos % 60}m` : ''}`
     : `${treino.cooldown_minutos}m`
 
+  const fase = animState?.fase
+  const resultado = animState?.resultado
+
   return (
     <div
-      className="treino-card"
-      style={{
-        opacity: nivelOK ? 1 : 0.55,
-        background: 'rgba(13,30,54,0.8)',
-        border: '1px solid rgba(255,255,255,0.06)',
-        borderRadius: 16,
-        padding: 16,
-        marginBottom: 10,
-        display: 'flex',
-        gap: 14,
-        alignItems: 'center',
-        transition: 'border-color 0.2s',
-      }}
+      className={`job-card${isLoading ? ' loading' : ''}${fase === 'work' ? ' job-working' : ''}${fase === 'reveal' ? ' job-revealing' : ''}${!disponivel && !fase ? ' job-bloqueado' : ''}`}
+      style={{ '--tier-cor': cor }}
     >
-      <div style={{ fontSize: 36, width: 48, height: 48, borderRadius: 14, background: 'rgba(255,255,255,0.04)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{treino.icone}</div>
+      <div className="job-card-stripe" />
 
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <h3 style={{ margin: '0 0 4px 0', fontSize: 16, color: '#f8fafc', fontWeight: 900 }}>
-          {treino.nome}
-        </h3>
-        <p style={{ margin: '0 0 6px 0', fontSize: 12, color: '#94a3b8' }}>
-          {treino.descricao}
-        </p>
-
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 6 }}>
-          <StatBadge label="Forca" value={treino.bonus_forca} color="rgba(239,68,68,0.15)" />
-          <StatBadge label="Velocidade" value={treino.bonus_velocidade} color="rgba(30,111,255,0.15)" />
-          <StatBadge label="Habilidade" value={treino.bonus_habilidade} color="rgba(168,85,247,0.15)" />
-        </div>
-
-        <div style={{ fontSize: 11, color: '#64748b' }}>
-          cooldown {cooldownTxt}
-          {treino.vezes_feito > 0 && <> . feito {treino.vezes_feito}x</>}
-        </div>
+      <div className="job-card-icon-wrap">
+        <div className="job-card-icon">{treino.icone}</div>
+        {fase === 'work' && <div className="job-card-icon-glow" />}
       </div>
 
-      <div style={{ minWidth: 110, textAlign: 'center' }}>
-        {!nivelOK ? (
-          <div style={{ fontSize: 12, color: '#475569' }}>Nivel {treino.nivel_min}</div>
-        ) : onCooldown ? (
-          <div style={{ fontSize: 12, color: '#f1c76a', fontWeight: 700 }}>
-            {formatRestante(restante)}
+      <div className="job-card-body">
+        <div className="job-card-titulo-row">
+          <h3 className="job-card-titulo">{treino.nome}</h3>
+          {treino.categoria && (
+            <span className="job-card-tier-badge" style={{ background: cor }}>{treino.categoria}</span>
+          )}
+        </div>
+        <p className="job-card-flavor">{treino.descricao || flavorEsforco(treino.cooldown_minutos)}</p>
+
+        <div className="job-card-stats">
+          {treino.bonus_forca > 0 && (
+            <div className="job-stat" style={{ background: 'rgba(239,68,68,0.1)', borderColor: 'rgba(239,68,68,0.3)', color: '#fca5a5' }}>
+              <img src="/icons/forca.png" alt="" className="js-icon-img" />
+              <span className="js-val">+{treino.bonus_forca}</span>
+            </div>
+          )}
+          {treino.bonus_velocidade > 0 && (
+            <div className="job-stat" style={{ background: 'rgba(56,168,248,0.1)', borderColor: 'rgba(56,168,248,0.3)', color: '#93c5fd' }}>
+              <img src="/icons/velocidade.png" alt="" className="js-icon-img" />
+              <span className="js-val">+{treino.bonus_velocidade}</span>
+            </div>
+          )}
+          {treino.bonus_habilidade > 0 && (
+            <div className="job-stat" style={{ background: 'rgba(168,85,247,0.1)', borderColor: 'rgba(168,85,247,0.3)', color: '#d8b4fe' }}>
+              <img src="/icons/habilidade.png" alt="" className="js-icon-img" />
+              <span className="js-val">+{treino.bonus_habilidade}</span>
+            </div>
+          )}
+          <div className="job-stat" style={{ background: 'rgba(214,168,79,0.1)', borderColor: 'rgba(214,168,79,0.3)', color: '#fcd34d' }}>
+            <span className="js-icon">⏱️</span>
+            <span className="js-val">{cooldownTxt}</span>
           </div>
-        ) : (
-          <button
-            className="btn-work"
-            disabled={isLoading || !disponivel}
-            onClick={() => onTreinar(treino.id)}
-            style={{ width: '100%' }}
-          >
-            {isLoading ? '...' : 'TREINAR'}
-          </button>
-        )}
+        </div>
+
+        <div className="job-card-mastery">
+          <div className="jm-info">
+            {!nivelOK && <span className="jm-text" style={{ color: '#ef4444' }}>🔒 Precisa nv.{treino.nivel_min}</span>}
+            {nivelOK && onCooldown && <span className="jm-text" style={{ color: '#fbbf24' }}>⏳ {formatRestante(restante)}</span>}
+            {treino.vezes_feito > 0 && <span className="jm-hoje">{treino.vezes_feito}x feitos</span>}
+          </div>
+        </div>
       </div>
+
+      <div className="job-card-action">
+        <button
+          className="btn-trabalhar"
+          onClick={() => disponivel && onTreinar(treino.id)}
+          disabled={isLoading || fase || !disponivel}
+        >
+          {fase === 'work' ? (
+            <span className="bt-working">
+              <span className="bt-spinner">💪</span>
+              <span>Treinando…</span>
+            </span>
+          ) : fase === 'reveal' ? (
+            <span className="bt-reveal">✓ Top!</span>
+          ) : !nivelOK ? (
+            <span className="bt-bloqueado">🚫 Nv.{treino.nivel_min}</span>
+          ) : onCooldown ? (
+            <span className="bt-bloqueado">⏳ {formatRestante(restante)}</span>
+          ) : (
+            <>
+              <span className="bt-verb">Treinar</span>
+              <span className="bt-arrow">→</span>
+            </>
+          )}
+        </button>
+      </div>
+
+      {fase === 'work' && (
+        <div className="job-progress-overlay"><div className="job-progress-bar" /></div>
+      )}
+
+      {fase === 'reveal' && resultado && (
+        <div className="job-reveal-rewards">
+          {resultado.bonus_forca > 0 && <span className="reward-float reward-din">+{resultado.bonus_forca} Força</span>}
+          {resultado.bonus_velocidade > 0 && <span className="reward-float reward-variedade">+{resultado.bonus_velocidade} Velocidade</span>}
+          {resultado.bonus_habilidade > 0 && <span className="reward-float reward-maestria">+{resultado.bonus_habilidade} Habilidade</span>}
+        </div>
+      )}
     </div>
   )
 }
@@ -100,8 +139,9 @@ export default function Treino() {
   const [treinos, setTreinos] = useState([])
   const [loading, setLoading] = useState(null)
   const [agora, setAgora] = useState(Math.floor(Date.now() / 1000))
+  const [animMap, setAnimMap] = useState({})
+  const animTimers = useRef({})
 
-  // tick timer pro cooldown
   useEffect(() => {
     const id = setInterval(() => setAgora(Math.floor(Date.now() / 1000)), 1000)
     return () => clearInterval(id)
@@ -115,27 +155,53 @@ export default function Treino() {
     } catch (e) {}
   }, [jogadorID])
 
+  useEffect(() => { carregar() }, [carregar])
+
   useEffect(() => {
-    carregar()
-  }, [carregar])
+    return () => Object.values(animTimers.current).forEach(t => clearTimeout(t))
+  }, [])
+
+  function clearAnim(id) {
+    setAnimMap(prev => { const n = { ...prev }; delete n[id]; return n })
+  }
 
   async function handleTreinar(treinoID) {
     if (!jogador || loading) return
+    const treino = treinos.find(t => t.id === treinoID)
+    if (!treino) return
+
     setLoading(treinoID)
+    setAnimMap(prev => ({ ...prev, [treinoID]: { fase: 'work' } }))
+    const inicio = Date.now()
+
     try {
       const res = await API.post('/api/treinar', {
         jogador_id: jogadorID,
         treino_id: treinoID
       })
+
+      const passou = Date.now() - inicio
+      if (passou < 850) await new Promise(r => setTimeout(r, 850 - passou))
+
       if (res.sucesso) {
         setJogador(res.jogador)
-        mostrarNotificacao(res.mensagem, 'sucesso')
+        setAnimMap(prev => ({ ...prev, [treinoID]: { fase: 'reveal', resultado: {
+          bonus_forca: treino.bonus_forca,
+          bonus_velocidade: treino.bonus_velocidade,
+          bonus_habilidade: treino.bonus_habilidade,
+        }}}))
+        animTimers.current[treinoID] = setTimeout(() => {
+          clearAnim(treinoID)
+          delete animTimers.current[treinoID]
+        }, 1600)
         await carregar()
       } else {
+        clearAnim(treinoID)
         mostrarNotificacao(res.mensagem || 'Não foi possível treinar', 'erro')
         if (res.proximo_em) await carregar()
       }
     } catch (e) {
+      clearAnim(treinoID)
       mostrarNotificacao('Erro ao treinar', 'erro')
     } finally {
       setLoading(null)
@@ -146,67 +212,54 @@ export default function Treino() {
     return <div style={{ padding: 20, textAlign: 'center' }}>Carregando…</div>
   }
 
-  // Cooldown global: pega o proximo_em de qualquer treino (todos têm o mesmo)
   const globalCooldown = treinos.length > 0 ? treinos[0].proximo_em || 0 : 0
   const globalRestante = globalCooldown > 0 ? globalCooldown - agora : 0
   const categoriaAtual = treinos.length > 0 ? treinos[0].categoria : ''
 
   return (
-    <div className="page-treino" style={{ padding: 12, maxWidth: 760, margin: '0 auto' }}>
-      <div style={{
-        background: 'linear-gradient(135deg, #1a3a1a 0%, #2d5a2d 100%)',
-        color: '#fff',
-        padding: '14px 16px',
-        borderRadius: 12,
-        marginBottom: 14
-      }}>
-        <h1 style={{ margin: 0, fontSize: 22 }}>🏋️ TREINO — {categoriaAtual}</h1>
-        <p style={{ margin: '4px 0 0 0', fontSize: 12, opacity: 0.9 }}>
-          Escolha um treino e entre em cooldown. Quanto mais forte o treino, maior o cooldown. Sua build, sua estratégia.
-        </p>
-      </div>
+    <>
+      <h2 className="page-title">🏋️ TREINO {categoriaAtual && `— ${categoriaAtual}`}</h2>
       <PageGuide
         pageKey="treino"
         icone="🏋️"
         titulo="Centro de Treinamento"
         texto="Treine para aumentar Força, Velocidade e Habilidade! Cada treino tem cooldown. Treinos mais fortes dão mais stats mas demoram mais. Monte sua build!"
       />
+      <p className="subtitle">Escolha um treino — quanto mais forte, maior o cooldown. Sua build, sua estratégia.</p>
 
-      <div style={{
-        display: 'flex',
-        gap: 6,
-        background: '#fff',
-        padding: 10,
-        borderRadius: 12,
-        marginBottom: 12,
-        justifyContent: 'space-around',
-        border: '2px solid #d4d8d0'
-      }}>
-        <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: 11, color: '#888' }}>FORÇA</div>
-          <div style={{ fontSize: 22, fontWeight: 900, color: '#e63946' }}>{jogador.forca}</div>
+      {/* Painel de stats com PNGs */}
+      <div className="treino-stats-panel">
+        <div className="ts-item">
+          <img src="/icons/forca.png" alt="Força" />
+          <div>
+            <div className="ts-label">FORÇA</div>
+            <div className="ts-val" style={{ color: '#fca5a5' }}>{jogador.forca}</div>
+          </div>
         </div>
-        <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: 11, color: '#888' }}>VELOCIDADE</div>
-          <div style={{ fontSize: 22, fontWeight: 900, color: '#1d72c2' }}>{jogador.velocidade}</div>
+        <div className="ts-item">
+          <img src="/icons/velocidade.png" alt="Velocidade" />
+          <div>
+            <div className="ts-label">VELOCIDADE</div>
+            <div className="ts-val" style={{ color: '#93c5fd' }}>{jogador.velocidade}</div>
+          </div>
         </div>
-        <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: 11, color: '#888' }}>HABILIDADE</div>
-          <div style={{ fontSize: 22, fontWeight: 900, color: '#9c27b0' }}>{jogador.habilidade}</div>
+        <div className="ts-item">
+          <img src="/icons/habilidade.png" alt="Habilidade" />
+          <div>
+            <div className="ts-label">HABILIDADE</div>
+            <div className="ts-val" style={{ color: '#d8b4fe' }}>{jogador.habilidade}</div>
+          </div>
         </div>
       </div>
 
       {globalRestante > 0 && (
-        <div style={{
-          background: '#fff8e1', border: '2px solid #f5a623', borderRadius: 12,
-          padding: '10px 14px', marginBottom: 12, textAlign: 'center',
-          fontWeight: 700, fontSize: 14, color: '#8a6d00'
-        }}>
-          ⏳ Cooldown: <span style={{ color: '#c47a00' }}>{formatRestante(globalRestante)}</span>
+        <div className="treino-cooldown-banner">
+          <span className="tcb-icon">⏳</span>
+          <span>Cooldown global: <strong>{formatRestante(globalRestante)}</strong></span>
         </div>
       )}
 
-      <div>
+      <div className="jobs-grid">
         {treinos.map(t => (
           <TreinoCard
             key={t.id}
@@ -214,10 +267,10 @@ export default function Treino() {
             agora={agora}
             loading={loading}
             onTreinar={handleTreinar}
+            animState={animMap[t.id]}
           />
         ))}
       </div>
-
-    </div>
+    </>
   )
 }

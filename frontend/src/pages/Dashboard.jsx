@@ -161,15 +161,15 @@ export default function Dashboard() {
 
   // === ACESSO RAPIDO DINAMICO (por nivel) ===
   const quickLinks = [
-    { icon: '⚽', label: 'Trabalhar', to: '/carreira' },
-    { icon: '🏋️', label: 'Treino', to: '/treino' },
-    { icon: '📖', label: 'Missoes', to: '/missoes' },
-    { icon: '🛒', label: 'Loja', to: '/loja' },
-    jogador.nivel >= 10 && { icon: '⚔️', label: 'Estadio', to: '/carreira?aba=estadio' },
-    jogador.nivel >= 12 && { icon: '🥊', label: 'Desafio 1v1', to: '/carreira?aba=desafio' },
-    jogador.nivel >= 15 && { icon: '🎮', label: 'MiniGame', to: '/carreira?aba=minigame' },
-    jogador.nivel >= 20 && { icon: '🏡', label: 'Minha Vida', to: '/vida' },
-    { icon: '👤', label: 'Meu Jogador', to: '/jogador' },
+    { img: '/nav/carreira.png', label: 'Trabalhar', to: '/carreira' },
+    { img: '/nav/treino.png', label: 'Treino', to: '/treino' },
+    { img: '/nav/missoes.png', label: 'Missoes', to: '/missoes' },
+    { img: '/nav/loja.png', label: 'Loja', to: '/loja' },
+    jogador.nivel >= 12 && { img: '/elos/desafiante.png', label: 'Desafio 1v1', to: '/disputas?aba=desafio' },
+    jogador.nivel >= 10 && { img: '/elos/diamante.png', label: 'Estadio PvP', to: '/disputas?aba=estadio' },
+    jogador.nivel >= 15 && { img: '/logo-mini-game.png', label: 'MiniGame', to: '/disputas?aba=minigame' },
+    jogador.nivel >= 20 && { img: '/nav/vida.png', label: 'Minha Vida', to: '/vida' },
+    { img: '/nav/jogador.png', label: 'Meu Jogador', to: '/jogador' },
   ].filter(Boolean).slice(0, 6)
 
   // Carta do Craque: overall = média de FOR/VEL/HAB
@@ -353,9 +353,11 @@ export default function Dashboard() {
       <section className="jc-section">
         <SectionHeader icon="⚡" title="Acesso Rapido" />
         <div className="jc-quick-grid">
-          {quickLinks.map(({ icon, label, to }) => (
+          {quickLinks.map(({ img, label, to }) => (
             <Link key={to} to={to} className="jc-quick-btn">
-              <span className="jc-quick-icon">{icon}</span>
+              <span className="jc-quick-icon">
+                <img src={img} alt="" className="jc-quick-icon-img" />
+              </span>
               <span className="jc-quick-label">{label}</span>
             </Link>
           ))}

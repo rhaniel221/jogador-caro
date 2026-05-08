@@ -72,7 +72,7 @@ function tierCinematico(tier) {
 // ================================================================
 // JOB CARD — apresentação rica
 // ================================================================
-function JobCard({ trabalho, maestria, nivel, onTrabalhar, loading, vezesHoje, animState }) {
+function JobCard({ trabalho, maestria, nivel, onTrabalhar, loading, vezesHoje, animState, energia, saude }) {
   const custo = custoEnergiaEscalado(trabalho.energia, nivel, trabalho.tier)
   const recompensa = calcularRecompensaTrabalho(trabalho, nivel)
   const { nivel: nivelM, prev, next } = calcNivelMaestria(maestria)
@@ -87,9 +87,15 @@ function JobCard({ trabalho, maestria, nivel, onTrabalhar, loading, vezesHoje, a
   const fase = animState?.fase
   const resultado = animState?.resultado
 
+  const semEnergia = energia < custo
+  const semNivel = nivel < trabalho.nivel_min
+  const semSaude = saude < 30
+  const bloqueado = semEnergia || semNivel || semSaude
+  const motivoBloqueio = semNivel ? `Nv.${trabalho.nivel_min}` : semSaude ? 'Saúde baixa' : semEnergia ? `Falta ⚡${custo - energia}` : ''
+
   return (
     <div
-      className={`job-card${isLoading ? ' loading' : ''}${fase === 'work' ? ' job-working' : ''}${fase === 'reveal' ? ' job-revealing' : ''}`}
+      className={`job-card${isLoading ? ' loading' : ''}${fase === 'work' ? ' job-working' : ''}${fase === 'reveal' ? ' job-revealing' : ''}${bloqueado && !fase ? ' job-bloqueado' : ''}`}
       data-trabalho-id={trabalho.id}
       style={{ '--tier-cor': cor }}
     >
@@ -150,7 +156,7 @@ function JobCard({ trabalho, maestria, nivel, onTrabalhar, loading, vezesHoje, a
         <button
           className="btn-trabalhar"
           onClick={() => onTrabalhar(trabalho.id)}
-          disabled={isLoading || fase}
+          disabled={isLoading || fase || bloqueado}
         >
           {fase === 'work' ? (
             <span className="bt-working">
@@ -159,6 +165,8 @@ function JobCard({ trabalho, maestria, nivel, onTrabalhar, loading, vezesHoje, a
             </span>
           ) : fase === 'reveal' ? (
             <span className="bt-reveal">✓ Feito!</span>
+          ) : bloqueado ? (
+            <span className="bt-bloqueado">🚫 {motivoBloqueio}</span>
           ) : (
             <>
               <span className="bt-verb">{verboTrabalho(trabalho.tier)}</span>
@@ -406,6 +414,21 @@ export default function Trabalhos() {
     const trabalho = trabalhos.find(t => t.id === trabalhoID)
     if (!trabalho) return
 
+    // Bloqueia ANTES de animar se não tem energia ou nível
+    const custo = custoEnergiaEscalado(trabalho.energia, jogador.nivel, trabalho.tier)
+    if (jogador.energia < custo) {
+      mostrarNotificacao(`Energia insuficiente! Precisa ⚡${custo} (você tem ⚡${jogador.energia})`, 'erro')
+      return
+    }
+    if (jogador.nivel < trabalho.nivel_min) {
+      mostrarNotificacao(`Nível insuficiente! Precisa nv.${trabalho.nivel_min}`, 'erro')
+      return
+    }
+    if (jogador.saude < 30) {
+      mostrarNotificacao('Saúde muito baixa pra trabalhar (<30). Vá ao Perfil → Tratamento.', 'erro')
+      return
+    }
+
     const cinema = tierCinematico(trabalho.tier)
     setLoading(trabalhoID)
 
@@ -607,6 +630,8 @@ export default function Trabalhos() {
             trabalho={t}
             maestria={maestria[t.id] || 0}
             nivel={nivel}
+            energia={jogador?.energia || 0}
+            saude={jogador?.saude || 0}
             onTrabalhar={handleTrabalhar}
             loading={loading}
             vezesHoje={hoje.trabalhos_hoje?.[t.id] || 0}

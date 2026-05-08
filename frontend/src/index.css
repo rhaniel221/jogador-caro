@@ -2108,52 +2108,104 @@ body::before {
 /* Toast premium */
 .jc-toast {
     position: fixed;
-    top: 18px;
+    top: 24px;
     left: 50%;
     transform: translateX(-50%);
     z-index: 9998;
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 14px 20px;
-    max-width: 420px;
+    gap: 14px;
+    padding: 14px 22px 14px 14px;
+    max-width: 480px;
+    min-width: 280px;
     width: max-content;
-    border: 1px solid;
-    border-radius: 14px;
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
+    border: 1.5px solid;
+    border-radius: 18px;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     pointer-events: none;
     font-family: var(--font-corpo);
+    overflow: hidden;
+}
+.jc-toast-icon-wrap {
+    position: relative;
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.jc-toast-icon-wrap::before {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--accent), transparent 65%);
+    opacity: 0.55;
+    z-index: 0;
+    animation: jcIconPulse 1.4s ease-in-out infinite;
+}
+@keyframes jcIconPulse {
+    0%, 100% { transform: scale(0.95); opacity: 0.4; }
+    50% { transform: scale(1.15); opacity: 0.7; }
+}
+.jc-toast-png {
+    width: 44px;
+    height: 44px;
+    object-fit: contain;
+    position: relative;
+    z-index: 1;
+    filter: drop-shadow(0 3px 6px rgba(0,0,0,0.5));
 }
 .jc-toast-icon {
-    width: 28px;
-    height: 28px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 14px;
+    font-size: 18px;
     font-weight: 900;
-    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.3);
 }
 .jc-toast-msg {
     font-size: 14px;
-    font-weight: 800;
-    line-height: 1.3;
+    font-weight: 900;
+    line-height: 1.35;
+    flex: 1;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.6);
+    letter-spacing: 0.2px;
+}
+.jc-toast-shine {
+    position: absolute;
+    top: 0;
+    left: -120%;
+    width: 60%;
+    height: 100%;
+    background: linear-gradient(110deg, transparent, rgba(255,255,255,0.18), transparent);
+    animation: jcShineSweep 1.4s ease-out 0.3s forwards;
+    pointer-events: none;
+}
+@keyframes jcShineSweep {
+    0% { left: -120%; }
+    100% { left: 130%; }
 }
 .jc-toast-in {
-    animation: jcToastIn 0.4s cubic-bezier(0.34,1.56,0.64,1) forwards;
+    animation: jcToastIn 0.45s cubic-bezier(0.34,1.56,0.64,1) forwards;
 }
 .jc-toast-out {
     animation: jcToastOut 0.4s ease-in forwards;
 }
 @keyframes jcToastIn {
-    from { transform: translateX(-50%) translateY(-60px) scale(0.9); opacity: 0; }
+    from { transform: translateX(-50%) translateY(-80px) scale(0.85); opacity: 0; }
     to   { transform: translateX(-50%) translateY(0) scale(1); opacity: 1; }
 }
 @keyframes jcToastOut {
     from { transform: translateX(-50%) translateY(0) scale(1); opacity: 1; }
-    to   { transform: translateX(-50%) translateY(-30px) scale(0.95); opacity: 0; }
+    to   { transform: translateX(-50%) translateY(-40px) scale(0.92); opacity: 0; }
 }
 
 /* Legacy — hide old classes */
@@ -4333,11 +4385,25 @@ input, select, textarea {
 .casa-modal-nota { text-align: center; font-size: 11px; color: #64748b; font-weight: 700; margin-top: 14px; }
 
 /* Combined mission objectives */
+.combinada-objetivos {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px dashed rgba(255,255,255,0.08);
+}
 .cm-obj {
-  font-size: 10px; font-weight: 900; padding: 3px 8px;
+  font-size: 11px; font-weight: 900; padding: 4px 10px;
   border-radius: 8px; background: rgba(239,68,68,0.1); color: #ff9b9b; border: 1px solid rgba(239,68,68,0.2);
 }
-.cm-obj.cm-done { background: rgba(34,197,94,0.1); color: var(--verde); border-color: rgba(34,197,94,0.25); }
+.cm-obj.cm-done { background: rgba(34,197,94,0.12); color: var(--verde); border-color: rgba(34,197,94,0.3); }
+
+.quest-reward-fama {
+  background: rgba(244,114,182,0.12);
+  color: #f472b6;
+  border: 1px solid rgba(244,114,182,0.25);
+}
 
 /* =====================================================
    TUTORIAL SYSTEM
@@ -6897,11 +6963,12 @@ input.game-input::placeholder { color: #475569; }
   grid-template-columns: 1fr;
   gap: 14px;
   margin-bottom: 18px;
+  align-items: stretch;
 }
 @media (min-width: 760px) {
-  .jobs-grid { grid-template-columns: repeat(2, 1fr); }
+  .jobs-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
 }
-@media (min-width: 1180px) {
+@media (min-width: 1280px) {
   .jobs-grid { grid-template-columns: repeat(3, 1fr); }
 }
 
@@ -6918,6 +6985,44 @@ input.game-input::placeholder { color: #475569; }
   box-shadow: 0 6px 18px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.04);
   overflow: hidden;
   transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.25s, border-color 0.25s;
+}
+
+/* DESKTOP — card vertical centralizado */
+@media (min-width: 760px) {
+  .job-card {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto 1fr auto;
+    gap: 12px;
+    padding: 22px 18px 18px 18px;
+    text-align: center;
+    align-items: start;
+  }
+  .job-card-icon-wrap {
+    margin: 0 auto;
+    width: 110px;
+    height: 110px;
+  }
+  .job-card-icon {
+    width: 110px;
+    height: 110px;
+    font-size: 56px;
+  }
+  .job-card-body {
+    text-align: center;
+  }
+  .job-card-titulo-row {
+    justify-content: center;
+  }
+  .job-card-stats {
+    justify-content: center;
+  }
+  .job-card-action {
+    justify-content: center;
+  }
+  .job-card-action .btn-trabalhar {
+    width: 100%;
+    justify-content: center;
+  }
 }
 .job-card:hover {
   transform: translateY(-3px);
@@ -7441,5 +7546,166 @@ input.game-input::placeholder { color: #475569; }
   .cine-icone, .cine-icone-emoji { width: 110px; height: 110px; font-size: 80px; }
   .cine-nome { font-size: 18px; }
   .cine-reward { font-size: 15px; padding: 10px 14px; }
+}
+
+/* Job stat — variant com img */
+.js-icon-img {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.4));
+}
+
+/* Section header com img */
+.jc-section-icon-img {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+}
+
+/* Stat card com img */
+.jc-stat-icon-img {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+}
+
+/* =====================================================
+   DASHBOARD — Acesso Rapido com PNGs
+   ===================================================== */
+.jc-quick-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 10px;
+}
+@media (min-width: 760px) {
+  .jc-quick-grid { grid-template-columns: repeat(6, 1fr); }
+}
+.jc-quick-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 8px;
+  background: linear-gradient(135deg, rgba(13,27,47,0.85) 0%, rgba(8,17,30,0.95) 100%);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  color: #f8fafc;
+  text-decoration: none;
+  font-weight: 800;
+  font-size: 11px;
+  text-align: center;
+  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+.jc-quick-btn:hover {
+  transform: translateY(-3px);
+  border-color: rgba(214,168,79,0.4);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.5), 0 0 0 1px rgba(214,168,79,0.15);
+}
+.jc-quick-icon {
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.06), rgba(0,0,0,0.3));
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+.jc-quick-icon-img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+  transition: transform 0.2s;
+}
+.jc-quick-btn:hover .jc-quick-icon-img {
+  transform: scale(1.1);
+}
+.jc-quick-label {
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+
+/* =====================================================
+   TREINO — painel + cooldown banner
+   ===================================================== */
+.treino-stats-panel {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  background: linear-gradient(135deg, rgba(13,27,47,0.85) 0%, rgba(8,17,30,0.95) 100%);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+}
+.ts-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 12px;
+}
+.ts-item img {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+  flex-shrink: 0;
+}
+.ts-item > div { min-width: 0; }
+.ts-label {
+  font-size: 9px;
+  font-weight: 900;
+  color: #94a3b8;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+}
+.ts-val {
+  font-family: var(--font-titulo);
+  font-size: 22px;
+  font-weight: 900;
+  line-height: 1;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.5);
+}
+
+.treino-cooldown-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px 16px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(214,168,79,0.15), rgba(214,168,79,0.05));
+  border: 1px solid rgba(214,168,79,0.35);
+  color: #fcd34d;
+  font-weight: 800;
+  font-size: 14px;
+  margin-bottom: 14px;
+  box-shadow: 0 4px 14px rgba(214,168,79,0.15);
+  animation: tcb-pulse 1.8s ease-in-out infinite;
+}
+.treino-cooldown-banner strong { color: #fff; text-shadow: 0 1px 4px rgba(0,0,0,0.5); }
+.tcb-icon { font-size: 18px; }
+@keyframes tcb-pulse {
+  0%, 100% { box-shadow: 0 4px 14px rgba(214,168,79,0.15); }
+  50% { box-shadow: 0 4px 24px rgba(214,168,79,0.35); }
+}
+
+@media (max-width: 600px) {
+  .treino-stats-panel { grid-template-columns: repeat(3, 1fr); padding: 12px; gap: 6px; }
+  .ts-item { flex-direction: column; gap: 4px; padding: 6px; text-align: center; }
+  .ts-item img { width: 30px; height: 30px; }
+  .ts-val { font-size: 18px; }
 }
 

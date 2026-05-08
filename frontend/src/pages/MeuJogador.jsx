@@ -7,11 +7,15 @@ import './MeuJogador.css'
 // IDs 101-124 para avatares de imagem (evita conflito com emojis do banco que usam IDs baixos)
 const AVATAR_IMGS = [101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124]
 
-function SectionHeader({ icon, title, right }) {
+function SectionHeader({ icon, iconImg, title, right }) {
   return (
     <div className="jc-section-header">
       <div className="jc-section-title-wrap">
-        {icon && <span className="jc-section-icon">{icon}</span>}
+        {iconImg ? (
+          <img src={iconImg} alt="" className="jc-section-icon-img" />
+        ) : icon ? (
+          <span className="jc-section-icon">{icon}</span>
+        ) : null}
         <h3>{title}</h3>
       </div>
       {right && <div className="jc-section-right">{right}</div>}
@@ -63,10 +67,13 @@ function FamaCard({ jogadorID, jogador, setJogador, mostrarNotificacao }) {
 
   return (
     <section className="jc-section">
-      <SectionHeader icon="⭐" title="Fama & Patrocinio" />
+      <SectionHeader iconImg="/icons/fama.png" title="Fama & Patrocinio" />
       <div style={{ padding: '14px', borderRadius: 14, border: `1px solid ${corRank}33`, background: `${corRank}0a` }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-          <span style={{ color: corRank, fontWeight: 900, fontSize: 18 }}>{rank.rank}</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <img src="/icons/fama.png" alt="" style={{ width: 28, height: 28, objectFit: 'contain', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} />
+            <span style={{ color: corRank, fontWeight: 900, fontSize: 18 }}>{rank.rank}</span>
+          </div>
           <span style={{ color: '#94a3b8', fontSize: 13, fontWeight: 800 }}>{fmt(fama)} Fama</span>
         </div>
         <div className="jc-progress" style={{ marginBottom: 8 }}><div style={{ width: progressoRank + '%', background: corRank }} /></div>
@@ -76,8 +83,14 @@ function FamaCard({ jogadorID, jogador, setJogador, mostrarNotificacao }) {
           {rank.renda_hora > 0 && <span style={{ padding: '4px 10px', borderRadius: 8, fontSize: 11, fontWeight: 800, background: 'rgba(34,197,94,0.12)', color: '#22c55e' }}>R$ {fmt(rank.renda_hora)}/hora</span>}
         </div>
         {rank.patrocinio && (
-          <div style={{ marginTop: 12, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
-            <span style={{ fontSize: 12, color: '#94a3b8' }}>Patrocinio: <strong style={{ color: '#fff' }}>{rank.patrocinio}</strong></span>
+          <div style={{ marginTop: 12, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, padding: 10, borderRadius: 10, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <img src="/coletas/patrocinio.png" alt="" style={{ width: 36, height: 36, objectFit: 'contain', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} />
+              <div>
+                <div style={{ fontSize: 11, color: '#94a3b8', fontWeight: 700 }}>Patrocinador</div>
+                <div style={{ fontSize: 13, color: '#fff', fontWeight: 900 }}>{rank.patrocinio}</div>
+              </div>
+            </div>
             {famaData.patrocinio_acumulado > 0 && (
               <button className="jc-btn jc-btn-primary" style={{ minHeight: 32, fontSize: 11 }} onClick={coletarPatrocinio} disabled={loading}>
                 {loading ? '...' : `Coletar R$ ${fmt(famaData.patrocinio_acumulado)}`}
@@ -112,10 +125,10 @@ function FamaCard({ jogadorID, jogador, setJogador, mostrarNotificacao }) {
 // ========================
 
 function getMoralInfo(moral) {
-  if (moral >= 81) return { label: 'Em Chamas!', cor: '#D6A84F', bg: 'rgba(214,168,79,0.08)', border: 'rgba(214,168,79,0.2)', emoji: '🔥' }
-  if (moral >= 61) return { label: 'Motivado', cor: '#22c55e', bg: 'rgba(34,197,94,0.08)', border: 'rgba(34,197,94,0.2)', emoji: '😊' }
-  if (moral >= 31) return { label: 'Normal', cor: '#43a7ff', bg: 'rgba(67,167,255,0.08)', border: 'rgba(67,167,255,0.2)', emoji: '😐' }
-  return { label: 'Desmotivado', cor: '#ef4444', bg: 'rgba(239,68,68,0.08)', border: 'rgba(239,68,68,0.2)', emoji: '😞' }
+  if (moral >= 81) return { label: 'Em Chamas!', cor: '#D6A84F', bg: 'rgba(214,168,79,0.08)', border: 'rgba(214,168,79,0.2)', emoji: '🔥', img: '/moral/em-chamas.png' }
+  if (moral >= 61) return { label: 'Motivado',  cor: '#22c55e', bg: 'rgba(34,197,94,0.08)', border: 'rgba(34,197,94,0.2)', emoji: '😊', img: '/moral/motivado.png' }
+  if (moral >= 31) return { label: 'Normal',     cor: '#43a7ff', bg: 'rgba(67,167,255,0.08)', border: 'rgba(67,167,255,0.2)', emoji: '😐', img: '/moral/normal.png' }
+  return                    { label: 'Desmotivado', cor: '#ef4444', bg: 'rgba(239,68,68,0.08)', border: 'rgba(239,68,68,0.2)', emoji: '😞', img: '/moral/desmotivado.png' }
 }
 
 function MoralSection({ jogador }) {
@@ -124,15 +137,22 @@ function MoralSection({ jogador }) {
   const mult = (0.80 + (moral / 100) * 0.40).toFixed(2)
   return (
     <section className="jc-section">
-      <SectionHeader icon="🧠" title="Moral" right={<span style={{ color: info.cor }}>{info.emoji} {info.label}</span>} />
-      <div style={{ background: info.bg, border: `1px solid ${info.border}`, borderRadius: 14, padding: '14px 16px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-          <span style={{ fontSize: 32, fontWeight: 900, color: info.cor, fontFamily: "'Teko', sans-serif" }}>{moral}</span>
-          <span style={{ fontSize: 12, fontWeight: 700, color: '#94a3b8' }}>Multiplicador: <strong style={{ color: info.cor }}>{mult}x</strong></span>
-        </div>
-        <div className="jc-progress"><div style={{ width: `${moral}%`, background: info.cor }} /></div>
-        <div style={{ marginTop: 8, fontSize: 11, color: '#64748b', lineHeight: 1.5 }}>
-          Sobe ao trabalhar (+3) e vencer desafios. Cai em derrotas e notas baixas.
+      <SectionHeader
+        iconImg="/icons/moral.png"
+        title="Moral"
+        right={<span style={{ color: info.cor }}>{info.label}</span>}
+      />
+      <div style={{ background: info.bg, border: `1px solid ${info.border}`, borderRadius: 14, padding: '14px 16px', display: 'flex', gap: 14, alignItems: 'center' }}>
+        <img src={info.img} alt={info.label} style={{ width: 70, height: 70, objectFit: 'contain', filter: `drop-shadow(0 4px 10px ${info.cor}55)`, flexShrink: 0 }} />
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+            <span style={{ fontSize: 32, fontWeight: 900, color: info.cor, fontFamily: "'Teko', sans-serif", lineHeight: 1 }}>{moral}</span>
+            <span style={{ fontSize: 12, fontWeight: 700, color: '#94a3b8' }}>Mult: <strong style={{ color: info.cor }}>{mult}x</strong></span>
+          </div>
+          <div className="jc-progress"><div style={{ width: `${moral}%`, background: info.cor }} /></div>
+          <div style={{ marginTop: 6, fontSize: 11, color: '#64748b', lineHeight: 1.4 }}>
+            Sobe trabalhando (+3) e vencendo. Cai em derrotas e notas baixas.
+          </div>
         </div>
       </div>
     </section>
@@ -296,15 +316,17 @@ export default function MeuJogador() {
       {/* Stats */}
       <div className="jc-stats-grid">
         {[
-          { icon: '💪', val: jogador.forca, label: 'Forca', attr: 'forca' },
-          { icon: '🏃', val: jogador.velocidade, label: 'Velocidade', attr: 'velocidade' },
-          { icon: '⚽', val: jogador.habilidade, label: 'Habilidade', attr: 'habilidade' },
-          { icon: '💰', val: `R$${fmt(jogador.dinheiro_mao)}`, label: 'Dinheiro' },
-          { icon: '⭐', val: jogador.pontos_fama, label: 'Fama' },
+          { img: '/icons/forca.png', val: jogador.forca, label: 'Forca', attr: 'forca' },
+          { img: '/icons/velocidade.png', val: jogador.velocidade, label: 'Velocidade', attr: 'velocidade' },
+          { img: '/icons/habilidade.png', val: jogador.habilidade, label: 'Habilidade', attr: 'habilidade' },
+          { img: '/icons/dinheiro.png', val: `R$${fmt(jogador.dinheiro_mao)}`, label: 'Dinheiro' },
+          { img: '/icons/fama.png', val: jogador.pontos_fama, label: 'Fama' },
           { icon: '⚔️', val: `${jogador.vitorias}V/${jogador.derrotas}D`, label: `${winRate}% Win` },
-        ].map(({ icon, val, label, attr }) => (
+        ].map(({ img, icon, val, label, attr }) => (
           <div key={label} className="jc-stat-card">
-            <div className="jc-stat-icon">{icon}</div>
+            <div className="jc-stat-icon">
+              {img ? <img src={img} alt="" className="jc-stat-icon-img" /> : icon}
+            </div>
             <div className="jc-stat-info">
               <div className="jc-stat-value">{val}</div>
               <div className="jc-stat-label">{label}</div>

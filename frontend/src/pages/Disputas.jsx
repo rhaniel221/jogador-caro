@@ -7,10 +7,10 @@ import Estadio from './Estadio'
 const MiniGame = lazy(() => import('./MiniGame'))
 
 const ABAS = [
-  { id: 'torneio',  label: 'Torneio',     icon: '🏆', minLevel: 1 },
-  { id: 'estadio',  label: 'Estadio PvP', icon: '⚔️', minLevel: 10 },
   { id: 'desafio',  label: 'Desafio 1v1', icon: '🥊', minLevel: 12 },
+  { id: 'estadio',  label: 'Estadio PvP', icon: '⚔️', minLevel: 10 },
   { id: 'minigame', label: 'MiniGame',    icon: '🎮', minLevel: 15 },
+  { id: 'torneio',  label: 'Torneio',     icon: '🏆', minLevel: 1 },
 ]
 
 export default function Disputas() {
