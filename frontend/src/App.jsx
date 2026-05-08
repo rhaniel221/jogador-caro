@@ -28,7 +28,9 @@ import Banco from './pages/Banco'
 import Performance from './pages/Performance'
 import Treino from './pages/Treino'
 
-// Força novato (nivel 1, tutorial nao iniciado/finalizado) a entrar pela /historia
+// Força novato (nivel 1, ainda no onboarding inicial) a entrar pela /historia.
+// Depois do step 5 (onboarding inicial concluido), libera navegacao livre
+// pro tutorial de inventario/loja/etc poder funcionar.
 function NovatoGuard() {
   const { jogador } = useGame()
   const location = useLocation()
@@ -39,6 +41,8 @@ function NovatoGuard() {
     // Tutorial completo (-1) ou nivel >= 2: deixa em paz
     if (jogador.tutorial_step === -1) return
     if (jogador.nivel >= 2) return
+    // Já passou do onboarding inicial (steps 1-4 = primeiros passos)? Liberou
+    if (jogador.tutorial_step >= 5) return
     // Já está em /historia? OK
     if (location.pathname === '/historia') return
     // Redireciona pra /historia
