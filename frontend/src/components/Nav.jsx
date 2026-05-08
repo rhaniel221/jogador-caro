@@ -7,6 +7,7 @@ import API from '../api'
 const links = [
   { to: '/',           label: 'Inicio',   img: '/nav/inicio.png', end: true, tid: 'nav-inicio' },
   { to: '/carreira',   label: 'Carreira', img: '/nav/carreira.png', tid: 'nav-trabalhos' },
+  { to: '/disputas',   label: 'Disputas', emoji: '⚔️', tid: 'nav-disputas' },
   { to: '/treino',     label: 'Treino',   img: '/nav/treino.png', tid: 'nav-treino' },
   { to: '/missoes',    label: 'Missoes',  img: '/nav/missoes.png', tid: 'nav-missoes' },
   { to: '/jogador',    label: 'Jogador',  img: '/nav/jogador.png', tid: 'nav-perfil' },
@@ -83,7 +84,10 @@ export default function Nav() {
             <li key={l.to}>
               {locked ? (
                 <span className="nav-locked" data-tutorial={l.tid}>
-                  <img src={l.img} alt="" className="nav-icon-img" /> {l.label} 🔒{l.minLevel}
+                  {l.img
+                    ? <img src={l.img} alt="" className="nav-icon-img" />
+                    : <span className="nav-icon-emoji">{l.emoji}</span>}
+                  {' '}{l.label} 🔒{l.minLevel}
                 </span>
               ) : (
                 <NavLink
@@ -93,7 +97,10 @@ export default function Nav() {
                   data-tutorial={l.tid}
                   onClick={() => markVisited(l.to)}
                 >
-                  <img src={l.img} alt="" className="nav-icon-img" /> {l.label}
+                  {l.img
+                    ? <img src={l.img} alt="" className="nav-icon-img" />
+                    : <span className="nav-icon-emoji">{l.emoji}</span>}
+                  {' '}{l.label}
                   {badgeCount > 0 && <span className="nav-count-badge">{badgeCount}</span>}
                   {isNewFeature(l.to, l.minLevel, nivel) && <span className="nav-new-badge">NOVO</span>}
                 </NavLink>

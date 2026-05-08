@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useGame } from '../context/GameContext'
 import API from '../api'
@@ -24,6 +24,34 @@ const TIER_NIVEL_MIN = {
   'Seleçoca': 100, Mundialito: 115, 'Bola de Ouro': 135, 'Ídolo': 160, Lenda: 190
 }
 
+// Tier index >= 4 (Série B em diante) abre modal cinematico
+const TIER_CINEMATICO_MIN_INDEX = 4
+
+const TIER_CORES = {
+  Garoto: '#94a3b8', Base: '#84cc16', Amador: '#22d3ee',
+  'Série C': '#38bdf8', 'Série B': '#3b82f6', 'Série A': '#8b5cf6',
+  'Copinha Nacional': '#a855f7', Continentão: '#d946ef', Europa: '#f43f5e',
+  'Liga dos Craques': '#f97316', 'Seleçoca': '#fbbf24', Mundialito: '#fde047',
+  'Bola de Ouro': '#facc15', 'Ídolo': '#fb7185', Lenda: '#fff'
+}
+
+// Frase de esforço com base na energia gasta
+function flavorEsforco(custoEnergia) {
+  if (custoEnergia <= 4) return 'Esforço leve, dá pra repetir.'
+  if (custoEnergia <= 10) return 'Esforço moderado — você sente.'
+  if (custoEnergia <= 25) return 'Trabalho pesado, prepara o corpo.'
+  if (custoEnergia <= 50) return 'Disputa intensa, gasta muito.'
+  return 'Desgaste extremo — só os monstros aguentam.'
+}
+
+// Verbos por tier
+function verboTrabalho(tier) {
+  if (tier === 'Garoto' || tier === 'Base') return 'Bora correr atrás'
+  if (tier === 'Amador' || tier === 'Série C') return 'Vai pra cima'
+  if (tier === 'Série B' || tier === 'Série A') return 'Mostra serviço'
+  return 'Brilha em campo'
+}
+
 function getTierDoJogador(nivel) {
   const tiers = [...TIERS].reverse()
   for (const t of tiers) {
@@ -37,60 +65,215 @@ function podeFazerTier(tierTrabalho, tierJogador) {
   return TIERS.indexOf(tierTrabalho) >= TIERS.indexOf(tierJogador)
 }
 
-function JobItem({ trabalho, maestria, nivel, onTrabalhar, loading, vezesHoje }) {
+function tierCinematico(tier) {
+  return TIERS.indexOf(tier) >= TIER_CINEMATICO_MIN_INDEX
+}
+
+// ================================================================
+// JOB CARD — apresentação rica
+// ================================================================
+function JobCard({ trabalho, maestria, nivel, onTrabalhar, loading, vezesHoje, animState }) {
   const custo = custoEnergiaEscalado(trabalho.energia, nivel, trabalho.tier)
   const recompensa = calcularRecompensaTrabalho(trabalho, nivel)
-
   const { nivel: nivelM, prev, next } = calcNivelMaestria(maestria)
   const pct = prev === next ? 100 : Math.round(((maestria - prev) / (next - prev)) * 100)
   const isLoading = loading === trabalho.id
   const fator = calcFatorMaestria(maestria)
+  const cor = TIER_CORES[trabalho.tier] || '#94a3b8'
+  const minGanho = Math.round(recompensa.ganho_min * fator)
+  const maxGanho = Math.round(recompensa.ganho_max * fator)
+  const xpFinal = Math.round(recompensa.ganho_xp * fator)
+
+  const fase = animState?.fase
+  const resultado = animState?.resultado
 
   return (
-    <div className="job-item">
-      <div className="col-desc" data-trabalho-id={trabalho.id}>
-        <h3>{trabalho.icone} {trabalho.nome}</h3>
+    <div
+      className={`job-card${isLoading ? ' loading' : ''}${fase === 'work' ? ' job-working' : ''}${fase === 'reveal' ? ' job-revealing' : ''}`}
+      data-trabalho-id={trabalho.id}
+      style={{ '--tier-cor': cor }}
+    >
+      {/* Borda lateral colorida por tier */}
+      <div className="job-card-stripe" />
 
-        <div className="mastery-bar">
-          <div className="mastery-fill" style={{ width: Math.min(100, Math.max(0, pct)) + '%' }} />
+      {/* Icone grande */}
+      <div className="job-card-icon-wrap">
+        <div className="job-card-icon">
+          {trabalho.icone}
+        </div>
+        {fase === 'work' && <div className="job-card-icon-glow" />}
+      </div>
+
+      {/* Conteudo */}
+      <div className="job-card-body">
+        <div className="job-card-titulo-row">
+          <h3 className="job-card-titulo">{trabalho.nome}</h3>
+          <span className="job-card-tier-badge" style={{ background: cor }}>{trabalho.tier}</span>
         </div>
 
-        <span className="mastery-text">
-          Maestria nível {nivelM} ({maestria}x)
-        </span>
+        <p className="job-card-flavor">{flavorEsforco(custo)}</p>
 
-        {vezesHoje > 0 && (
-          <span className="hoje-badge">hoje: {vezesHoje}x</span>
-        )}
+        <div className="job-card-stats">
+          <div className="job-stat job-stat-energia" title="Custo de energia">
+            <span className="js-icon">⚡</span>
+            <span className="js-val">{custo}</span>
+          </div>
+          <div className="job-stat job-stat-din" title="Pagamento">
+            <span className="js-icon">💰</span>
+            <span className="js-val">R$ {fmt(minGanho)}<small>–{fmt(maxGanho)}</small></span>
+          </div>
+          <div className="job-stat job-stat-xp" title="XP ganho">
+            <span className="js-icon">⭐</span>
+            <span className="js-val">+{xpFinal}</span>
+          </div>
+          {trabalho.nivel_min > 1 && (
+            <div className="job-stat job-stat-nv" title="Nível mínimo">
+              <span className="js-icon">🔓</span>
+              <span className="js-val">Nv.{trabalho.nivel_min}</span>
+            </div>
+          )}
+        </div>
+
+        <div className="job-card-mastery">
+          <div className="jm-track">
+            <div className="jm-fill" style={{ width: Math.min(100, Math.max(0, pct)) + '%' }} />
+          </div>
+          <div className="jm-info">
+            <span className="jm-text">Maestria nv. {nivelM} <small>({maestria}x)</small></span>
+            {vezesHoje > 0 && <span className="jm-hoje">hoje: {vezesHoje}x</span>}
+          </div>
+        </div>
       </div>
 
-      <div className="col-pay">
-        <span className="reward-money">
-          R$ {fmt(Math.round(recompensa.ganho_min * fator))} – R$ {fmt(Math.round(recompensa.ganho_max * fator))}
-        </span>
-        <span className="reward-xp">+{Math.round(recompensa.ganho_xp * fator)} XP</span>
-      </div>
-
-      <div className="col-req">
-        <span className="req-energy">⚡ {custo}</span>
-        {trabalho.nivel_min > 1 && (
-          <small className="req-item" style={{ color: '#3a4a30' }}>Nível mín: {trabalho.nivel_min}</small>
-        )}
-      </div>
-
-      <div className="col-action">
+      {/* Acao */}
+      <div className="job-card-action">
         <button
-          className="btn-work"
+          className="btn-trabalhar"
           onClick={() => onTrabalhar(trabalho.id)}
-          disabled={isLoading}
+          disabled={isLoading || fase}
         >
-          {isLoading ? '...' : 'Trabalhar'}
+          {fase === 'work' ? (
+            <span className="bt-working">
+              <span className="bt-spinner">⚽</span>
+              <span>Trabalhando…</span>
+            </span>
+          ) : fase === 'reveal' ? (
+            <span className="bt-reveal">✓ Feito!</span>
+          ) : (
+            <>
+              <span className="bt-verb">{verboTrabalho(trabalho.tier)}</span>
+              <span className="bt-arrow">→</span>
+            </>
+          )}
         </button>
+      </div>
+
+      {/* Anim trabalhando: barra de progresso atravessando o card */}
+      {fase === 'work' && (
+        <div className="job-progress-overlay">
+          <div className="job-progress-bar" />
+        </div>
+      )}
+
+      {/* Anim revelacao: numeros flutuando */}
+      {fase === 'reveal' && resultado && (
+        <div className="job-reveal-rewards">
+          {resultado.ganhou > 0 && (
+            <span className="reward-float reward-din">+R$ {fmt(resultado.ganhou)}</span>
+          )}
+          {resultado.ganhou_xp > 0 && (
+            <span className="reward-float reward-xp">+{resultado.ganhou_xp} XP</span>
+          )}
+          {resultado.bonus_variedade_xp > 0 && (
+            <span className="reward-float reward-variedade">✨ +{resultado.bonus_variedade_xp} bônus</span>
+          )}
+          {resultado.bonus_maestria > 0 && (
+            <span className="reward-float reward-maestria">⭐ +{resultado.bonus_maestria} maestria</span>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ================================================================
+// MODAL CINEMATICO — pra trabalhos de tier alto
+// ================================================================
+function CinematicWork({ data, onClose }) {
+  if (!data) return null
+  const { trabalho, fase, resultado } = data
+  const cor = TIER_CORES[trabalho.tier] || '#fbbf24'
+
+  return (
+    <div className="cine-overlay" onClick={fase === 'reveal' ? onClose : undefined}>
+      <div className={`cine-card cine-${fase}`} onClick={e => e.stopPropagation()} style={{ '--tier-cor': cor }}>
+        {fase === 'work' ? (
+          <>
+            <div className="cine-tier" style={{ color: cor }}>{trabalho.tier.toUpperCase()}</div>
+            <div className="cine-icone">
+              <span className="cine-icone-glow" />
+              <span className="cine-icone-emoji">{trabalho.icone}</span>
+            </div>
+            <h2 className="cine-nome">{trabalho.nome}</h2>
+            <p className="cine-status">⚡ Em ação…</p>
+            <div className="cine-bar">
+              <div className="cine-bar-fill" />
+            </div>
+            <div className="cine-sparkles">
+              <span>✨</span><span>⚡</span><span>💥</span><span>⭐</span><span>🔥</span>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="cine-confetti">
+              {[...Array(20)].map((_, i) => (
+                <span key={i} className={`cc cc-${i % 5}`} style={{ left: (i * 5.2) + '%' }} />
+              ))}
+            </div>
+            <div className="cine-tier" style={{ color: cor }}>SUCESSO</div>
+            <div className="cine-icone cine-icone-vitoria">
+              <span className="cine-icone-emoji">{trabalho.icone}</span>
+            </div>
+            <h2 className="cine-nome">{trabalho.nome}</h2>
+            <div className="cine-rewards">
+              {resultado?.ganhou > 0 && (
+                <div className="cine-reward cine-reward-din">
+                  <span className="cr-icon">💰</span>
+                  <span className="cr-valor">+R$ {fmt(resultado.ganhou)}</span>
+                </div>
+              )}
+              {resultado?.ganhou_xp > 0 && (
+                <div className="cine-reward cine-reward-xp">
+                  <span className="cr-icon">⭐</span>
+                  <span className="cr-valor">+{resultado.ganhou_xp} XP</span>
+                </div>
+              )}
+              {resultado?.bonus_variedade_xp > 0 && (
+                <div className="cine-reward cine-reward-bonus">
+                  <span className="cr-icon">✨</span>
+                  <span className="cr-valor">+{resultado.bonus_variedade_xp} XP variedade</span>
+                </div>
+              )}
+              {resultado?.bonus_maestria > 0 && (
+                <div className="cine-reward cine-reward-bonus">
+                  <span className="cr-icon">🏅</span>
+                  <span className="cr-valor">+{resultado.bonus_maestria} XP maestria</span>
+                </div>
+              )}
+            </div>
+            <button className="btn-trabalhar btn-cine-fechar" onClick={onClose}>
+              Continuar →
+            </button>
+          </>
+        )}
       </div>
     </div>
   )
 }
 
+// ================================================================
+// PAINEL DE VARIEDADE
+// ================================================================
 const MILESTONES = [
   { n: 3, bonus: 10, icon: '⭐' },
 ]
@@ -157,6 +340,9 @@ function VariedadePanel({ diferentesHoje, config, tier }) {
   )
 }
 
+// ================================================================
+// PAGINA PRINCIPAL
+// ================================================================
 export default function Trabalhos() {
   const { jogador, setJogador, mostrarNotificacao, jogadorID, setLevelUp, pushDialogo } = useGame()
   const navigate = useNavigate()
@@ -170,6 +356,12 @@ export default function Trabalhos() {
   const [eventoPendente, setEventoPendente] = useState(null)
   const [eventoLoading, setEventoLoading] = useState(false)
   const [eventoResultado, setEventoResultado] = useState(null)
+
+  // Estado de animacao por trabalho (inline)
+  const [animMap, setAnimMap] = useState({})
+  // Estado do modal cinematico
+  const [cinematic, setCinematic] = useState(null)
+  const animTimers = useRef({})
 
   useEffect(() => {
     API.get('/api/trabalhos').then(setTrabalhos).catch(() => {})
@@ -186,7 +378,6 @@ export default function Trabalhos() {
 
   useEffect(() => {
     if (!jogador || !trabalhos.length) return
-    // Seleciona o tier mais alto disponível que não está superado
     const disponivel = TIERS.slice().reverse().find(tier => {
       if (!podeFazerTier(tier, tierJogador)) return false
       return trabalhos.filter(t => t.tier === tier).some(t => t.nivel_min <= jogador.nivel)
@@ -194,21 +385,57 @@ export default function Trabalhos() {
     if (disponivel) setTierAtivo(disponivel)
   }, [jogador, trabalhos, tierJogador])
 
+  // Cleanup de timers ao desmontar
+  useEffect(() => {
+    return () => {
+      Object.values(animTimers.current).forEach(t => clearTimeout(t))
+    }
+  }, [])
+
+  function clearInlineAnim(trabalhoID) {
+    setAnimMap(prev => {
+      const n = { ...prev }
+      delete n[trabalhoID]
+      return n
+    })
+  }
+
   async function handleTrabalhar(trabalhoID) {
     if (!jogador) return
+    if (loading || cinematic) return
+    const trabalho = trabalhos.find(t => t.id === trabalhoID)
+    if (!trabalho) return
+
+    const cinema = tierCinematico(trabalho.tier)
     setLoading(trabalhoID)
 
-    try {
-      const trabalho = trabalhos.find(t => t.id === trabalhoID)
+    if (cinema) {
+      setCinematic({ trabalho, fase: 'work', resultado: null })
+    } else {
+      setAnimMap(prev => ({ ...prev, [trabalhoID]: { fase: 'work' } }))
+    }
 
+    const minDuracao = cinema ? 1700 : 850
+    const inicio = Date.now()
+
+    try {
       const res = await API.post('/api/trabalhar', {
         jogador_id: jogadorID,
         trabalho_id: trabalhoID,
       })
 
+      // Garante duracao minima de animacao
+      const passou = Date.now() - inicio
+      if (passou < minDuracao) {
+        await new Promise(r => setTimeout(r, minDuracao - passou))
+      }
+
       if (res.falta_item) {
+        if (cinema) setCinematic(null)
+        else clearInlineAnim(trabalhoID)
         pushDialogo({ tipo: 'falta_item', item: res.falta_item, mensagem: res.mensagem })
       } else if (res.sucesso) {
+        // Aplica estado do jogador IMEDIATAMENTE (anima sobreposta)
         setJogador(res.jogador)
         setMaestria(prev => ({ ...prev, [trabalhoID]: (prev[trabalhoID] || 0) + 1 }))
         setHoje(prev => ({
@@ -220,22 +447,30 @@ export default function Trabalhos() {
           },
         }))
 
-        mostrarNotificacao(`+R$ ${fmt(res.ganhou)} | +${res.ganhou_xp} XP`, 'sucesso')
+        // Transiciona pra revelacao
+        if (cinema) {
+          setCinematic({ trabalho, fase: 'reveal', resultado: res })
+        } else {
+          setAnimMap(prev => ({ ...prev, [trabalhoID]: { fase: 'reveal', resultado: res } }))
+          // Auto-clear inline
+          animTimers.current[trabalhoID] = setTimeout(() => {
+            clearInlineAnim(trabalhoID)
+            delete animTimers.current[trabalhoID]
+          }, 1600)
+        }
 
-        if (res.bonus_variedade_xp > 0) {
-          mostrarNotificacao(`Bônus variedade! +${res.bonus_variedade_xp} XP extra`, 'sucesso')
-        }
-        if (res.bonus_maestria > 0) {
-          mostrarNotificacao(`Maestria ${res.bonus_tier}! +${res.bonus_maestria} XP bônus!`, 'sucesso')
-        }
         if (res.level_up) {
           setLevelUp(res.novo_nivel)
         }
-        // Evento aleatório?
         if (res.evento) {
-          setEventoPendente({ ...res.evento, ganho_din: res.ganhou, ganho_xp: res.ganhou_xp })
+          // Aguarda anim antes de abrir evento
+          setTimeout(() => {
+            setEventoPendente({ ...res.evento, ganho_din: res.ganhou, ganho_xp: res.ganhou_xp })
+          }, cinema ? 2400 : 1600)
         }
       } else if (res.mensagem && (res.mensagem.includes('alugar uma casa') || res.mensagem.includes('casa melhor') || res.mensagem.includes('Série B exige'))) {
+        if (cinema) setCinematic(null)
+        else clearInlineAnim(trabalhoID)
         pushDialogo({
           tipo: 'dialogo',
           icone: '🏠',
@@ -243,13 +478,21 @@ export default function Trabalhos() {
         })
         setTimeout(() => navigate('/vida'), 300)
       } else {
+        if (cinema) setCinematic(null)
+        else clearInlineAnim(trabalhoID)
         mostrarNotificacao(res.mensagem || 'Não foi possível trabalhar.', 'erro')
       }
     } catch {
+      if (cinema) setCinematic(null)
+      else clearInlineAnim(trabalhoID)
       mostrarNotificacao('Erro de conexão.', 'erro')
     }
 
     setLoading(null)
+  }
+
+  function fecharCinematic() {
+    setCinematic(null)
   }
 
   async function handleEscolhaEvento(opcaoID) {
@@ -345,6 +588,7 @@ export default function Trabalhos() {
                 key={tier}
                 className={`tab${tierAtivo === tier ? ' active' : ''}${naoDesbloqueou ? ' locked' : ''}`}
                 onClick={() => !naoDesbloqueou && setTierAtivo(tier)}
+                style={tierAtivo === tier ? { background: `linear-gradient(135deg, ${TIER_CORES[tier]} 0%, #0a3d91 100%)` } : undefined}
               >
                 {tier} {naoDesbloqueou ? `🔒${nivelMin}` : ''}
               </div>
@@ -356,16 +600,9 @@ export default function Trabalhos() {
         )
       })()}
 
-      <div className="jobs-list" data-tutorial="first-job">
-        <div className="job-header">
-          <span className="col-desc">Descrição</span>
-          <span className="col-pay">Pagamento</span>
-          <span className="col-req">Exige</span>
-          <span className="col-action"></span>
-        </div>
-
+      <div className="jobs-grid" data-tutorial="first-job">
         {tierTrabalhos.map(t => (
-          <JobItem
+          <JobCard
             key={t.id}
             trabalho={t}
             maestria={maestria[t.id] || 0}
@@ -373,6 +610,7 @@ export default function Trabalhos() {
             onTrabalhar={handleTrabalhar}
             loading={loading}
             vezesHoje={hoje.trabalhos_hoje?.[t.id] || 0}
+            animState={animMap[t.id]}
           />
         ))}
       </div>
@@ -380,6 +618,9 @@ export default function Trabalhos() {
       <p className="footer-note">
         💡 Suba de nível para desbloquear tiers melhores! Tier Amador fica sempre disponível.
       </p>
+
+      {/* Modal cinematico */}
+      <CinematicWork data={cinematic} onClose={fecharCinematic} />
 
       {/* Modal de Evento Aleatório */}
       {eventoPendente && (

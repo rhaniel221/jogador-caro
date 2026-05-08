@@ -18,6 +18,7 @@ import Historia from './pages/Historia'
 import MeuJogador from './pages/MeuJogador'
 import MinhaVida from './pages/MinhaVida'
 import Carreira from './pages/Carreira'
+import Disputas from './pages/Disputas'
 import Loja from './pages/Loja'
 import Inventario from './pages/Inventario'
 import Missoes from './pages/Missoes'
@@ -61,6 +62,7 @@ function AppContent() {
           <Route path="/jogador" element={<MeuJogador />} />
           <Route path="/vida" element={<MinhaVida />} />
           <Route path="/carreira" element={<Carreira />} />
+          <Route path="/disputas" element={<Disputas />} />
           <Route path="/missoes" element={<Missoes />} />
           <Route path="/loja" element={<Loja />} />
           <Route path="/inventario" element={<Inventario />} />
@@ -69,11 +71,11 @@ function AppContent() {
           <Route path="/banco" element={<Banco />} />
           <Route path="/performance" element={<Performance />} />
           <Route path="/treino" element={<Treino />} />
-          <Route path="/minigame" element={<Navigate to="/carreira?aba=minigame" replace />} />
+          <Route path="/minigame" element={<Navigate to="/disputas?aba=minigame" replace />} />
           <Route path="/inicio" element={<Navigate to="/jogador" replace />} />
-          <Route path="/desafio" element={<Navigate to="/carreira?aba=desafio" replace />} />
-          <Route path="/estadio" element={<Navigate to="/carreira?aba=estadio" replace />} />
-          <Route path="/torneio" element={<Navigate to="/carreira?aba=torneio" replace />} />
+          <Route path="/desafio" element={<Navigate to="/disputas?aba=desafio" replace />} />
+          <Route path="/estadio" element={<Navigate to="/disputas?aba=estadio" replace />} />
+          <Route path="/torneio" element={<Navigate to="/disputas" replace />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Layout>

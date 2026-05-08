@@ -367,6 +367,17 @@ body::before {
     filter: drop-shadow(0 1px 2px rgba(0,0,0,0.15));
 }
 
+.nav-icon-emoji {
+    width: 22px;
+    height: 22px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+    line-height: 1;
+}
+
 .nav-locked {
     color: #475569;
     font-size: 11px;
@@ -6877,3 +6888,558 @@ input.game-input::placeholder { color: #475569; }
   * { max-width: 100%; }
   img { max-width: 100%; height: auto; }
 }
+
+/* =====================================================
+   TRABALHOS — JOB CARDS RICOS
+   ===================================================== */
+.jobs-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+@media (min-width: 760px) {
+  .jobs-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (min-width: 1180px) {
+  .jobs-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+.job-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: 86px 1fr auto;
+  gap: 14px;
+  align-items: center;
+  padding: 16px 18px 14px 22px;
+  background: linear-gradient(135deg, rgba(13,27,47,0.85) 0%, rgba(8,17,30,0.95) 100%);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.04);
+  overflow: hidden;
+  transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.25s, border-color 0.25s;
+}
+.job-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--tier-cor, rgba(255,255,255,0.18));
+  box-shadow: 0 12px 30px rgba(0,0,0,0.45), 0 0 0 1px rgba(255,255,255,0.04);
+}
+
+.job-card-stripe {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 5px;
+  background: linear-gradient(180deg, var(--tier-cor, #94a3b8), transparent);
+  box-shadow: 0 0 12px var(--tier-cor, transparent);
+}
+
+/* Icone grande */
+.job-card-icon-wrap {
+  position: relative;
+  width: 86px;
+  height: 86px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.job-card-icon {
+  position: relative;
+  z-index: 2;
+  width: 86px;
+  height: 86px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.08), rgba(0,0,0,0.4));
+  border: 2px solid var(--tier-cor, rgba(255,255,255,0.12));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 44px;
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5));
+  transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+}
+.job-card:hover .job-card-icon {
+  transform: scale(1.06) rotate(-4deg);
+}
+.job-card-icon-glow {
+  position: absolute;
+  inset: -10px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--tier-cor, #fbbf24), transparent 70%);
+  opacity: 0.5;
+  animation: pulse-glow 0.9s ease-in-out infinite;
+  z-index: 1;
+}
+@keyframes pulse-glow {
+  0%, 100% { transform: scale(0.95); opacity: 0.4; }
+  50% { transform: scale(1.15); opacity: 0.7; }
+}
+
+/* Corpo */
+.job-card-body { min-width: 0; }
+
+.job-card-titulo-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+}
+.job-card-titulo {
+  font-size: 15px;
+  font-weight: 900;
+  color: #fff;
+  margin: 0;
+  line-height: 1.2;
+  letter-spacing: 0.2px;
+  flex: 1;
+  min-width: 0;
+}
+.job-card-tier-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 9px;
+  font-weight: 900;
+  color: #06111F;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.2);
+}
+.job-card-flavor {
+  font-size: 11px;
+  color: #94A3B8;
+  margin: 0 0 8px 0;
+  font-style: italic;
+  line-height: 1.3;
+}
+
+/* Stats */
+.job-card-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+.job-stat {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 800;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  white-space: nowrap;
+}
+.job-stat .js-icon { font-size: 12px; }
+.job-stat .js-val small { opacity: 0.7; font-size: 10px; margin-left: 1px; }
+.job-stat-energia { color: #38A8F8; border-color: rgba(56,168,248,0.25); background: rgba(56,168,248,0.08); }
+.job-stat-din { color: #fbbf24; border-color: rgba(251,191,36,0.25); background: rgba(251,191,36,0.08); }
+.job-stat-xp { color: #a3e635; border-color: rgba(163,230,53,0.25); background: rgba(163,230,53,0.08); }
+.job-stat-nv { color: #f97316; border-color: rgba(249,115,22,0.25); background: rgba(249,115,22,0.08); }
+
+/* Mastery */
+.job-card-mastery { display: flex; flex-direction: column; gap: 2px; }
+.jm-track {
+  height: 5px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 99px;
+  overflow: hidden;
+}
+.jm-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--tier-cor, #38A8F8), #fff);
+  border-radius: 99px;
+  transition: width 0.5s ease;
+  box-shadow: 0 0 8px var(--tier-cor, #38A8F8);
+}
+.jm-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 10px;
+  color: #64748B;
+  font-weight: 700;
+}
+.jm-info small { opacity: 0.7; margin-left: 2px; }
+.jm-hoje {
+  color: #38A8F8;
+  background: rgba(56,168,248,0.1);
+  padding: 1px 6px;
+  border-radius: 8px;
+  font-size: 9px;
+}
+
+/* Acao */
+.job-card-action { display: flex; align-items: center; }
+
+.btn-trabalhar {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 18px;
+  background: linear-gradient(135deg, var(--tier-cor, #1e6fff) 0%, #0a3d91 120%);
+  border: none;
+  border-radius: 12px;
+  color: #fff;
+  font-weight: 900;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.15);
+  transition: transform 0.2s, box-shadow 0.2s;
+  white-space: nowrap;
+  font-family: var(--font-corpo);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+}
+.btn-trabalhar:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.5), 0 0 0 1px var(--tier-cor, transparent), inset 0 1px 0 rgba(255,255,255,0.2);
+}
+.btn-trabalhar:active:not(:disabled) { transform: translateY(0); }
+.btn-trabalhar:disabled { opacity: 0.55; cursor: not-allowed; }
+.btn-trabalhar .bt-arrow { transition: transform 0.2s; }
+.btn-trabalhar:hover .bt-arrow { transform: translateX(3px); }
+
+.bt-working { display: inline-flex; align-items: center; gap: 6px; }
+.bt-spinner {
+  display: inline-block;
+  font-size: 14px;
+  animation: bt-spin 0.7s linear infinite;
+}
+@keyframes bt-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+.bt-reveal {
+  color: #fff;
+  font-weight: 900;
+  animation: bounce-in 0.4s ease;
+}
+
+/* Estados de animacao no card */
+.job-card.job-working {
+  animation: card-tremor 0.6s ease-in-out infinite;
+}
+@keyframes card-tremor {
+  0%, 100% { transform: translateY(-3px); }
+  25% { transform: translateY(-3px) rotate(-0.3deg); }
+  75% { transform: translateY(-3px) rotate(0.3deg); }
+}
+.job-card.job-revealing {
+  animation: card-flash 0.6s ease;
+  border-color: var(--tier-cor, #fbbf24);
+  box-shadow: 0 0 30px var(--tier-cor, transparent), 0 12px 30px rgba(0,0,0,0.45);
+}
+@keyframes card-flash {
+  0% { box-shadow: 0 0 0 var(--tier-cor, transparent), 0 12px 30px rgba(0,0,0,0.45); }
+  50% { box-shadow: 0 0 50px var(--tier-cor, #fbbf24), 0 12px 30px rgba(0,0,0,0.45); }
+  100% { box-shadow: 0 0 30px var(--tier-cor, transparent), 0 12px 30px rgba(0,0,0,0.45); }
+}
+
+/* Barra de progresso atravessando */
+.job-progress-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: rgba(255,255,255,0.04);
+  overflow: hidden;
+}
+.job-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--tier-cor, #38A8F8), #fff);
+  width: 0;
+  animation: progress-fill 0.85s linear forwards;
+  box-shadow: 0 0 10px var(--tier-cor, #38A8F8);
+}
+@keyframes progress-fill {
+  0% { width: 0; }
+  100% { width: 100%; }
+}
+
+/* Recompensas flutuantes (inline) */
+.job-reveal-rewards {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  pointer-events: none;
+  z-index: 5;
+}
+.reward-float {
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-weight: 900;
+  font-size: 14px;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.6);
+  animation: float-up 1.5s cubic-bezier(0.22,1,0.36,1) forwards;
+  white-space: nowrap;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.5);
+  backdrop-filter: blur(6px);
+}
+.reward-float.reward-din { background: linear-gradient(135deg, #fbbf24, #d97706); color: #1a0f00; }
+.reward-float.reward-xp { background: linear-gradient(135deg, #a3e635, #65a30d); color: #0d1a00; }
+.reward-float.reward-variedade { background: linear-gradient(135deg, #22d3ee, #0891b2); color: #001a1f; }
+.reward-float.reward-maestria { background: linear-gradient(135deg, #f472b6, #c026d3); color: #fff; }
+
+@keyframes float-up {
+  0% { transform: translateY(15px) scale(0.7); opacity: 0; }
+  20% { transform: translateY(0) scale(1.15); opacity: 1; }
+  35% { transform: translateY(-6px) scale(1); }
+  100% { transform: translateY(-50px) scale(0.95); opacity: 0; }
+}
+.reward-float:nth-child(2) { animation-delay: 0.1s; }
+.reward-float:nth-child(3) { animation-delay: 0.2s; }
+.reward-float:nth-child(4) { animation-delay: 0.3s; }
+
+/* =====================================================
+   MODAL CINEMATICO — TRABALHOS DE TIER ALTO
+   ===================================================== */
+.cine-overlay {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(ellipse at center, rgba(10,20,40,0.85) 0%, rgba(0,0,0,0.95) 100%);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: fade-in 0.25s ease;
+  backdrop-filter: blur(6px);
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.cine-card {
+  position: relative;
+  background: linear-gradient(160deg, #0d1b2f 0%, #06111f 100%);
+  border: 2px solid var(--tier-cor, #fbbf24);
+  border-radius: 24px;
+  padding: 32px 28px;
+  max-width: 460px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.7), 0 0 80px var(--tier-cor, rgba(251,191,36,0.3));
+  overflow: hidden;
+  animation: cine-pop 0.5s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes cine-pop {
+  0% { transform: scale(0.7) translateY(40px); opacity: 0; }
+  100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+.cine-tier {
+  font-family: var(--font-titulo, sans-serif);
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 3px;
+  margin-bottom: 12px;
+  text-shadow: 0 2px 8px currentColor;
+}
+
+.cine-icone {
+  position: relative;
+  width: 140px;
+  height: 140px;
+  margin: 0 auto 18px auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.cine-icone-emoji {
+  font-size: 100px;
+  position: relative;
+  z-index: 2;
+  filter: drop-shadow(0 8px 20px rgba(0,0,0,0.7));
+  animation: cine-icone-bounce 0.9s ease-in-out infinite;
+}
+.cine-icone-glow {
+  position: absolute;
+  inset: -20px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--tier-cor, #fbbf24), transparent 65%);
+  opacity: 0.55;
+  animation: cine-glow-pulse 1.4s ease-in-out infinite;
+}
+@keyframes cine-icone-bounce {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-8px) scale(1.07); }
+}
+@keyframes cine-glow-pulse {
+  0%, 100% { transform: scale(0.9); opacity: 0.45; }
+  50% { transform: scale(1.2); opacity: 0.75; }
+}
+
+.cine-icone-vitoria .cine-icone-emoji {
+  animation: cine-vitoria 0.8s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes cine-vitoria {
+  0% { transform: scale(0.4) rotate(-30deg); opacity: 0; }
+  60% { transform: scale(1.3) rotate(8deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0); opacity: 1; }
+}
+
+.cine-nome {
+  font-size: 22px;
+  font-weight: 900;
+  color: #fff;
+  margin: 0 0 14px 0;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.8);
+  letter-spacing: 0.3px;
+  line-height: 1.2;
+}
+
+.cine-status {
+  font-size: 14px;
+  color: var(--tier-cor, #fbbf24);
+  font-weight: 800;
+  margin: 0 0 18px 0;
+  letter-spacing: 0.5px;
+  animation: cine-status-pulse 1s ease-in-out infinite;
+}
+@keyframes cine-status-pulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+.cine-bar {
+  height: 8px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 99px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.1);
+  margin-bottom: 12px;
+}
+.cine-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--tier-cor, #fbbf24), #fff);
+  width: 0;
+  animation: cine-fill 1.7s cubic-bezier(0.4,0,0.2,1) forwards;
+  box-shadow: 0 0 16px var(--tier-cor, #fbbf24);
+}
+@keyframes cine-fill {
+  0% { width: 0; }
+  100% { width: 100%; }
+}
+
+.cine-sparkles {
+  display: flex;
+  justify-content: space-around;
+  font-size: 22px;
+  margin-top: 8px;
+}
+.cine-sparkles span {
+  display: inline-block;
+  animation: cine-sparkle 1.2s ease-in-out infinite;
+  filter: drop-shadow(0 0 8px var(--tier-cor, #fbbf24));
+}
+.cine-sparkles span:nth-child(2) { animation-delay: 0.15s; }
+.cine-sparkles span:nth-child(3) { animation-delay: 0.3s; }
+.cine-sparkles span:nth-child(4) { animation-delay: 0.45s; }
+.cine-sparkles span:nth-child(5) { animation-delay: 0.6s; }
+@keyframes cine-sparkle {
+  0%, 100% { transform: translateY(0) scale(0.8); opacity: 0.4; }
+  50% { transform: translateY(-8px) scale(1.2); opacity: 1; }
+}
+
+/* Confetes na revelacao */
+.cine-confetti {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.cc {
+  position: absolute;
+  top: -10px;
+  width: 8px;
+  height: 14px;
+  border-radius: 2px;
+  animation: confetti-fall 2.2s linear forwards;
+}
+.cc-0 { background: #fbbf24; animation-delay: 0s; }
+.cc-1 { background: #38A8F8; animation-delay: 0.1s; }
+.cc-2 { background: #a3e635; animation-delay: 0.2s; }
+.cc-3 { background: #f472b6; animation-delay: 0.3s; }
+.cc-4 { background: #fff; animation-delay: 0.4s; }
+@keyframes confetti-fall {
+  0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(560px) rotate(720deg); opacity: 0; }
+}
+
+/* Recompensas no modal */
+.cine-rewards {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 18px 0 22px 0;
+  position: relative;
+  z-index: 5;
+}
+.cine-reward {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 12px 18px;
+  border-radius: 12px;
+  font-weight: 900;
+  font-size: 18px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  animation: cine-reward-in 0.5s cubic-bezier(0.34,1.56,0.64,1) backwards;
+}
+.cine-reward:nth-child(1) { animation-delay: 0.1s; }
+.cine-reward:nth-child(2) { animation-delay: 0.25s; }
+.cine-reward:nth-child(3) { animation-delay: 0.4s; }
+.cine-reward:nth-child(4) { animation-delay: 0.55s; }
+@keyframes cine-reward-in {
+  0% { transform: translateX(-30px); opacity: 0; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+.cine-reward-din { color: #fbbf24; border-color: rgba(251,191,36,0.4); background: rgba(251,191,36,0.08); }
+.cine-reward-xp { color: #a3e635; border-color: rgba(163,230,53,0.4); background: rgba(163,230,53,0.08); }
+.cine-reward-bonus { color: #f472b6; border-color: rgba(244,114,182,0.4); background: rgba(244,114,182,0.08); }
+.cr-icon { font-size: 24px; }
+
+.btn-cine-fechar {
+  width: 100%;
+  padding: 14px 20px;
+  font-size: 14px;
+  position: relative;
+  z-index: 5;
+}
+
+@media (max-width: 600px) {
+  .job-card {
+    grid-template-columns: 70px 1fr;
+    grid-template-rows: auto auto;
+    gap: 12px;
+    padding: 14px 14px 14px 18px;
+  }
+  .job-card-icon-wrap, .job-card-icon { width: 70px; height: 70px; }
+  .job-card-icon { font-size: 36px; }
+  .job-card-action { grid-column: 1 / -1; justify-content: stretch; }
+  .btn-trabalhar { width: 100%; justify-content: center; }
+  .cine-card { padding: 24px 18px; }
+  .cine-icone, .cine-icone-emoji { width: 110px; height: 110px; font-size: 80px; }
+  .cine-nome { font-size: 18px; }
+  .cine-reward { font-size: 15px; padding: 10px 14px; }
+}
+
