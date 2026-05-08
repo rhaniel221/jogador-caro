@@ -92,7 +92,11 @@
       "Bash(./scripts/process-img.sh *)",
       "Bash(git -C /Users/lenilu/Projetos/jogador-caro ls-files static/dist)",
       "Bash(git *)",
-      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\(json.dumps\\({k:v for k,v in d.items\\(\\) if 'mcp' in k.lower\\(\\) or 'env' in k.lower\\(\\)},indent=2\\)\\)\")"
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\(json.dumps\\({k:v for k,v in d.items\\(\\) if 'mcp' in k.lower\\(\\) or 'env' in k.lower\\(\\)},indent=2\\)\\)\")",
+      "Bash(mkdir -p /tmp/chrome-pw-elos)",
+      "Bash(\"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome\" --remote-debugging-port=9222 --user-data-dir=\"/tmp/chrome-pw-elos\" --no-first-run --no-default-browser-check)",
+      "Bash(echo \"PID: $!\")",
+      "Bash(python3 *)"
     ]
   }
 }
