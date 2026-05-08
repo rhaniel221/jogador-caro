@@ -105,7 +105,13 @@ function JobCard({ trabalho, maestria, nivel, onTrabalhar, loading, vezesHoje, a
       {/* Icone grande */}
       <div className="job-card-icon-wrap">
         <div className="job-card-icon">
-          {trabalho.icone}
+          <img
+            src={`/trabalhos/${trabalho.id}.png`}
+            alt={trabalho.nome}
+            className="job-card-icon-img"
+            onError={e => { e.currentTarget.style.display = 'none'; e.currentTarget.nextSibling.style.display = 'flex' }}
+          />
+          <span className="job-card-icon-emoji" style={{ display: 'none' }}>{trabalho.icone}</span>
         </div>
         {fase === 'work' && <div className="job-card-icon-glow" />}
       </div>
