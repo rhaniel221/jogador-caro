@@ -128,16 +128,22 @@ export function TutorialProvider({ children }) {
 
   useEffect(() => { stepRef.current = step }, [step])
 
-  // Ativa tutorial de energia: dormindo (5), nível 4+, energia baixa
+  // Ativa tutorial de energia: nivel 4+, energia baixa, em qualquer pagina
+  // Dispara mesmo se o jogador ainda nao completou os tutoriais anteriores
+  // (interrompe o fluxo pra ensinar o que importa naquele momento)
   useEffect(() => {
-    if (step !== 5 || !jogador) return
-    if (jogador.nivel < 4 || (location.pathname !== '/' && location.pathname !== '/carreira')) return
+    if (!jogador) return
+    // Pula se ja terminou tutorial OU ja esta na fase de energia
+    if (jogador.tutorial_step === -1) return
+    if (step >= 20 && step <= 26) return
+    // Condicoes pra disparar tutorial de energia
+    if (jogador.nivel < 4) return
     if (jogador.energia > 3) return
     const timer = setTimeout(() => {
       goToStep(20)
-    }, 2500)
+    }, 1500)
     return () => clearTimeout(timer)
-  }, [step, jogador?.nivel, jogador?.energia, location.pathname, jogadorID])
+  }, [step, jogador?.nivel, jogador?.energia, jogador?.tutorial_step, jogadorID])
 
   const currentStep = STEPS.find(s => s.id === step) || null
   const isActive = step > 0 && step !== 5 && currentStep !== null
