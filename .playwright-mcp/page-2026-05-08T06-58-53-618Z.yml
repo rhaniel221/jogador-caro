@@ -1,0 +1,366 @@
+- generic [ref=e1]:
+  - link "Pular para o conteúdo" [ref=e3] [cursor=pointer]:
+    - /url: "#main"
+  - generic [ref=e7]:
+    - generic [ref=e9]:
+      - navigation "Barra lateral":
+        - generic:
+          - generic:
+            - generic:
+              - button "Abrir barra lateral":
+                - img
+        - generic:
+          - generic:
+            - link "Novo chat":
+              - /url: /
+              - generic:
+                - img
+              - generic: Novo chat
+          - generic:
+            - button "Buscar em chats":
+              - generic:
+                - img
+              - generic: Buscar em chats
+          - generic:
+            - button "Recentes":
+              - generic:
+                - img
+              - generic: Recentes
+        - generic:
+          - generic:
+            - button "Abrir menu do perfil":
+              - generic:
+                - generic:
+                  - img "Imagem de perfil"
+      - generic [ref=e10]:
+        - heading "Histórico de chats" [level=2] [ref=e11]
+        - generic [ref=e12]:
+          - navigation "Histórico de chats" [ref=e13]:
+            - generic [ref=e16]:
+              - link "Início" [ref=e17] [cursor=pointer]:
+                - /url: /
+                - generic [ref=e18]: ChatGPT
+              - button "Fechar barra lateral" [expanded] [ref=e20]:
+                - img [ref=e21]
+            - list [ref=e24]:
+              - listitem [ref=e25]:
+                - link "Novo chat Shift Command O" [ref=e115] [cursor=pointer]:
+                  - /url: /
+                  - generic [ref=e27]:
+                    - img [ref=e117]
+                    - generic [ref=e120]: Novo chat
+                  - generic [ref=e121]:
+                    - generic "Shift" [ref=e122]:
+                      - generic [ref=e123]: ⇧
+                    - generic "Command" [ref=e124]:
+                      - generic [ref=e125]: ⌘
+                    - generic [ref=e127]: O
+              - listitem [ref=e32]:
+                - button "Buscar em chats Command K" [ref=e128] [cursor=pointer]:
+                  - generic [ref=e34]:
+                    - img [ref=e130]
+                    - generic [ref=e133]: Buscar em chats
+                  - generic [ref=e134]:
+                    - generic "Command" [ref=e135]:
+                      - generic [ref=e136]: ⌘
+                    - generic [ref=e138]: K
+            - link "Codex" [ref=e39] [cursor=pointer]:
+              - /url: /codex/cloud
+              - generic [ref=e40]:
+                - img [ref=e42]
+                - generic [ref=e45]: Codex
+              - img [ref=e47]
+            - generic [ref=e50] [cursor=pointer]:
+              - img [ref=e52]
+              - generic [ref=e55]: Mais
+            - generic [ref=e139]:
+              - button "GPTs" [expanded] [ref=e141] [cursor=pointer]:
+                - heading "GPTs" [level=2] [ref=e142]
+              - list [ref=e143]:
+                - listitem [ref=e144]:
+                  - link "Website Generator" [ref=e145] [cursor=pointer]:
+                    - /url: /g/g-iYSeH3EAI-website-generator
+                    - generic [ref=e150]: Website Generator
+                    - button [ref=e152]:
+                      - img [ref=e154]
+                - listitem [ref=e156]:
+                  - link "DevOps Expert" [ref=e157] [cursor=pointer]:
+                    - /url: /g/g-12DKj6Wax-devops-expert
+                    - generic [ref=e162]: DevOps Expert
+                    - button [ref=e164]:
+                      - img [ref=e166]
+              - link "Explorar GPTs" [ref=e168] [cursor=pointer]:
+                - /url: /gpts
+                - img [ref=e170]
+                - generic [ref=e173]: Explorar GPTs
+            - generic [ref=e174]:
+              - button "Projetos" [expanded] [ref=e176] [cursor=pointer]:
+                - heading "Projetos" [level=2] [ref=e177]
+              - list [ref=e178]:
+                - listitem [ref=e179]:
+                  - button "Novo projeto" [ref=e180] [cursor=pointer]:
+                    - img [ref=e182]
+                    - generic [ref=e185]: Novo projeto
+                - listitem [ref=e186]:
+                  - link "Exibir chats Actyon Abrir opções do projeto para Actyon" [ref=e187] [cursor=pointer]:
+                    - /url: /g/g-p-693d6ebbb2848191b2e71b2fda5ad637-actyon/project
+                    - generic [ref=e188]:
+                      - button "Exibir chats" [ref=e190]:
+                        - generic [ref=e191]:
+                          - img "Verde Lótus" [ref=e194]
+                          - img [ref=e198]
+                      - generic [ref=e201]: Actyon
+                    - button "Abrir opções do projeto para Actyon" [ref=e203]:
+                      - img [ref=e205]
+                - listitem [ref=e207]:
+                  - link "Verde Cifrão Empresas Abrir opções do projeto para Empresas" [ref=e208] [cursor=pointer]:
+                    - /url: /g/g-p-6972397a04548191af18cde944b6aee3-empresas/project
+                    - generic [ref=e209]:
+                      - img "Verde Cifrão" [ref=e212]
+                      - generic [ref=e215]: Empresas
+                    - button "Abrir opções do projeto para Empresas" [ref=e217]:
+                      - img [ref=e219]
+                - listitem [ref=e221]:
+                  - link "Cor padrão, preta no modo claro, branca no modo escuro Pasta Programação Abrir opções do projeto para Programação" [ref=e222] [cursor=pointer]:
+                    - /url: /g/g-p-69723960efb88191aace3886a25973c3-programacao/project
+                    - generic [ref=e223]:
+                      - img "Cor padrão, preta no modo claro, branca no modo escuro Pasta" [ref=e226]
+                      - generic [ref=e229]: Programação
+                    - button "Abrir opções do projeto para Programação" [ref=e231]:
+                      - img [ref=e233]
+            - generic [ref=e235]:
+              - button "Recentes" [expanded] [ref=e237] [cursor=pointer]:
+                - heading "Recentes" [level=2] [ref=e238]
+              - list [ref=e240]:
+                - listitem [ref=e595]:
+                  - link "Ícone 3D Pergaminho RPG" [ref=e596] [cursor=pointer]:
+                    - /url: /c/69fd898b-3bc4-83e9-b0f7-12450b3961ca
+                    - generic [ref=e598]: Ícone 3D Pergaminho RPG
+                    - button "Abrir opções de conversa para Ícone 3D Pergaminho RPG" [ref=e601]:
+                      - img [ref=e603]
+                - listitem [ref=e241]:
+                  - link "Ícone 3D Halter Fitness" [ref=e242] [cursor=pointer]:
+                    - /url: /c/69fd8939-b7c4-83e9-b727-3e3b1304689f
+                    - generic [ref=e244]: Ícone 3D Halter Fitness
+                    - generic [ref=e245]:
+                      - button "Abrir opções de conversa para Ícone 3D Halter Fitness" [ref=e248]:
+                        - img [ref=e250]
+                      - img [ref=e253]
+                - listitem [ref=e256]:
+                  - link "Ícone 3D Futebol Carreira" [ref=e257] [cursor=pointer]:
+                    - /url: /c/69fd88ec-94ec-83e9-a9e5-5648f81c83c0
+                    - generic [ref=e259]: Ícone 3D Futebol Carreira
+                    - button "Abrir opções de conversa para Ícone 3D Futebol Carreira" [ref=e262]:
+                      - img [ref=e264]
+                - listitem [ref=e266]:
+                  - link "Ícone 3D casa minimalista" [ref=e267] [cursor=pointer]:
+                    - /url: /c/69fd8876-b8d0-83e9-8289-25b675303477
+                    - generic [ref=e269]: Ícone 3D casa minimalista
+                    - button "Abrir opções de conversa para Ícone 3D casa minimalista" [ref=e272]:
+                      - img [ref=e274]
+                - listitem [ref=e276]:
+                  - link "Criação de imagem 3D" [ref=e277] [cursor=pointer]:
+                    - /url: /c/69fd87f4-17dc-83e9-b58e-ee845c1685aa
+                    - generic [ref=e279]: Criação de imagem 3D
+                    - button "Abrir opções de conversa para Criação de imagem 3D" [ref=e282]:
+                      - img [ref=e284]
+                - listitem [ref=e286]:
+                  - link "Criação de ícone 3D" [ref=e287] [cursor=pointer]:
+                    - /url: /c/69fd87a7-87f4-83e9-a918-e8181c87fa9a
+                    - generic [ref=e289]: Criação de ícone 3D
+                    - button "Abrir opções de conversa para Criação de ícone 3D" [ref=e292]:
+                      - img [ref=e294]
+                - listitem [ref=e296]:
+                  - link "Ícone 3D Campo Futebol" [ref=e297] [cursor=pointer]:
+                    - /url: /c/69fd8730-4960-83e9-93d4-bf5234ce4e76
+                    - generic [ref=e299]: Ícone 3D Campo Futebol
+                    - button "Abrir opções de conversa para Ícone 3D Campo Futebol" [ref=e302]:
+                      - img [ref=e304]
+                - listitem [ref=e306]:
+                  - link "Ícone 3D Camisa Futebol" [ref=e307] [cursor=pointer]:
+                    - /url: /c/69fd86ac-3844-83e9-84cc-c664d2a6fc3e
+                    - generic [ref=e309]: Ícone 3D Camisa Futebol
+                    - button "Abrir opções de conversa para Ícone 3D Camisa Futebol" [ref=e312]:
+                      - img [ref=e314]
+                - listitem [ref=e316]:
+                  - link "Ícone 3D calção futebol" [ref=e317] [cursor=pointer]:
+                    - /url: /c/69fd8660-2df4-83e9-ab11-57ec70e4df63
+                    - generic [ref=e319]: Ícone 3D calção futebol
+                    - button "Abrir opções de conversa para Ícone 3D calção futebol" [ref=e322]:
+                      - img [ref=e324]
+                - listitem [ref=e326]:
+                  - link "Ícone 3D meião futebol" [ref=e327] [cursor=pointer]:
+                    - /url: /c/69fd85e4-3628-83e9-babb-d5f44301917e
+                    - generic [ref=e329]: Ícone 3D meião futebol
+                    - button "Abrir opções de conversa para Ícone 3D meião futebol" [ref=e332]:
+                      - img [ref=e334]
+                - listitem [ref=e336]:
+                  - link "Criação de ícone 3D" [ref=e337] [cursor=pointer]:
+                    - /url: /c/69fd8569-2ffc-83e9-9202-c720aad655de
+                    - generic [ref=e339]: Criação de ícone 3D
+                    - button "Abrir opções de conversa para Criação de ícone 3D" [ref=e342]:
+                      - img [ref=e344]
+                - listitem [ref=e346]:
+                  - link "Criação de ícone 3D" [ref=e347] [cursor=pointer]:
+                    - /url: /c/69fd84ef-eee8-83e9-becc-e02e192f3015
+                    - generic [ref=e349]: Criação de ícone 3D
+                    - button "Abrir opções de conversa para Criação de ícone 3D" [ref=e352]:
+                      - img [ref=e354]
+                - listitem [ref=e356]:
+                  - link "Criação de ícone 3D" [ref=e357] [cursor=pointer]:
+                    - /url: /c/69fd8474-f670-83e9-b943-97cf6a090a08
+                    - generic [ref=e359]: Criação de ícone 3D
+                    - button "Abrir opções de conversa para Criação de ícone 3D" [ref=e362]:
+                      - img [ref=e364]
+                - listitem [ref=e366]:
+                  - link "Ícone 3D de massagem" [ref=e367] [cursor=pointer]:
+                    - /url: /c/69fd83fb-3d48-83e9-876c-0552eec9ccfd
+                    - generic [ref=e369]: Ícone 3D de massagem
+                    - button "Abrir opções de conversa para Ícone 3D de massagem" [ref=e372]:
+                      - img [ref=e374]
+                - listitem [ref=e376]:
+                  - link "Criação de ícone 3D" [ref=e377] [cursor=pointer]:
+                    - /url: /c/69fd8381-76d8-83e9-9e09-5d2581fcaf90
+                    - generic [ref=e379]: Criação de ícone 3D
+                    - button "Abrir opções de conversa para Criação de ícone 3D" [ref=e382]:
+                      - img [ref=e384]
+                - listitem [ref=e386]:
+                  - link "Criação de ícone 3D" [ref=e387] [cursor=pointer]:
+                    - /url: /c/69fd830c-df40-83e9-bf54-bdbae5ca51d8
+                    - generic [ref=e389]: Criação de ícone 3D
+                    - button "Abrir opções de conversa para Criação de ícone 3D" [ref=e392]:
+                      - img [ref=e394]
+                - listitem [ref=e396]:
+                  - link "Imagem 3D Marmita Brasileira" [ref=e397] [cursor=pointer]:
+                    - /url: /c/69fd828e-caf4-83e9-9062-d004f477fa47
+                    - generic [ref=e399]: Imagem 3D Marmita Brasileira
+                    - button "Abrir opções de conversa para Imagem 3D Marmita Brasileira" [ref=e402]:
+                      - img [ref=e404]
+                - listitem [ref=e406]:
+                  - link "Criação de ícone 3D" [ref=e407] [cursor=pointer]:
+                    - /url: /c/69fd8208-ffe8-83e9-9130-9b403972f1e8
+                    - generic [ref=e409]: Criação de ícone 3D
+                    - button "Abrir opções de conversa para Criação de ícone 3D" [ref=e412]:
+                      - img [ref=e414]
+                - listitem [ref=e416]:
+                  - link "Imagem 3D Roteador Wifi" [ref=e417] [cursor=pointer]:
+                    - /url: /c/69fd81bc-e57c-83e9-9dd7-2f6ff4a53a79
+                    - generic [ref=e419]: Imagem 3D Roteador Wifi
+                    - button "Abrir opções de conversa para Imagem 3D Roteador Wifi" [ref=e422]:
+                      - img [ref=e424]
+                - listitem [ref=e426]:
+                  - link "Imagem 3D Torneira Azul" [ref=e427] [cursor=pointer]:
+                    - /url: /c/69fd8142-9000-83e9-9b27-d1a98b46a801
+                    - generic [ref=e429]: Imagem 3D Torneira Azul
+                    - button "Abrir opções de conversa para Imagem 3D Torneira Azul" [ref=e432]:
+                      - img [ref=e434]
+                - listitem [ref=e436]:
+                  - link "Criação de Ícone 3D" [ref=e437] [cursor=pointer]:
+                    - /url: /c/69fd80f6-9934-83e9-b4e9-42cf7f8a5d2e
+                    - generic [ref=e439]: Criação de Ícone 3D
+                    - button "Abrir opções de conversa para Criação de Ícone 3D" [ref=e442]:
+                      - img [ref=e444]
+                - listitem [ref=e446]:
+                  - link "Ícone 3D para IPTU" [ref=e447] [cursor=pointer]:
+                    - /url: /c/69fd80a7-9040-83e9-acdd-a1d4a93282e1
+                    - generic [ref=e449]: Ícone 3D para IPTU
+                    - button "Abrir opções de conversa para Ícone 3D para IPTU" [ref=e452]:
+                      - img [ref=e454]
+                - listitem [ref=e456]:
+                  - link "Imagem chave dourada 3D" [ref=e457] [cursor=pointer]:
+                    - /url: /c/69fd805d-1a1c-83e9-b6db-e564fa85a076
+                    - generic [ref=e459]: Imagem chave dourada 3D
+                    - button "Abrir opções de conversa para Imagem chave dourada 3D" [ref=e462]:
+                      - img [ref=e464]
+                - listitem [ref=e466]:
+                  - link "Criação de Imagem 3D" [ref=e467] [cursor=pointer]:
+                    - /url: /c/69fd800a-9e4c-83e9-805b-95598917cb68
+                    - generic [ref=e469]: Criação de Imagem 3D
+                    - button "Abrir opções de conversa para Criação de Imagem 3D" [ref=e472]:
+                      - img [ref=e474]
+                - listitem [ref=e476]:
+                  - link "Criação de imagem 3D" [ref=e477] [cursor=pointer]:
+                    - /url: /c/69fd7f91-f288-83e9-b77e-ed364e946a25
+                    - generic [ref=e479]: Criação de imagem 3D
+                    - button "Abrir opções de conversa para Criação de imagem 3D" [ref=e482]:
+                      - img [ref=e484]
+                - listitem [ref=e486]:
+                  - link "Criação de imagem 3D" [ref=e487] [cursor=pointer]:
+                    - /url: /c/69fd7f1d-b8a0-83e9-855e-dd11d5bec687
+                    - generic [ref=e489]: Criação de imagem 3D
+                    - button "Abrir opções de conversa para Criação de imagem 3D" [ref=e492]:
+                      - img [ref=e494]
+                - listitem [ref=e496]:
+                  - link "Criação de Imagem 3D" [ref=e497] [cursor=pointer]:
+                    - /url: /c/69fd7ea7-2574-83e9-962a-74c241671054
+                    - generic [ref=e499]: Criação de Imagem 3D
+                    - button "Abrir opções de conversa para Criação de Imagem 3D" [ref=e502]:
+                      - img [ref=e504]
+                - listitem [ref=e506]:
+                  - link "Ícone 3D futebol Habilidade" [ref=e507] [cursor=pointer]:
+                    - /url: /c/69fd7e26-b078-83e9-b307-f134560891a7
+                    - generic [ref=e509]: Ícone 3D futebol Habilidade
+                    - button "Abrir opções de conversa para Ícone 3D futebol Habilidade" [ref=e512]:
+                      - img [ref=e514]
+          - button "Rhaniel Barbosa, abra o menu do perfil" [ref=e59] [cursor=pointer]:
+            - img "Imagem de perfil" [ref=e526]
+            - generic [ref=e62]:
+              - generic [ref=e64]: Rhaniel Barbosa
+              - generic [ref=e67]: Plus
+    - generic [ref=e69]:
+      - banner:
+        - generic [ref=e72]:
+          - button "Compartilhar" [ref=e527] [cursor=pointer]:
+            - generic [ref=e528]:
+              - img [ref=e529]
+              - text: Compartilhar
+          - button "Abrir opções de conversa" [ref=e532] [cursor=pointer]:
+            - img [ref=e533]
+      - main [ref=e78]:
+        - generic [ref=e79]:
+          - generic [ref=e535]:
+            - generic [ref=e537]:
+              - heading "Você disse:" [level=4] [ref=e538]
+              - generic [ref=e540]:
+                - generic [ref=e548]: "Crie uma imagem com este prompt: Ícone 3D premium de pergaminho aberto para botão Missões, 128x128 PNG transparente. Pergaminho enrolado nas pontas mostrando linhas estilizadas (sem letras reais), selo dourado embaixo, papel envelhecido, sombra. Estilo cartoon RPG premium. Fundo transparente."
+                - generic [ref=e549]:
+                  - group "Suas ações de mensagem":
+                    - button "Copiar mensagem":
+                      - generic:
+                        - img
+                    - button "Editar mensagem":
+                      - generic:
+                        - img
+            - generic [ref=e552]:
+              - heading "O ChatGPT disse:" [level=4] [ref=e553]
+              - generic [ref=e555]:
+                - button "Pensando Gerando uma imagem mais detalhada. Aguarde um instante." [ref=e558] [cursor=pointer]:
+                  - generic [ref=e559]:
+                    - generic [ref=e560]: Pensando
+                    - generic [ref=e561]: Gerando uma imagem mais detalhada. Aguarde um instante.
+                - generic "Gerando imagem…" [ref=e568]
+                - generic [ref=e605]:
+                  - group "Ações de resposta"
+          - generic [ref=e89]:
+            - button [ref=e570] [cursor=pointer]:
+              - img [ref=e571]
+            - generic [ref=e94]:
+              - generic [ref=e98]:
+                - button "Adicionar arquivos e mais" [ref=e101] [cursor=pointer]:
+                  - img
+                - textbox "Converse com o ChatGPT" [active] [ref=e577]:
+                  - paragraph [ref=e578]: Pergunte alguma coisa
+                - generic [ref=e105]:
+                  - button "Raciocínio" [ref=e583] [cursor=pointer]:
+                    - generic [ref=e584]: Raciocínio
+                    - img
+                  - generic [ref=e106]:
+                    - button "Iniciar ditado" [ref=e585] [cursor=pointer]:
+                      - img
+                    - button "Parar de responder" [ref=e606] [cursor=pointer]:
+                      - img [ref=e607]
+              - button [ref=e111]
+              - button [ref=e112]
+            - generic [ref=e594]: O ChatGPT pode cometer erros. Confira informações importantes. Consulte as Preferências de cookies.
+  - alert [ref=e113]
+  - status [ref=e114]

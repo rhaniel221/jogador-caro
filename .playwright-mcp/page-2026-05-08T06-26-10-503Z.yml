@@ -1,0 +1,87 @@
+- generic [ref=e1]:
+  - link "Pular para o conteúdo" [ref=e3] [cursor=pointer]:
+    - /url: "#main"
+  - generic [ref=e7]:
+    - generic [ref=e9]:
+      - navigation "Barra lateral":
+        - generic:
+          - generic:
+            - generic:
+              - button "Abrir barra lateral":
+                - img
+        - generic:
+          - generic:
+            - link "Novo chat":
+              - /url: /
+              - generic:
+                - img
+              - generic: Novo chat
+          - generic:
+            - button "Buscar em chats":
+              - generic:
+                - img
+              - generic: Buscar em chats
+          - generic:
+            - button "Recentes":
+              - generic:
+                - img
+              - generic: Recentes
+        - generic:
+          - generic:
+            - button "Abrir menu do perfil"
+      - generic [ref=e10]:
+        - heading "Histórico de chats" [level=2] [ref=e11]
+        - generic [ref=e12]:
+          - navigation "Histórico de chats" [ref=e13]:
+            - generic [ref=e16]:
+              - link "Início" [ref=e17] [cursor=pointer]:
+                - /url: /
+                - generic [ref=e18]: ChatGPT
+              - button "Fechar barra lateral" [expanded] [ref=e20]:
+                - img [ref=e21]
+            - list [ref=e24]:
+              - listitem [ref=e25]:
+                - link "Novo chat" [ref=e26] [cursor=pointer]:
+                  - /url: /
+                  - img [ref=e28]
+                  - generic [ref=e31]: Novo chat
+              - listitem [ref=e32]:
+                - button "Buscar em chats" [ref=e33] [cursor=pointer]:
+                  - img [ref=e35]
+                  - generic [ref=e38]: Buscar em chats
+            - link "Codex" [ref=e39] [cursor=pointer]:
+              - /url: /codex/cloud
+              - generic [ref=e40]:
+                - img [ref=e42]
+                - generic [ref=e45]: Codex
+              - img [ref=e47]
+            - generic [ref=e50] [cursor=pointer]:
+              - img [ref=e52]
+              - generic [ref=e55]: Mais
+          - button "Rhaniel Barbosa, abra o menu do perfil" [ref=e59] [cursor=pointer]:
+            - generic [ref=e62]:
+              - generic [ref=e64]: Rhaniel Barbosa
+              - generic [ref=e67]: Plus
+    - generic [ref=e69]:
+      - banner:
+        - button "Ativar chat temporário" [ref=e75] [cursor=pointer]:
+          - img [ref=e76]
+      - main [ref=e78]:
+        - generic [ref=e79]:
+          - heading "Ei, Rhaniel . Tudo pronto para começar?" [level=1] [ref=e87]:
+            - generic [ref=e88]:
+              - text: Ei,
+              - button "Rhaniel" [ref=e90] [cursor=pointer]
+              - text: . Tudo pronto para começar?
+          - generic [ref=e96]:
+            - generic [ref=e100]:
+              - button "Adicionar arquivos e mais" [ref=e103] [cursor=pointer]:
+                - img
+              - textbox "Converse com o ChatGPT" [active] [ref=e106]:
+                - /placeholder: Pergunte alguma coisa
+              - button "Enviar prompt" [disabled] [ref=e110]:
+                - img [ref=e111]
+            - button [ref=e113]
+            - button [ref=e114]
+  - alert [ref=e115]
+  - status [ref=e116]

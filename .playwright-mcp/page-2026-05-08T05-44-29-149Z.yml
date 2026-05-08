@@ -1,0 +1,364 @@
+- generic [ref=e1]:
+  - link "Pular para o conteúdo" [ref=e3] [cursor=pointer]:
+    - /url: "#main"
+  - generic [ref=e7]:
+    - generic [ref=e9]:
+      - navigation "Barra lateral":
+        - generic:
+          - generic:
+            - generic:
+              - button "Abrir barra lateral":
+                - img
+        - generic:
+          - generic:
+            - link "Novo chat":
+              - /url: /
+              - generic:
+                - img
+              - generic: Novo chat
+          - generic:
+            - button "Buscar em chats":
+              - generic:
+                - img
+              - generic: Buscar em chats
+          - generic:
+            - button "Recentes":
+              - generic:
+                - img
+              - generic: Recentes
+        - generic:
+          - generic:
+            - button "Abrir menu do perfil":
+              - generic:
+                - generic:
+                  - img "Imagem de perfil"
+      - generic [ref=e10]:
+        - heading "Histórico de chats" [level=2] [ref=e11]
+        - generic [ref=e12]:
+          - navigation "Histórico de chats" [ref=e13]:
+            - generic [ref=e16]:
+              - link "Início" [ref=e17] [cursor=pointer]:
+                - /url: /
+                - generic [ref=e18]: ChatGPT
+              - button "Fechar barra lateral" [expanded] [ref=e20]:
+                - img [ref=e21]
+            - list [ref=e24]:
+              - listitem [ref=e25]:
+                - link "Novo chat Shift Command O" [ref=e117] [cursor=pointer]:
+                  - /url: /
+                  - generic [ref=e27]:
+                    - img [ref=e119]
+                    - generic [ref=e122]: Novo chat
+                  - generic [ref=e123]:
+                    - generic "Shift" [ref=e124]:
+                      - generic [ref=e125]: ⇧
+                    - generic "Command" [ref=e126]:
+                      - generic [ref=e127]: ⌘
+                    - generic [ref=e129]: O
+              - listitem [ref=e32]:
+                - button "Buscar em chats Command K" [ref=e130] [cursor=pointer]:
+                  - generic [ref=e34]:
+                    - img [ref=e132]
+                    - generic [ref=e135]: Buscar em chats
+                  - generic [ref=e136]:
+                    - generic "Command" [ref=e137]:
+                      - generic [ref=e138]: ⌘
+                    - generic [ref=e140]: K
+            - link "Codex" [ref=e39] [cursor=pointer]:
+              - /url: /codex/cloud
+              - generic [ref=e40]:
+                - img [ref=e42]
+                - generic [ref=e45]: Codex
+              - img [ref=e47]
+            - generic [ref=e50] [cursor=pointer]:
+              - img [ref=e52]
+              - generic [ref=e55]: Mais
+            - generic [ref=e141]:
+              - button "GPTs" [expanded] [ref=e143] [cursor=pointer]:
+                - heading "GPTs" [level=2] [ref=e144]
+              - list [ref=e145]:
+                - listitem [ref=e146]:
+                  - link "Website Generator" [ref=e147] [cursor=pointer]:
+                    - /url: /g/g-iYSeH3EAI-website-generator
+                    - generic [ref=e152]: Website Generator
+                    - button [ref=e154]:
+                      - img [ref=e156]
+                - listitem [ref=e158]:
+                  - link "DevOps Expert" [ref=e159] [cursor=pointer]:
+                    - /url: /g/g-12DKj6Wax-devops-expert
+                    - generic [ref=e164]: DevOps Expert
+                    - button [ref=e166]:
+                      - img [ref=e168]
+              - link "Explorar GPTs" [ref=e170] [cursor=pointer]:
+                - /url: /gpts
+                - img [ref=e172]
+                - generic [ref=e175]: Explorar GPTs
+            - generic [ref=e176]:
+              - button "Projetos" [expanded] [ref=e178] [cursor=pointer]:
+                - heading "Projetos" [level=2] [ref=e179]
+              - list [ref=e180]:
+                - listitem [ref=e181]:
+                  - button "Novo projeto" [ref=e182] [cursor=pointer]:
+                    - img [ref=e184]
+                    - generic [ref=e187]: Novo projeto
+                - listitem [ref=e188]:
+                  - link "Exibir chats Actyon Abrir opções do projeto para Actyon" [ref=e189] [cursor=pointer]:
+                    - /url: /g/g-p-693d6ebbb2848191b2e71b2fda5ad637-actyon/project
+                    - generic [ref=e190]:
+                      - button "Exibir chats" [ref=e192]:
+                        - generic [ref=e193]:
+                          - img "Verde Lótus" [ref=e196]
+                          - img [ref=e200]
+                      - generic [ref=e203]: Actyon
+                    - button "Abrir opções do projeto para Actyon" [ref=e205]:
+                      - img [ref=e207]
+                - listitem [ref=e209]:
+                  - link "Verde Cifrão Empresas Abrir opções do projeto para Empresas" [ref=e210] [cursor=pointer]:
+                    - /url: /g/g-p-6972397a04548191af18cde944b6aee3-empresas/project
+                    - generic [ref=e211]:
+                      - img "Verde Cifrão" [ref=e214]
+                      - generic [ref=e217]: Empresas
+                    - button "Abrir opções do projeto para Empresas" [ref=e219]:
+                      - img [ref=e221]
+                - listitem [ref=e223]:
+                  - link "Cor padrão, preta no modo claro, branca no modo escuro Pasta Programação Abrir opções do projeto para Programação" [ref=e224] [cursor=pointer]:
+                    - /url: /g/g-p-69723960efb88191aace3886a25973c3-programacao/project
+                    - generic [ref=e225]:
+                      - img "Cor padrão, preta no modo claro, branca no modo escuro Pasta" [ref=e228]
+                      - generic [ref=e231]: Programação
+                    - button "Abrir opções do projeto para Programação" [ref=e233]:
+                      - img [ref=e235]
+            - generic [ref=e237]:
+              - button "Recentes" [expanded] [ref=e239] [cursor=pointer]:
+                - heading "Recentes" [level=2] [ref=e240]
+              - list [ref=e242]:
+                - listitem [ref=e243]:
+                  - link "Criação de Avatar 3D" [ref=e244] [cursor=pointer]:
+                    - /url: /c/69fd778d-8158-83e9-9387-74b1871ddd63
+                    - generic [ref=e246]: Criação de Avatar 3D
+                    - generic [ref=e247]:
+                      - button "Abrir opções de conversa para Criação de Avatar 3D" [ref=e250]:
+                        - img [ref=e252]
+                      - img [ref=e255]
+                - listitem [ref=e258]:
+                  - link "Avatar 3D futebolista, não lida" [ref=e259] [cursor=pointer]:
+                    - /url: /c/69fd7715-213c-83e9-ba46-66da06535792
+                    - generic [ref=e261]: Avatar 3D futebolista
+                    - button "Abrir opções de conversa para Avatar 3D futebolista" [ref=e265]:
+                      - img [ref=e267]
+                - listitem [ref=e271]:
+                  - link "Criação de avatar 3D" [ref=e272] [cursor=pointer]:
+                    - /url: /c/69fd769f-4b04-83e9-b257-18714cbc9f94
+                    - generic [ref=e274]: Criação de avatar 3D
+                    - button "Abrir opções de conversa para Criação de avatar 3D" [ref=e277]:
+                      - img [ref=e279]
+                - listitem [ref=e281]:
+                  - link "Criação de Avatar 3D" [ref=e282] [cursor=pointer]:
+                    - /url: /c/69fd7627-f204-83e9-be0c-bf6ca802c90d
+                    - generic [ref=e284]: Criação de Avatar 3D
+                    - button "Abrir opções de conversa para Criação de Avatar 3D" [ref=e287]:
+                      - img [ref=e289]
+                - listitem [ref=e291]:
+                  - link "Criação de Avatar 3D" [ref=e292] [cursor=pointer]:
+                    - /url: /c/69fd75ac-25e0-83e9-9942-c4150b9f4fa3
+                    - generic [ref=e294]: Criação de Avatar 3D
+                    - button "Abrir opções de conversa para Criação de Avatar 3D" [ref=e297]:
+                      - img [ref=e299]
+                - listitem [ref=e301]:
+                  - link "Imagem de Avatar 3D" [ref=e302] [cursor=pointer]:
+                    - /url: /c/69fd7530-6f94-83e9-9f73-bb3693616936
+                    - generic [ref=e304]: Imagem de Avatar 3D
+                    - button "Abrir opções de conversa para Imagem de Avatar 3D" [ref=e307]:
+                      - img [ref=e309]
+                - listitem [ref=e311]:
+                  - link "Criação de Avatar 3D" [ref=e312] [cursor=pointer]:
+                    - /url: /c/69fd74b9-e044-83e9-87e3-22f482589bed
+                    - generic [ref=e314]: Criação de Avatar 3D
+                    - button "Abrir opções de conversa para Criação de Avatar 3D" [ref=e317]:
+                      - img [ref=e319]
+                - listitem [ref=e321]:
+                  - link "Avatar 3D Futebol Cartoon" [ref=e322] [cursor=pointer]:
+                    - /url: /c/69fd7444-a07c-83e9-954e-7901db9fa334
+                    - generic [ref=e324]: Avatar 3D Futebol Cartoon
+                    - button "Abrir opções de conversa para Avatar 3D Futebol Cartoon" [ref=e327]:
+                      - img [ref=e329]
+                - listitem [ref=e331]:
+                  - link "Imagem Avatar 3D Futebol" [ref=e332] [cursor=pointer]:
+                    - /url: /c/69fd73cc-0d94-83e9-bdf6-5bb4d3f489e4
+                    - generic [ref=e334]: Imagem Avatar 3D Futebol
+                    - button "Abrir opções de conversa para Imagem Avatar 3D Futebol" [ref=e337]:
+                      - img [ref=e339]
+                - listitem [ref=e341]:
+                  - link "Criação de Avatar 3D" [ref=e342] [cursor=pointer]:
+                    - /url: /c/69fd7351-1cb0-83e9-8d15-21c354b62b41
+                    - generic [ref=e344]: Criação de Avatar 3D
+                    - button "Abrir opções de conversa para Criação de Avatar 3D" [ref=e347]:
+                      - img [ref=e349]
+                - listitem [ref=e351]:
+                  - link "Criação de Imagem 16:9" [ref=e352] [cursor=pointer]:
+                    - /url: /c/69fd72e7-7d4c-83e9-8dc4-4eca976e9c93
+                    - generic [ref=e354]: Criação de Imagem 16:9
+                    - button "Abrir opções de conversa para Criação de Imagem 16:9" [ref=e357]:
+                      - img [ref=e359]
+                - listitem [ref=e361]:
+                  - link "Imagem Estádio Futebol Cartoon" [ref=e362] [cursor=pointer]:
+                    - /url: /c/69fd7256-1ca4-83e9-9454-f9774cca005e
+                    - generic [ref=e364]: Imagem Estádio Futebol Cartoon
+                    - button "Abrir opções de conversa para Imagem Estádio Futebol Cartoon" [ref=e367]:
+                      - img [ref=e369]
+                - listitem [ref=e371]:
+                  - link "Imagem estádio futebol Brasil" [ref=e372] [cursor=pointer]:
+                    - /url: /c/69fd71e7-5e30-83e9-ad9a-ea3a03402623
+                    - generic [ref=e374]: Imagem estádio futebol Brasil
+                    - button "Abrir opções de conversa para Imagem estádio futebol Brasil" [ref=e377]:
+                      - img [ref=e379]
+                - listitem [ref=e381]:
+                  - link "Imagem 3D Mansão Luxuosa" [ref=e382] [cursor=pointer]:
+                    - /url: /c/69fd7148-ed6c-83e9-b6c1-9682caaac387
+                    - generic [ref=e384]: Imagem 3D Mansão Luxuosa
+                    - button "Abrir opções de conversa para Imagem 3D Mansão Luxuosa" [ref=e387]:
+                      - img [ref=e389]
+                - listitem [ref=e391]:
+                  - link "Criação de imagem 3D" [ref=e392] [cursor=pointer]:
+                    - /url: /c/69fd70cc-b204-83e9-8f5b-3e8e355c2a28
+                    - generic [ref=e394]: Criação de imagem 3D
+                    - button "Abrir opções de conversa para Criação de imagem 3D" [ref=e397]:
+                      - img [ref=e399]
+                - listitem [ref=e401]:
+                  - link "Ícone Grão-Mestre Futebol" [ref=e402] [cursor=pointer]:
+                    - /url: /c/69fd7036-dc80-83e9-b01e-37bc8a1d98f0
+                    - generic [ref=e404]: Ícone Grão-Mestre Futebol
+                    - button "Abrir opções de conversa para Ícone Grão-Mestre Futebol" [ref=e407]:
+                      - img [ref=e409]
+                - listitem [ref=e411]:
+                  - link "Ícone Elo Mestre Futebol" [ref=e412] [cursor=pointer]:
+                    - /url: /c/69fd6e05-6f1c-83e9-8ef2-e833e94848ea
+                    - generic [ref=e414]: Ícone Elo Mestre Futebol
+                    - button "Abrir opções de conversa para Ícone Elo Mestre Futebol" [ref=e417]:
+                      - img [ref=e419]
+                - listitem [ref=e421]:
+                  - link "Jogo Jogador-Caro Desenvolvimento, não lida" [ref=e422] [cursor=pointer]:
+                    - /url: /c/69fbe4c1-a604-83e9-baac-e81364ae95cb
+                    - generic "Jogo Jogador-Caro Desenvolvimento" [ref=e424]
+                    - button "Abrir opções de conversa para Jogo Jogador-Caro Desenvolvimento" [ref=e428]:
+                      - img [ref=e430]
+                - listitem [ref=e434]:
+                  - link "Adicionar acessórios na foto" [ref=e435] [cursor=pointer]:
+                    - /url: /c/69fd639f-6658-83e9-9c41-cd9ec3f32995
+                    - generic [ref=e437]: Adicionar acessórios na foto
+                    - button "Abrir opções de conversa para Adicionar acessórios na foto" [ref=e440]:
+                      - img [ref=e442]
+                - listitem [ref=e444]:
+                  - link "Vestido sapato tiara bebê" [ref=e445] [cursor=pointer]:
+                    - /url: /c/69fd2d5c-8c94-83e9-9f81-04135c45793b
+                    - generic [ref=e447]: Vestido sapato tiara bebê
+                    - button "Abrir opções de conversa para Vestido sapato tiara bebê" [ref=e450]:
+                      - img [ref=e452]
+                - listitem [ref=e454]:
+                  - link "Convite de Aniversário" [ref=e455] [cursor=pointer]:
+                    - /url: /c/69fd228e-2b30-83e9-8073-fe7a2ebc4dfb
+                    - generic [ref=e457]: Convite de Aniversário
+                    - button "Abrir opções de conversa para Convite de Aniversário" [ref=e460]:
+                      - img [ref=e462]
+                - listitem [ref=e464]:
+                  - link "Convite Save the Date" [ref=e465] [cursor=pointer]:
+                    - /url: /c/69fd021d-7368-83e9-bdfa-876f674d5eeb
+                    - generic [ref=e467]: Convite Save the Date
+                    - button "Abrir opções de conversa para Convite Save the Date" [ref=e470]:
+                      - img [ref=e472]
+                - listitem [ref=e474]:
+                  - link "Xuxa para bebê 11 meses" [ref=e475] [cursor=pointer]:
+                    - /url: /c/69fcbda0-7240-83e9-9fc1-5b93395bd645
+                    - generic [ref=e477]: Xuxa para bebê 11 meses
+                    - button "Abrir opções de conversa para Xuxa para bebê 11 meses" [ref=e480]:
+                      - img [ref=e482]
+                - listitem [ref=e484]:
+                  - link "Mata-mata Palmeiras vs Corinthians" [ref=e485] [cursor=pointer]:
+                    - /url: /c/69fbfefa-b264-83e9-a476-1fadf9a2589e
+                    - generic "Mata-mata Palmeiras vs Corinthians" [ref=e487]
+                    - button "Abrir opções de conversa para Mata-mata Palmeiras vs Corinthians" [ref=e490]:
+                      - img [ref=e492]
+                - listitem [ref=e494]:
+                  - link "Pegar CSS de Página" [ref=e495] [cursor=pointer]:
+                    - /url: /c/69fbd535-0b30-83e9-9ddd-3fca2cc689a5
+                    - generic [ref=e497]: Pegar CSS de Página
+                    - button "Abrir opções de conversa para Pegar CSS de Página" [ref=e500]:
+                      - img [ref=e502]
+                - listitem [ref=e504]:
+                  - link "Explicação lava e seca" [ref=e505] [cursor=pointer]:
+                    - /url: /c/69fb6a1a-8ee0-83e9-b154-0d48f4c9fdb2
+                    - generic [ref=e507]: Explicação lava e seca
+                    - button "Abrir opções de conversa para Explicação lava e seca" [ref=e510]:
+                      - img [ref=e512]
+                - listitem [ref=e514]:
+                  - link "Instalar Interruptores Inteligentes" [ref=e515] [cursor=pointer]:
+                    - /url: /c/69faaf33-cf40-8325-99fd-fe95f25afc6b
+                    - generic [ref=e517]: Instalar Interruptores Inteligentes
+                    - button "Abrir opções de conversa para Instalar Interruptores Inteligentes" [ref=e520]:
+                      - img [ref=e522]
+                - listitem [ref=e524]:
+                  - link "Automatização pintura eletrostática" [ref=e525] [cursor=pointer]:
+                    - /url: /c/69fa714d-cb2c-832c-bc13-bd487956a353
+                    - generic "Automatização pintura eletrostática" [ref=e527]
+                    - button "Abrir opções de conversa para Automatização pintura eletrostática" [ref=e530]:
+                      - img [ref=e532]
+          - button "Rhaniel Barbosa, abra o menu do perfil" [ref=e59] [cursor=pointer]:
+            - img "Imagem de perfil" [ref=e534]
+            - generic [ref=e62]:
+              - generic [ref=e64]: Rhaniel Barbosa
+              - generic [ref=e67]: Plus
+    - generic [ref=e69]:
+      - banner:
+        - generic [ref=e72]:
+          - button "Compartilhar" [ref=e535] [cursor=pointer]:
+            - generic [ref=e536]:
+              - img [ref=e537]
+              - text: Compartilhar
+          - button "Abrir opções de conversa" [ref=e540] [cursor=pointer]:
+            - img [ref=e541]
+      - main [ref=e78]:
+        - generic [ref=e79]:
+          - generic [ref=e543]:
+            - generic [ref=e545]:
+              - heading "Você disse:" [level=4] [ref=e546]
+              - generic [ref=e548]:
+                - generic [ref=e556]: "Crie uma imagem com este prompt: Avatar 3D de jogador de futebol brasileiro estilo cartoon premium, 512x512 PNG transparente. Apenas cabeça e ombros, olhando para frente, fundo transparente. Estilo similar aos avatares do FIFA mobile / EA Sports FC, traços limpos e marcantes. Pele negra, tranças coladas (cornrows), expressão séria e focada. Sem texto, sem logo de time, sem capacete."
+                - generic [ref=e557]:
+                  - group "Suas ações de mensagem":
+                    - button "Copiar mensagem":
+                      - generic:
+                        - img
+                    - button "Editar mensagem":
+                      - generic:
+                        - img
+            - generic [ref=e560]:
+              - heading "O ChatGPT disse:" [level=4] [ref=e561]
+              - generic [ref=e563]:
+                - button "Pensando Gerando uma imagem mais detalhada. Aguarde um instante." [ref=e566] [cursor=pointer]:
+                  - generic [ref=e567]:
+                    - generic [ref=e568]: Pensando
+                    - generic [ref=e569]: Gerando uma imagem mais detalhada. Aguarde um instante.
+                - generic "Gerando imagem…" [ref=e576]
+          - generic [ref=e91]:
+            - button [ref=e578] [cursor=pointer]:
+              - img [ref=e579]
+            - generic [ref=e96]:
+              - generic [ref=e100]:
+                - button "Adicionar arquivos e mais" [ref=e103] [cursor=pointer]:
+                  - img
+                - textbox "Converse com o ChatGPT" [active] [ref=e585]:
+                  - paragraph [ref=e586]: Pergunte alguma coisa
+                - generic [ref=e107]:
+                  - button "Raciocínio" [ref=e591] [cursor=pointer]:
+                    - generic [ref=e592]: Raciocínio
+                    - img
+                  - generic [ref=e108]:
+                    - button "Iniciar ditado" [ref=e593] [cursor=pointer]:
+                      - img
+                    - button "Parar de responder" [ref=e594] [cursor=pointer]:
+                      - img [ref=e595]
+              - button [ref=e113]
+              - button [ref=e114]
+            - generic [ref=e602]: O ChatGPT pode cometer erros. Confira informações importantes. Consulte as Preferências de cookies.
+  - alert [ref=e115]
+  - status [ref=e116]
