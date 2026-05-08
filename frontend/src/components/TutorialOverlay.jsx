@@ -96,17 +96,19 @@ export default function TutorialOverlay() {
   // Seta: posição relativa ao tooltip
   const arrowLeft = Math.max(18, Math.min(targetCX - tooltipLeft, TOOLTIP_W - 18))
 
+  // 4 painéis ao redor do target — nunca bloqueia cliques no target
+  const cutTop = Math.max(0, rect.top - 8)
+  const cutLeft = Math.max(0, rect.left - 8)
+  const cutRight = Math.min(vw, rect.left + rect.width + 8)
+  const cutBottom = Math.min(vh, rect.top + rect.height + 8)
+
   return (
     <div className={`tutorial-overlay tutorial-fade-in`}>
-      {/* Fundo escuro com recorte pro target */}
-      <div className="tutorial-backdrop"
-        style={{
-          '--cut-top': rect.top - 8 + 'px',
-          '--cut-left': rect.left - 8 + 'px',
-          '--cut-w': rect.width + 16 + 'px',
-          '--cut-h': rect.height + 16 + 'px',
-        }}
-      />
+      {/* 4 painéis escuros ao redor do target (todos pointer-events: none) */}
+      <div className="tutorial-backdrop-panel" style={{ top: 0, left: 0, width: vw, height: cutTop }} />
+      <div className="tutorial-backdrop-panel" style={{ top: cutBottom, left: 0, width: vw, height: vh - cutBottom }} />
+      <div className="tutorial-backdrop-panel" style={{ top: cutTop, left: 0, width: cutLeft, height: cutBottom - cutTop }} />
+      <div className="tutorial-backdrop-panel" style={{ top: cutTop, left: cutRight, width: vw - cutRight, height: cutBottom - cutTop }} />
 
       {/* Borda brilhante ao redor do target */}
       <div className="tutorial-highlight" style={{

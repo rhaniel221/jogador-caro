@@ -24,8 +24,9 @@ const TIER_NIVEL_MIN = {
   'Seleçoca': 100, Mundialito: 115, 'Bola de Ouro': 135, 'Ídolo': 160, Lenda: 190
 }
 
-// Tier index >= 4 (Série B em diante) abre modal cinematico
-const TIER_CINEMATICO_MIN_INDEX = 4
+// Modal cinemático desabilitado — todos os tiers usam o mesmo visual inline.
+// Para reativar pra tiers altos, troque pro índice desejado (ex: 4 = Série B+).
+const TIER_CINEMATICO_MIN_INDEX = 999
 
 const TIER_CORES = {
   Garoto: '#94a3b8', Base: '#84cc16', Amador: '#22d3ee',
