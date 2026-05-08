@@ -1117,6 +1117,38 @@ func HandleJogadores(w http.ResponseWriter, r *http.Request) {
 	JsonResp(w, 200, lista)
 }
 
+// itemImgPath retorna o caminho da arte premium (PNG) com base no slot/categoria do item.
+// Quando não houver match, retorna "" e o frontend usa o emoji em item.Icone.
+func itemImgPath(item Item) string {
+	switch item.Slot {
+	case "chuteira":
+		return "/loja/chuteira.png"
+	case "camisa":
+		return "/loja/camisa.png"
+	case "shorts":
+		return "/loja/calcao.png"
+	case "meiao":
+		return "/loja/meiao.png"
+	case "luva":
+		return "/loja/luva.png"
+	}
+	// Consumíveis: por nome (heurística)
+	low := strings.ToLower(item.Nome)
+	switch {
+	case strings.Contains(low, "energético") || strings.Contains(low, "energetico") || strings.Contains(low, "energy"):
+		return "/loja/energetico.png"
+	case strings.Contains(low, "comida") || strings.Contains(low, "marmita") || strings.Contains(low, "lanche") || strings.Contains(low, "refeição") || strings.Contains(low, "refeicao"):
+		return "/loja/comida.png"
+	case strings.Contains(low, "spa"):
+		return "/loja/spa.png"
+	case strings.Contains(low, "massagem"):
+		return "/loja/massagem.png"
+	case strings.Contains(low, "meditação") || strings.Contains(low, "meditacao") || strings.Contains(low, "yoga"):
+		return "/loja/meditacao.png"
+	}
+	return ""
+}
+
 func HandleItens(w http.ResponseWriter, r *http.Request) {
 	rows, err := db.Conn.Query(`SELECT id, nome, descricao, preco, COALESCE(preco_moedas, 0), tipo, icone, COALESCE(raridade, 'comum'), nivel_min, nivel_max,
 		bonus_forca, bonus_velocidade, bonus_habilidade, bonus_saude_max, bonus_energia_max,
@@ -1134,6 +1166,7 @@ func HandleItens(w http.ResponseWriter, r *http.Request) {
 			&item.BonusHabilidade, &item.BonusSaudeMax, &item.BonusEnergiaMax,
 			&item.BonusVitMax, &item.RecuperaEnergia, &item.RecuperaSaude, &item.SlotsMochila,
 			&item.CooldownMinutos, &item.Slot)
+		item.IconeImg = itemImgPath(item)
 		itens = append(itens, item)
 	}
 	JsonResp(w, 200, itens)
@@ -4549,17 +4582,19 @@ func calcBoleto(nivel int, tipoCasa string) (total int, itens []map[string]inter
 	// Casa própria/mansão: paga IPTU em vez de aluguel
 	moradiaNome := "Aluguel"
 	moradiaIcone := "🏠"
+	moradiaImg := "/contas/aluguel.png"
 	if tipoCasa != "" && tipoCasa != "basica" {
 		moradiaNome = "IPTU"
 		moradiaIcone = "🧾"
+		moradiaImg = "/contas/iptu.png"
 	}
 
 	itens = []map[string]interface{}{
-		{"nome": moradiaNome, "icone": moradiaIcone, "valor": moradia},
-		{"nome": "Energia Elétrica", "icone": "💡", "valor": energia},
-		{"nome": "Água", "icone": "🚿", "valor": agua},
-		{"nome": "Internet", "icone": "📡", "valor": internet},
-		{"nome": "Condomínio", "icone": "🏢", "valor": condominio},
+		{"nome": moradiaNome, "icone": moradiaIcone, "icone_img": moradiaImg, "valor": moradia},
+		{"nome": "Energia Elétrica", "icone": "💡", "icone_img": "/contas/energia-conta.png", "valor": energia},
+		{"nome": "Água", "icone": "🚿", "icone_img": "/contas/agua.png", "valor": agua},
+		{"nome": "Internet", "icone": "📡", "icone_img": "/contas/internet.png", "valor": internet},
+		{"nome": "Condomínio", "icone": "🏢", "icone_img": "/contas/condominio.png", "valor": condominio},
 	}
 
 	total = moradia + energia + agua + internet + condominio

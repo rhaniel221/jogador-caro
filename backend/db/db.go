@@ -1032,17 +1032,19 @@ func seedCatalogos() {
 		bonusXP    int
 	}
 	campinhoNiveis := []campinhoNivelSeed{
-		{0, "Campo de Terra", "Seu campinho humilde. Um pedaço de chão batido.", "/estadios/campo-simples.png", 10},
-		{1, "Com Traves de Madeira", "Agora tem gol! Traves feitas com madeira do bairro.", "/estadios/campo-simples.png", 10},
+		{0, "Campo de Terra", "Seu campinho humilde. Um pedaço de chão batido.", "/coletas/campinho.png", 10},
+		{1, "Com Traves de Madeira", "Agora tem gol! Traves feitas com madeira do bairro.", "/coletas/campinho.png", 10},
 		{2, "Campo Marcado", "Linhas de gesso marcam o campo. Parece quase oficial!", "/estadios/campo-simples.png", 10},
 		{3, "Com Grama", "Gramado plantado! Agora sim parece um campo de verdade.", "/estadios/campo-simples.png", 10},
-		{4, "Com Arquibancada", "Torcida tem onde sentar! O bairro inteiro vem assistir.", "/estadios/campo-simples.png", 10},
-		{5, "Com Iluminação", "Jogos noturnos! Holofotes iluminam o campo.", "/estadios/campo-simples.png", 10},
-		{6, "Estádio Completo", "Um mini-estádio! Seu legado no bairro.", "/estadios/campo-simples.png", 10},
+		{4, "Com Arquibancada", "Torcida tem onde sentar! O bairro inteiro vem assistir.", "/estadios/estadio-medio.png", 10},
+		{5, "Com Iluminação", "Jogos noturnos! Holofotes iluminam o campo.", "/estadios/estadio-grande.png", 10},
+		{6, "Estádio Completo", "Um mini-estádio! Seu legado no bairro.", "/estadios/arena-final.png", 10},
 	}
 	for _, cn := range campinhoNiveis {
+		// UPSERT — atualiza arte mesmo em DBs já populados
 		Conn.Exec(`INSERT INTO campinho_niveis (nivel, nome, descricao, arte, bonus_xp_pct)
-			VALUES ($1,$2,$3,$4,$5) ON CONFLICT (nivel) DO NOTHING`,
+			VALUES ($1,$2,$3,$4,$5)
+			ON CONFLICT (nivel) DO UPDATE SET arte = EXCLUDED.arte`,
 			cn.nivel, cn.nome, cn.desc, cn.arte, cn.bonusXP)
 	}
 

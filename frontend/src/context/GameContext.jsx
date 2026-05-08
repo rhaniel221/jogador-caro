@@ -40,8 +40,8 @@ export function GameProvider({ children }) {
   }, [])
 
   function getAvatar(id) {
-    // Avatares de imagem: IDs 101-111 → /avatar/1.png - /avatar/11.png
-    if (typeof id === 'number' && id >= 101 && id <= 111) {
+    // Avatares de imagem: IDs 101-124 → /avatar/1.png - /avatar/24.png
+    if (typeof id === 'number' && id >= 101 && id <= 124) {
       return <img src={`/avatar/${id - 100}.png`} alt="Avatar" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 'inherit' }} />
     }
     const av = avatares.find(a => a.id === id)

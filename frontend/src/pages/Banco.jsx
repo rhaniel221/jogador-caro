@@ -203,7 +203,12 @@ export default function Banco() {
             </div>
             {(boleto.itens || []).map((item, i) => (
               <div key={i} className="boleto-linha">
-                <span>{item.icone} {item.nome}</span>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                  {item.icone_img
+                    ? <img src={item.icone_img} alt="" style={{ width: 22, height: 22, objectFit: 'contain' }} />
+                    : item.icone}
+                  {item.nome}
+                </span>
                 <span>R$ {fmt(item.valor)}</span>
               </div>
             ))}

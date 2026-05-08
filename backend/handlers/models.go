@@ -26,6 +26,7 @@ type Item struct {
 	SlotsMochila     int    `json:"slots_mochila"` // apenas para tipo "mochila"
 	CooldownMinutos  int    `json:"cooldown_minutos"`
 	Slot             string `json:"slot"` // cabeca, camisa, bracos, luva, shorts, meiao, chuteira, bola, contrato
+	IconeImg         string `json:"icone_img,omitempty"`
 }
 
 type Trabalho struct {

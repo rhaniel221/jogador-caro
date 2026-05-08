@@ -62,7 +62,7 @@ export default function Header() {
 
       <div className="stats-panel">
         <div className="stat" data-tutorial="stat-energia">
-          <span className="stat-icon-big">⚡</span>
+          <img src="/icons/energia.png" alt="Energia" className="stat-icon-big stat-icon-img" />
           <div className="stat-info">
             <span className="stat-label">Energia</span>
             <span className="stat-value">{jogador.energia}<span className="stat-max">/{jogador.energia_max}</span></span>
@@ -70,7 +70,7 @@ export default function Header() {
           </div>
         </div>
         <div className="stat" data-tutorial="stat-vitalidade">
-          <span className="stat-icon-big">💚</span>
+          <img src="/icons/vitalidade.png" alt="Vitalidade" className="stat-icon-big stat-icon-img" />
           <div className="stat-info">
             <span className="stat-label">Vitalidade</span>
             <span className="stat-value">{jogador.vitalidade}<span className="stat-max">/{jogador.vitalidade_max}</span></span>
@@ -78,7 +78,7 @@ export default function Header() {
           </div>
         </div>
         <div className="stat" data-tutorial="stat-saude">
-          <span className="stat-icon-big">❤️</span>
+          <img src="/icons/saude.png" alt="Saúde" className="stat-icon-big stat-icon-img" />
           <div className="stat-info">
             <span className="stat-label">Saúde</span>
             <span className="stat-value">{jogador.saude}<span className="stat-max">/{jogador.saude_max}</span></span>

@@ -830,10 +830,10 @@ function PatrimonioSection({ jogadorID }) {
 // ========================
 
 function getMoralInfo(moral) {
-  if (moral >= 81) return { label: 'Em Chamas!', cor: '#f39c12', bg: '#fdf8e8', border: '#f0c040', emoji: '🔥' }
-  if (moral >= 61) return { label: 'Motivado', cor: '#27ae60', bg: '#eafaf1', border: '#82e0aa', emoji: '😊' }
-  if (moral >= 31) return { label: 'Normal', cor: '#2980b9', bg: '#eaf4fd', border: '#85c1e9', emoji: '😐' }
-  return { label: 'Desmotivado', cor: '#e74c3c', bg: '#fdecea', border: '#f1948a', emoji: '😞' }
+  if (moral >= 81) return { label: 'Em Chamas!', cor: '#f39c12', bg: '#fdf8e8', border: '#f0c040', emoji: '🔥', img: '/moral/em-chamas.png' }
+  if (moral >= 61) return { label: 'Motivado', cor: '#27ae60', bg: '#eafaf1', border: '#82e0aa', emoji: '😊', img: '/moral/motivado.png' }
+  if (moral >= 31) return { label: 'Normal', cor: '#2980b9', bg: '#eaf4fd', border: '#85c1e9', emoji: '😐', img: '/moral/normal.png' }
+  return { label: 'Desmotivado', cor: '#e74c3c', bg: '#fdecea', border: '#f1948a', emoji: '😞', img: '/moral/desmotivado.png' }
 }
 
 function MoralSection({ jogador, jogadorID, mostrarNotificacao }) {
@@ -846,8 +846,11 @@ function MoralSection({ jogador, jogadorID, mostrarNotificacao }) {
   return (
     <div className="pf-section">
       <div className="pf-section-header">
-        <h3>🧠 MORAL</h3>
-        <span className="pf-section-badge" style={{ color: info.cor }}>{info.emoji} {info.label}</span>
+        <h3><img src="/icons/moral.png" alt="" style={{ width: 22, height: 22, verticalAlign: 'middle', marginRight: 6 }} />MORAL</h3>
+        <span className="pf-section-badge" style={{ color: info.cor, display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+          <img src={info.img} alt={info.label} style={{ width: 28, height: 28, objectFit: 'contain' }} />
+          {info.label}
+        </span>
       </div>
       <div style={{
         background: info.bg, border: `2px solid ${info.border}`, borderRadius: 12, padding: '12px 16px',
@@ -957,8 +960,8 @@ function ClubeObjetivosSection({ jogadorID, setJogador, mostrarNotificacao, setL
 
 const CASA_IMGS = {
   basica: '/casas/init-casa-simples.png',
-  media: '/casas/init-casa-media.png',
-  top: '/casas/initcasa-top.png',
+  media: '/casas/casa-propria.png',
+  top: '/casas/mansao.png',
 }
 const CASA_NOMES = { basica: 'Casa Alugada', media: 'Casa Própria', top: 'Mansão do Craque' }
 

@@ -4,8 +4,8 @@ import API from '../api'
 import { fmt } from '../utils'
 import './MeuJogador.css'
 
-// IDs 101-111 para avatares de imagem (evita conflito com emojis do banco que usam IDs baixos)
-const AVATAR_IMGS = [101,102,103,104,105,106,107,108,109,110,111]
+// IDs 101-124 para avatares de imagem (evita conflito com emojis do banco que usam IDs baixos)
+const AVATAR_IMGS = [101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124]
 
 function SectionHeader({ icon, title, right }) {
   return (
@@ -20,8 +20,8 @@ function SectionHeader({ icon, title, right }) {
 }
 
 function AvatarDisplay({ avatarId, size }) {
-  // IDs 101-111 mapeiam para /avatar/1.png - /avatar/11.png
-  if (typeof avatarId === 'number' && avatarId >= 101 && avatarId <= 111) {
+  // IDs 101-124 mapeiam para /avatar/1.png - /avatar/24.png
+  if (typeof avatarId === 'number' && avatarId >= 101 && avatarId <= 124) {
     return <img src={`/avatar/${avatarId - 100}.png`} alt="Avatar" />
   }
   return <span style={{ fontSize: size || 70 }}>⚽</span>

@@ -108,7 +108,11 @@ export default function Loja() {
       <div key={item.id} ref={isHighlight ? highlightRef : null}
         className={`shop-item${bloqueado ? ' shop-item-bloqueado' : ''}${isHighlight ? ' shop-item-highlight' : ''}`}
         style={rar !== 'comum' ? { borderColor: isHighlight ? '#f1c40f' : rarCor[rar] } : isHighlight ? { borderColor: '#f1c40f' } : {}}>
-        <div className="s-icone">{item.icone}</div>
+        <div className="s-icone">
+          {item.icone_img
+            ? <img src={item.icone_img} alt="" className="s-icone-img" />
+            : item.icone}
+        </div>
         <div className="s-nome">{item.nome}</div>
         {rar !== 'comum' && <div className="s-raridade" style={{ color: rarCor[rar] }}>{rar.toUpperCase()}</div>}
 
@@ -118,7 +122,9 @@ export default function Loja() {
           <div className="s-stats-box">
             {stats.efeitos.map((e, i) => (
               <div key={i} className="s-stat-line">
-                <span className="s-stat-icon">{e.icon}</span>
+                {e.iconImg
+                  ? <img src={e.iconImg} alt={e.label} className="s-stat-icon s-stat-icon-img" />
+                  : <span className="s-stat-icon">{e.icon}</span>}
                 <span className="s-stat-label">{e.label}</span>
                 <span className="s-stat-val" style={{ color: e.cor }}>{e.val}</span>
               </div>
@@ -249,7 +255,11 @@ export default function Loja() {
                     const esgotado = item.comprado >= item.limite_compra
                     return (
                       <div key={item.id} className={`shop-item${esgotado ? ' shop-item-bloqueado' : ''}`}>
-                        <div className="s-icone">{item.icone}</div>
+                        <div className="s-icone">
+          {item.icone_img
+            ? <img src={item.icone_img} alt="" className="s-icone-img" />
+            : item.icone}
+        </div>
                         <div className="s-nome">{item.nome}</div>
                         <div className="s-desc">+{item.fama_ganha} Fama</div>
                         <div className="s-preco">R$ {fmt(item.preco)}</div>
@@ -297,7 +307,11 @@ export default function Loja() {
           <div className="shop-grid">
             {lojaPremium.map(item => (
               <div key={item.id} className="shop-item shop-item-premium">
-                <div className="s-icone">{item.icone}</div>
+                <div className="s-icone">
+          {item.icone_img
+            ? <img src={item.icone_img} alt="" className="s-icone-img" />
+            : item.icone}
+        </div>
                 <div className="s-nome">{item.nome}</div>
                 <div className="s-preco">🪙 {item.preco} moedas</div>
                 <button className="btn-work btn-small shop-btn-premium" onClick={() => comprarPremium(item.id)}>Comprar</button>

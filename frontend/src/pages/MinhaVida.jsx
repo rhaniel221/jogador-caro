@@ -148,7 +148,7 @@ function TratamentoSection({ jogadorID, jogador, setJogador, mostrarNotificacao 
 // CASA
 // ========================
 
-const CASA_IMGS = { basica: '/casas/init-casa-simples.png', media: '/casas/init-casa-media.png', top: '/casas/initcasa-top.png' }
+const CASA_IMGS = { basica: '/casas/init-casa-simples.png', media: '/casas/casa-propria.png', top: '/casas/mansao.png' }
 const CASA_NOMES = { basica: 'Casa Alugada', media: 'Casa Propria', top: 'Mansao do Craque' }
 
 function CasaCard({ jogadorID, jogador, setJogador, mostrarNotificacao, setLevelUp }) {

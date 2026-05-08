@@ -145,6 +145,7 @@ body::before {
 .stat-inv:hover { background: rgba(15,95,214,0.15); }
 
 .stat-icon-big { font-size: 22px; }
+.stat-icon-img { width: 26px; height: 26px; object-fit: contain; display: inline-block; vertical-align: middle; }
 
 .stat-info {
     display: flex;
@@ -356,6 +357,14 @@ body::before {
 
 .main-menu li:first-child a {
     border-left: none;
+}
+
+.nav-icon-img {
+    width: 22px;
+    height: 22px;
+    object-fit: contain;
+    flex-shrink: 0;
+    filter: drop-shadow(0 1px 2px rgba(0,0,0,0.15));
 }
 
 .nav-locked {
@@ -1321,6 +1330,7 @@ body::before {
 .s-desc-lock { color: #c0392b; font-weight: 900; }
 
 .shop-item .s-icone { font-size: 32px; margin-bottom: 8px; }
+.shop-item .s-icone-img { width: 56px; height: 56px; object-fit: contain; display: inline-block; }
 .shop-item .s-nome { color: var(--preto); font-size: 14px; font-weight: 900; margin-bottom: 4px; line-height: 1.3; }
 .shop-item .s-desc { color: var(--texto-muted); font-size: 11px; margin-bottom: 6px; line-height: 1.3; font-weight: 700; }
 .shop-item .s-preco { color: var(--verde); font-weight: 900; font-size: 15px; margin-bottom: 8px; }
@@ -1337,6 +1347,7 @@ body::before {
     font-size: 12px; font-weight: 700; padding: 2px 0;
 }
 .s-stat-icon { font-size: 14px; flex-shrink: 0; width: 18px; text-align: center; }
+.s-stat-icon-img { width: 18px; height: 18px; object-fit: contain; }
 .s-stat-label { flex: 1; color: var(--texto-muted); font-size: 11px; }
 .s-stat-val { font-weight: 900; font-size: 13px; }
 .s-cooldown {

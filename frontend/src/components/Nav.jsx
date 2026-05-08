@@ -5,15 +5,15 @@ import API from '../api'
 
 // Ordem por prioridade de gameplay
 const links = [
-  { to: '/',           label: 'Inicio',   icon: '🏠', end: true, tid: 'nav-inicio' },
-  { to: '/carreira',   label: 'Carreira', icon: '⚽', tid: 'nav-trabalhos' },
-  { to: '/treino',     label: 'Treino',   icon: '🏋️', tid: 'nav-treino' },
-  { to: '/missoes',    label: 'Missoes',  icon: '📖', tid: 'nav-missoes' },
-  { to: '/jogador',    label: 'Jogador',  icon: '👤', tid: 'nav-perfil' },
-  { to: '/loja',       label: 'Loja',     icon: '🛒', tid: 'nav-loja' },
-  { to: '/vida',       label: 'Vida',     icon: '🏡', tid: 'nav-vida', minLevel: 20 },
-  { to: '/top-craques', label: 'Rankings', icon: '📊', tid: 'nav-top', minLevel: 10 },
-  { to: '/foruns',     label: 'Forums',   icon: '💬', tid: 'nav-foruns', minLevel: 10 },
+  { to: '/',           label: 'Inicio',   img: '/nav/inicio.png', end: true, tid: 'nav-inicio' },
+  { to: '/carreira',   label: 'Carreira', img: '/nav/carreira.png', tid: 'nav-trabalhos' },
+  { to: '/treino',     label: 'Treino',   img: '/nav/treino.png', tid: 'nav-treino' },
+  { to: '/missoes',    label: 'Missoes',  img: '/nav/missoes.png', tid: 'nav-missoes' },
+  { to: '/jogador',    label: 'Jogador',  img: '/nav/jogador.png', tid: 'nav-perfil' },
+  { to: '/loja',       label: 'Loja',     img: '/nav/loja.png', tid: 'nav-loja' },
+  { to: '/vida',       label: 'Vida',     img: '/nav/vida.png', tid: 'nav-vida', minLevel: 20 },
+  { to: '/top-craques', label: 'Rankings', img: '/nav/rankings.png', tid: 'nav-top', minLevel: 10 },
+  { to: '/foruns',     label: 'Forums',   img: '/nav/foruns.png', tid: 'nav-foruns', minLevel: 10 },
 ]
 
 function isNewFeature(path, minLevel, nivel) {
@@ -83,7 +83,7 @@ export default function Nav() {
             <li key={l.to}>
               {locked ? (
                 <span className="nav-locked" data-tutorial={l.tid}>
-                  {l.icon} {l.label} 🔒{l.minLevel}
+                  <img src={l.img} alt="" className="nav-icon-img" /> {l.label} 🔒{l.minLevel}
                 </span>
               ) : (
                 <NavLink
@@ -93,7 +93,7 @@ export default function Nav() {
                   data-tutorial={l.tid}
                   onClick={() => markVisited(l.to)}
                 >
-                  <span style={{ fontSize: 14 }}>{l.icon}</span> {l.label}
+                  <img src={l.img} alt="" className="nav-icon-img" /> {l.label}
                   {badgeCount > 0 && <span className="nav-count-badge">{badgeCount}</span>}
                   {isNewFeature(l.to, l.minLevel, nivel) && <span className="nav-new-badge">NOVO</span>}
                 </NavLink>

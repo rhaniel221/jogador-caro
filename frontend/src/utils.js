@@ -188,14 +188,14 @@ export function gerarDescricaoItem(item) {
 export function itemStats(item) {
   if (!item) return { efeitos: [], cooldown: 0, nivel: '' }
   const efeitos = []
-  if (item.recupera_energia > 0) efeitos.push({ icon: '⚡', label: 'Energia', val: `+${item.recupera_energia}`, cor: '#2980b9' })
-  if (item.recupera_saude > 0) efeitos.push({ icon: '❤️', label: 'Saúde', val: `+${item.recupera_saude}`, cor: '#e74c3c' })
-  if (item.bonus_forca > 0) efeitos.push({ icon: '💪', label: 'Força', val: `+${item.bonus_forca}`, cor: '#e67e22' })
-  if (item.bonus_velocidade > 0) efeitos.push({ icon: '🏃', label: 'Velocidade', val: `+${item.bonus_velocidade}`, cor: '#3498db' })
-  if (item.bonus_habilidade > 0) efeitos.push({ icon: '⚽', label: 'Habilidade', val: `+${item.bonus_habilidade}`, cor: '#2ecc71' })
-  if (item.bonus_saude_max > 0) efeitos.push({ icon: '❤️', label: 'Saúde Máx', val: `+${item.bonus_saude_max}`, cor: '#c0392b' })
-  if (item.bonus_energia_max > 0) efeitos.push({ icon: '⚡', label: 'Energia Máx', val: `+${item.bonus_energia_max}`, cor: '#2471a3' })
-  if (item.bonus_vit_max > 0) efeitos.push({ icon: '💚', label: 'Vitalidade Máx', val: `+${item.bonus_vit_max}`, cor: '#27ae60' })
+  if (item.recupera_energia > 0) efeitos.push({ icon: '⚡', iconImg: '/icons/energia.png', label: 'Energia', val: `+${item.recupera_energia}`, cor: '#2980b9' })
+  if (item.recupera_saude > 0) efeitos.push({ icon: '❤️', iconImg: '/icons/saude.png', label: 'Saúde', val: `+${item.recupera_saude}`, cor: '#e74c3c' })
+  if (item.bonus_forca > 0) efeitos.push({ icon: '💪', iconImg: '/icons/forca.png', label: 'Força', val: `+${item.bonus_forca}`, cor: '#e67e22' })
+  if (item.bonus_velocidade > 0) efeitos.push({ icon: '🏃', iconImg: '/icons/velocidade.png', label: 'Velocidade', val: `+${item.bonus_velocidade}`, cor: '#3498db' })
+  if (item.bonus_habilidade > 0) efeitos.push({ icon: '⚽', iconImg: '/icons/habilidade.png', label: 'Habilidade', val: `+${item.bonus_habilidade}`, cor: '#2ecc71' })
+  if (item.bonus_saude_max > 0) efeitos.push({ icon: '❤️', iconImg: '/icons/saude.png', label: 'Saúde Máx', val: `+${item.bonus_saude_max}`, cor: '#c0392b' })
+  if (item.bonus_energia_max > 0) efeitos.push({ icon: '⚡', iconImg: '/icons/energia.png', label: 'Energia Máx', val: `+${item.bonus_energia_max}`, cor: '#2471a3' })
+  if (item.bonus_vit_max > 0) efeitos.push({ icon: '💚', iconImg: '/icons/vitalidade.png', label: 'Vitalidade Máx', val: `+${item.bonus_vit_max}`, cor: '#27ae60' })
   if (item.slots_mochila > 0) efeitos.push({ icon: '🎒', label: 'Slots', val: `${item.slots_mochila}`, cor: '#8e44ad' })
   let nivel = ''
   if (item.nivel_min > 1 && item.nivel_max > 0) nivel = `Nv.${item.nivel_min}-${item.nivel_max}`
