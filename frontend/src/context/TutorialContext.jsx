@@ -35,7 +35,30 @@ const STEPS = [
   { id: 4, tipo: 'info', page: null, target: '[data-tutorial="stat-dinheiro"]',
     delay: 500,
     titulo: 'Dinheiro',
-    texto: 'Use dinheiro pra comprar itens na Loja. Agora complete as missoes da historia para avancar!' },
+    texto: 'Use dinheiro pra comprar itens na Loja. Agora vamos conhecer o seu Inventário!' },
+
+  // ============================================
+  // INVENTARIO + EQUIPAR (logo após onboarding)
+  // ============================================
+  { id: 10, tipo: 'nav', page: null, target: '[data-tutorial="header-inventario"]', destino: '/inventario',
+    delay: 500,
+    titulo: 'Abra o Inventário',
+    texto: 'No Inventário você vê seu jogador e equipa itens. Clique no ícone da mochila no header!' },
+
+  { id: 11, tipo: 'info', page: '/inventario', target: '[data-tutorial="inv-equipamento"]',
+    delay: 800,
+    titulo: 'Esse é o seu Jogador!',
+    texto: 'Esse é o craque que você vai forjar. Ao redor dele tem 8 slots de equipamento — cabeça, camisa, luvas, shorts, meião, chuteiras, etc. Cada peça aumenta seus atributos.' },
+
+  { id: 12, tipo: 'info', page: '/inventario', target: '[data-tutorial="inv-equipamento"]',
+    delay: 500,
+    titulo: 'Como Equipar',
+    texto: 'Quando você ganhar um item (em missões, abrindo na Loja ou completando torneios), o slot correspondente vai pulsar azul. Clique nele e escolha o item — pronto, equipado! Os bônus aparecem ao lado.' },
+
+  { id: 13, tipo: 'nav', page: null, target: '[data-tutorial="nav-inicio"]', destino: '/',
+    delay: 500,
+    titulo: 'Volta ao Início',
+    texto: 'Beleza, agora você sabe equipar. Volte ao Início e continue as missões da história pra ganhar seus primeiros itens!' },
 
   // step 5 = dormindo (espera nivel 4 + energia baixa)
 
@@ -148,7 +171,8 @@ export function TutorialProvider({ children }) {
   }, [location.pathname, currentStep?.id])
 
   function getNextStep(current) {
-    if (current === 4) return 5
+    if (current === 4) return 10
+    if (current === 13) return 5
     if (current === 26) return -1
     const nextId = current + 1
     return STEPS.find(s => s.id === nextId) ? nextId : -1
@@ -185,6 +209,7 @@ export function TutorialProvider({ children }) {
 
   const faseInfo = (() => {
     if (step >= 1 && step <= 4) return { num: step, total: 4, fase: 'Primeiros Passos' }
+    if (step >= 10 && step <= 13) return { num: step - 9, total: 4, fase: 'Inventário' }
     if (step >= 20 && step <= 26) return { num: step - 19, total: 7, fase: 'Energia & Trabalhos' }
     return { num: 0, total: 0, fase: '' }
   })()

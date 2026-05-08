@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react'
 import { useGame } from '../context/GameContext'
 import API from '../api'
-import { fmt, gerarDescricaoItem } from '../utils'
+import { fmt, gerarDescricaoItem, itemStats } from '../utils'
 import PageGuide from '../components/PageGuide'
 
-function BotaoCooldown({ ts, onUsar }) {
+// ============================================================
+// COOLDOWN
+// ============================================================
+function BotaoCooldown({ ts, onUsar, label = 'Usar' }) {
   const calc = () => { const d = (ts || 0) - Math.floor(Date.now() / 1000); return d > 0 ? d : 0 }
   const [restante, setRestante] = useState(calc())
   useEffect(() => {
@@ -15,86 +18,75 @@ function BotaoCooldown({ ts, onUsar }) {
   }, [ts])
   if (restante > 0) {
     const m = Math.floor(restante / 60), s = String(restante % 60).padStart(2, '0')
-    return <button className="btn-work btn-small" disabled>⏳ {m}:{s}</button>
+    return <button className="inv-btn inv-btn-cd" disabled>⏳ {m}:{s}</button>
   }
-  return <button className="btn-work btn-small btn-verde" onClick={onUsar}>Usar</button>
+  return <button className="inv-btn inv-btn-verde" onClick={onUsar}>{label}</button>
 }
 
-const RAR_COR = { comum: '#666', raro: '#2980b9', epico: '#8e44ad', lendario: '#f39c12' }
-const RAR_BG = { comum: '#f5f5f5', raro: '#e8f4fd', epico: '#f3e8fd', lendario: '#fdf8e8' }
-const RAR_BORDER = { comum: '#ccc', raro: '#85c1e9', epico: '#bb8fce', lendario: '#f0c040' }
+// ============================================================
+// CORES DE RARIDADE (tema escuro)
+// ============================================================
+const RAR_COR = {
+  comum:    { texto: '#cbd5e1', borda: 'rgba(148,163,184,0.45)', glow: 'rgba(148,163,184,0.18)', bg: 'rgba(148,163,184,0.08)' },
+  raro:     { texto: '#60a5fa', borda: 'rgba(96,165,250,0.55)',  glow: 'rgba(96,165,250,0.3)',   bg: 'rgba(96,165,250,0.1)' },
+  epico:    { texto: '#c084fc', borda: 'rgba(192,132,252,0.55)', glow: 'rgba(192,132,252,0.3)',  bg: 'rgba(192,132,252,0.1)' },
+  lendario: { texto: '#fbbf24', borda: 'rgba(251,191,36,0.6)',   glow: 'rgba(251,191,36,0.4)',   bg: 'rgba(251,191,36,0.12)' },
+}
 
-const SLOTS_ESQ = [
-  { id: 'cabeca', nome: 'Cabeça', icone: '⛑️' },
-  { id: 'camisa', nome: 'Camisa', icone: '👕' },
-  { id: 'bracos', nome: 'Braços', icone: '💪' },
-  { id: 'luva', nome: 'Luva', icone: '🧤' },
+function corRar(rar) { return RAR_COR[rar] || RAR_COR.comum }
+
+// ============================================================
+// SLOTS — posição relativa ao personagem (% do container)
+// ============================================================
+const SLOTS = [
+  { id: 'cabeca',   nome: 'Cabeça',   icone: '⛑️', x: 50,  y: 8 },
+  { id: 'camisa',   nome: 'Camisa',   icone: '👕', x: 14,  y: 28 },
+  { id: 'bracos',   nome: 'Braços',   icone: '💪', x: 86,  y: 28 },
+  { id: 'luva',     nome: 'Luva',     icone: '🧤', x: 14,  y: 50 },
+  { id: 'shorts',   nome: 'Shorts',   icone: '🩳', x: 86,  y: 50 },
+  { id: 'meiao',    nome: 'Meião',    icone: '🧦', x: 14,  y: 72 },
+  { id: 'chuteira', nome: 'Chuteira', icone: '👟', x: 86,  y: 72 },
+  { id: 'bola',     nome: 'Bola',     icone: '⚽', x: 50,  y: 92 },
 ]
-const SLOTS_DIR = [
-  { id: 'shorts', nome: 'Shorts', icone: '🩳' },
-  { id: 'meiao', nome: 'Meião', icone: '🧦' },
-  { id: 'chuteira', nome: 'Chuteira', icone: '👟' },
-  { id: 'bola', nome: 'Bola', icone: '⚽' },
-]
 
-function SlotBox({ slot, equipped, onEquipar, onDesequipar, inventario }) {
-  const [aberto, setAberto] = useState(false)
-  const inv = equipped
-  const item = inv?.item
-  const rar = item?.raridade || 'comum'
-
-  // Itens disponíveis para esse slot (não equipados, tipo equipamento, mesmo slot)
-  const disponiveis = inventario.filter(i =>
-    !i.equipado && i.item?.tipo === 'equipamento' && i.item?.slot === slot.id
-  )
-
-  if (inv) {
-    return (
-      <div className="eq-slot eq-slot-filled" style={{ borderColor: RAR_BORDER[rar], background: RAR_BG[rar] }}
-        onClick={() => setAberto(!aberto)}>
-        <span className="eq-slot-item-icon">{item.icone}</span>
-        <div className="eq-slot-info">
-          <div className="eq-slot-item-name" style={{ color: RAR_COR[rar] }}>{item.nome}</div>
-          <div className="eq-slot-item-stats">{gerarDescricaoItem(item)}</div>
-        </div>
-        {aberto && (
-          <button className="btn-work btn-small eq-slot-btn" onClick={e => { e.stopPropagation(); onDesequipar(inv.item_id); setAberto(false) }}>
-            Tirar
-          </button>
-        )}
-      </div>
-    )
-  }
+// ============================================================
+// SLOT VISUAL — equipado ou vazio, posicionado sobre o personagem
+// ============================================================
+function SlotPos({ slot, equipped, onClick, contagemDisponivel, slotSelecionado }) {
+  const item = equipped?.item
+  const rar = item ? corRar(item.raridade || 'comum') : null
+  const ativo = slotSelecionado === slot.id
+  const temItensDisponiveis = contagemDisponivel > 0
 
   return (
-    <div className="eq-slot eq-slot-empty" onClick={() => disponiveis.length > 0 && setAberto(!aberto)}>
-      <span className="eq-slot-icon-placeholder">{slot.icone}</span>
-      <span className="eq-slot-label">{slot.nome}</span>
-      {disponiveis.length > 0 && <span className="eq-slot-avail">{disponiveis.length}</span>}
-      {aberto && disponiveis.length > 0 && (
-        <div className="eq-slot-dropdown" onClick={e => e.stopPropagation()}>
-          {disponiveis.map(di => {
-            const r = di.item?.raridade || 'comum'
-            return (
-              <div key={di.item_id} className="eq-slot-option" style={{ borderColor: RAR_BORDER[r] }}
-                onClick={() => { onEquipar(di.item_id); setAberto(false) }}>
-                <span>{di.item.icone}</span>
-                <div>
-                  <div style={{ fontSize: 12, fontWeight: 700, color: RAR_COR[r] }}>{di.item.nome}</div>
-                  <div style={{ fontSize: 10, color: '#666' }}>{gerarDescricaoItem(di.item)}</div>
-                </div>
-              </div>
-            )
-          })}
-        </div>
-      )}
-    </div>
+    <button
+      type="button"
+      className={`eq-slot-pos${item ? ' filled' : ' empty'}${ativo ? ' ativo' : ''}${temItensDisponiveis && !item ? ' tem-disponivel' : ''}`}
+      style={{
+        left: slot.x + '%',
+        top: slot.y + '%',
+        '--rar-borda': rar?.borda || 'rgba(255,255,255,0.18)',
+        '--rar-glow': rar?.glow || 'transparent',
+        '--rar-bg': rar?.bg || 'rgba(13,27,47,0.85)',
+      }}
+      onClick={() => onClick(slot.id)}
+      title={slot.nome}
+    >
+      <span className="eq-slot-pos-icone">{item?.icone || slot.icone}</span>
+      {item && <span className="eq-slot-pos-marker">✓</span>}
+      {!item && temItensDisponiveis && <span className="eq-slot-pos-badge">{contagemDisponivel}</span>}
+    </button>
   )
 }
 
+// ============================================================
+// PAGINA
+// ============================================================
 export default function Inventario() {
   const { jogador, setJogador, jogadorID, mostrarNotificacao, recarregarJogador } = useGame()
   const [inventario, setInventario] = useState([])
+  const [aba, setAba] = useState('equipamento')
+  const [slotSelecionado, setSlotSelecionado] = useState(null)
 
   const carregar = () => {
     if (!jogadorID) return
@@ -107,19 +99,18 @@ export default function Inventario() {
     if (res.sucesso) { setJogador(res.jogador); carregar(); mostrarNotificacao(res.mensagem, 'sucesso') }
     else mostrarNotificacao(res.mensagem, 'erro')
   }
-
   async function equipar(itemID) {
     const res = await API.post('/api/equipar', { jogador_id: jogadorID, item_id: itemID, equipar: true })
-    if (res.sucesso) { setJogador(res.jogador); carregar(); mostrarNotificacao(res.mensagem, 'sucesso') }
-    else mostrarNotificacao(res.mensagem, 'erro')
+    if (res.sucesso) {
+      setJogador(res.jogador); carregar(); setSlotSelecionado(null)
+      mostrarNotificacao(res.mensagem, 'sucesso')
+    } else mostrarNotificacao(res.mensagem, 'erro')
   }
-
   async function desequipar(itemID) {
     const res = await API.post('/api/equipar', { jogador_id: jogadorID, item_id: itemID, equipar: false })
     if (res.sucesso) { setJogador(res.jogador); carregar(); mostrarNotificacao(res.mensagem, 'sucesso') }
     else mostrarNotificacao(res.mensagem, 'erro')
   }
-
   async function venderItem(itemID) {
     const res = await API.post('/api/vender-item', { jogador_id: jogadorID, item_id: itemID })
     if (res.sucesso) { setJogador(res.jogador); carregar(); mostrarNotificacao(res.mensagem, 'sucesso') }
@@ -128,45 +119,42 @@ export default function Inventario() {
 
   if (!jogador) return null
 
-  // Mapa de slot → item equipado
+  // === Mapas ===
   const equippedBySlot = {}
   inventario.filter(i => i.equipado && i.item?.slot).forEach(i => {
     if (!equippedBySlot[i.item.slot]) equippedBySlot[i.item.slot] = i
   })
-
-  // Contratos equipados (slot "contrato") - seção separada
   const contratos = inventario.filter(i => i.equipado && i.item?.slot === 'contrato')
-
-  // Consumíveis e itens não equipados
   const consumiveis = inventario.filter(i => !i.equipado && i.item?.tipo === 'consumivel')
   const equipaveis = inventario.filter(i => !i.equipado && i.item?.tipo === 'equipamento' && i.item?.slot !== 'contrato')
   const slotsUsados = inventario.filter(i => !i.equipado).length
 
-  const renderCard = (inv, tipo) => {
-    const rar = inv.item?.raridade || 'comum'
-    return (
-      <div key={inv.item_id} className="pf-inv-card" style={{ borderColor: RAR_BORDER[rar], background: RAR_BG[rar] }}>
-        <div className="pf-inv-top">
-          <span className="pf-inv-icon">{inv.item?.icone}</span>
-          {inv.quantidade > 1 && <span className="pf-inv-qtd">x{inv.quantidade}</span>}
-        </div>
-        <div className="pf-inv-name" style={{ color: RAR_COR[rar] }}>{inv.item?.nome}</div>
-        <div className="pf-inv-desc">{gerarDescricaoItem(inv.item)}</div>
-        <div className="pf-inv-rar" style={{ color: RAR_COR[rar] }}>{rar.toUpperCase()}</div>
-        <div className="pf-inv-actions">
-          {tipo === 'consumivel' ? (
-            <BotaoCooldown ts={inv.item?.recupera_energia > 0 ? inv.proximo_em : jogador.proximo_consumivel_em} onUsar={() => usarItem(inv.item_id)} />
-          ) : (
-            <button className="btn-work btn-small btn-verde" onClick={() => equipar(inv.item_id)}>Equipar</button>
-          )}
-          {!inv.equipado && inv.item?.preco > 0 && (
-            <button className="btn-work btn-small inv-btn-vender" onClick={() => venderItem(inv.item_id)}>
-              Vender R${fmt(Math.max(1, Math.floor((inv.item?.preco || 0) * 0.7)))}
-            </button>
-          )}
-        </div>
-      </div>
-    )
+  // === Stats agregados dos itens equipados ===
+  const totalBonus = { forca: 0, velocidade: 0, habilidade: 0 }
+  inventario.filter(i => i.equipado && i.item).forEach(i => {
+    const s = itemStats(i.item) || {}
+    totalBonus.forca += s.forca || 0
+    totalBonus.velocidade += s.velocidade || 0
+    totalBonus.habilidade += s.habilidade || 0
+  })
+
+  // === Itens disponíveis pro slot selecionado ===
+  const disponiveisDoSlot = slotSelecionado
+    ? equipaveis.filter(i => i.item?.slot === slotSelecionado)
+    : []
+
+  function clicarSlot(slotId) {
+    const eq = equippedBySlot[slotId]
+    if (eq) {
+      desequipar(eq.item_id)
+    } else {
+      // alterna seleção pra mostrar lista de disponíveis
+      setSlotSelecionado(s => s === slotId ? null : slotId)
+    }
+  }
+
+  function contagemDisponivel(slotId) {
+    return equipaveis.filter(i => i.item?.slot === slotId).length
   }
 
   return (
@@ -176,60 +164,192 @@ export default function Inventario() {
         pageKey="inventario"
         icone="🎒"
         titulo="Seu Inventário"
-        texto="Aqui ficam todos os seus itens. Equipe armaduras e chuteiras nos slots, use consumíveis para recuperar energia/saúde, e venda itens que não precisa mais."
+        texto="Equipe armaduras nos slots ao redor do personagem, use consumíveis pra recuperar energia, e venda o que não precisa."
       />
-      <div className="inv-page-header">
-        <span className="inv-page-slots">{slotsUsados}/{jogador.capacidade_mochila} slots</span>
-        <label className="inv-toggle">
+
+      {/* Header com slots usados + privacidade */}
+      <div className="inv2-header">
+        <div className="inv2-slots-info">
+          <span className="inv2-slots-num">{slotsUsados}</span>
+          <span className="inv2-slots-label">de {jogador.capacidade_mochila} slots usados</span>
+        </div>
+        <label className="inv2-toggle">
           <input type="checkbox" checked={jogador.inventario_publico || false}
             onChange={async e => {
               await API.post('/api/perfil/config', { jogador_id: jogadorID, inventario_publico: e.target.checked })
               recarregarJogador()
             }} />
-          <span className="inv-toggle-label">{jogador.inventario_publico ? '🔓 Público' : '🔒 Privado'}</span>
+          <span>{jogador.inventario_publico ? '🔓 Público' : '🔒 Privado'}</span>
         </label>
       </div>
 
-      {/* Painel de equipamento estilo MU Online */}
-      <div className="eq-panel">
-        <div className="eq-col">
-          {SLOTS_ESQ.map(s => (
-            <SlotBox key={s.id} slot={s} equipped={equippedBySlot[s.id]}
-              onEquipar={equipar} onDesequipar={desequipar} inventario={inventario} />
-          ))}
-        </div>
-        <div className="eq-avatar">
-          <img src="/personagem-inventario.png" alt="Personagem" className="eq-avatar-img" />
-          <div className="eq-avatar-name">{jogador.nome}</div>
-          <div className="eq-avatar-stats">
-            <span style={{ color: '#e63946' }}>💪{jogador.forca}</span>
-            <span style={{ color: '#1d72c2' }}>🏃{jogador.velocidade}</span>
-            <span style={{ color: '#9c27b0' }}>⚽{jogador.habilidade}</span>
-          </div>
-        </div>
-        <div className="eq-col">
-          {SLOTS_DIR.map(s => (
-            <SlotBox key={s.id} slot={s} equipped={equippedBySlot[s.id]}
-              onEquipar={equipar} onDesequipar={desequipar} inventario={inventario} />
-          ))}
-        </div>
+      {/* Tabs */}
+      <div className="inv2-tabs">
+        <button className={`inv2-tab${aba === 'equipamento' ? ' active' : ''}`} onClick={() => setAba('equipamento')}>
+          ⚔️ Equipamento
+          {equipaveis.length > 0 && <span className="inv2-tab-badge">{equipaveis.length}</span>}
+        </button>
+        <button className={`inv2-tab${aba === 'consumiveis' ? ' active' : ''}`} onClick={() => setAba('consumiveis')}>
+          🍎 Consumíveis
+          {consumiveis.length > 0 && <span className="inv2-tab-badge">{consumiveis.length}</span>}
+        </button>
+        {contratos.length > 0 && (
+          <button className={`inv2-tab${aba === 'contratos' ? ' active' : ''}`} onClick={() => setAba('contratos')}>
+            📋 Contratos
+            <span className="inv2-tab-badge">{contratos.length}</span>
+          </button>
+        )}
       </div>
 
-      {/* Contratos equipados */}
-      {contratos.length > 0 && (
-        <div className="pf-section">
-          <div className="pf-section-header"><h3>📋 CONTRATOS ({contratos.length})</h3></div>
-          <div className="pf-inv-grid">
-            {contratos.map(inv => {
-              const rar = inv.item?.raridade || 'comum'
-              return (
-                <div key={inv.item_id} className="pf-inv-card" style={{ borderColor: RAR_BORDER[rar], background: RAR_BG[rar] }}>
-                  <div className="pf-inv-top">
-                    <span className="pf-inv-icon">{inv.item?.icone}</span>
-                    <span className="pf-inv-badge-eq">E</span>
+      {/* === ABA EQUIPAMENTO === */}
+      {aba === 'equipamento' && (
+        <>
+          <div className="inv2-equip-area" data-tutorial="inv-equipamento">
+            <div className="inv2-personagem-wrap">
+              <img src="/personagem-inventario.png" alt="" className="inv2-personagem-img" />
+              <div className="inv2-personagem-glow" />
+
+              {SLOTS.map(s => (
+                <SlotPos
+                  key={s.id}
+                  slot={s}
+                  equipped={equippedBySlot[s.id]}
+                  contagemDisponivel={contagemDisponivel(s.id)}
+                  slotSelecionado={slotSelecionado}
+                  onClick={clicarSlot}
+                />
+              ))}
+            </div>
+
+            {/* Stats agregados */}
+            <div className="inv2-stats-painel">
+              <div className="inv2-stats-titulo">{jogador.nome}</div>
+              <div className="inv2-stats-grid">
+                <div className="inv2-stat">
+                  <img src="/icons/forca.png" alt="" />
+                  <div>
+                    <div className="inv2-stat-label">Força</div>
+                    <div className="inv2-stat-val">{jogador.forca}{totalBonus.forca > 0 && <span className="inv2-stat-bonus"> +{totalBonus.forca}</span>}</div>
                   </div>
-                  <div className="pf-inv-name" style={{ color: RAR_COR[rar] }}>{inv.item?.nome}</div>
-                  <div className="pf-inv-desc">{gerarDescricaoItem(inv.item)}</div>
+                </div>
+                <div className="inv2-stat">
+                  <img src="/icons/velocidade.png" alt="" />
+                  <div>
+                    <div className="inv2-stat-label">Velocidade</div>
+                    <div className="inv2-stat-val">{jogador.velocidade}{totalBonus.velocidade > 0 && <span className="inv2-stat-bonus"> +{totalBonus.velocidade}</span>}</div>
+                  </div>
+                </div>
+                <div className="inv2-stat">
+                  <img src="/icons/habilidade.png" alt="" />
+                  <div>
+                    <div className="inv2-stat-label">Habilidade</div>
+                    <div className="inv2-stat-val">{jogador.habilidade}{totalBonus.habilidade > 0 && <span className="inv2-stat-bonus"> +{totalBonus.habilidade}</span>}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Painel de equipar (só aparece quando slot vazio é clicado) */}
+          {slotSelecionado && disponiveisDoSlot.length > 0 && (
+            <div className="inv2-equip-painel">
+              <div className="inv2-equip-painel-titulo">
+                <span>Itens pra {SLOTS.find(s => s.id === slotSelecionado)?.nome}</span>
+                <button className="inv2-fechar" onClick={() => setSlotSelecionado(null)}>✕</button>
+              </div>
+              <div className="inv2-equip-grid">
+                {disponiveisDoSlot.map(inv => {
+                  const rar = corRar(inv.item?.raridade || 'comum')
+                  return (
+                    <button
+                      key={inv.item_id}
+                      className="inv2-equip-card"
+                      style={{ '--rar-borda': rar.borda, '--rar-bg': rar.bg, '--rar-cor': rar.texto }}
+                      onClick={() => equipar(inv.item_id)}
+                    >
+                      <span className="inv2-equip-card-icone">{inv.item?.icone}</span>
+                      <div className="inv2-equip-card-nome">{inv.item?.nome}</div>
+                      <div className="inv2-equip-card-desc">{gerarDescricaoItem(inv.item)}</div>
+                      <div className="inv2-equip-card-rar">{(inv.item?.raridade || 'comum').toUpperCase()}</div>
+                      <div className="inv2-equip-card-cta">⚡ EQUIPAR</div>
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+          )}
+
+          {slotSelecionado && disponiveisDoSlot.length === 0 && (
+            <div className="inv2-empty-msg">
+              Você não tem itens pra <strong>{SLOTS.find(s => s.id === slotSelecionado)?.nome}</strong>. Compre na <a href="/loja" style={{ color: '#43a7ff' }}>Loja</a>.
+              <button className="inv2-fechar inv2-fechar-msg" onClick={() => setSlotSelecionado(null)}>✕</button>
+            </div>
+          )}
+
+          {/* Mochila — equipamentos NÃO equipados */}
+          {equipaveis.length > 0 && (
+            <div className="inv2-section">
+              <h3 className="inv2-section-titulo">📦 Mochila — equipáveis ({equipaveis.length})</h3>
+              <div className="inv2-grid">
+                {equipaveis.map(inv => {
+                  const rar = corRar(inv.item?.raridade || 'comum')
+                  return (
+                    <div
+                      key={inv.item_id}
+                      className="inv2-card"
+                      style={{ '--rar-borda': rar.borda, '--rar-bg': rar.bg, '--rar-cor': rar.texto, '--rar-glow': rar.glow }}
+                    >
+                      <div className="inv2-card-icone">{inv.item?.icone}</div>
+                      <div className="inv2-card-nome">{inv.item?.nome}</div>
+                      <div className="inv2-card-slot">{SLOTS.find(s => s.id === inv.item?.slot)?.nome}</div>
+                      <div className="inv2-card-desc">{gerarDescricaoItem(inv.item)}</div>
+                      <div className="inv2-card-rar">{(inv.item?.raridade || 'comum').toUpperCase()}</div>
+                      <div className="inv2-card-actions">
+                        <button className="inv2-btn inv2-btn-verde" onClick={() => equipar(inv.item_id)}>Equipar</button>
+                        {inv.item?.preco > 0 && (
+                          <button className="inv2-btn inv2-btn-vender" onClick={() => venderItem(inv.item_id)}>
+                            R${fmt(Math.max(1, Math.floor((inv.item?.preco || 0) * 0.7)))}
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          )}
+        </>
+      )}
+
+      {/* === ABA CONSUMIVEIS === */}
+      {aba === 'consumiveis' && (
+        <div className="inv2-section" data-tutorial="inv-consumiveis">
+          {consumiveis.length === 0 && (
+            <p className="inv2-empty">Sem consumíveis. Compre na <a href="/loja" style={{ color: '#43a7ff' }}>Loja</a>!</p>
+          )}
+          <div className="inv2-grid">
+            {consumiveis.map(inv => {
+              const rar = corRar(inv.item?.raridade || 'comum')
+              const cdTs = inv.item?.recupera_energia > 0 ? inv.proximo_em : jogador.proximo_consumivel_em
+              return (
+                <div
+                  key={inv.item_id}
+                  className="inv2-card"
+                  style={{ '--rar-borda': rar.borda, '--rar-bg': rar.bg, '--rar-cor': rar.texto, '--rar-glow': rar.glow }}
+                >
+                  <div className="inv2-card-icone">{inv.item?.icone}</div>
+                  {inv.quantidade > 1 && <div className="inv2-card-qtd">x{inv.quantidade}</div>}
+                  <div className="inv2-card-nome">{inv.item?.nome}</div>
+                  <div className="inv2-card-desc">{gerarDescricaoItem(inv.item)}</div>
+                  <div className="inv2-card-rar">{(inv.item?.raridade || 'comum').toUpperCase()}</div>
+                  <div className="inv2-card-actions">
+                    <BotaoCooldown ts={cdTs} onUsar={() => usarItem(inv.item_id)} />
+                    {inv.item?.preco > 0 && (
+                      <button className="inv2-btn inv2-btn-vender" onClick={() => venderItem(inv.item_id)}>
+                        R${fmt(Math.max(1, Math.floor((inv.item?.preco || 0) * 0.7)))}
+                      </button>
+                    )}
+                  </div>
                 </div>
               )
             })}
@@ -237,25 +357,33 @@ export default function Inventario() {
         </div>
       )}
 
-      {/* Consumíveis */}
-      {consumiveis.length > 0 && (
-        <div className="pf-section" data-tutorial="inv-consumiveis">
-          <div className="pf-section-header"><h3>🍎 CONSUMÍVEIS ({consumiveis.length})</h3></div>
-          <div className="pf-inv-grid">{consumiveis.map(inv => renderCard(inv, 'consumivel'))}</div>
-        </div>
-      )}
-
-      {/* Equipamentos na mochila */}
-      {equipaveis.length > 0 && (
-        <div className="pf-section">
-          <div className="pf-section-header"><h3>📦 EQUIPAMENTOS ({equipaveis.length})</h3></div>
-          <div className="pf-inv-grid">{equipaveis.map(inv => renderCard(inv, 'equipamento'))}</div>
+      {/* === ABA CONTRATOS === */}
+      {aba === 'contratos' && contratos.length > 0 && (
+        <div className="inv2-section">
+          <div className="inv2-grid">
+            {contratos.map(inv => {
+              const rar = corRar(inv.item?.raridade || 'comum')
+              return (
+                <div
+                  key={inv.item_id}
+                  className="inv2-card"
+                  style={{ '--rar-borda': rar.borda, '--rar-bg': rar.bg, '--rar-cor': rar.texto, '--rar-glow': rar.glow }}
+                >
+                  <div className="inv2-card-eq-badge">EQUIPADO</div>
+                  <div className="inv2-card-icone">{inv.item?.icone}</div>
+                  <div className="inv2-card-nome">{inv.item?.nome}</div>
+                  <div className="inv2-card-desc">{gerarDescricaoItem(inv.item)}</div>
+                  <div className="inv2-card-rar">{(inv.item?.raridade || 'comum').toUpperCase()}</div>
+                </div>
+              )
+            })}
+          </div>
         </div>
       )}
 
       {inventario.length === 0 && (
-        <div className="pf-section">
-          <p className="pf-empty">Bolsa vazia. Compre itens na Loja ou complete Missões!</p>
+        <div className="inv2-section">
+          <p className="inv2-empty">Mochila vazia. Compre itens na Loja ou complete missões!</p>
         </div>
       )}
     </>

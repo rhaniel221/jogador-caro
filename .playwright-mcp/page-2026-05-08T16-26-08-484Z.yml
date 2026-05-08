@@ -1,0 +1,146 @@
+- generic [ref=e1]:
+  - 'button "Conta do Google: Rhaniel Barbosa (brhaniel@gmail.com)" [ref=e8] [cursor=pointer]':
+    - img [ref=e10]
+  - main [ref=e12]:
+    - button "Nova conversa" [ref=e255] [cursor=pointer]:
+      - generic [ref=e257]: Gemini
+    - generic [ref=e15]:
+      - link "Fazer upgrade para Google AI Plus" [ref=e18]:
+        - img [ref=e19]: spark
+        - generic [ref=e21]: Fazer upgrade para Google AI Plus
+      - button "Abrir o menu de conversa." [ref=e259] [cursor=pointer]:
+        - img [ref=e260]: more_vert
+    - generic [ref=e34]:
+      - navigation "Abrir barra lateral" [ref=e35]:
+        - generic [ref=e37]:
+          - button "Pesquisa" [ref=e39] [cursor=pointer]:
+            - img [ref=e40]: search
+          - generic [ref=e43]:
+            - group [ref=e44]:
+              - link "Nova conversa" [ref=e46] [cursor=pointer]:
+                - /url: /app
+                - img [ref=e49]: edit_square
+                - generic [ref=e53]: Nova conversa
+            - generic [ref=e54]:
+              - link "Meus itens" [ref=e73] [cursor=pointer]:
+                - /url: mystuff
+                - img [ref=e76]: family_star
+                - generic [ref=e77]: Meus itens
+              - generic [ref=e264]:
+                - link "Notebooks" [ref=e266] [cursor=pointer]:
+                  - /url: /notebooks/view
+                  - generic [ref=e267]: Notebooks
+                  - img [ref=e270]: keyboard_arrow_right
+                - generic "Novo notebook" [ref=e272] [cursor=pointer]:
+                  - img [ref=e275]: add_2
+                  - generic [ref=e276]: Novo notebook
+              - generic [ref=e79]:
+                - link "Gems" [ref=e82] [cursor=pointer]:
+                  - /url: /gems/view
+                  - generic [ref=e83]: Gems
+                  - img [ref=e86]: keyboard_arrow_right
+                - region
+              - generic [ref=e89]:
+                - heading "Conversas" [level=1] [ref=e91]
+                - region [ref=e92]:
+                  - 'button "Gere uma imagem 1024x1024 com fundo TRANSPARENTE (PNG), estilo render 3D AAA mobile-game (igual ícones de FIFA Mobile), sem moldura, sem texto. ÍCONE: BOLA DE FUTEBOL VELHA E MURCHA NA RUA - Uma bola de futebol antiga, gasta, ligeiramente murcha (semi-vazia), com couro descascado e sujeira - Posicionada num pedaço de asfalto/calçada de rua (chão visível só uma parte pequena pra dar contexto) - Iluminação dramática vinda de cima - Sombra suave embaixo - Vibe: começo da jornada, bola humilde de garoto pobre encontrada na rua - Composição centralizada, fácil de reconhecer mesmo em 64x64" [ref=e94] [cursor=pointer]':
+                    - generic [ref=e95]: "Gere uma imagem 1024x1024 com fundo TRANSPARENTE (PNG), estilo render 3D AAA mobile-game (igual ícones de FIFA Mobile), sem moldura, sem texto. ÍCONE: BOLA DE FUTEBOL VELHA E MURCHA NA RUA - Uma bola de futebol antiga, gasta, ligeiramente murcha (semi-vazia), com couro descascado e sujeira - Posicionada num pedaço de asfalto/calçada de rua (chão visível só uma parte pequena pra dar contexto) - Iluminação dramática vinda de cima - Sombra suave embaixo - Vibe: começo da jornada, bola humilde de garoto pobre encontrada na rua - Composição centralizada, fácil de reconhecer mesmo em 64x64"
+                  - button "Desafio de Pênalti com Vídeos" [ref=e99] [cursor=pointer]:
+                    - generic [ref=e100]: Desafio de Pênalti com Vídeos
+                  - button "Imagem Personalizada Para Aplicativo" [ref=e104] [cursor=pointer]:
+                    - generic [ref=e105]: Imagem Personalizada Para Aplicativo
+                  - button "Criação de Vídeo para Novo Produto" [ref=e109] [cursor=pointer]:
+                    - generic [ref=e110]: Criação de Vídeo para Novo Produto
+                  - button "Produto 3D Embalagem Plástico" [ref=e114] [cursor=pointer]:
+                    - generic [ref=e115]: Produto 3D Embalagem Plástico
+                  - button "Erro na Criação de Imagem" [ref=e119] [cursor=pointer]:
+                    - generic [ref=e120]: Erro na Criação de Imagem
+                  - 'button "Branding Completo NutrAction: Visual e Estratégia" [ref=e124] [cursor=pointer]':
+                    - generic [ref=e125]: "Branding Completo NutrAction: Visual e Estratégia"
+                  - 'button "Dívida Tributária: Opções e Estratégias" [ref=e129] [cursor=pointer]':
+                    - generic [ref=e130]: "Dívida Tributária: Opções e Estratégias"
+                  - button "Criação de Vídeos para TikTok" [ref=e134] [cursor=pointer]:
+                    - generic [ref=e135]: Criação de Vídeos para TikTok
+                  - button "Vídeo Gerado a Partir de Imagens" [ref=e139] [cursor=pointer]:
+                    - generic [ref=e140]: Vídeo Gerado a Partir de Imagens
+                  - button "Go API Login POST Method Error" [ref=e144] [cursor=pointer]:
+                    - generic [ref=e145]: Go API Login POST Method Error
+                  - button "Atualização e Melhoria de Currículo" [ref=e149] [cursor=pointer]:
+                    - generic [ref=e150]: Atualização e Melhoria de Currículo
+                  - button "Inventário com Cooldown Individualizado" [ref=e154] [cursor=pointer]:
+                    - generic [ref=e155]: Inventário com Cooldown Individualizado
+            - group [ref=e158]:
+              - button "Settings & help" [ref=e160] [cursor=pointer]:
+                - img [ref=e163]: settings_2
+                - generic [ref=e167]: Configurações e ajuda
+      - generic [ref=e174]:
+        - generic [ref=e175]:
+          - heading "Conversa com o Gemini" [level=1] [ref=e176]
+          - generic [ref=e280]:
+            - generic [ref=e285]:
+              - button "Copiar comando" [ref=e287] [cursor=pointer]:
+                - img [ref=e288]: content_copy
+              - generic [ref=e291]:
+                - button "Editar" [disabled]:
+                  - img: edit
+              - generic [ref=e293]:
+                - heading [level=2] [ref=e294]:
+                  - generic [ref=e295]: Você disse
+                  - paragraph [ref=e296]: Gere uma imagem 1024x1536 (vertical, retrato) com fundo TRANSPARENTE (PNG), estilo render 3D AAA mobile-game (igual ícones de FIFA Ultimate Team), sem moldura, sem texto.
+                  - paragraph [ref=e297]
+                  - paragraph [ref=e299]: PERSONAGEM PARA INVENTÁRIO DE JOGADOR DE FUTEBOL
+                  - paragraph [ref=e300]: "- Jogador de futebol masculino jovem, brasileiro, em vista frontal completa (cabeça aos pés visíveis)"
+                  - paragraph [ref=e301]: "- Pose levemente em T-pose mas natural: pernas separadas em postura confiante, braços levemente abertos pra fora do corpo (não totalmente estendidos)"
+                  - paragraph [ref=e302]: "- Uniforme BÁSICO BRANCO E PRETO neutro:"
+                  - paragraph [ref=e303]: "- Camisa branca lisa simples (sem números, sem escudo, sem texto)"
+                  - paragraph [ref=e304]: "- Shorts pretos lisos"
+                  - paragraph [ref=e305]: "- Meiões brancos longos"
+                  - paragraph [ref=e306]: "- Chuteiras pretas básicas"
+                  - paragraph [ref=e307]: "- Pele morena/parda"
+                  - paragraph [ref=e308]: "- Cabelo curto castanho escuro"
+                  - paragraph [ref=e309]: "- Expressão neutra confiante"
+                  - paragraph [ref=e310]: "- Iluminação cinematográfica dramática vinda do alto, sombra suave atrás"
+                  - paragraph [ref=e311]: "- TODO O CORPO VISÍVEL — sem corte de cabeça nem pés"
+                  - paragraph [ref=e312]: "- Composição centralizada"
+                  - paragraph [ref=e313]: "- IMPORTANTE: deixar áreas de cabeça, peito, braços, mãos, quadril, pernas e pés bem visíveis (ícones de equipamento serão sobrepostos depois)"
+                - button "Abrir" [ref=e314] [cursor=pointer]:
+                  - img [ref=e315]: expand_more
+            - generic [ref=e322]:
+              - generic [ref=e325]:
+                - generic [ref=e327]:
+                  - generic:
+                    - generic:
+                      - img
+                - generic:
+                  - img
+              - generic [ref=e328]:
+                - generic [ref=e331]:
+                  - button "Criando sua imagem...":
+                    - generic:
+                      - generic:
+                        - generic:
+                          - generic: Criando sua imagem...
+                - heading "O Gemini disse" [level=2] [ref=e332]
+        - generic [ref=e220]:
+          - group [ref=e221]:
+            - generic [ref=e224]:
+              - textbox "Insira um comando para o Gemini" [active] [ref=e229]:
+                - text: Peça ao Gemini
+                - paragraph [ref=e333]
+              - generic [ref=e231]:
+                - button "Abrir o menu de envio de arquivo" [ref=e338] [cursor=pointer]:
+                  - img [ref=e339]: add_2
+                - button "Ferramentas" [ref=e345]:
+                  - img [ref=e346]: page_info
+                  - generic [ref=e349]: Ferramentas
+              - generic [ref=e232]:
+                - button "Abrir seletor de modo" [ref=e235]:
+                  - generic [ref=e237]:
+                    - generic [ref=e238]: Rápido
+                    - img [ref=e239]: keyboard_arrow_down
+                - generic [ref=e242]:
+                  - text: mic
+                  - button "Parar resposta" [ref=e353] [cursor=pointer]:
+                    - text: send
+                    - img [ref=e355]: stop
+          - paragraph [ref=e358]: O Gemini é uma IA e pode cometer erros.
