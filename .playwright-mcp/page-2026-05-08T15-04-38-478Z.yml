@@ -1,0 +1,584 @@
+- generic [ref=e1]:
+  - link "Pular para o conteúdo" [ref=e3] [cursor=pointer]:
+    - /url: "#main"
+  - generic [ref=e7]:
+    - generic [ref=e9]:
+      - navigation "Barra lateral":
+        - generic:
+          - generic:
+            - generic:
+              - button "Abrir barra lateral":
+                - img
+        - generic:
+          - generic:
+            - link "Novo chat":
+              - /url: /
+              - generic:
+                - img
+              - generic: Novo chat
+          - generic:
+            - button "Buscar em chats":
+              - generic:
+                - img
+              - generic: Buscar em chats
+          - generic:
+            - button "Recentes":
+              - generic:
+                - img
+              - generic: Recentes
+        - generic:
+          - generic:
+            - button "Abrir menu do perfil":
+              - generic:
+                - generic:
+                  - img "Imagem de perfil"
+      - generic [ref=e10]:
+        - heading "Histórico de chats" [level=2] [ref=e11]
+        - generic [ref=e12]:
+          - navigation "Histórico de chats" [ref=e13]:
+            - generic [ref=e16]:
+              - link "Início" [ref=e17] [cursor=pointer]:
+                - /url: /
+                - generic [ref=e18]: ChatGPT
+              - button "Fechar barra lateral" [expanded] [ref=e20]:
+                - img [ref=e21]
+            - list [ref=e24]:
+              - listitem [ref=e25]:
+                - link "Novo chat Shift Command O" [ref=e115] [cursor=pointer]:
+                  - /url: /
+                  - generic [ref=e27]:
+                    - img [ref=e117]
+                    - generic [ref=e120]: Novo chat
+                  - generic [ref=e121]:
+                    - generic "Shift" [ref=e122]:
+                      - generic [ref=e123]: ⇧
+                    - generic "Command" [ref=e124]:
+                      - generic [ref=e125]: ⌘
+                    - generic [ref=e127]: O
+              - listitem [ref=e32]:
+                - button "Buscar em chats Command K" [ref=e128] [cursor=pointer]:
+                  - generic [ref=e34]:
+                    - img [ref=e130]
+                    - generic [ref=e133]: Buscar em chats
+                  - generic [ref=e134]:
+                    - generic "Command" [ref=e135]:
+                      - generic [ref=e136]: ⌘
+                    - generic [ref=e138]: K
+            - link "Codex" [ref=e39] [cursor=pointer]:
+              - /url: /codex/cloud
+              - generic [ref=e40]:
+                - img [ref=e42]
+                - generic [ref=e45]: Codex
+              - img [ref=e47]
+            - generic [ref=e50] [cursor=pointer]:
+              - img [ref=e52]
+              - generic [ref=e55]: Mais
+            - generic [ref=e139]:
+              - button "GPTs" [expanded] [ref=e141] [cursor=pointer]:
+                - heading "GPTs" [level=2] [ref=e142]
+              - list [ref=e143]:
+                - listitem [ref=e144]:
+                  - link "Website Generator" [ref=e145] [cursor=pointer]:
+                    - /url: /g/g-iYSeH3EAI-website-generator
+                    - generic [ref=e150]: Website Generator
+                    - button [ref=e152]:
+                      - img [ref=e154]
+                - listitem [ref=e156]:
+                  - link "DevOps Expert" [ref=e157] [cursor=pointer]:
+                    - /url: /g/g-12DKj6Wax-devops-expert
+                    - generic [ref=e162]: DevOps Expert
+                    - button [ref=e164]:
+                      - img [ref=e166]
+              - link "Explorar GPTs" [ref=e168] [cursor=pointer]:
+                - /url: /gpts
+                - img [ref=e170]
+                - generic [ref=e173]: Explorar GPTs
+            - generic [ref=e174]:
+              - button "Projetos" [expanded] [ref=e176] [cursor=pointer]:
+                - heading "Projetos" [level=2] [ref=e177]
+              - list [ref=e178]:
+                - listitem [ref=e179]:
+                  - button "Novo projeto" [ref=e180] [cursor=pointer]:
+                    - img [ref=e182]
+                    - generic [ref=e185]: Novo projeto
+                - listitem [ref=e186]:
+                  - link "Exibir chats Actyon Abrir opções do projeto para Actyon" [ref=e187] [cursor=pointer]:
+                    - /url: /g/g-p-693d6ebbb2848191b2e71b2fda5ad637-actyon/project
+                    - generic [ref=e188]:
+                      - button "Exibir chats" [ref=e190]:
+                        - generic [ref=e191]:
+                          - img "Verde Lótus" [ref=e194]
+                          - img [ref=e198]
+                      - generic [ref=e201]: Actyon
+                    - button "Abrir opções do projeto para Actyon" [ref=e203]:
+                      - img [ref=e205]
+                - listitem [ref=e207]:
+                  - link "Verde Cifrão Empresas Abrir opções do projeto para Empresas" [ref=e208] [cursor=pointer]:
+                    - /url: /g/g-p-6972397a04548191af18cde944b6aee3-empresas/project
+                    - generic [ref=e209]:
+                      - img "Verde Cifrão" [ref=e212]
+                      - generic [ref=e215]: Empresas
+                    - button "Abrir opções do projeto para Empresas" [ref=e217]:
+                      - img [ref=e219]
+                - listitem [ref=e221]:
+                  - link "Cor padrão, preta no modo claro, branca no modo escuro Pasta Programação Abrir opções do projeto para Programação" [ref=e222] [cursor=pointer]:
+                    - /url: /g/g-p-69723960efb88191aace3886a25973c3-programacao/project
+                    - generic [ref=e223]:
+                      - img "Cor padrão, preta no modo claro, branca no modo escuro Pasta" [ref=e226]
+                      - generic [ref=e229]: Programação
+                    - button "Abrir opções do projeto para Programação" [ref=e231]:
+                      - img [ref=e233]
+            - generic [ref=e235]:
+              - button "Recentes" [expanded] [ref=e237] [cursor=pointer]:
+                - heading "Recentes" [level=2] [ref=e238]
+              - list [ref=e240]:
+                - listitem [ref=e625]:
+                  - link "Ícone para futebol mobile" [ref=e626] [cursor=pointer]:
+                    - /url: /c/69fdf8d1-0800-83e9-9a71-6f1cf8e43fe4
+                    - generic [ref=e628]: Ícone para futebol mobile
+                    - button "Abrir opções de conversa para Ícone para futebol mobile" [ref=e631]:
+                      - img [ref=e633]
+                - listitem [ref=e241]:
+                  - link "Ícone Medalha ELO Ferro" [ref=e242] [cursor=pointer]:
+                    - /url: /c/69fde7f5-1ce4-83e9-bbfb-2a5a47d76b3b
+                    - generic [ref=e244]: Ícone Medalha ELO Ferro
+                    - button "Abrir opções de conversa para Ícone Medalha ELO Ferro" [ref=e247]:
+                      - img [ref=e249]
+                - listitem [ref=e251]:
+                  - link "Ícone 3D balões chat" [ref=e252] [cursor=pointer]:
+                    - /url: /c/69fd8bf5-49c4-83e9-9a21-177759a4303b
+                    - generic [ref=e254]: Ícone 3D balões chat
+                    - button "Abrir opções de conversa para Ícone 3D balões chat" [ref=e257]:
+                      - img [ref=e259]
+                - listitem [ref=e261]:
+                  - link "Criação de Ícone 3D" [ref=e262] [cursor=pointer]:
+                    - /url: /c/69fd8b7c-24dc-83e9-8d49-7b503a7320d9
+                    - generic [ref=e264]: Criação de Ícone 3D
+                    - button "Abrir opções de conversa para Criação de Ícone 3D" [ref=e267]:
+                      - img [ref=e269]
+                - listitem [ref=e271]:
+                  - link "Ícone 3D casinha aconchegante" [ref=e272] [cursor=pointer]:
+                    - /url: /c/69fd8b02-f804-83e9-9c7b-36b0033cd48d
+                    - generic [ref=e274]: Ícone 3D casinha aconchegante
+                    - button "Abrir opções de conversa para Ícone 3D casinha aconchegante" [ref=e277]:
+                      - img [ref=e279]
+                - listitem [ref=e281]:
+                  - link "Ícone 3D sacola compras" [ref=e282] [cursor=pointer]:
+                    - /url: /c/69fd8a85-f688-83e9-ab9c-c5d9bb04c15a
+                    - generic [ref=e284]: Ícone 3D sacola compras
+                    - button "Abrir opções de conversa para Ícone 3D sacola compras" [ref=e287]:
+                      - img [ref=e289]
+                - listitem [ref=e291]:
+                  - link "Ícone 3D jogador futebol" [ref=e292] [cursor=pointer]:
+                    - /url: /c/69fd8a04-3f0c-83e9-9075-8c5400758d13
+                    - generic [ref=e294]: Ícone 3D jogador futebol
+                    - button "Abrir opções de conversa para Ícone 3D jogador futebol" [ref=e297]:
+                      - img [ref=e299]
+                - listitem [ref=e301]:
+                  - link "Ícone 3D Pergaminho RPG" [ref=e302] [cursor=pointer]:
+                    - /url: /c/69fd898b-3bc4-83e9-b0f7-12450b3961ca
+                    - generic [ref=e304]: Ícone 3D Pergaminho RPG
+                    - button "Abrir opções de conversa para Ícone 3D Pergaminho RPG" [ref=e307]:
+                      - img [ref=e309]
+                - listitem [ref=e311]:
+                  - link "Ícone 3D Halter Fitness" [ref=e312] [cursor=pointer]:
+                    - /url: /c/69fd8939-b7c4-83e9-b727-3e3b1304689f
+                    - generic [ref=e314]: Ícone 3D Halter Fitness
+                    - button "Abrir opções de conversa para Ícone 3D Halter Fitness" [ref=e317]:
+                      - img [ref=e319]
+                - listitem [ref=e321]:
+                  - link "Ícone 3D Futebol Carreira" [ref=e322] [cursor=pointer]:
+                    - /url: /c/69fd88ec-94ec-83e9-a9e5-5648f81c83c0
+                    - generic [ref=e324]: Ícone 3D Futebol Carreira
+                    - button "Abrir opções de conversa para Ícone 3D Futebol Carreira" [ref=e327]:
+                      - img [ref=e329]
+                - listitem [ref=e331]:
+                  - link "Ícone 3D casa minimalista" [ref=e332] [cursor=pointer]:
+                    - /url: /c/69fd8876-b8d0-83e9-8289-25b675303477
+                    - generic [ref=e334]: Ícone 3D casa minimalista
+                    - button "Abrir opções de conversa para Ícone 3D casa minimalista" [ref=e337]:
+                      - img [ref=e339]
+                - listitem [ref=e341]:
+                  - link "Criação de imagem 3D" [ref=e342] [cursor=pointer]:
+                    - /url: /c/69fd87f4-17dc-83e9-b58e-ee845c1685aa
+                    - generic [ref=e344]: Criação de imagem 3D
+                    - button "Abrir opções de conversa para Criação de imagem 3D" [ref=e347]:
+                      - img [ref=e349]
+                - listitem [ref=e351]:
+                  - link "Criação de ícone 3D" [ref=e352] [cursor=pointer]:
+                    - /url: /c/69fd87a7-87f4-83e9-a918-e8181c87fa9a
+                    - generic [ref=e354]: Criação de ícone 3D
+                    - button "Abrir opções de conversa para Criação de ícone 3D" [ref=e357]:
+                      - img [ref=e359]
+                - listitem [ref=e361]:
+                  - link "Ícone 3D Campo Futebol" [ref=e362] [cursor=pointer]:
+                    - /url: /c/69fd8730-4960-83e9-93d4-bf5234ce4e76
+                    - generic [ref=e364]: Ícone 3D Campo Futebol
+                    - button "Abrir opções de conversa para Ícone 3D Campo Futebol" [ref=e367]:
+                      - img [ref=e369]
+                - listitem [ref=e371]:
+                  - link "Ícone 3D Camisa Futebol" [ref=e372] [cursor=pointer]:
+                    - /url: /c/69fd86ac-3844-83e9-84cc-c664d2a6fc3e
+                    - generic [ref=e374]: Ícone 3D Camisa Futebol
+                    - button "Abrir opções de conversa para Ícone 3D Camisa Futebol" [ref=e377]:
+                      - img [ref=e379]
+                - listitem [ref=e381]:
+                  - link "Ícone 3D calção futebol" [ref=e382] [cursor=pointer]:
+                    - /url: /c/69fd8660-2df4-83e9-ab11-57ec70e4df63
+                    - generic [ref=e384]: Ícone 3D calção futebol
+                    - button "Abrir opções de conversa para Ícone 3D calção futebol" [ref=e387]:
+                      - img [ref=e389]
+                - listitem [ref=e391]:
+                  - link "Ícone 3D meião futebol" [ref=e392] [cursor=pointer]:
+                    - /url: /c/69fd85e4-3628-83e9-babb-d5f44301917e
+                    - generic [ref=e394]: Ícone 3D meião futebol
+                    - button "Abrir opções de conversa para Ícone 3D meião futebol" [ref=e397]:
+                      - img [ref=e399]
+                - listitem [ref=e401]:
+                  - link "Criação de ícone 3D" [ref=e402] [cursor=pointer]:
+                    - /url: /c/69fd8569-2ffc-83e9-9202-c720aad655de
+                    - generic [ref=e404]: Criação de ícone 3D
+                    - button "Abrir opções de conversa para Criação de ícone 3D" [ref=e407]:
+                      - img [ref=e409]
+                - listitem [ref=e411]:
+                  - link "Criação de ícone 3D" [ref=e412] [cursor=pointer]:
+                    - /url: /c/69fd84ef-eee8-83e9-becc-e02e192f3015
+                    - generic [ref=e414]: Criação de ícone 3D
+                    - button "Abrir opções de conversa para Criação de ícone 3D" [ref=e417]:
+                      - img [ref=e419]
+                - listitem [ref=e421]:
+                  - link "Criação de ícone 3D" [ref=e422] [cursor=pointer]:
+                    - /url: /c/69fd8474-f670-83e9-b943-97cf6a090a08
+                    - generic [ref=e424]: Criação de ícone 3D
+                    - button "Abrir opções de conversa para Criação de ícone 3D" [ref=e427]:
+                      - img [ref=e429]
+                - listitem [ref=e431]:
+                  - link "Ícone 3D de massagem" [ref=e432] [cursor=pointer]:
+                    - /url: /c/69fd83fb-3d48-83e9-876c-0552eec9ccfd
+                    - generic [ref=e434]: Ícone 3D de massagem
+                    - button "Abrir opções de conversa para Ícone 3D de massagem" [ref=e437]:
+                      - img [ref=e439]
+                - listitem [ref=e441]:
+                  - link "Criação de ícone 3D" [ref=e442] [cursor=pointer]:
+                    - /url: /c/69fd8381-76d8-83e9-9e09-5d2581fcaf90
+                    - generic [ref=e444]: Criação de ícone 3D
+                    - button "Abrir opções de conversa para Criação de ícone 3D" [ref=e447]:
+                      - img [ref=e449]
+                - listitem [ref=e451]:
+                  - link "Criação de ícone 3D" [ref=e452] [cursor=pointer]:
+                    - /url: /c/69fd830c-df40-83e9-bf54-bdbae5ca51d8
+                    - generic [ref=e454]: Criação de ícone 3D
+                    - button "Abrir opções de conversa para Criação de ícone 3D" [ref=e457]:
+                      - img [ref=e459]
+                - listitem [ref=e461]:
+                  - link "Imagem 3D Marmita Brasileira" [ref=e462] [cursor=pointer]:
+                    - /url: /c/69fd828e-caf4-83e9-9062-d004f477fa47
+                    - generic [ref=e464]: Imagem 3D Marmita Brasileira
+                    - button "Abrir opções de conversa para Imagem 3D Marmita Brasileira" [ref=e467]:
+                      - img [ref=e469]
+                - listitem [ref=e471]:
+                  - link "Criação de ícone 3D" [ref=e472] [cursor=pointer]:
+                    - /url: /c/69fd8208-ffe8-83e9-9130-9b403972f1e8
+                    - generic [ref=e474]: Criação de ícone 3D
+                    - button "Abrir opções de conversa para Criação de ícone 3D" [ref=e477]:
+                      - img [ref=e479]
+                - listitem [ref=e481]:
+                  - link "Imagem 3D Roteador Wifi" [ref=e482] [cursor=pointer]:
+                    - /url: /c/69fd81bc-e57c-83e9-9dd7-2f6ff4a53a79
+                    - generic [ref=e484]: Imagem 3D Roteador Wifi
+                    - button "Abrir opções de conversa para Imagem 3D Roteador Wifi" [ref=e487]:
+                      - img [ref=e489]
+                - listitem [ref=e491]:
+                  - link "Imagem 3D Torneira Azul" [ref=e492] [cursor=pointer]:
+                    - /url: /c/69fd8142-9000-83e9-9b27-d1a98b46a801
+                    - generic [ref=e494]: Imagem 3D Torneira Azul
+                    - button "Abrir opções de conversa para Imagem 3D Torneira Azul" [ref=e497]:
+                      - img [ref=e499]
+                - listitem [ref=e501]:
+                  - link "Criação de Ícone 3D" [ref=e502] [cursor=pointer]:
+                    - /url: /c/69fd80f6-9934-83e9-b4e9-42cf7f8a5d2e
+                    - generic [ref=e504]: Criação de Ícone 3D
+                    - button "Abrir opções de conversa para Criação de Ícone 3D" [ref=e507]:
+                      - img [ref=e509]
+          - button "Rhaniel Barbosa, abra o menu do perfil" [ref=e59] [cursor=pointer]:
+            - img "Imagem de perfil" [ref=e521]
+            - generic [ref=e62]:
+              - generic [ref=e64]: Rhaniel Barbosa
+              - generic [ref=e67]: Plus
+    - generic [ref=e69]:
+      - banner:
+        - generic [ref=e72]:
+          - button "Compartilhar" [ref=e562] [cursor=pointer]:
+            - generic [ref=e563]:
+              - img [ref=e564]
+              - text: Compartilhar
+          - button "Abrir opções de conversa" [ref=e567] [cursor=pointer]:
+            - img [ref=e568]
+      - main [ref=e78]:
+        - generic [ref=e79]:
+          - generic [ref=e570]:
+            - generic [ref=e571]:
+              - heading "Você disse:" [level=4] [ref=e572]
+              - generic [ref=e574]:
+                - generic [ref=e580]:
+                  - checkbox "Mostrar mais" [ref=e581]
+                  - generic [ref=e583]: "Vou pedir uma série de ícones de trabalhos pra um jogo de futebol mobile (estilo browser-game / FIFA Mobile). Mantém **exatamente o mesmo estilo, formato e proporções** em todos: ESTILO MESTRE: - Render 3D AAA mobile-game, ilustração polida e detalhada - Fundo TRANSPARENTE (PNG, sem frame, sem moldura, sem círculo de fundo) - Quadrado 1024x1024 - Iluminação dramática vinda do topo, sombra suave embaixo do objeto - Cores saturadas e vibrantes - Sem texto, sem letras - Objeto único centralizado, fácil de reconhecer no tamanho de ícone (256px) - Estilo CONSISTENTE com /loja/comida.png e /coletas/campinho.png já existentes PRIMEIRO ÍCONE: **BOLA QUE SAIU DE CAMPO** - Uma bola de futebol de couro tradicional (preto e branco) parada na grama de fora do campo, ao lado de uma linha branca pintada - Pequena moita de grama verde alta ao redor da bola - Vibe: garoto mais novo pegando a bola que saiu, começo da carreira - Sem nada além da bola, grama e linha — composição limpa e fácil de reconhecer"
+                  - generic [ref=e584] [cursor=pointer]:
+                    - generic [ref=e585]: Mostrar mais
+                    - img [ref=e586]
+                - generic [ref=e588]:
+                  - group "Suas ações de mensagem":
+                    - button "Copiar mensagem":
+                      - generic:
+                        - img
+                    - button "Editar mensagem":
+                      - generic:
+                        - img
+            - generic [ref=e590]:
+              - heading "O ChatGPT disse:" [level=4] [ref=e591]
+              - generic [ref=e593]:
+                - generic [ref=e600]:
+                  - button "Thought for 59s" [ref=e654] [cursor=pointer]:
+                    - text: Thought for 59s
+                    - img [ref=e655]
+                  - generic [ref=e660]:
+                    - button "Imagem gerada" [ref=e661] [cursor=pointer]:
+                      - generic [ref=e662]:
+                        - img "Imagem gerada" [ref=e664]
+                        - img [ref=e666]
+                        - img [ref=e668]
+                    - generic [ref=e670]:
+                      - button "Editar imagem" [ref=e672] [cursor=pointer]: Editar
+                      - button "Compartilhar esta imagem" [ref=e674] [cursor=pointer]:
+                        - img [ref=e676]
+                - generic [ref=e649]:
+                  - group "Ações de resposta":
+                    - button "Copiar resposta":
+                      - generic:
+                        - img
+                    - button "Imagem satisfatória":
+                      - generic:
+                        - img
+                    - button "Imagem insatisfatória":
+                      - generic:
+                        - img
+                    - button "Mais ações":
+                      - img
+            - generic [ref=e684]:
+              - heading "Você disse:" [level=4] [ref=e685]
+              - generic [ref=e687]:
+                - generic [ref=e693]:
+                  - checkbox "Mostrar mais" [ref=e694]
+                  - generic [ref=e696]: "Próximo, **mantendo exatamente o mesmo estilo, formato e proporções** (1024x1024, fundo transparente, render 3D AAA, sem moldura). **ÍCONE: VENDER FOGOS DE ARTIFÍCIO** - Um pacote/caixa de fogos de artifício/rojões coloridos amarrados, prontos pra vender - Detalhes: estopins enrolados saindo do topo, papel colorido (vermelho, amarelo, azul) brilhante - Pode ter uma faísca pequena ou brilho sutil em uma das pontas - Vibe: vendedor de rua na porta do estádio - Composição limpa, fácil de reconhecer no tamanho de ícone"
+                  - generic [ref=e697] [cursor=pointer]:
+                    - generic [ref=e698]: Mostrar mais
+                    - img [ref=e699]
+                - generic [ref=e701]:
+                  - group "Suas ações de mensagem":
+                    - button "Copiar mensagem":
+                      - generic:
+                        - img
+                    - button "Editar mensagem":
+                      - generic:
+                        - img
+            - generic [ref=e703]:
+              - heading "O ChatGPT disse:" [level=4] [ref=e704]
+              - generic [ref=e706]:
+                - generic [ref=e713]:
+                  - button "Thought for 1m 3s" [ref=e767] [cursor=pointer]:
+                    - text: Thought for 1m 3s
+                    - img [ref=e768]
+                  - generic [ref=e772]:
+                    - button "Imagem gerada" [ref=e773] [cursor=pointer]:
+                      - generic [ref=e774]:
+                        - img "Imagem gerada" [ref=e776]
+                        - img [ref=e778]
+                        - img [ref=e780]
+                    - generic [ref=e782]:
+                      - button "Editar imagem" [ref=e784] [cursor=pointer]: Editar
+                      - button "Compartilhar esta imagem" [ref=e786] [cursor=pointer]:
+                        - img [ref=e788]
+                - generic [ref=e739]:
+                  - group "Ações de resposta":
+                    - button "Copiar resposta":
+                      - generic:
+                        - img
+                    - button "Imagem satisfatória":
+                      - generic:
+                        - img
+                    - button "Imagem insatisfatória":
+                      - generic:
+                        - img
+                    - button "Mais ações":
+                      - img
+            - generic [ref=e796]:
+              - heading "Você disse:" [level=4] [ref=e797]
+              - generic [ref=e799]:
+                - generic [ref=e807]: "Próximo, mesmo estilo. **ÍCONE: VENDER DOGÃO NA PORTA DO ESTÁDIO** - Um cachorro-quente brasileiro tradicional bem caprichado: pão dourado, salsicha, batata palha por cima, ketchup e mostarda visíveis, milho/ervilha - Vapor saindo, parece quentinho e fresco - Sem prato/bandeja — só o dogão - Vibe: comida de rua brasileira, irresistível"
+                - generic [ref=e808]:
+                  - group "Suas ações de mensagem":
+                    - button "Copiar mensagem":
+                      - generic:
+                        - img
+                    - button "Editar mensagem":
+                      - generic:
+                        - img
+            - generic [ref=e810]:
+              - heading "O ChatGPT disse:" [level=4] [ref=e811]
+              - generic [ref=e813]:
+                - generic [ref=e820]:
+                  - button "Thought for 1m 5s" [ref=e874] [cursor=pointer]:
+                    - text: Thought for 1m 5s
+                    - img [ref=e875]
+                  - generic [ref=e879]:
+                    - button "Imagem gerada" [ref=e880] [cursor=pointer]:
+                      - generic [ref=e881]:
+                        - img "Imagem gerada" [ref=e883]
+                        - img [ref=e885]
+                        - img [ref=e887]
+                    - generic [ref=e889]:
+                      - button "Editar imagem" [ref=e891] [cursor=pointer]: Editar
+                      - button "Compartilhar esta imagem" [ref=e893] [cursor=pointer]:
+                        - img [ref=e895]
+                - generic [ref=e846]:
+                  - group "Ações de resposta":
+                    - button "Copiar resposta":
+                      - generic:
+                        - img
+                    - button "Imagem satisfatória":
+                      - generic:
+                        - img
+                    - button "Imagem insatisfatória":
+                      - generic:
+                        - img
+                    - button "Mais ações":
+                      - img
+            - generic [ref=e903]:
+              - heading "Você disse:" [level=4] [ref=e904]
+              - generic [ref=e906]:
+                - generic [ref=e914]: "Próximo, mesmo estilo. **ÍCONE: VENDER BEBIDAS NO ESTÁDIO** - Uma caixa térmica/cooler aberta cheia de garrafas de cerveja gelada e refrigerante, com gelo derretendo, gotas de água condensadas - Pode ter 1 lata visível na frente brilhando - Cores: cooler azul, latas vermelhas/verdes - Vibe: calor de estádio, refrescante"
+                - generic [ref=e915]:
+                  - group "Suas ações de mensagem":
+                    - button "Copiar mensagem":
+                      - generic:
+                        - img
+                    - button "Editar mensagem":
+                      - generic:
+                        - img
+            - generic [ref=e917]:
+              - heading "O ChatGPT disse:" [level=4] [ref=e918]
+              - generic [ref=e920]:
+                - generic [ref=e927]:
+                  - button "Thought for 1m 9s" [ref=e967] [cursor=pointer]:
+                    - text: Thought for 1m 9s
+                    - img [ref=e968]
+                  - generic [ref=e972]:
+                    - button "Imagem gerada" [ref=e973] [cursor=pointer]:
+                      - generic [ref=e974]:
+                        - img "Imagem gerada" [ref=e976]
+                        - img [ref=e978]
+                        - img [ref=e980]
+                    - generic [ref=e982]:
+                      - button "Editar imagem" [ref=e984] [cursor=pointer]: Editar
+                      - button "Compartilhar esta imagem" [ref=e986] [cursor=pointer]:
+                        - img [ref=e988]
+                - generic [ref=e990]:
+                  - group "Ações de resposta":
+                    - button "Copiar resposta":
+                      - generic:
+                        - img
+                    - button "Imagem satisfatória":
+                      - generic:
+                        - img
+                    - button "Imagem insatisfatória":
+                      - generic:
+                        - img
+                    - button "Mais ações":
+                      - img
+            - generic [ref=e997]:
+              - heading "Você disse:" [level=4] [ref=e998]
+              - generic [ref=e1000]:
+                - generic [ref=e1008]: "Próximo, mesmo estilo. **ÍCONE: DISTRIBUIR PANFLETO** - Um maço/leque de panfletos coloridos sendo entregues por uma mão estilizada (só braço/mão visível, ou só os panfletos sem a pessoa) - Papéis amarelos, vermelhos, azuis com gráficos de eventos abstratos (sem letras legíveis) - Pode ter alguns panfletos voando soltos - Vibe: trabalho de rua simples"
+                - generic [ref=e1009]:
+                  - group "Suas ações de mensagem":
+                    - button "Copiar mensagem":
+                      - generic:
+                        - img
+                    - button "Editar mensagem":
+                      - generic:
+                        - img
+            - generic [ref=e1011]:
+              - heading "O ChatGPT disse:" [level=4] [ref=e1012]
+              - generic [ref=e1014]:
+                - generic [ref=e1021]:
+                  - button "Thought for 1m 10s" [ref=e1078] [cursor=pointer]:
+                    - text: Thought for 1m 10s
+                    - img [ref=e1079]
+                  - generic [ref=e1083]:
+                    - button "Imagem gerada" [ref=e1084] [cursor=pointer]:
+                      - generic [ref=e1085]:
+                        - img "Imagem gerada" [ref=e1087]
+                        - img [ref=e1089]
+                        - img [ref=e1091]
+                    - generic [ref=e1093]:
+                      - button "Editar imagem" [ref=e1095] [cursor=pointer]: Editar
+                      - button "Compartilhar esta imagem" [ref=e1097] [cursor=pointer]:
+                        - img [ref=e1099]
+                - generic [ref=e1101]:
+                  - group "Ações de resposta":
+                    - button "Copiar resposta":
+                      - generic:
+                        - img
+                    - button "Imagem satisfatória":
+                      - generic:
+                        - img
+                    - button "Imagem insatisfatória":
+                      - generic:
+                        - img
+                    - button "Mais ações":
+                      - img
+            - generic [ref=e1108]:
+              - heading "Você disse:" [level=4] [ref=e1109]
+              - generic [ref=e1111]:
+                - generic [ref=e1119]: "Próximo, mesmo estilo. **ÍCONE: TRABALHAR NO LAVA-JATO** - Uma mangueira de pressão de lava-jato espirrando água com bolhas de sabão e espuma - Pode incluir uma esponja amarela/azul molhada com espuma branca - Carro estilizado parcialmente visível ao fundo (opcional, mas pode reforçar contexto) ou só os instrumentos - Vibe: trabalho braçal, água por todo lado, brilho úmido"
+                - generic [ref=e1120]:
+                  - group "Suas ações de mensagem":
+                    - button "Copiar mensagem":
+                      - generic:
+                        - img
+                    - button "Editar mensagem":
+                      - generic:
+                        - img
+            - generic [ref=e1122]:
+              - heading "O ChatGPT disse:" [level=4] [ref=e1123]
+              - generic [ref=e1132]:
+                - generic [ref=e1145]:
+                  - button "Ensuring icon style consistency" [ref=e1148] [cursor=pointer]:
+                    - generic [ref=e1150]:
+                      - generic [ref=e1152]: Ensuring icon style consistency
+                      - img [ref=e1153]
+                  - paragraph [ref=e1157] [cursor=pointer]: I’ll make sure to avoid any copyright concerns.
+                - generic "Gerando imagem…" [ref=e1138]
+          - generic [ref=e89]:
+            - button [ref=e608] [cursor=pointer]:
+              - img [ref=e609]
+            - generic [ref=e94]:
+              - generic [ref=e98]:
+                - button "Adicionar arquivos e mais" [ref=e101] [cursor=pointer]:
+                  - img
+                - textbox "Converse com o ChatGPT" [active] [ref=e522]:
+                  - paragraph [ref=e1140]: Pergunte alguma coisa
+                - generic [ref=e105]:
+                  - button "Raciocínio" [ref=e528] [cursor=pointer]:
+                    - generic [ref=e529]: Raciocínio
+                    - img
+                  - generic [ref=e106]:
+                    - button "Iniciar ditado" [ref=e530] [cursor=pointer]:
+                      - img
+                    - button "Parar de responder" [ref=e1141] [cursor=pointer]:
+                      - img [ref=e1142]
+              - button [ref=e111]
+              - button [ref=e112]
+            - generic [ref=e624]: O ChatGPT pode cometer erros. Confira informações importantes. Consulte as Preferências de cookies.
+  - alert [ref=e113]
+  - status [ref=e114]

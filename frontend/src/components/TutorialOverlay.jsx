@@ -3,7 +3,7 @@ import { useTutorial } from '../context/TutorialContext'
 import { useGame } from '../context/GameContext'
 
 export default function TutorialOverlay() {
-  const { currentStep, isActive, visible, advance, skip, faseInfo } = useTutorial()
+  const { currentStep, isActive, visible, advance, faseInfo } = useTutorial()
   const { activeDialog } = useGame()
   const [rect, setRect] = useState(null)
   const rafRef = useRef(null)
@@ -132,7 +132,6 @@ export default function TutorialOverlay() {
         <div className="tutorial-texto">{currentStep.texto}</div>
 
         <div className="tutorial-actions">
-          <span className="tutorial-skip" onClick={skip}>Pular</span>
           {isNav ? (
             <span className="tutorial-hint">👆 Clique no elemento destacado</span>
           ) : (

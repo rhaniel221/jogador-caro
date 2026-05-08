@@ -1,13 +1,64 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useCallback, useRef } from 'react'
 import { useGame } from '../context/GameContext'
 import API from '../api'
 
+// ================================================================
+// FASES DA NARRATIVA
+// ================================================================
 const FASES = {
-  1: { titulo: 'O Sonho', icone: '💭', cor: '#1a7dff' },
-  2: { titulo: 'O Campinho', icone: '🏟️', cor: '#00b848', arte: '/estadios/campo-simples.png', desbloqueio: 'Campinho Simples Liberado!' },
-  3: { titulo: 'O Estádio', icone: '⚽', cor: '#ff7a00', arte: '/estadio.png', desbloqueio: 'Acesso ao Estádio Liberado!' },
+  1: {
+    titulo: 'O Sonho',
+    subtitulo: 'Capítulo Um',
+    cor: '#1a7dff',
+    img: '/historia/fase-sonho.png',
+    fallbackIcone: '💭',
+    abertura: {
+      linhas: [
+        'Você é mais um.',
+        'Mais um moleque do bairro com a chuteira gasta e o coração inquieto.',
+        'A vizinhança sabe seu nome. Ninguém ainda sabe sua história.',
+        'Mas hoje, na curva da rua de terra, vai começar tudo.',
+      ],
+    },
+    fechamento: 'Você não tinha um campo. Mas tinha a bola. E tinha o sonho.',
+  },
+  2: {
+    titulo: 'O Campinho',
+    subtitulo: 'Capítulo Dois',
+    cor: '#00b848',
+    img: '/historia/fase-campinho.png',
+    fallbackIcone: '🏟️',
+    desbloqueio: 'Campinho liberado!',
+    abertura: {
+      linhas: [
+        'Não é estádio. Não tem grama de verdade.',
+        'É um terreno baldio com duas pedras como traves.',
+        'Mas é teu. É onde tu vais virar craque.',
+      ],
+    },
+    fechamento: 'Tu construiu o teu primeiro palco. A torcida ainda é só de moleques. Mas ela vai crescer.',
+  },
+  3: {
+    titulo: 'O Estádio',
+    subtitulo: 'Capítulo Três',
+    cor: '#ff7a00',
+    img: '/historia/fase-estadio.png',
+    fallbackIcone: '🏟️',
+    desbloqueio: 'Acesso ao estádio!',
+    abertura: {
+      linhas: [
+        'O estádio não te conhece ainda.',
+        'Mas tu chegaste — pela porta de serviço, vendendo dogão pra entrar.',
+        'O cheiro de gramado, o eco da torcida... isso vai marcar tua alma.',
+      ],
+    },
+    fechamento: 'Tu não és mais o moleque da rua. Agora a cidade sabe teu nome. E tua carreira começa AGORA.',
+  },
 }
 
+// ================================================================
+// TIMER (mantido)
+// ================================================================
 function TimerDisplay({ inicioEm, tempoMinutos, onDone }) {
   const [restante, setRestante] = useState(0)
 
@@ -35,12 +86,15 @@ function TimerDisplay({ inicioEm, tempoMinutos, onDone }) {
   const seg = restante % 60
   return (
     <span className="missao-timer">
-      {min}:{seg.toString().padStart(2, '0')}
+      ⏳ {min}:{seg.toString().padStart(2, '0')}
     </span>
   )
 }
 
-function MissaoCard({ missao, onExecutar, onPular, loading }) {
+// ================================================================
+// MISSAO CARD — visual cinematográfico
+// ================================================================
+function MissaoCard({ missao, onExecutar, onPular, loading, indice, faseCor }) {
   const isLoading = loading === missao.id
   const { status, tipo, vezes_feitas, vezes_necessarias, tempo_minutos, inicio_em } = missao
   const [timerDone, setTimerDone] = useState(false)
@@ -61,74 +115,141 @@ function MissaoCard({ missao, onExecutar, onPular, loading }) {
   else statusClass = ' missao-disponivel'
 
   let btnLabel = 'Iniciar'
-  if (tipo === 'repetivel') btnLabel = `Fazer (${vezes_feitas}/${vezes_necessarias})`
-  if (tipo === 'timer' && !inicio_em) btnLabel = 'Iniciar'
+  if (tipo === 'repetivel') btnLabel = `Continuar (${vezes_feitas}/${vezes_necessarias})`
+  if (tipo === 'timer' && !inicio_em) btnLabel = 'Começar'
   if (tipo === 'timer' && inicio_em && disponivel) btnLabel = 'Concluir'
   if (completada) btnLabel = 'Concluída'
 
+  const pngImg = `/historia/missao-${missao.id}.png`
+
   return (
-    <div className={`missao-card${statusClass}`}>
-      <div className="missao-header">
-        <span className="missao-icone">{missao.icone}</span>
-        <div className="missao-info">
-          <h3 className="missao-nome">{missao.nome}</h3>
-          <p className="missao-desc">{missao.descricao}</p>
-        </div>
-        {completada && <span className="missao-check">✅</span>}
+    <article
+      className={`missao-card-cine${statusClass}`}
+      style={{ '--fase-cor': faseCor }}
+    >
+      <div className="mcc-num">{String(indice + 1).padStart(2, '0')}</div>
+
+      <div className="mcc-icon-wrap">
+        <img
+          src={pngImg}
+          alt={missao.nome}
+          className="mcc-icon-img"
+          onError={e => { e.currentTarget.style.display = 'none'; e.currentTarget.nextSibling.style.display = 'flex' }}
+        />
+        <span className="mcc-icon-emoji" style={{ display: 'none' }}>{missao.icone}</span>
+        {bloqueada && <div className="mcc-lock-overlay">🔒</div>}
+        {completada && <div className="mcc-done-overlay">✓</div>}
       </div>
 
-      {tipo === 'repetivel' && !completada && vezes_feitas > 0 && (
-        <div className="missao-progress">
-          <div className="missao-progress-track">
-            <div className="missao-progress-fill" style={{ width: Math.min(100, pct) + '%' }} />
+      <div className="mcc-body">
+        <h3 className="mcc-titulo">{missao.nome}</h3>
+        <p className="mcc-desc">{missao.descricao}</p>
+
+        {tipo === 'repetivel' && !completada && (
+          <div className="mcc-progress">
+            <div className="mcc-progress-track">
+              <div className="mcc-progress-fill" style={{ width: Math.min(100, pct) + '%' }} />
+            </div>
+            <span className="mcc-progress-text">{vezes_feitas}/{vezes_necessarias}</span>
           </div>
-          <span className="missao-progress-text">{vezes_feitas}/{vezes_necessarias}</span>
-        </div>
-      )}
+        )}
 
-      {emTimer && (
-        <div className="missao-timer-row">
-          <TimerDisplay
-            inicioEm={inicio_em}
-            tempoMinutos={tempo_minutos}
-            onDone={() => setTimerDone(true)}
-          />
-          <button className="btn-pular" onClick={() => onPular(missao.id)} disabled={isLoading}>
-            💎 Pular (1 moeda)
+        {!completada && !bloqueada && (
+          <div className="mcc-rewards">
+            {missao.recompensa_xp > 0 && <span className="mcc-reward mcc-reward-xp">+{missao.recompensa_xp} XP</span>}
+            {missao.recompensa_dinheiro > 0 && <span className="mcc-reward mcc-reward-din">+R$ {missao.recompensa_dinheiro}</span>}
+            {missao.recompensa_moedas > 0 && <span className="mcc-reward mcc-reward-coin">+{missao.recompensa_moedas} 💎</span>}
+            {missao.custo_energia > 0 && <span className="mcc-reward mcc-reward-energy">⚡ {missao.custo_energia}</span>}
+          </div>
+        )}
+
+        {emTimer && (
+          <div className="mcc-timer-row">
+            <TimerDisplay
+              inicioEm={inicio_em}
+              tempoMinutos={tempo_minutos}
+              onDone={() => setTimerDone(true)}
+            />
+            <button className="mcc-btn-pular" onClick={() => onPular(missao.id)} disabled={isLoading}>
+              💎 Pular (1)
+            </button>
+          </div>
+        )}
+
+        {!completada && !bloqueada && !emTimer && (
+          <button
+            className="mcc-btn-acao"
+            onClick={() => onExecutar(missao.id)}
+            disabled={isLoading}
+          >
+            {isLoading ? '...' : btnLabel}
+            <span className="mcc-btn-arrow">→</span>
           </button>
+        )}
+
+        {bloqueada && (
+          <div className="mcc-bloqueio">🔒 Termine a missão anterior pra liberar</div>
+        )}
+      </div>
+    </article>
+  )
+}
+
+// ================================================================
+// ABERTURA CINEMATOGRAFICA DA FASE
+// ================================================================
+function AberturaFase({ fase, onContinuar }) {
+  const [linhaAtiva, setLinhaAtiva] = useState(0)
+  const [pronto, setPronto] = useState(false)
+
+  useEffect(() => {
+    if (linhaAtiva >= fase.abertura.linhas.length) {
+      setPronto(true)
+      return
+    }
+    const timer = setTimeout(() => setLinhaAtiva(i => i + 1), 1800)
+    return () => clearTimeout(timer)
+  }, [linhaAtiva, fase.abertura.linhas.length])
+
+  return (
+    <div className="abertura-overlay" style={{ '--fase-cor': fase.cor }}>
+      <div className="abertura-bg" />
+      <div className="abertura-conteudo">
+        <div className="abertura-cap">{fase.subtitulo}</div>
+        <h1 className="abertura-titulo">{fase.titulo}</h1>
+
+        <div className="abertura-linhas">
+          {fase.abertura.linhas.slice(0, linhaAtiva + 1).map((linha, i) => (
+            <p key={i} className="abertura-linha" style={{ animationDelay: `${i * 0.1}s` }}>
+              {linha}
+            </p>
+          ))}
         </div>
-      )}
 
-      {!completada && !bloqueada && (
-        <div className="missao-rewards">
-          {missao.recompensa_xp > 0 && <span className="mr-xp">+{missao.recompensa_xp} XP</span>}
-          {missao.recompensa_dinheiro > 0 && <span className="mr-money">+R$ {missao.recompensa_dinheiro}</span>}
-          {missao.recompensa_moedas > 0 && <span className="mr-coins">+{missao.recompensa_moedas} 💎</span>}
-          {missao.custo_energia > 0 && <span className="mr-energy">⚡ {missao.custo_energia}</span>}
-        </div>
-      )}
-
-      {!completada && !bloqueada && !emTimer && (
-        <button
-          className="btn-work btn-missao"
-          onClick={() => onExecutar(missao.id)}
-          disabled={isLoading}
-        >
-          {isLoading ? '...' : btnLabel}
-        </button>
-      )}
-
-      {bloqueada && (
-        <div className="missao-lock">🔒 Complete a missão anterior</div>
-      )}
+        {pronto && (
+          <button className="abertura-btn" onClick={onContinuar}>
+            Começar →
+          </button>
+        )}
+        {!pronto && (
+          <div className="abertura-skip" onClick={() => { setLinhaAtiva(fase.abertura.linhas.length); setPronto(true) }}>
+            Continuar
+          </div>
+        )}
+      </div>
     </div>
   )
 }
 
+// ================================================================
+// PAGINA HISTORIA
+// ================================================================
 export default function Historia() {
   const { jogador, setJogador, mostrarNotificacao, jogadorID, setLevelUp, pushDialogo } = useGame()
   const [missoes, setMissoes] = useState([])
   const [loading, setLoading] = useState(null)
+  const [aberturaPendente, setAberturaPendente] = useState(null)
+  const aberturaShownRef = useRef(new Set())
 
   const carregarMissoes = useCallback(() => {
     if (!jogadorID) return
@@ -152,12 +273,31 @@ export default function Historia() {
   const missoesFase = missoes.filter(m => m.fase === faseAtiva)
   const faseInfo = FASES[faseAtiva] || FASES[1]
 
+  // Mostra abertura quando entra numa fase nova
+  useEffect(() => {
+    if (!missoes.length) return
+    const key = `historia-abertura-fase-${faseAtiva}-${jogadorID}`
+    if (aberturaShownRef.current.has(faseAtiva)) return
+    if (localStorage.getItem(key)) return
+    // Só mostra abertura se a fase tem missões pendentes (não exibe ao revisitar fase já completada)
+    const temPendente = missoesFase.some(m => !m.completada)
+    if (!temPendente) return
+    aberturaShownRef.current.add(faseAtiva)
+    setAberturaPendente(faseAtiva)
+  }, [faseAtiva, missoes.length, jogadorID])
+
+  function fecharAbertura() {
+    if (aberturaPendente) {
+      localStorage.setItem(`historia-abertura-fase-${aberturaPendente}-${jogadorID}`, '1')
+    }
+    setAberturaPendente(null)
+  }
+
   async function handleExecutar(missaoID) {
     setLoading(missaoID)
     try {
       const missao = missoes.find(m => m.id === missaoID)
 
-      // Mostra diálogo de início ANTES de chamar a API (na fila)
       if (missao?.dialogo_inicio && missao.status === 'disponivel' && missao.vezes_feitas === 0) {
         pushDialogo({ tipo: 'dialogo', texto: missao.dialogo_inicio, icone: missao.icone })
       }
@@ -170,7 +310,6 @@ export default function Historia() {
       if (res.sucesso) {
         if (res.jogador) setJogador(res.jogador)
 
-        // Diálogo de resposta (na fila, aparece depois do primeiro)
         if (res.dialogo) {
           pushDialogo({ tipo: 'dialogo', texto: res.dialogo, icone: missao?.icone })
         }
@@ -178,7 +317,6 @@ export default function Historia() {
         if (res.missao?.completada) {
           mostrarNotificacao('Missão concluída! ' + (missao?.nome || ''), 'sucesso')
 
-          // Verifica se completou a última missão da fase → novo capítulo
           const faseAtualMissoes = missoes.filter(m => m.fase === missao.fase)
           const outrasCompletas = faseAtualMissoes.filter(m => m.id !== missaoID).every(m => m.completada)
           if (outrasCompletas) {
@@ -188,9 +326,9 @@ export default function Historia() {
                 tipo: 'novo_capitulo',
                 fase: missao.fase + 1,
                 titulo: proxFase.titulo,
-                icone: proxFase.icone,
+                icone: proxFase.fallbackIcone,
                 desbloqueio: proxFase.desbloqueio,
-                arte: proxFase.arte,
+                arte: proxFase.img,
               })
             }
           }
@@ -222,7 +360,6 @@ export default function Historia() {
       if (res.sucesso) {
         if (res.jogador) setJogador(res.jogador)
         mostrarNotificacao('Tempo pulado! 💎', 'sucesso')
-        // Após pular o timer, executa a missão direto (conclui + mostra diálogos)
         setLoading(null)
         await handleExecutar(missaoID)
         return
@@ -237,47 +374,80 @@ export default function Historia() {
 
   return (
     <>
-      <div className="historia-header">
-        <span className="historia-fase-icone">{faseInfo.icone}</span>
-        <div>
-          <h2 className="historia-titulo">FASE {faseAtiva}: {faseInfo.titulo}</h2>
-          <p className="historia-sub">Complete as missões para avançar na história</p>
-        </div>
-      </div>
+      {aberturaPendente && (
+        <AberturaFase fase={FASES[aberturaPendente]} onContinuar={fecharAbertura} />
+      )}
 
-      <div className="fases-progress">
+      {/* Cabeçalho cinematográfico da fase */}
+      <header className="historia-cine-header" style={{ '--fase-cor': faseInfo.cor }}>
+        <div className="hch-img-wrap">
+          <img
+            src={faseInfo.img}
+            alt={faseInfo.titulo}
+            className="hch-img"
+            onError={e => { e.currentTarget.style.display = 'none'; e.currentTarget.nextSibling.style.display = 'flex' }}
+          />
+          <span className="hch-img-emoji" style={{ display: 'none' }}>{faseInfo.fallbackIcone}</span>
+        </div>
+        <div className="hch-info">
+          <div className="hch-cap">{faseInfo.subtitulo}</div>
+          <h1 className="hch-titulo">{faseInfo.titulo}</h1>
+          <p className="hch-sub">Sua história. Seu legado. Comece a forjar agora.</p>
+        </div>
+      </header>
+
+      {/* Barra de capítulos */}
+      <div className="historia-fases-bar">
         {Object.entries(FASES).map(([num, info]) => {
           const n = parseInt(num)
           const done = n < faseAtiva || todasCompletas
           const active = n === faseAtiva && !todasCompletas
+          const future = n > faseAtiva && !todasCompletas
           return (
-            <div key={n} className={`fase-dot${done ? ' done' : ''}${active ? ' active' : ''}`}>
-              <span className="fase-dot-icone">{info.icone}</span>
-              <span className="fase-dot-label">{info.titulo}</span>
+            <div key={n} className={`hfb-step${done ? ' done' : ''}${active ? ' active' : ''}${future ? ' future' : ''}`}>
+              <div className="hfb-step-circle" style={{ '--cor': info.cor }}>
+                {done ? '✓' : n}
+              </div>
+              <div className="hfb-step-label">
+                <span className="hfb-step-cap">CAP. {n}</span>
+                <span className="hfb-step-titulo">{info.titulo}</span>
+              </div>
+              {n < 3 && <div className="hfb-step-line" />}
             </div>
           )
         })}
       </div>
 
       {todasCompletas ? (
-        <div className="historia-completa">
-          <span className="historia-completa-icone">🏆</span>
-          <h2>Parabéns!</h2>
-          <p>Você completou todas as missões da história!</p>
-          <p>Agora sua <strong>carreira profissional</strong> começa. Acesse os <strong>Trabalhos</strong> pelo menu!</p>
+        <div className="historia-completa-cine">
+          <div className="hcc-glow" />
+          <div className="hcc-trofeu">🏆</div>
+          <h2 className="hcc-titulo">A história começa agora</h2>
+          <p className="hcc-texto">
+            Você completou os primeiros capítulos. A rua, o campinho e o estádio te formaram.
+            Agora a vida real de craque começa — saia do menu Carreira e enfrente o mundo.
+          </p>
         </div>
       ) : (
-        <div className="missoes-lista" data-tutorial="missoes-lista">
-          {missoesFase.map(m => (
-            <MissaoCard
-              key={m.id}
-              missao={m}
-              onExecutar={handleExecutar}
-              onPular={handlePular}
-              loading={loading}
-            />
-          ))}
-        </div>
+        <>
+          <div className="historia-fase-frase">
+            "{faseInfo.fechamento}"
+          </div>
+
+          <div className="missoes-cine-lista" data-tutorial="missoes-lista">
+            {missoesFase.map((m, i) => (
+              <MissaoCard
+                key={m.id}
+                missao={m}
+                indice={i}
+                faseCor={faseInfo.cor}
+                onExecutar={handleExecutar}
+                onPular={handlePular}
+                loading={loading}
+              />
+            ))}
+          </div>
+        </>
       )}
     </>
   )

@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { Routes, Route, Navigate } from 'react-router-dom'
+import React, { useState, useEffect } from 'react'
+import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { GameProvider, useGame } from './context/GameContext'
 import { TutorialProvider } from './context/TutorialContext'
 import Layout from './components/Layout'
@@ -28,6 +28,26 @@ import Banco from './pages/Banco'
 import Performance from './pages/Performance'
 import Treino from './pages/Treino'
 
+// Força novato (nivel 1, tutorial nao iniciado/finalizado) a entrar pela /historia
+function NovatoGuard() {
+  const { jogador } = useGame()
+  const location = useLocation()
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    if (!jogador) return
+    // Tutorial completo (-1) ou nivel >= 2: deixa em paz
+    if (jogador.tutorial_step === -1) return
+    if (jogador.nivel >= 2) return
+    // Já está em /historia? OK
+    if (location.pathname === '/historia') return
+    // Redireciona pra /historia
+    navigate('/historia', { replace: true })
+  }, [jogador?.id, jogador?.nivel, jogador?.tutorial_step, location.pathname])
+
+  return null
+}
+
 function AppContent() {
   const { jogador } = useGame()
   const [loaded, setLoaded] = useState(false)
@@ -46,6 +66,7 @@ function AppContent() {
 
   return (
     <TutorialProvider>
+      <NovatoGuard />
       <LoginModal />
       <Notificacao />
       <LevelUpOverlay />

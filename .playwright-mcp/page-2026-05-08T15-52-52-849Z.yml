@@ -1,0 +1,483 @@
+- generic [ref=e1]:
+  - 'button "Conta do Google: Rhaniel Barbosa (brhaniel@gmail.com)" [ref=e2459] [cursor=pointer]':
+    - img [ref=e13]
+  - main [ref=e15]:
+    - generic:
+      - button "Menu principal" [ref=e2460] [cursor=pointer]:
+        - img [ref=e28]: menu
+      - button "Nova conversa" [ref=e2461] [cursor=pointer]:
+        - generic [ref=e34]: Gemini
+    - generic [ref=e36]:
+      - generic [ref=e262]: "Gere uma imagem 1024x1024 com fundo TRANSPARENTE (PNG), estilo render 3D AAA mobile-game (igual ícones de FIFA Mobile), sem moldura, sem texto. ÍCONE: BOLA DE FUTEBOL VELHA E MURCHA NA RUA - Uma bola de futebol antiga, gasta, ligeiramente murcha (semi-vazia), com couro descascado e sujeira - Posicionada num pedaço de asfalto/calçada de rua (chão visível só uma parte pequena pra dar contexto) - Iluminação dramática vinda de cima - Sombra suave embaixo - Vibe: começo da jornada, bola humilde de garoto pobre encontrada na rua - Composição centralizada, fácil de reconhecer mesmo em 64x64"
+      - generic [ref=e37]:
+        - link "Fazer upgrade para Google AI Plus" [ref=e2462]:
+          - img [ref=e41]: spark
+          - generic [ref=e43]: Fazer upgrade para Google AI Plus
+        - generic [ref=e46]:
+          - button "Compartilhar conversa" [ref=e2463] [cursor=pointer]:
+            - img [ref=e265]: share
+          - button "Abrir o menu de conversa." [ref=e2464] [cursor=pointer]:
+            - img [ref=e203]: more_vert
+    - generic [ref=e17]:
+      - navigation "Abrir barra lateral" [ref=e2465]:
+        - generic [ref=e59]:
+          - group [ref=e60]:
+            - link "Nova conversa" [ref=e2466] [cursor=pointer]:
+              - /url: /app
+              - generic [ref=e63]: Nova conversa
+              - img [ref=e67]: edit_square
+          - group [ref=e70]:
+            - button "Settings & help" [ref=e2467] [cursor=pointer]:
+              - img [ref=e76]: settings_2
+      - generic [ref=e82]:
+        - generic [ref=e83]:
+          - heading "Conversa com o Gemini" [level=1] [ref=e2468]
+          - generic [ref=e86]:
+            - generic [ref=e206]:
+              - generic [ref=e211]:
+                - button "Copiar comando" [ref=e2469] [cursor=pointer]:
+                  - img [ref=e214]: content_copy
+                - generic [ref=e219]:
+                  - 'heading "Você disse Gere uma imagem 1024x1024 com fundo TRANSPARENTE (PNG), estilo render 3D AAA mobile-game (igual ícones de FIFA Mobile), sem moldura, sem texto. ÍCONE: BOLA DE FUTEBOL VELHA E MURCHA NA RUA - Uma bola de futebol antiga, gasta, ligeiramente murcha (semi-vazia), com couro descascado e sujeira - Posicionada num pedaço de asfalto/calçada de rua (chão visível só uma parte pequena pra dar contexto) - Iluminação dramática vinda de cima - Sombra suave embaixo - Vibe: começo da jornada, bola humilde de garoto pobre encontrada na rua - Composição centralizada, fácil de reconhecer mesmo em 64x64" [level=2] [ref=e2470]':
+                    - generic [ref=e221]: Você disse
+                    - paragraph [ref=e222]: Gere uma imagem 1024x1024 com fundo TRANSPARENTE (PNG), estilo render 3D AAA mobile-game (igual ícones de FIFA Mobile), sem moldura, sem texto.
+                    - paragraph [ref=e223]
+                    - paragraph [ref=e225]: "ÍCONE: BOLA DE FUTEBOL VELHA E MURCHA NA RUA"
+                    - paragraph [ref=e226]: "- Uma bola de futebol antiga, gasta, ligeiramente murcha (semi-vazia), com couro descascado e sujeira"
+                    - paragraph [ref=e227]: "- Posicionada num pedaço de asfalto/calçada de rua (chão visível só uma parte pequena pra dar contexto)"
+                    - paragraph [ref=e228]: "- Iluminação dramática vinda de cima"
+                    - paragraph [ref=e229]: "- Sombra suave embaixo"
+                    - paragraph [ref=e230]: "- Vibe: começo da jornada, bola humilde de garoto pobre encontrada na rua"
+                    - paragraph [ref=e231]: "- Composição centralizada, fácil de reconhecer mesmo em 64x64"
+                  - button "Abrir" [ref=e2471] [cursor=pointer]:
+                    - img [ref=e233]: expand_more
+              - generic [ref=e239]:
+                - generic:
+                  - generic:
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button "Ouvir":
+                            - img: volume_up
+                      - menu
+                - generic [ref=e240]:
+                  - generic [ref=e245]:
+                    - generic:
+                      - generic:
+                        - img
+                  - generic [ref=e272]:
+                    - heading "O Gemini disse" [level=2] [ref=e2472]
+                    - paragraph [ref=e337]:
+                      - generic [ref=e344]:
+                        - button ", gerada com IA" [ref=e2473] [cursor=pointer]:
+                          - img ", gerada com IA" [ref=e2474]
+                        - generic [ref=e347]:
+                          - button "Compartilhar imagem" [ref=e2475] [cursor=pointer]:
+                            - img [ref=e350]: share
+                          - button "Copiar imagem" [ref=e2476] [cursor=pointer]:
+                            - img [ref=e355]: content_copy
+                          - button "Baixar imagem no tamanho original" [ref=e2477]:
+                            - img [ref=e362]: download
+                - generic [ref=e308]:
+                  - button "Boa resposta" [ref=e2478] [cursor=pointer]:
+                    - img [ref=e311]: thumb_up
+                  - button "Resposta ruim" [ref=e2479] [cursor=pointer]:
+                    - img [ref=e316]: thumb_down
+                  - button "Compartilhar imagem" [ref=e2480] [cursor=pointer]:
+                    - img [ref=e327]: share
+                  - button "Mostrar mais opções" [ref=e2481]:
+                    - img [ref=e334]: more_vert
+            - generic [ref=e365]:
+              - generic [ref=e370]:
+                - button "Copiar comando" [ref=e2482] [cursor=pointer]:
+                  - img [ref=e373]: content_copy
+                - generic [ref=e378]:
+                  - 'heading "Você disse Próximo, mesmo estilo (1024x1024, fundo transparente, render 3D AAA mobile-game, sem moldura, sem texto). ÍCONE: PEDIR PERMISSÃO PRA MÃE - Uma porta de casa simples brasileira (madeira, batente azul ou verde) entreaberta, com uma mão de criança segurando a maçaneta como quem está pedindo pra sair - Um par de chuteiras descansando ao lado da porta no chão - Vibe: momento doméstico, ansiedade do moleque querendo ir jogar bola - Composição centralizada" [level=2] [ref=e2483]':
+                    - generic [ref=e380]: Você disse
+                    - paragraph [ref=e381]: Próximo, mesmo estilo (1024x1024, fundo transparente, render 3D AAA mobile-game, sem moldura, sem texto).
+                    - paragraph [ref=e382]
+                    - paragraph [ref=e383]: "ÍCONE: PEDIR PERMISSÃO PRA MÃE"
+                    - paragraph [ref=e384]: "- Uma porta de casa simples brasileira (madeira, batente azul ou verde) entreaberta, com uma mão de criança segurando a maçaneta como quem está pedindo pra sair"
+                    - paragraph [ref=e385]: "- Um par de chuteiras descansando ao lado da porta no chão"
+                    - paragraph [ref=e386]: "- Vibe: momento doméstico, ansiedade do moleque querendo ir jogar bola"
+                    - paragraph [ref=e387]: "- Composição centralizada"
+                  - button "Abrir" [ref=e2484] [cursor=pointer]:
+                    - img [ref=e389]: expand_more
+              - generic [ref=e395]:
+                - generic:
+                  - generic:
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button "Ouvir":
+                            - img: volume_up
+                      - menu
+                - generic [ref=e396]:
+                  - generic [ref=e401]:
+                    - generic:
+                      - generic:
+                        - img
+                  - generic [ref=e414]:
+                    - heading "O Gemini disse" [level=2] [ref=e2485]
+                    - paragraph [ref=e623]:
+                      - generic [ref=e630]:
+                        - button ", gerada com IA" [ref=e2486] [cursor=pointer]:
+                          - img ", gerada com IA" [ref=e2487]
+                        - generic [ref=e633]:
+                          - button "Compartilhar imagem" [ref=e2488] [cursor=pointer]:
+                            - img [ref=e636]: share
+                          - button "Copiar imagem" [ref=e2489] [cursor=pointer]:
+                            - img [ref=e641]: content_copy
+                          - button "Baixar imagem no tamanho original" [ref=e2490]:
+                            - img [ref=e648]: download
+                - generic [ref=e450]:
+                  - button "Boa resposta" [ref=e2491] [cursor=pointer]:
+                    - img [ref=e453]: thumb_up
+                  - button "Resposta ruim" [ref=e2492] [cursor=pointer]:
+                    - img [ref=e458]: thumb_down
+                  - button "Compartilhar imagem" [ref=e2493] [cursor=pointer]:
+                    - img [ref=e469]: share
+                  - button "Mostrar mais opções" [ref=e2494]:
+                    - img [ref=e476]: more_vert
+            - generic [ref=e700]:
+              - generic [ref=e705]:
+                - button "Copiar comando" [ref=e2495] [cursor=pointer]:
+                  - img [ref=e708]: content_copy
+                - generic [ref=e713]:
+                  - 'heading "Você disse Próximo, mesmo estilo (1024x1024, fundo transparente, render 3D AAA mobile-game, sem moldura, sem texto). ÍCONE: CHUTAR NO GOL - Uma bola de futebol em movimento, com motion blur sutil, sendo chutada com força - A bola está atravessando uma \"rede\" de gol improvisada (rede furada de quintal/rua) ou bate numa parede de tijolos com chute marcado - Pode ter pequenos rastros de impacto, poeira saindo - Vibe: O PRIMEIRO GOL — energia, força, momento épico - Composição centralizada" [level=2] [ref=e2496]':
+                    - generic [ref=e715]: Você disse
+                    - paragraph [ref=e716]: Próximo, mesmo estilo (1024x1024, fundo transparente, render 3D AAA mobile-game, sem moldura, sem texto).
+                    - paragraph [ref=e717]
+                    - paragraph [ref=e718]: "ÍCONE: CHUTAR NO GOL"
+                    - paragraph [ref=e719]: "- Uma bola de futebol em movimento, com motion blur sutil, sendo chutada com força"
+                    - paragraph [ref=e720]: "- A bola está atravessando uma \"rede\" de gol improvisada (rede furada de quintal/rua) ou bate numa parede de tijolos com chute marcado"
+                    - paragraph [ref=e721]: "- Pode ter pequenos rastros de impacto, poeira saindo"
+                    - paragraph [ref=e722]: "- Vibe: O PRIMEIRO GOL — energia, força, momento épico"
+                    - paragraph [ref=e723]: "- Composição centralizada"
+                  - button "Abrir" [ref=e2497] [cursor=pointer]:
+                    - img [ref=e725]: expand_more
+              - generic [ref=e731]:
+                - generic:
+                  - generic:
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button "Ouvir":
+                            - img: volume_up
+                      - menu
+                - generic [ref=e732]:
+                  - generic [ref=e737]:
+                    - generic:
+                      - generic:
+                        - img
+                  - generic [ref=e747]:
+                    - heading "O Gemini disse" [level=2] [ref=e2498]
+                    - paragraph [ref=e983]:
+                      - generic [ref=e990]:
+                        - button ", gerada com IA" [ref=e2499] [cursor=pointer]:
+                          - img ", gerada com IA" [ref=e2500]
+                        - generic [ref=e993]:
+                          - button "Compartilhar imagem" [ref=e2501] [cursor=pointer]:
+                            - img [ref=e996]: share
+                          - button "Copiar imagem" [ref=e2502] [cursor=pointer]:
+                            - img [ref=e1001]: content_copy
+                          - button "Baixar imagem no tamanho original" [ref=e2503]:
+                            - img [ref=e1008]: download
+                - generic [ref=e783]:
+                  - button "Boa resposta" [ref=e2504] [cursor=pointer]:
+                    - img [ref=e786]: thumb_up
+                  - button "Resposta ruim" [ref=e2505] [cursor=pointer]:
+                    - img [ref=e791]: thumb_down
+                  - button "Compartilhar imagem" [ref=e2506] [cursor=pointer]:
+                    - img [ref=e802]: share
+                  - button "Mostrar mais opções" [ref=e2507]:
+                    - img [ref=e809]: more_vert
+            - generic [ref=e1015]:
+              - generic [ref=e1020]:
+                - button "Copiar comando" [ref=e2508] [cursor=pointer]:
+                  - img [ref=e1023]: content_copy
+                - generic [ref=e1028]:
+                  - 'heading "Você disse Próximo, mesmo estilo (1024x1024, fundo transparente, sem moldura, sem texto). ÍCONE: MONTAR TRAVES DE MADEIRA - Duas traves de gol improvisadas feitas com pedaços de madeira/varas brancas tortas amarradas com corda, vista frontal - Pode ter um martelo de carpinteiro descansando no chão na frente - Vibe: construção rústica, suor de moleque, primeiro passo do campinho próprio - Composição centralizada" [level=2] [ref=e2509]':
+                    - generic [ref=e1030]: Você disse
+                    - paragraph [ref=e1031]: Próximo, mesmo estilo (1024x1024, fundo transparente, sem moldura, sem texto).
+                    - paragraph [ref=e1032]
+                    - paragraph [ref=e1033]: "ÍCONE: MONTAR TRAVES DE MADEIRA"
+                    - paragraph [ref=e1034]: "- Duas traves de gol improvisadas feitas com pedaços de madeira/varas brancas tortas amarradas com corda, vista frontal"
+                    - paragraph [ref=e1035]: "- Pode ter um martelo de carpinteiro descansando no chão na frente"
+                    - paragraph [ref=e1036]: "- Vibe: construção rústica, suor de moleque, primeiro passo do campinho próprio"
+                    - paragraph [ref=e1037]: "- Composição centralizada"
+                  - button "Abrir" [ref=e2510] [cursor=pointer]:
+                    - img [ref=e1039]: expand_more
+              - generic [ref=e1045]:
+                - generic:
+                  - generic:
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button "Ouvir":
+                            - img: volume_up
+                      - menu
+                - generic [ref=e1046]:
+                  - generic [ref=e1051]:
+                    - generic:
+                      - generic:
+                        - img
+                  - generic [ref=e1068]:
+                    - heading "O Gemini disse" [level=2] [ref=e2511]
+                    - paragraph [ref=e1330]:
+                      - generic [ref=e1337]:
+                        - button ", gerada com IA" [ref=e2512] [cursor=pointer]:
+                          - img ", gerada com IA" [ref=e2513]
+                        - generic [ref=e1340]:
+                          - button "Compartilhar imagem" [ref=e2514] [cursor=pointer]:
+                            - img [ref=e1343]: share
+                          - button "Copiar imagem" [ref=e2515] [cursor=pointer]:
+                            - img [ref=e1348]: content_copy
+                          - button "Baixar imagem no tamanho original" [ref=e2516]:
+                            - img [ref=e1355]: download
+                - generic [ref=e1104]:
+                  - button "Boa resposta" [ref=e2517] [cursor=pointer]:
+                    - img [ref=e1107]: thumb_up
+                  - button "Resposta ruim" [ref=e2518] [cursor=pointer]:
+                    - img [ref=e1112]: thumb_down
+                  - button "Compartilhar imagem" [ref=e2519] [cursor=pointer]:
+                    - img [ref=e1123]: share
+                  - button "Mostrar mais opções" [ref=e2520]:
+                    - img [ref=e1130]: more_vert
+            - generic [ref=e1362]:
+              - generic [ref=e1367]:
+                - button "Copiar comando" [ref=e2521] [cursor=pointer]:
+                  - img [ref=e1370]: content_copy
+                - generic [ref=e1375]:
+                  - 'heading "Você disse Próximo, mesmo estilo (1024x1024, fundo transparente, sem moldura, sem texto). ÍCONE: MARCAR CAMPO COM PÓ DE GESSO - Um saco aberto de pó branco (gesso/cal) inclinado, derramando pó branco numa linha reta na grama/terra - Uma pequena pilha de pó branco se formando - Vibe: marcação de linhas de campo improvisado, tarefa do faz-tudo - Composição centralizada" [level=2] [ref=e2522]':
+                    - generic [ref=e1377]: Você disse
+                    - paragraph [ref=e1378]: Próximo, mesmo estilo (1024x1024, fundo transparente, sem moldura, sem texto).
+                    - paragraph [ref=e1379]
+                    - paragraph [ref=e1380]: "ÍCONE: MARCAR CAMPO COM PÓ DE GESSO"
+                    - paragraph [ref=e1381]: "- Um saco aberto de pó branco (gesso/cal) inclinado, derramando pó branco numa linha reta na grama/terra"
+                    - paragraph [ref=e1382]: "- Uma pequena pilha de pó branco se formando"
+                    - paragraph [ref=e1383]: "- Vibe: marcação de linhas de campo improvisado, tarefa do faz-tudo"
+                    - paragraph [ref=e1384]: "- Composição centralizada"
+                  - button "Abrir" [ref=e2523] [cursor=pointer]:
+                    - img [ref=e1386]: expand_more
+              - generic [ref=e1392]:
+                - generic:
+                  - generic:
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button "Ouvir":
+                            - img: volume_up
+                      - menu
+                - generic [ref=e1393]:
+                  - generic [ref=e1398]:
+                    - generic:
+                      - generic:
+                        - img
+                  - generic [ref=e1415]:
+                    - heading "O Gemini disse" [level=2] [ref=e2524]
+                    - paragraph [ref=e1703]:
+                      - generic [ref=e1710]:
+                        - button ", gerada com IA" [ref=e2525] [cursor=pointer]:
+                          - img ", gerada com IA" [ref=e2526]
+                        - generic [ref=e1713]:
+                          - button "Compartilhar imagem" [ref=e2527] [cursor=pointer]:
+                            - img [ref=e1716]: share
+                          - button "Copiar imagem" [ref=e2528] [cursor=pointer]:
+                            - img [ref=e1721]: content_copy
+                          - button "Baixar imagem no tamanho original" [ref=e2529]:
+                            - img [ref=e1728]: download
+                - generic [ref=e1451]:
+                  - button "Boa resposta" [ref=e2530] [cursor=pointer]:
+                    - img [ref=e1454]: thumb_up
+                  - button "Resposta ruim" [ref=e2531] [cursor=pointer]:
+                    - img [ref=e1459]: thumb_down
+                  - button "Compartilhar imagem" [ref=e2532] [cursor=pointer]:
+                    - img [ref=e1470]: share
+                  - button "Mostrar mais opções" [ref=e2533]:
+                    - img [ref=e1477]: more_vert
+            - generic [ref=e1779]:
+              - generic [ref=e1784]:
+                - button "Copiar comando" [ref=e2534] [cursor=pointer]:
+                  - img [ref=e1787]: content_copy
+                - generic [ref=e1792]:
+                  - 'heading "Você disse Próximo, mesmo estilo (1024x1024, fundo transparente, sem moldura, sem texto). ÍCONE: CHAMAR UM AMIGO PRA JOGAR - Duas mãos cumprimentando-se / batendo cabeça (handshake/fist-bump) com camisetas estilizadas de futebol coloridas, vista lateral - Pode ter uma bola de futebol pequena ao fundo - Vibe: amizade, parceria, dupla de moleques pronta pra pelada - Composição centralizada" [level=2] [ref=e2535]':
+                    - generic [ref=e1794]: Você disse
+                    - paragraph [ref=e1795]: Próximo, mesmo estilo (1024x1024, fundo transparente, sem moldura, sem texto).
+                    - paragraph [ref=e1796]
+                    - paragraph [ref=e1797]: "ÍCONE: CHAMAR UM AMIGO PRA JOGAR"
+                    - paragraph [ref=e1798]: "- Duas mãos cumprimentando-se / batendo cabeça (handshake/fist-bump) com camisetas estilizadas de futebol coloridas, vista lateral"
+                    - paragraph [ref=e1799]: "- Pode ter uma bola de futebol pequena ao fundo"
+                    - paragraph [ref=e1800]: "- Vibe: amizade, parceria, dupla de moleques pronta pra pelada"
+                    - paragraph [ref=e1801]: "- Composição centralizada"
+                  - button "Abrir" [ref=e2536] [cursor=pointer]:
+                    - img [ref=e1803]: expand_more
+              - generic [ref=e1809]:
+                - generic:
+                  - generic:
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button "Ouvir":
+                            - img: volume_up
+                      - menu
+                - generic [ref=e1810]:
+                  - generic [ref=e1815]:
+                    - generic:
+                      - generic:
+                        - img
+                  - generic [ref=e1820]:
+                    - heading "O Gemini disse" [level=2] [ref=e2537]
+                    - paragraph [ref=e2126]:
+                      - generic [ref=e2133]:
+                        - button ", gerada com IA" [ref=e2538] [cursor=pointer]:
+                          - img ", gerada com IA" [ref=e2539]
+                        - generic [ref=e2136]:
+                          - button "Compartilhar imagem" [ref=e2540] [cursor=pointer]:
+                            - img [ref=e2139]: share
+                          - button "Copiar imagem" [ref=e2541] [cursor=pointer]:
+                            - img [ref=e2144]: content_copy
+                          - button "Baixar imagem no tamanho original" [ref=e2542]:
+                            - img [ref=e2151]: download
+                - generic [ref=e1940]:
+                  - button "Boa resposta" [ref=e2543] [cursor=pointer]:
+                    - img [ref=e1943]: thumb_up
+                  - button "Resposta ruim" [ref=e2544] [cursor=pointer]:
+                    - img [ref=e1948]: thumb_down
+                  - button "Compartilhar imagem" [ref=e2545] [cursor=pointer]:
+                    - img [ref=e1959]: share
+                  - button "Mostrar mais opções" [ref=e2546]:
+                    - img [ref=e1966]: more_vert
+            - generic [ref=e2158]:
+              - generic [ref=e2163]:
+                - button "Copiar comando" [ref=e2547] [cursor=pointer]:
+                  - img [ref=e2166]: content_copy
+                - generic [ref=e2171]:
+                  - 'heading "Você disse Próximo, mesmo estilo (1024x1024, fundo transparente, sem moldura, sem texto). ÍCONE: VENDER HOTDOG NO ESTÁDIO - Uma caixa de isopor branca com pão de cachorro-quente espalhados, salsichas, e um cachorro-quente já montado em destaque na frente com vapor saindo - Pode ter um pequeno guardanapo ao lado - Vibe: vendedor ambulante na porta do estádio, comida de rua brasileira - Composição centralizada" [level=2] [ref=e2548]':
+                    - generic [ref=e2173]: Você disse
+                    - paragraph [ref=e2174]: Próximo, mesmo estilo (1024x1024, fundo transparente, sem moldura, sem texto).
+                    - paragraph [ref=e2175]
+                    - paragraph [ref=e2176]: "ÍCONE: VENDER HOTDOG NO ESTÁDIO"
+                    - paragraph [ref=e2177]: "- Uma caixa de isopor branca com pão de cachorro-quente espalhados, salsichas, e um cachorro-quente já montado em destaque na frente com vapor saindo"
+                    - paragraph [ref=e2178]: "- Pode ter um pequeno guardanapo ao lado"
+                    - paragraph [ref=e2179]: "- Vibe: vendedor ambulante na porta do estádio, comida de rua brasileira"
+                    - paragraph [ref=e2180]: "- Composição centralizada"
+                  - button "Abrir" [ref=e2549] [cursor=pointer]:
+                    - img [ref=e2182]: expand_more
+              - generic [ref=e2188]:
+                - generic:
+                  - generic:
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button "Ouvir":
+                            - img: volume_up
+                      - menu
+                - generic [ref=e2189]:
+                  - generic [ref=e2194]:
+                    - generic:
+                      - generic:
+                        - img
+                  - generic [ref=e2211]:
+                    - heading "O Gemini disse" [level=2] [ref=e2550]
+                    - paragraph [ref=e2551]:
+                      - generic [ref=e2558]:
+                        - button ", gerada com IA" [ref=e2559] [cursor=pointer]:
+                          - img ", gerada com IA" [ref=e2560]
+                        - generic [ref=e2561]:
+                          - button "Compartilhar imagem" [ref=e2563] [cursor=pointer]:
+                            - img [ref=e2564]: share
+                          - button "Copiar imagem" [ref=e2568] [cursor=pointer]:
+                            - img [ref=e2569]: content_copy
+                          - button "Baixar imagem no tamanho original" [ref=e2573]:
+                            - img [ref=e2576]: download
+                - generic [ref=e2247]:
+                  - button "Boa resposta" [ref=e2579] [cursor=pointer]:
+                    - img [ref=e2250]: thumb_up
+                  - button "Resposta ruim" [ref=e2580] [cursor=pointer]:
+                    - img [ref=e2255]: thumb_down
+                  - button "Compartilhar imagem" [ref=e2581] [cursor=pointer]:
+                    - img [ref=e2266]: share
+                  - button "Mostrar mais opções" [ref=e2582]:
+                    - img [ref=e2273]: more_vert
+            - generic [ref=e2583]:
+              - generic [ref=e2588]:
+                - button "Copiar comando" [ref=e2590] [cursor=pointer]:
+                  - img [ref=e2591]: content_copy
+                - button "Editar" [ref=e2633] [cursor=pointer]:
+                  - img [ref=e2634]: edit
+                - generic [ref=e2596]:
+                  - 'heading "Você disse Próximo, mesmo estilo (1024x1024, fundo transparente, sem moldura, sem texto). ÍCONE: AJUDAR CARROS A ESTACIONAR - Um pano amarelo/vermelho sendo agitado por uma mão (estilo flanela do \"guarda-carros\") indicando direção - Pode ter um chaveiro/molho de chaves ou moedas no chão - Pequena placa \"ESTACIONA\" estilizada (sem letras legíveis) ou faixa colorida - Vibe: típico flanelinha de evento brasileiro - Composição centralizada" [level=2] [ref=e2597]':
+                    - generic [ref=e2598]: Você disse
+                    - paragraph [ref=e2599]: Próximo, mesmo estilo (1024x1024, fundo transparente, sem moldura, sem texto).
+                    - paragraph [ref=e2600]
+                    - paragraph [ref=e2601]: "ÍCONE: AJUDAR CARROS A ESTACIONAR"
+                    - paragraph [ref=e2602]: "- Um pano amarelo/vermelho sendo agitado por uma mão (estilo flanela do \"guarda-carros\") indicando direção"
+                    - paragraph [ref=e2603]: "- Pode ter um chaveiro/molho de chaves ou moedas no chão"
+                    - paragraph [ref=e2604]: "- Pequena placa \"ESTACIONA\" estilizada (sem letras legíveis) ou faixa colorida"
+                    - paragraph [ref=e2605]: "- Vibe: típico flanelinha de evento brasileiro"
+                    - paragraph [ref=e2606]: "- Composição centralizada"
+                  - button "Abrir" [ref=e2607] [cursor=pointer]:
+                    - img [ref=e2608]: expand_more
+              - generic [ref=e2614]:
+                - generic:
+                  - generic:
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button "Ouvir":
+                            - img: volume_up
+                      - menu
+                - generic [ref=e2615]:
+                  - generic [ref=e2620]:
+                    - generic:
+                      - generic:
+                        - img
+                  - generic [ref=e2637]:
+                    - heading "O Gemini disse" [level=2] [ref=e2625]
+                    - paragraph [ref=e2642]:
+                      - generic [ref=e2649]:
+                        - button ", gerada com IA" [ref=e2650] [cursor=pointer]:
+                          - img ", gerada com IA" [ref=e2651]
+                        - generic [ref=e2652]:
+                          - button "Compartilhar imagem" [ref=e2654] [cursor=pointer]:
+                            - img [ref=e2655]: share
+                          - button "Copiar imagem" [ref=e2659] [cursor=pointer]:
+                            - img [ref=e2660]: content_copy
+                          - button "Baixar imagem no tamanho original" [ref=e2664]:
+                            - img [ref=e2667]: download
+                - generic [ref=e2673]:
+                  - button "Boa resposta" [ref=e2675] [cursor=pointer]:
+                    - img [ref=e2676]: thumb_up
+                  - button "Resposta ruim" [ref=e2680] [cursor=pointer]:
+                    - img [ref=e2681]: thumb_down
+                  - button "Refazer" [ref=e2686] [cursor=pointer]:
+                    - img [ref=e2687]: refresh
+                  - button "Compartilhar imagem" [ref=e2691] [cursor=pointer]:
+                    - img [ref=e2692]: share
+                  - button "Mostrar mais opções" [ref=e2698]:
+                    - img [ref=e2699]: more_vert
+        - generic [ref=e150]:
+          - group [ref=e151]:
+            - generic [ref=e154]:
+              - textbox "Insira um comando para o Gemini" [active] [ref=e2626]:
+                - text: Peça ao Gemini
+                - paragraph [ref=e2627]
+              - generic [ref=e161]:
+                - button "Abrir o menu de envio de arquivo" [ref=e2628] [cursor=pointer]:
+                  - img [ref=e167]: add_2
+                - button "Ferramentas" [ref=e2629]:
+                  - img [ref=e174]: page_info
+                  - generic [ref=e177]: Ferramentas
+              - generic [ref=e180]:
+                - button "Abrir seletor de modo" [ref=e2630]:
+                  - generic [ref=e185]:
+                    - generic [ref=e186]: Rápido
+                    - img [ref=e187]: keyboard_arrow_down
+                - generic [ref=e190]:
+                  - button "Microfone" [ref=e2702] [cursor=pointer]:
+                    - img [ref=e195]: mic
+                  - generic:
+                    - button "Enviar mensagem" [disabled]:
+                      - img: send
+          - paragraph [ref=e258]: O Gemini é uma IA e pode cometer erros.

@@ -1,0 +1,200 @@
+- generic [ref=e1]:
+  - 'button "Conta do Google: Rhaniel Barbosa (brhaniel@gmail.com)" [ref=e596] [cursor=pointer]':
+    - img [ref=e13]
+  - main [ref=e15]:
+    - generic:
+      - button "Menu principal" [ref=e597] [cursor=pointer]:
+        - img [ref=e28]: menu
+      - button "Nova conversa" [ref=e598] [cursor=pointer]:
+        - generic [ref=e34]: Gemini
+    - generic [ref=e36]:
+      - generic [ref=e262]: "Gere uma imagem 1024x1024 com fundo TRANSPARENTE (PNG), estilo render 3D AAA mobile-game (igual ícones de FIFA Mobile), sem moldura, sem texto. ÍCONE: BOLA DE FUTEBOL VELHA E MURCHA NA RUA - Uma bola de futebol antiga, gasta, ligeiramente murcha (semi-vazia), com couro descascado e sujeira - Posicionada num pedaço de asfalto/calçada de rua (chão visível só uma parte pequena pra dar contexto) - Iluminação dramática vinda de cima - Sombra suave embaixo - Vibe: começo da jornada, bola humilde de garoto pobre encontrada na rua - Composição centralizada, fácil de reconhecer mesmo em 64x64"
+      - generic [ref=e37]:
+        - link "Fazer upgrade para Google AI Plus" [ref=e599]:
+          - img [ref=e41]: spark
+          - generic [ref=e43]: Fazer upgrade para Google AI Plus
+        - generic [ref=e46]:
+          - button "Compartilhar conversa" [ref=e600] [cursor=pointer]:
+            - img [ref=e265]: share
+          - button "Abrir o menu de conversa." [ref=e601] [cursor=pointer]:
+            - img [ref=e203]: more_vert
+    - generic [ref=e17]:
+      - navigation "Abrir barra lateral" [ref=e602]:
+        - generic [ref=e59]:
+          - group [ref=e60]:
+            - link "Nova conversa" [ref=e603] [cursor=pointer]:
+              - /url: /app
+              - generic [ref=e63]: Nova conversa
+              - img [ref=e67]: edit_square
+          - group [ref=e70]:
+            - button "Settings & help" [ref=e604] [cursor=pointer]:
+              - img [ref=e76]: settings_2
+      - generic [ref=e82]:
+        - generic [ref=e83]:
+          - heading "Conversa com o Gemini" [level=1] [ref=e605]
+          - generic [ref=e86]:
+            - generic [ref=e206]:
+              - generic [ref=e211]:
+                - button "Copiar comando" [ref=e606] [cursor=pointer]:
+                  - img [ref=e214]: content_copy
+                - generic [ref=e219]:
+                  - 'heading "Você disse Gere uma imagem 1024x1024 com fundo TRANSPARENTE (PNG), estilo render 3D AAA mobile-game (igual ícones de FIFA Mobile), sem moldura, sem texto. ÍCONE: BOLA DE FUTEBOL VELHA E MURCHA NA RUA - Uma bola de futebol antiga, gasta, ligeiramente murcha (semi-vazia), com couro descascado e sujeira - Posicionada num pedaço de asfalto/calçada de rua (chão visível só uma parte pequena pra dar contexto) - Iluminação dramática vinda de cima - Sombra suave embaixo - Vibe: começo da jornada, bola humilde de garoto pobre encontrada na rua - Composição centralizada, fácil de reconhecer mesmo em 64x64" [level=2] [ref=e607]':
+                    - generic [ref=e221]: Você disse
+                    - paragraph [ref=e222]: Gere uma imagem 1024x1024 com fundo TRANSPARENTE (PNG), estilo render 3D AAA mobile-game (igual ícones de FIFA Mobile), sem moldura, sem texto.
+                    - paragraph [ref=e223]
+                    - paragraph [ref=e225]: "ÍCONE: BOLA DE FUTEBOL VELHA E MURCHA NA RUA"
+                    - paragraph [ref=e226]: "- Uma bola de futebol antiga, gasta, ligeiramente murcha (semi-vazia), com couro descascado e sujeira"
+                    - paragraph [ref=e227]: "- Posicionada num pedaço de asfalto/calçada de rua (chão visível só uma parte pequena pra dar contexto)"
+                    - paragraph [ref=e228]: "- Iluminação dramática vinda de cima"
+                    - paragraph [ref=e229]: "- Sombra suave embaixo"
+                    - paragraph [ref=e230]: "- Vibe: começo da jornada, bola humilde de garoto pobre encontrada na rua"
+                    - paragraph [ref=e231]: "- Composição centralizada, fácil de reconhecer mesmo em 64x64"
+                  - button "Abrir" [ref=e608] [cursor=pointer]:
+                    - img [ref=e233]: expand_more
+              - generic [ref=e239]:
+                - generic:
+                  - generic:
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button "Ouvir":
+                            - img: volume_up
+                      - menu
+                - generic [ref=e240]:
+                  - generic [ref=e245]:
+                    - generic:
+                      - generic:
+                        - img
+                  - generic [ref=e272]:
+                    - heading "O Gemini disse" [level=2] [ref=e609]
+                    - paragraph [ref=e337]:
+                      - generic [ref=e344]:
+                        - button ", gerada com IA" [ref=e610] [cursor=pointer]:
+                          - img ", gerada com IA" [ref=e611]
+                        - generic [ref=e347]:
+                          - button "Compartilhar imagem" [ref=e612] [cursor=pointer]:
+                            - img [ref=e350]: share
+                          - button "Copiar imagem" [ref=e613] [cursor=pointer]:
+                            - img [ref=e355]: content_copy
+                          - button "Baixar imagem no tamanho original" [ref=e614]:
+                            - img [ref=e362]: download
+                - generic [ref=e308]:
+                  - button "Boa resposta" [ref=e615] [cursor=pointer]:
+                    - img [ref=e311]: thumb_up
+                  - button "Resposta ruim" [ref=e616] [cursor=pointer]:
+                    - img [ref=e316]: thumb_down
+                  - button "Compartilhar imagem" [ref=e617] [cursor=pointer]:
+                    - img [ref=e327]: share
+                  - button "Mostrar mais opções" [ref=e618]:
+                    - img [ref=e334]: more_vert
+            - generic [ref=e365]:
+              - generic [ref=e370]:
+                - button "Copiar comando" [ref=e619] [cursor=pointer]:
+                  - img [ref=e373]: content_copy
+                - generic [ref=e378]:
+                  - 'heading "Você disse Próximo, mesmo estilo (1024x1024, fundo transparente, render 3D AAA mobile-game, sem moldura, sem texto). ÍCONE: PEDIR PERMISSÃO PRA MÃE - Uma porta de casa simples brasileira (madeira, batente azul ou verde) entreaberta, com uma mão de criança segurando a maçaneta como quem está pedindo pra sair - Um par de chuteiras descansando ao lado da porta no chão - Vibe: momento doméstico, ansiedade do moleque querendo ir jogar bola - Composição centralizada" [level=2] [ref=e620]':
+                    - generic [ref=e380]: Você disse
+                    - paragraph [ref=e381]: Próximo, mesmo estilo (1024x1024, fundo transparente, render 3D AAA mobile-game, sem moldura, sem texto).
+                    - paragraph [ref=e382]
+                    - paragraph [ref=e383]: "ÍCONE: PEDIR PERMISSÃO PRA MÃE"
+                    - paragraph [ref=e384]: "- Uma porta de casa simples brasileira (madeira, batente azul ou verde) entreaberta, com uma mão de criança segurando a maçaneta como quem está pedindo pra sair"
+                    - paragraph [ref=e385]: "- Um par de chuteiras descansando ao lado da porta no chão"
+                    - paragraph [ref=e386]: "- Vibe: momento doméstico, ansiedade do moleque querendo ir jogar bola"
+                    - paragraph [ref=e387]: "- Composição centralizada"
+                  - button "Abrir" [ref=e621] [cursor=pointer]:
+                    - img [ref=e389]: expand_more
+              - generic [ref=e395]:
+                - generic:
+                  - generic:
+                    - generic:
+                      - generic:
+                        - generic:
+                          - button "Ouvir":
+                            - img: volume_up
+                      - menu
+                - generic [ref=e396]:
+                  - generic [ref=e401]:
+                    - generic:
+                      - generic:
+                        - img
+                  - generic [ref=e414]:
+                    - heading "O Gemini disse" [level=2] [ref=e622]
+                    - paragraph [ref=e623]:
+                      - generic [ref=e630]:
+                        - button ", gerada com IA" [ref=e631] [cursor=pointer]:
+                          - img ", gerada com IA" [ref=e632]
+                        - generic [ref=e633]:
+                          - button "Compartilhar imagem" [ref=e635] [cursor=pointer]:
+                            - img [ref=e636]: share
+                          - button "Copiar imagem" [ref=e640] [cursor=pointer]:
+                            - img [ref=e641]: content_copy
+                          - button "Baixar imagem no tamanho original" [ref=e645]:
+                            - img [ref=e648]: download
+                - generic [ref=e450]:
+                  - button "Boa resposta" [ref=e651] [cursor=pointer]:
+                    - img [ref=e453]: thumb_up
+                  - button "Resposta ruim" [ref=e652] [cursor=pointer]:
+                    - img [ref=e458]: thumb_down
+                  - button "Compartilhar imagem" [ref=e653] [cursor=pointer]:
+                    - img [ref=e469]: share
+                  - button "Mostrar mais opções" [ref=e654]:
+                    - img [ref=e476]: more_vert
+            - generic [ref=e700]:
+              - generic [ref=e705]:
+                - button "Copiar comando" [ref=e707] [cursor=pointer]:
+                  - img [ref=e708]: content_copy
+                - generic [ref=e711]:
+                  - button "Editar" [disabled]:
+                    - img: edit
+                - generic [ref=e713]:
+                  - 'heading "Você disse Próximo, mesmo estilo (1024x1024, fundo transparente, render 3D AAA mobile-game, sem moldura, sem texto). ÍCONE: CHUTAR NO GOL - Uma bola de futebol em movimento, com motion blur sutil, sendo chutada com força - A bola está atravessando uma \"rede\" de gol improvisada (rede furada de quintal/rua) ou bate numa parede de tijolos com chute marcado - Pode ter pequenos rastros de impacto, poeira saindo - Vibe: O PRIMEIRO GOL — energia, força, momento épico - Composição centralizada" [level=2] [ref=e714]':
+                    - generic [ref=e715]: Você disse
+                    - paragraph [ref=e716]: Próximo, mesmo estilo (1024x1024, fundo transparente, render 3D AAA mobile-game, sem moldura, sem texto).
+                    - paragraph [ref=e717]
+                    - paragraph [ref=e718]: "ÍCONE: CHUTAR NO GOL"
+                    - paragraph [ref=e719]: "- Uma bola de futebol em movimento, com motion blur sutil, sendo chutada com força"
+                    - paragraph [ref=e720]: "- A bola está atravessando uma \"rede\" de gol improvisada (rede furada de quintal/rua) ou bate numa parede de tijolos com chute marcado"
+                    - paragraph [ref=e721]: "- Pode ter pequenos rastros de impacto, poeira saindo"
+                    - paragraph [ref=e722]: "- Vibe: O PRIMEIRO GOL — energia, força, momento épico"
+                    - paragraph [ref=e723]: "- Composição centralizada"
+                  - button "Abrir" [ref=e724] [cursor=pointer]:
+                    - img [ref=e725]: expand_more
+              - generic [ref=e732]:
+                - generic [ref=e735]:
+                  - generic [ref=e737]:
+                    - generic:
+                      - generic:
+                        - img
+                  - generic:
+                    - img
+                - generic [ref=e738]:
+                  - generic [ref=e741]:
+                    - button "Criando sua imagem...":
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic: Criando sua imagem...
+                  - heading "O Gemini disse" [level=2] [ref=e742]
+        - generic [ref=e150]:
+          - group [ref=e151]:
+            - generic [ref=e154]:
+              - textbox "Insira um comando para o Gemini" [active] [ref=e693]:
+                - text: Peça ao Gemini
+                - paragraph [ref=e694]
+              - generic [ref=e161]:
+                - button "Abrir o menu de envio de arquivo" [ref=e695] [cursor=pointer]:
+                  - img [ref=e167]: add_2
+                - button "Ferramentas" [ref=e696]:
+                  - img [ref=e174]: page_info
+                  - generic [ref=e177]: Ferramentas
+              - generic [ref=e180]:
+                - button "Abrir seletor de modo" [ref=e697]:
+                  - generic [ref=e185]:
+                    - generic [ref=e186]: Rápido
+                    - img [ref=e187]: keyboard_arrow_down
+                - generic [ref=e190]:
+                  - text: mic
+                  - button "Parar resposta" [ref=e253] [cursor=pointer]:
+                    - text: send
+                    - img [ref=e699]: stop
+          - paragraph [ref=e258]: O Gemini é uma IA e pode cometer erros.
