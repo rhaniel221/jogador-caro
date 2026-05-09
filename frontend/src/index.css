@@ -8157,7 +8157,6 @@ input.game-input::placeholder { color: #475569; }
 }
 .abertura-seg-img {
   position: absolute;
-  width: 50%;
   height: 50%;
   object-fit: cover;
   opacity: 0;
@@ -8171,11 +8170,13 @@ input.game-input::placeholder { color: #475569; }
   transform: translateY(0);
 }
 
-/* Posicao da imagem dentro do segmento (cada um no seu quadrante) */
-.seg-1 .abertura-seg-img { top: 0;   left: 0;   }
-.seg-2 .abertura-seg-img { top: 0;   left: 50%; }
-.seg-3 .abertura-seg-img { top: 50%; left: 0;   }
-.seg-4 .abertura-seg-img { top: 50%; left: 50%; }
+/* Posicao + largura da imagem por segmento — cobre toda a area do
+   poligono incluindo o trecho que cruza a diagonal (35-65%). Sem
+   isso seg-2 e seg-3 ficavam com area preta na parte da diagonal */
+.seg-1 .abertura-seg-img { top: 0;   left: 0;   width: 50%; }
+.seg-2 .abertura-seg-img { top: 0;   left: 35%; width: 65%; }
+.seg-3 .abertura-seg-img { top: 50%; left: 0;   width: 65%; }
+.seg-4 .abertura-seg-img { top: 50%; left: 50%; width: 50%; }
 
 /* Polygons dos 4 quadrantes: divididos por horizontal y=50% e
    diagonal inclinada pra direita de (35%,0) ate (65%,100%) */
