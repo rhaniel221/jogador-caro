@@ -13,10 +13,10 @@ const FASES = {
     cor: '#1a7dff',
     img: '/historia-img/fase-sonho.png',
     aberturaImgs: [
-      '/historia-img/abertura-1.png',
-      '/historia-img/abertura-2.png',
-      '/historia-img/abertura-3.png',
-      '/historia-img/abertura-4.png',
+      '/historia-img/abertura-1.webp',
+      '/historia-img/abertura-2.webp',
+      '/historia-img/abertura-3.webp',
+      '/historia-img/abertura-4.webp',
     ],
     fallbackIcone: '💭',
     abertura: {

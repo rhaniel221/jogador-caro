@@ -99,7 +99,8 @@
       "Bash(python3 *)",
       "Bash(pkill -f \"vite\")",
       "Bash(git show *)",
-      "Read(//tmp/**)"
+      "Read(//tmp/**)",
+      "Bash(cwebp -q 78 -mt -af abertura-__TRACKED_VAR__.png -o abertura-__TRACKED_VAR__.webp)"
     ]
   }
 }

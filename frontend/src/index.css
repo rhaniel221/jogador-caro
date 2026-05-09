@@ -8142,8 +8142,9 @@ input.game-input::placeholder { color: #475569; }
   pointer-events: none;
 }
 
-/* Cada segmento ocupa toda a tela mas e recortado por clip-path.
-   A imagem dentro anima translateY pra entrar de cima ou de baixo. */
+/* Cada segmento e fullscreen com clip-path mascarando seu polygon.
+   A imagem dentro nao e mais fullscreen — ocupa apenas seu quadrante
+   50%x50% pra evitar zoom cortado. */
 .abertura-seg {
   position: absolute;
   inset: 0;
@@ -8151,20 +8152,25 @@ input.game-input::placeholder { color: #475569; }
 }
 .abertura-seg-img {
   position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
+  width: 50%;
+  height: 50%;
   object-fit: cover;
   opacity: 0;
   transition: opacity 0.4s ease,
               transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
 }
-.abertura-seg-img.from-top    { transform: translateY(-100%) scale(1.04); }
-.abertura-seg-img.from-bottom { transform: translateY( 100%) scale(1.04); }
+.abertura-seg-img.from-top    { transform: translateY(-100%); }
+.abertura-seg-img.from-bottom { transform: translateY( 100%); }
 .abertura-seg-img.is-shown {
   opacity: 1;
-  transform: translateY(0) scale(1);
+  transform: translateY(0);
 }
+
+/* Posicao da imagem dentro do segmento (cada um no seu quadrante) */
+.seg-1 .abertura-seg-img { top: 0;   left: 0;   }
+.seg-2 .abertura-seg-img { top: 0;   left: 50%; }
+.seg-3 .abertura-seg-img { top: 50%; left: 0;   }
+.seg-4 .abertura-seg-img { top: 50%; left: 50%; }
 
 /* Polygons dos 4 quadrantes: divididos por horizontal y=50% e
    diagonal inclinada pra direita de (35%,0) ate (65%,100%) */
