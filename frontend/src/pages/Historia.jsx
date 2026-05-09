@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react'
 import { useGame } from '../context/GameContext'
+import { useTutorial } from '../context/TutorialContext'
 import API from '../api'
 
 // ================================================================
@@ -202,6 +203,13 @@ function MissaoCard({ missao, onExecutar, onPular, loading, indice, faseCor }) {
 function AberturaFase({ fase, onContinuar }) {
   const [linhaAtiva, setLinhaAtiva] = useState(0)
   const [pronto, setPronto] = useState(false)
+  const { setPaused } = useTutorial()
+
+  // Pausa o tutorial enquanto a abertura ta no ar — só libera no "Começar →"
+  useEffect(() => {
+    setPaused(true)
+    return () => setPaused(false)
+  }, [setPaused])
 
   useEffect(() => {
     if (linhaAtiva >= fase.abertura.linhas.length) {
@@ -245,11 +253,6 @@ function AberturaFase({ fase, onContinuar }) {
           <button className="abertura-btn" onClick={onContinuar}>
             Começar →
           </button>
-        )}
-        {!pronto && (
-          <div className="abertura-skip" onClick={() => { setLinhaAtiva(fase.abertura.linhas.length); setPronto(true) }}>
-            Continuar
-          </div>
         )}
       </div>
     </div>

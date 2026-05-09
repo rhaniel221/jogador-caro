@@ -106,6 +106,7 @@ export function TutorialProvider({ children }) {
   const location = useLocation()
   const [step, setStep] = useState(-1)
   const [visible, setVisible] = useState(false) // controla fade in/out
+  const [paused, setPaused] = useState(false) // pausa tutorial durante abertura/cutscene
   const stepRef = useRef(-1)
   const transitionTimer = useRef(null)
 
@@ -149,9 +150,11 @@ export function TutorialProvider({ children }) {
   const currentStep = STEPS.find(s => s.id === step) || null
   const isActive = step > 0 && step !== 5 && currentStep !== null
 
-  // Controla visibilidade: esconde durante transição de step e transição de página
+  // Controla visibilidade: esconde durante transição de step, transição de página
+  // e enquanto pausado (cutscene/abertura de capítulo)
   useEffect(() => {
     if (!isActive) { setVisible(false); return }
+    if (paused) { setVisible(false); return }
     // Verifica se step exige página específica
     if (currentStep.page !== null && location.pathname !== currentStep.page) {
       setVisible(false)
@@ -162,7 +165,7 @@ export function TutorialProvider({ children }) {
     const delay = currentStep.delay || 500
     const timer = setTimeout(() => setVisible(true), delay)
     return () => clearTimeout(timer)
-  }, [step, location.pathname, isActive])
+  }, [step, location.pathname, isActive, paused])
 
   // Auto-avança steps 'nav' quando chega na página certa
   useEffect(() => {
@@ -247,6 +250,7 @@ export function TutorialProvider({ children }) {
     <TutorialContext.Provider value={{
       currentStep, isActive, visible, advance, skip, step, faseInfo,
       triggerInventoryTutorial,
+      setPaused,
     }}>
       {children}
     </TutorialContext.Provider>
