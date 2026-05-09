@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { GameProvider, useGame } from './context/GameContext'
-import { TutorialProvider, useTutorial } from './context/TutorialContext'
+import { TutorialProvider } from './context/TutorialContext'
 import Layout from './components/Layout'
 import LoadingScreen from './components/LoadingScreen'
 import LoginModal from './components/LoginModal'
@@ -28,25 +28,19 @@ import Banco from './pages/Banco'
 import Performance from './pages/Performance'
 import Treino from './pages/Treino'
 
-// Força novato (nivel 1, ainda no onboarding inicial) a entrar pela /historia.
-// Lê o step LIVE do TutorialContext (não o defasado de jogador.tutorial_step).
-// Depois do step 5+ libera navegação livre.
+// Bloqueia novato (nivel<4) a qualquer rota que nao seja / ou /historia.
+// Garante que digitar /loja, /carreira etc no browser tambem cai em /historia.
 function NovatoGuard() {
   const { jogador } = useGame()
-  const { step } = useTutorial()
   const location = useLocation()
   const navigate = useNavigate()
 
   useEffect(() => {
     if (!jogador) return
-    if (jogador.nivel >= 2) return
-    // Tutorial finalizado (-1) ou já passou dos 4 primeiros steps: liberou
-    if (step === -1) return
-    if (step >= 5) return
-    // Step ainda inicial (1-4): força /historia
-    if (location.pathname === '/historia') return
+    if (jogador.nivel >= 4) return
+    if (location.pathname === '/' || location.pathname === '/historia') return
     navigate('/historia', { replace: true })
-  }, [jogador?.id, jogador?.nivel, step, location.pathname])
+  }, [jogador?.id, jogador?.nivel, location.pathname])
 
   return null
 }
