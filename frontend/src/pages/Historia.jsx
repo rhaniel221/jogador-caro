@@ -205,15 +205,14 @@ function MissaoCard({ missao, onExecutar, onPular, loading, indice, faseCor }) {
 // ================================================================
 // ABERTURA CINEMATOGRAFICA DA FASE
 // ================================================================
-// Tempos da abertura
-const SLIDE_DURATION = 1700  // ms cada slide fica visível
-const FLASH_DURATION = 320   // ms do flash de transição
+// Direcao do slide-in pra cada um dos 4 segmentos da colagem
+const SEG_DIRS = ['from-top', 'from-bottom', 'from-top', 'from-bottom']
 
 function AberturaFase({ fase, onContinuar }) {
   const imgs = fase.aberturaImgs || []
-  const totalSlides = imgs.length
-  const [slideIndex, setSlideIndex] = useState(0)
-  const [phase, setPhase] = useState(totalSlides > 0 ? 'slideshow' : 'text')
+  const [imgsLoaded, setImgsLoaded] = useState(imgs.length === 0)
+  const [revealedCount, setRevealedCount] = useState(0)
+  const [phase, setPhase] = useState(imgs.length > 0 ? 'reveal' : 'text')
   const [flashing, setFlashing] = useState(false)
   const [linhaAtiva, setLinhaAtiva] = useState(0)
   const [pronto, setPronto] = useState(false)
@@ -225,26 +224,50 @@ function AberturaFase({ fase, onContinuar }) {
     return () => setPaused(false)
   }, [setPaused])
 
-  // Avanco do slideshow: cada slide fica SLIDE_DURATION, depois flash, depois proximo (ou texto)
+  // Preload — espera as 4 imagens carregarem antes de animar
   useEffect(() => {
-    if (phase !== 'slideshow') return
-    const lastSlide = slideIndex >= totalSlides - 1
-    const holdTimer = setTimeout(() => {
-      setFlashing(true)
-      const flashTimer = setTimeout(() => {
-        setFlashing(false)
-        if (lastSlide) {
-          setPhase('text')
-        } else {
-          setSlideIndex(i => i + 1)
-        }
-      }, FLASH_DURATION)
-      return () => clearTimeout(flashTimer)
-    }, SLIDE_DURATION)
-    return () => clearTimeout(holdTimer)
-  }, [slideIndex, phase, totalSlides])
+    if (imgs.length === 0) return
+    let loaded = 0
+    let cancelled = false
+    imgs.forEach(src => {
+      const img = new Image()
+      const done = () => {
+        if (cancelled) return
+        loaded++
+        if (loaded >= imgs.length) setImgsLoaded(true)
+      }
+      img.onload = done
+      img.onerror = done
+      img.src = src
+    })
+    return () => { cancelled = true }
+  }, [imgs.length])
 
-  // Reveal das linhas — so depois que o slideshow termina
+  // Sequencia: flash → reveal seg 1 → hold → flash → reveal seg 2 → ...
+  useEffect(() => {
+    if (!imgsLoaded || phase !== 'reveal') return
+    let cancelled = false
+    const sleep = ms => new Promise(r => setTimeout(r, ms))
+    const run = async () => {
+      for (let i = 0; i < imgs.length; i++) {
+        if (cancelled) return
+        setFlashing(true)
+        await sleep(220)
+        if (cancelled) return
+        setFlashing(false)
+        setRevealedCount(i + 1)
+        await sleep(700)
+      }
+      if (cancelled) return
+      // Pequeno respiro antes do texto
+      await sleep(400)
+      if (!cancelled) setPhase('text')
+    }
+    run()
+    return () => { cancelled = true }
+  }, [imgsLoaded, phase, imgs.length])
+
+  // Reveal das linhas — so depois que o collage termina
   useEffect(() => {
     if (phase !== 'text') return
     if (linhaAtiva >= fase.abertura.linhas.length) {
@@ -259,47 +282,54 @@ function AberturaFase({ fase, onContinuar }) {
     <div className="abertura-overlay" style={{ '--fase-cor': fase.cor }}>
       <div className="abertura-bg" />
 
-      {/* Slideshow: 4 imagens, alternando direcao (top↓, bottom↑) */}
-      {phase === 'slideshow' && imgs.map((src, i) => {
-        const isActive = i === slideIndex
-        const dir = i % 2 === 0 ? 'down' : 'up'
-        return (
-          <img
-            key={i}
-            src={src}
-            alt=""
-            className={`abertura-slide dir-${dir}${isActive ? ' is-active' : ''}`}
-            onError={e => { e.currentTarget.style.display = 'none' }}
-          />
-        )
-      })}
+      {/* Colagem geometrica: 4 imagens recortadas por horizontal + diagonal */}
+      {imgs.length > 0 && (
+        <div className="abertura-colagem">
+          {imgs.map((src, i) => (
+            <div key={i} className={`abertura-seg seg-${i + 1}`}>
+              <img
+                src={src}
+                alt=""
+                className={`abertura-seg-img ${SEG_DIRS[i]}${revealedCount > i ? ' is-shown' : ''}`}
+                onError={e => { e.currentTarget.style.display = 'none' }}
+              />
+            </div>
+          ))}
+
+          {/* Linhas brancas: horizontal no centro + diagonal inclinada pra direita */}
+          <svg className="abertura-lines" width="100%" height="100%" preserveAspectRatio="none">
+            <line x1="0%"  y1="50%"  x2="100%" y2="50%"   stroke="#fff" strokeWidth="6" vectorEffect="non-scaling-stroke" />
+            <line x1="35%" y1="0%"   x2="65%"  y2="100%"  stroke="#fff" strokeWidth="6" vectorEffect="non-scaling-stroke" />
+          </svg>
+        </div>
+      )}
 
       {/* Camera flash entre transicoes */}
       <div className={`abertura-flash${flashing ? ' is-flashing' : ''}`} />
 
-      {/* Vignette pra texto destacar (so na fase texto) */}
-      {phase === 'text' && <div className="abertura-vinheta" />}
-
-      {/* Texto centralizado — so depois das 4 imagens */}
+      {/* Vignette + texto centralizado — so na fase texto */}
       {phase === 'text' && (
-        <div className="abertura-conteudo">
-          <div className="abertura-cap">{fase.subtitulo}</div>
-          <h1 className="abertura-titulo">{fase.titulo}</h1>
+        <>
+          <div className="abertura-vinheta" />
+          <div className="abertura-conteudo">
+            <div className="abertura-cap">{fase.subtitulo}</div>
+            <h1 className="abertura-titulo">{fase.titulo}</h1>
 
-          <div className="abertura-linhas">
-            {fase.abertura.linhas.slice(0, linhaAtiva + 1).map((linha, i) => (
-              <p key={i} className="abertura-linha" style={{ animationDelay: `${i * 0.1}s` }}>
-                {linha}
-              </p>
-            ))}
+            <div className="abertura-linhas">
+              {fase.abertura.linhas.slice(0, linhaAtiva + 1).map((linha, i) => (
+                <p key={i} className="abertura-linha" style={{ animationDelay: `${i * 0.1}s` }}>
+                  {linha}
+                </p>
+              ))}
+            </div>
+
+            {pronto && (
+              <button className="abertura-btn" onClick={onContinuar}>
+                Começar →
+              </button>
+            )}
           </div>
-
-          {pronto && (
-            <button className="abertura-btn" onClick={onContinuar}>
-              Começar →
-            </button>
-          )}
-        </div>
+        </>
       )}
     </div>
   )

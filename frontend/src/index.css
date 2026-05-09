@@ -8130,35 +8130,55 @@ input.game-input::placeholder { color: #475569; }
 }
 .abertura-skip:hover { color: #cbd5e1; }
 
-/* ================ ABERTURA: SLIDESHOW + FLASH + TEXTO ================ */
+/* ================ ABERTURA: COLLAGE GEOMETRICO + FLASH + TEXTO ================ */
 .abertura-overlay { overflow: hidden; }
 
-/* Slides: cada um cobre a tela inteira, alternando entrada por cima/baixo.
-   Slide nao ativo fica fora da tela; ativo desliza pra dentro. */
-.abertura-slide {
+/* Container do collage — fundo preto + 4 segments + linhas brancas */
+.abertura-colagem {
+  position: absolute;
+  inset: 0;
+  background: #000;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Cada segmento ocupa toda a tela mas e recortado por clip-path.
+   A imagem dentro anima translateY pra entrar de cima ou de baixo. */
+.abertura-seg {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+.abertura-seg-img {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center 30%;
-  z-index: 0;
-  pointer-events: none;
   opacity: 0;
-  transition: transform 0.55s cubic-bezier(0.2, 0.7, 0.2, 1),
-              opacity  0.35s ease-out;
+  transition: opacity 0.4s ease,
+              transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
 }
-.abertura-slide.dir-down  { transform: translateY(-100%); }
-.abertura-slide.dir-up    { transform: translateY( 100%); }
-.abertura-slide.is-active {
+.abertura-seg-img.from-top    { transform: translateY(-100%) scale(1.04); }
+.abertura-seg-img.from-bottom { transform: translateY( 100%) scale(1.04); }
+.abertura-seg-img.is-shown {
   opacity: 1;
-  transform: translateY(0);
-  animation: abertura-slide-zoom 1.7s ease-out forwards;
+  transform: translateY(0) scale(1);
 }
-/* Ken Burns sutil enquanto o slide ta ativo */
-@keyframes abertura-slide-zoom {
-  from { transform: translateY(0) scale(1); }
-  to   { transform: translateY(0) scale(1.05); }
+
+/* Polygons dos 4 quadrantes: divididos por horizontal y=50% e
+   diagonal inclinada pra direita de (35%,0) ate (65%,100%) */
+.seg-1 { clip-path: polygon(0 0,    35% 0,   50% 50%,  0 50%); }      /* top-esq */
+.seg-2 { clip-path: polygon(35% 0,  100% 0,  100% 50%, 50% 50%); }    /* top-dir */
+.seg-3 { clip-path: polygon(0 50%,  50% 50%, 65% 100%, 0 100%); }     /* bot-esq */
+.seg-4 { clip-path: polygon(50% 50%, 100% 50%, 100% 100%, 65% 100%); } /* bot-dir */
+
+/* SVG com as 2 linhas brancas (horizontal + diagonal) */
+.abertura-lines {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
 }
 
 /* Flash branco rapido entre transicoes (efeito de foto) */
