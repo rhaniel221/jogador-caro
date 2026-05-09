@@ -1,0 +1,120 @@
+- generic [ref=e1]:
+  - 'button "Conta do Google: Rhaniel Barbosa (brhaniel@gmail.com)" [ref=e654] [cursor=pointer]':
+    - img [ref=e10]
+  - main [ref=e12]:
+    - button "Nova conversa" [disabled] [ref=e655]:
+      - generic [ref=e16]: Gemini
+    - generic [ref=e23]:
+      - link "Fazer upgrade para Google AI Plus" [ref=e656]:
+        - img [ref=e27]: spark
+        - generic [ref=e29]: Fazer upgrade para Google AI Plus
+      - button "Conversa momentânea" [ref=e731] [cursor=pointer]:
+        - img [ref=e733]
+    - generic [ref=e44]:
+      - navigation "Abrir barra lateral" [ref=e659]:
+        - generic [ref=e47]:
+          - button "Pesquisa" [ref=e660] [cursor=pointer]:
+            - img [ref=e50]: search
+          - generic [ref=e53]:
+            - group [ref=e54]:
+              - link "Nova conversa" [ref=e661] [cursor=pointer]:
+                - /url: /app
+                - img [ref=e59]: edit_square
+                - generic [ref=e63]: Nova conversa
+            - generic [ref=e64]:
+              - link "Meus itens" [ref=e662] [cursor=pointer]:
+                - /url: mystuff
+                - img [ref=e70]: family_star
+                - generic [ref=e71]: Meus itens
+              - generic [ref=e73]:
+                - link "Notebooks" [ref=e663] [cursor=pointer]:
+                  - /url: /notebooks/view
+                  - generic [ref=e76]: Notebooks
+                  - img [ref=e79]: keyboard_arrow_right
+                - generic "Novo notebook" [ref=e664] [cursor=pointer]:
+                  - img [ref=e84]: add_2
+                  - generic [ref=e85]: Novo notebook
+              - generic [ref=e87]:
+                - link "Gems" [ref=e665] [cursor=pointer]:
+                  - /url: /gems/view
+                  - generic [ref=e91]: Gems
+                  - img [ref=e94]: keyboard_arrow_right
+                - region
+              - generic [ref=e97]:
+                - heading "Conversas" [level=1] [ref=e666]
+                - region [ref=e100]:
+                  - button [ref=e667] [cursor=pointer]:
+                    - generic [ref=e103]: "Gere uma imagem 1024x1536 (vertical, retrato) com fundo TRANSPARENTE (PNG), estilo render 3D AAA mobile-game (igual ícones de FIFA Ultimate Team), sem moldura, sem texto. PERSONAGEM PARA INVENTÁRIO DE JOGADOR DE FUTEBOL - Jogador de futebol masculino jovem, brasileiro, em vista frontal completa (cabeça aos pés visíveis) - Pose levemente em T-pose mas natural: pernas separadas em postura confiante, braços levemente abertos pra fora do corpo (não totalmente estendidos) - Uniforme BÁSICO BRANCO E PRETO neutro: - Camisa branca lisa simples (sem números, sem escudo, sem texto) - Shorts pretos lisos - Meiões brancos longos - Chuteiras pretas básicas - Pele morena/parda - Cabelo curto castanho escuro - Expressão neutra confiante - Iluminação cinematográfica dramática vinda do alto, sombra suave atrás - TODO O CORPO VISÍVEL — sem corte de cabeça nem pés - Composição centralizada - IMPORTANTE: deixar áreas de cabeça, peito, braços, mãos, quadril, pernas e pés bem visíveis (ícones de equipamento serão sobrepostos depois)"
+                  - 'button "Gere uma imagem 1024x1024 com fundo TRANSPARENTE (PNG), estilo render 3D AAA mobile-game (igual ícones de FIFA Mobile), sem moldura, sem texto. ÍCONE: BOLA DE FUTEBOL VELHA E MURCHA NA RUA - Uma bola de futebol antiga, gasta, ligeiramente murcha (semi-vazia), com couro descascado e sujeira - Posicionada num pedaço de asfalto/calçada de rua (chão visível só uma parte pequena pra dar contexto) - Iluminação dramática vinda de cima - Sombra suave embaixo - Vibe: começo da jornada, bola humilde de garoto pobre encontrada na rua - Composição centralizada, fácil de reconhecer mesmo em 64x64" [ref=e668] [cursor=pointer]':
+                    - generic [ref=e108]: "Gere uma imagem 1024x1024 com fundo TRANSPARENTE (PNG), estilo render 3D AAA mobile-game (igual ícones de FIFA Mobile), sem moldura, sem texto. ÍCONE: BOLA DE FUTEBOL VELHA E MURCHA NA RUA - Uma bola de futebol antiga, gasta, ligeiramente murcha (semi-vazia), com couro descascado e sujeira - Posicionada num pedaço de asfalto/calçada de rua (chão visível só uma parte pequena pra dar contexto) - Iluminação dramática vinda de cima - Sombra suave embaixo - Vibe: começo da jornada, bola humilde de garoto pobre encontrada na rua - Composição centralizada, fácil de reconhecer mesmo em 64x64"
+                  - button "Desafio de Pênalti com Vídeos" [ref=e669] [cursor=pointer]:
+                    - generic [ref=e113]: Desafio de Pênalti com Vídeos
+                  - button "Imagem Personalizada Para Aplicativo" [ref=e670] [cursor=pointer]:
+                    - generic [ref=e118]: Imagem Personalizada Para Aplicativo
+                  - button "Criação de Vídeo para Novo Produto" [ref=e671] [cursor=pointer]:
+                    - generic [ref=e123]: Criação de Vídeo para Novo Produto
+                  - button "Produto 3D Embalagem Plástico" [ref=e672] [cursor=pointer]:
+                    - generic [ref=e128]: Produto 3D Embalagem Plástico
+                  - button "Erro na Criação de Imagem" [ref=e673] [cursor=pointer]:
+                    - generic [ref=e133]: Erro na Criação de Imagem
+                  - 'button "Branding Completo NutrAction: Visual e Estratégia" [ref=e674] [cursor=pointer]':
+                    - generic [ref=e138]: "Branding Completo NutrAction: Visual e Estratégia"
+                  - 'button "Dívida Tributária: Opções e Estratégias" [ref=e675] [cursor=pointer]':
+                    - generic [ref=e143]: "Dívida Tributária: Opções e Estratégias"
+                  - button "Criação de Vídeos para TikTok" [ref=e676] [cursor=pointer]:
+                    - generic [ref=e148]: Criação de Vídeos para TikTok
+                  - button "Vídeo Gerado a Partir de Imagens" [ref=e677] [cursor=pointer]:
+                    - generic [ref=e153]: Vídeo Gerado a Partir de Imagens
+                  - button "Go API Login POST Method Error" [ref=e678] [cursor=pointer]:
+                    - generic [ref=e158]: Go API Login POST Method Error
+                  - button "Atualização e Melhoria de Currículo" [ref=e679] [cursor=pointer]:
+                    - generic [ref=e163]: Atualização e Melhoria de Currículo
+                  - button "Inventário com Cooldown Individualizado" [ref=e680] [cursor=pointer]:
+                    - generic [ref=e168]: Inventário com Cooldown Individualizado
+            - group [ref=e171]:
+              - button "Settings & help" [ref=e681] [cursor=pointer]:
+                - img [ref=e176]: settings_2
+                - generic [ref=e180]: Configurações e ajuda
+      - generic [ref=e187]:
+        - generic [ref=e188]:
+          - heading "Conversa com o Gemini" [level=1] [ref=e682]
+          - generic [ref=e739]:
+            - generic [ref=e740]:
+              - generic [ref=e746]: Olá, Rhaniel
+              - heading "Por onde começamos?" [level=1] [ref=e753]:
+                - generic [ref=e754]: Por onde começamos?
+            - generic [ref=e762]:
+              - button "🖼️ Criar imagem, botão, toque para usar a ferramenta" [ref=e764] [cursor=pointer]:
+                - generic [ref=e765]: 🖼️ Criar imagem
+              - button "🎸 Criar música, botão, toque para usar a ferramenta" [ref=e767] [cursor=pointer]:
+                - generic [ref=e768]: 🎸 Criar música
+              - button "Escrever algo, botão, toque para usar a ferramenta" [ref=e770] [cursor=pointer]:
+                - generic [ref=e771]: Escrever algo
+              - button "Me ajude a aprender, botão, toque para usar a ferramenta" [ref=e773] [cursor=pointer]:
+                - generic [ref=e774]: Me ajude a aprender
+              - button "Melhore meu dia, botão, toque para usar a ferramenta" [ref=e776] [cursor=pointer]:
+                - generic [ref=e777]: Melhore meu dia
+        - generic [ref=e528]:
+          - group [ref=e529]:
+            - generic [ref=e532]:
+              - textbox "Insira um comando para o Gemini" [active] [ref=e724]:
+                - text: Peça ao Gemini
+                - paragraph [ref=e778]
+              - generic [ref=e539]:
+                - button "Abrir o menu de envio de arquivo" [ref=e725] [cursor=pointer]:
+                  - img [ref=e545]: add_2
+                - button "Ferramentas" [ref=e726]:
+                  - img [ref=e552]: page_info
+                  - generic [ref=e555]: Ferramentas
+              - generic [ref=e558]:
+                - button "Abrir seletor de modo" [ref=e727]:
+                  - generic [ref=e563]:
+                    - generic [ref=e564]: Rápido
+                    - img [ref=e565]: keyboard_arrow_down
+                - generic [ref=e568]:
+                  - button "Microfone" [ref=e728] [cursor=pointer]:
+                    - img [ref=e573]: mic
+                  - generic:
+                    - button "Enviar mensagem" [disabled]:
+                      - img: send
+          - paragraph [ref=e779]
