@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useGame } from '../context/GameContext'
+import { useTutorial } from '../context/TutorialContext'
 import { useSearchParams } from 'react-router-dom'
 import API from '../api'
 import { fmt, itemStats } from '../utils'
@@ -9,6 +10,7 @@ import Inventario from './Inventario'
 export default function Loja() {
   const [abaOuter, setAbaOuter] = useState('loja')
   const { jogador, setJogador, jogadorID, mostrarNotificacao } = useGame()
+  const { triggerInventoryTutorial } = useTutorial()
   const [searchParams, setSearchParams] = useSearchParams()
   const [itensLoja, setItensLoja] = useState([])
   const [lojaPremium, setLojaPremium] = useState([])
@@ -54,18 +56,34 @@ export default function Loja() {
   })
 
   async function comprar(id) {
+    const item = itensLoja.find(i => i.id === id)
     const res = await API.post('/api/comprar', { jogador_id: jogadorID, item_id: id })
-    if (res.sucesso) { setJogador(res.jogador); mostrarNotificacao(res.mensagem, 'sucesso') }
+    if (res.sucesso) {
+      setJogador(res.jogador)
+      mostrarNotificacao(res.mensagem, 'sucesso')
+      if (item?.tipo === 'equipamento') triggerInventoryTutorial()
+    }
     else mostrarNotificacao(res.mensagem, 'erro')
   }
   async function comprarPremium(id) {
+    const item = lojaPremium.find(i => i.id === id)
     const res = await API.post('/api/comprar-premium', { jogador_id: jogadorID, item_id: id })
-    if (res.sucesso) { setJogador(res.jogador); mostrarNotificacao(res.mensagem, 'sucesso') }
+    if (res.sucesso) {
+      setJogador(res.jogador)
+      mostrarNotificacao(res.mensagem, 'sucesso')
+      if (item?.tipo === 'equipamento') triggerInventoryTutorial()
+    }
     else mostrarNotificacao(res.mensagem, 'erro')
   }
   async function comprarFama(id) {
+    const item = itensFama.find(i => i.id === id)
     const res = await API.post('/api/gastar-fama', { jogador_id: jogadorID, item_id: id })
-    if (res.sucesso) { setJogador(res.jogador); mostrarNotificacao(res.mensagem, 'sucesso'); carregarFama() }
+    if (res.sucesso) {
+      setJogador(res.jogador)
+      mostrarNotificacao(res.mensagem, 'sucesso')
+      carregarFama()
+      if (item?.tipo === 'equipamento') triggerInventoryTutorial()
+    }
     else mostrarNotificacao(res.mensagem, 'erro')
   }
 

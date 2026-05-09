@@ -74,11 +74,17 @@ export default function Nav() {
     return () => clearInterval(id)
   }, [jogadorID, carregarBadges])
 
+  // Trava todos os menus enquanto o jogador nao termina a historia inicial
+  // (nivel < 4). Forca foco nas missoes de origem.
+  const historiaLock = nivel < 4
+
   return (
     <nav className="main-menu">
       <ul>
         {links.map(l => {
-          const locked = l.minLevel && nivel < l.minLevel
+          const lvlLocked = l.minLevel && nivel < l.minLevel
+          const locked = historiaLock || lvlLocked
+          const lockLabel = lvlLocked ? `🔒${l.minLevel}` : '🔒'
           const badgeCount = badges[l.to] || 0
           return (
             <li key={l.to}>
@@ -87,7 +93,7 @@ export default function Nav() {
                   {l.img
                     ? <img src={l.img} alt="" className="nav-icon-img" />
                     : <span className="nav-icon-emoji">{l.emoji}</span>}
-                  {' '}{l.label} 🔒{l.minLevel}
+                  {' '}{l.label} {lockLabel}
                 </span>
               ) : (
                 <NavLink

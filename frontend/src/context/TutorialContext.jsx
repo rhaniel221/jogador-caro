@@ -133,9 +133,10 @@ export function TutorialProvider({ children }) {
   // (interrompe o fluxo pra ensinar o que importa naquele momento)
   useEffect(() => {
     if (!jogador) return
-    // Pula se ja terminou tutorial OU ja esta na fase de energia
+    // Pula se ja terminou tutorial OU ja esta na fase de energia/inventario
     if (jogador.tutorial_step === -1) return
     if (step >= 20 && step <= 26) return
+    if (step >= 10 && step <= 13) return // nao interrompe inv tutorial
     // Condicoes pra disparar tutorial de energia
     if (jogador.nivel < 4) return
     if (jogador.energia > 3) return
@@ -177,8 +178,14 @@ export function TutorialProvider({ children }) {
   }, [location.pathname, currentStep?.id])
 
   function getNextStep(current) {
-    if (current === 4) return 10
-    if (current === 13) return 5
+    // Step 4: pula direto pro 5 (sleeping). Inv tutorial agora dispara
+    // sob demanda quando o jogador comprar um equipamento.
+    if (current === 4) return 5
+    if (current === 13) {
+      // Marca que ja viu o tutorial de inventario pra nao re-disparar
+      if (jogadorID) localStorage.setItem('inv_tut_seen_' + jogadorID, '1')
+      return 5
+    }
     if (current === 26) return -1
     const nextId = current + 1
     return STEPS.find(s => s.id === nextId) ? nextId : -1
@@ -201,6 +208,19 @@ export function TutorialProvider({ children }) {
   const advance = useCallback(() => {
     const nextId = getNextStep(stepRef.current)
     goToStep(nextId)
+  }, [jogadorID])
+
+  // Dispara o tutorial de inventario quando o jogador compra equipamento
+  // pela primeira vez. Bloqueia se ja viu, se esta em outro tutorial ativo,
+  // ou se o jogador ainda esta no onboarding inicial (1-4).
+  const triggerInventoryTutorial = useCallback(() => {
+    if (!jogadorID) return
+    if (localStorage.getItem('inv_tut_seen_' + jogadorID)) return
+    const s = stepRef.current
+    if (s >= 1 && s <= 4) return       // ainda no onboarding
+    if (s >= 10 && s <= 13) return     // ja em andamento
+    if (s >= 20 && s <= 26) return     // tutorial de energia
+    goToStep(10)
   }, [jogadorID])
 
   const skip = useCallback(() => {
@@ -226,6 +246,7 @@ export function TutorialProvider({ children }) {
   return (
     <TutorialContext.Provider value={{
       currentStep, isActive, visible, advance, skip, step, faseInfo,
+      triggerInventoryTutorial,
     }}>
       {children}
     </TutorialContext.Provider>
