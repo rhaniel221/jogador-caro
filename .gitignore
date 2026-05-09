@@ -22,3 +22,9 @@ bot-whatsapp/*.log
 # === Produtos front (build) ===
 dist/
 build/
+
+# Playwright MCP artifacts
+.playwright-mcp/
+gemini-*.png
+hero-info.txt
+

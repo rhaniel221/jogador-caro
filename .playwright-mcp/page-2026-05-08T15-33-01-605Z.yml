@@ -1,5 +1,0 @@
-- generic [ref=e1]:
-  - textbox "Peça ao Gemini" [active] [ref=e4]
-  - 'button "Conta do Google: Rhaniel Barbosa (brhaniel@gmail.com)" [ref=e11] [cursor=pointer]':
-    - img [ref=e13]
-  - main [ref=e15]
