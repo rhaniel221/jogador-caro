@@ -28,3 +28,8 @@ build/
 gemini-*.png
 hero-info.txt
 
+
+# Vite cache
+frontend/node_modules/.vite/
+loading-*.png
+
