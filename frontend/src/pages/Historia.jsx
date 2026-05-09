@@ -301,35 +301,35 @@ function AberturaFase({ fase, onContinuar }) {
             <line x1="0%"  y1="50%"  x2="100%" y2="50%"   stroke="#fff" strokeWidth="6" vectorEffect="non-scaling-stroke" />
             <line x1="35%" y1="0%"   x2="65%"  y2="100%"  stroke="#fff" strokeWidth="6" vectorEffect="non-scaling-stroke" />
           </svg>
+
+          {/* Camera flash — bounded ao collage */}
+          <div className={`abertura-flash${flashing ? ' is-flashing' : ''}`} />
+
+          {/* Vignette + texto centralizado — so na fase texto, sobre o collage */}
+          {phase === 'text' && (
+            <>
+              <div className="abertura-vinheta" />
+              <div className="abertura-conteudo">
+                <div className="abertura-cap">{fase.subtitulo}</div>
+                <h1 className="abertura-titulo">{fase.titulo}</h1>
+
+                <div className="abertura-linhas">
+                  {fase.abertura.linhas.slice(0, linhaAtiva + 1).map((linha, i) => (
+                    <p key={i} className="abertura-linha" style={{ animationDelay: `${i * 0.1}s` }}>
+                      {linha}
+                    </p>
+                  ))}
+                </div>
+
+                {pronto && (
+                  <button className="abertura-btn" onClick={onContinuar}>
+                    Começar →
+                  </button>
+                )}
+              </div>
+            </>
+          )}
         </div>
-      )}
-
-      {/* Camera flash entre transicoes */}
-      <div className={`abertura-flash${flashing ? ' is-flashing' : ''}`} />
-
-      {/* Vignette + texto centralizado — so na fase texto */}
-      {phase === 'text' && (
-        <>
-          <div className="abertura-vinheta" />
-          <div className="abertura-conteudo">
-            <div className="abertura-cap">{fase.subtitulo}</div>
-            <h1 className="abertura-titulo">{fase.titulo}</h1>
-
-            <div className="abertura-linhas">
-              {fase.abertura.linhas.slice(0, linhaAtiva + 1).map((linha, i) => (
-                <p key={i} className="abertura-linha" style={{ animationDelay: `${i * 0.1}s` }}>
-                  {linha}
-                </p>
-              ))}
-            </div>
-
-            {pronto && (
-              <button className="abertura-btn" onClick={onContinuar}>
-                Começar →
-              </button>
-            )}
-          </div>
-        </>
       )}
     </div>
   )

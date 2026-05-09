@@ -8131,15 +8131,25 @@ input.game-input::placeholder { color: #475569; }
 .abertura-skip:hover { color: #cbd5e1; }
 
 /* ================ ABERTURA: COLLAGE GEOMETRICO + FLASH + TEXTO ================ */
-.abertura-overlay { overflow: hidden; }
-
-/* Container do collage — fundo preto + 4 segments + linhas brancas */
-.abertura-colagem {
-  position: absolute;
-  inset: 0;
+.abertura-overlay {
+  overflow: hidden;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-direction: row !important;
   background: #000;
+}
+
+/* Container do collage — no mobile preenche viewport, no desktop
+   trava em formato 2:3 portrait (mesma proporcao das imagens) e
+   centraliza com fundo preto nas laterais. */
+.abertura-colagem {
+  position: relative;
+  width:  min(100vw, calc(100vh * 2 / 3));
+  height: 100vh;
+  background: #000;
+  overflow: hidden;
   z-index: 0;
-  pointer-events: none;
 }
 
 /* Cada segmento e fullscreen com clip-path mascarando seu polygon.
@@ -8222,22 +8232,25 @@ input.game-input::placeholder { color: #475569; }
   to   { opacity: 1; }
 }
 
-/* Conteudo (texto + botao) — centralizado, aparece apos o slideshow */
+/* Conteudo (texto + botao) — centralizado sobre o collage */
 .abertura-conteudo {
-  position: relative;
-  z-index: 3;
-  margin: auto;
-  padding: 32px 36px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 6;
+  width: calc(100% - 36px);
+  max-width: 480px;
+  padding: 28px 28px;
   text-align: center;
   background: linear-gradient(180deg,
-    rgba(5,10,20,0.55) 0%,
-    rgba(5,10,20,0.78) 100%);
-  backdrop-filter: blur(6px);
-  border-radius: 20px;
+    rgba(5,10,20,0.65) 0%,
+    rgba(5,10,20,0.85) 100%);
+  backdrop-filter: blur(8px);
+  border-radius: 18px;
   border: 1px solid rgba(214,168,79,0.22);
   box-shadow: 0 18px 50px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.06);
   animation: abertura-conteudo-in 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
-  max-width: 600px;
 }
 @keyframes abertura-conteudo-in {
   from { opacity: 0; transform: translateY(40px) scale(0.96); filter: blur(6px); }
