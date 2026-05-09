@@ -18,6 +18,12 @@ const FASES = {
       '/historia-img/abertura-3.webp',
       '/historia-img/abertura-4.webp',
     ],
+    aberturaImgsDesktop: [
+      '/historia-img/abertura-1-desktop.webp',
+      '/historia-img/abertura-2-desktop.webp',
+      '/historia-img/abertura-3-desktop.webp',
+      '/historia-img/abertura-4-desktop.webp',
+    ],
     fallbackIcone: '💭',
     abertura: {
       linhas: [
@@ -210,6 +216,7 @@ const SEG_DIRS = ['from-top', 'from-bottom', 'from-top', 'from-bottom']
 
 function AberturaFase({ fase, onContinuar }) {
   const imgs = fase.aberturaImgs || []
+  const imgsDesktop = fase.aberturaImgsDesktop || []
   const [imgsLoaded, setImgsLoaded] = useState(imgs.length === 0)
   const [revealedCount, setRevealedCount] = useState(0)
   const [phase, setPhase] = useState(imgs.length > 0 ? 'reveal' : 'text')
@@ -224,17 +231,22 @@ function AberturaFase({ fase, onContinuar }) {
     return () => setPaused(false)
   }, [setPaused])
 
-  // Preload — espera as 4 imagens carregarem antes de animar
+  // Preload — espera as imagens carregarem antes de animar.
+  // Detecta viewport landscape e prioriza versão desktop quando existir.
   useEffect(() => {
     if (imgs.length === 0) return
+    const isLandscape = window.matchMedia('(min-aspect-ratio: 1/1)').matches
+    const sources = (isLandscape && imgsDesktop.length === imgs.length)
+      ? imgsDesktop
+      : imgs
     let loaded = 0
     let cancelled = false
-    imgs.forEach(src => {
+    sources.forEach(src => {
       const img = new Image()
       const done = () => {
         if (cancelled) return
         loaded++
-        if (loaded >= imgs.length) setImgsLoaded(true)
+        if (loaded >= sources.length) setImgsLoaded(true)
       }
       img.onload = done
       img.onerror = done
@@ -285,16 +297,23 @@ function AberturaFase({ fase, onContinuar }) {
       {/* Colagem geometrica: 4 imagens recortadas por horizontal + diagonal */}
       {imgs.length > 0 && (
         <div className="abertura-colagem">
-          {imgs.map((src, i) => (
-            <div key={i} className={`abertura-seg seg-${i + 1}`}>
-              <img
-                src={src}
-                alt=""
-                className={`abertura-seg-img ${SEG_DIRS[i]}${revealedCount > i ? ' is-shown' : ''}`}
-                onError={e => { e.currentTarget.style.display = 'none' }}
-              />
-            </div>
-          ))}
+          {imgs.map((src, i) => {
+            const desktopSrc = imgsDesktop[i]
+            const cls = `abertura-seg-img ${SEG_DIRS[i]}${revealedCount > i ? ' is-shown' : ''}`
+            return (
+              <div key={i} className={`abertura-seg seg-${i + 1}`}>
+                <picture>
+                  {desktopSrc && <source media="(min-aspect-ratio: 1/1)" srcSet={desktopSrc} />}
+                  <img
+                    src={src}
+                    alt=""
+                    className={cls}
+                    onError={e => { e.currentTarget.style.display = 'none' }}
+                  />
+                </picture>
+              </div>
+            )
+          })}
 
           {/* Linhas brancas: horizontal no centro + diagonal inclinada pra direita */}
           <svg className="abertura-lines" width="100%" height="100%" preserveAspectRatio="none">

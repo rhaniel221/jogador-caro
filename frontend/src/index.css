@@ -8133,20 +8133,15 @@ input.game-input::placeholder { color: #475569; }
 /* ================ ABERTURA: COLLAGE GEOMETRICO + FLASH + TEXTO ================ */
 .abertura-overlay {
   overflow: hidden;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  flex-direction: row !important;
   background: #000;
 }
 
-/* Container do collage — no mobile preenche viewport, no desktop
-   trava em formato 2:3 portrait (mesma proporcao das imagens) e
-   centraliza com fundo preto nas laterais. */
+/* Container do collage — preenche viewport completo nos dois (mobile
+   portrait e desktop landscape). Imagens portrait sao usadas no mobile
+   e versoes landscape carregam via <picture> media query no desktop. */
 .abertura-colagem {
-  position: relative;
-  width:  min(100vw, calc(100vh * 2 / 3));
-  height: 100vh;
+  position: absolute;
+  inset: 0;
   background: #000;
   overflow: hidden;
   z-index: 0;

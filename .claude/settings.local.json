@@ -100,7 +100,11 @@
       "Bash(pkill -f \"vite\")",
       "Bash(git show *)",
       "Read(//tmp/**)",
-      "Bash(cwebp -q 78 -mt -af abertura-__TRACKED_VAR__.png -o abertura-__TRACKED_VAR__.webp)"
+      "Bash(cwebp -q 78 -mt -af abertura-__TRACKED_VAR__.png -o abertura-__TRACKED_VAR__.webp)",
+      "Bash(cwebp -q 78 -mt /Users/lenilu/Projetos/jogador-caro/.playwright-mcp/Gemini-Generated-Image-g1au4ng1au4ng1au.png -o /Users/lenilu/Projetos/jogador-caro/frontend/public/historia-img/abertura-1-desktop.webp)",
+      "Bash(cwebp -q 78 -mt /Users/lenilu/Projetos/jogador-caro/.playwright-mcp/Gemini-Generated-Image-fptmugfptmugfptm.png -o /Users/lenilu/Projetos/jogador-caro/frontend/public/historia-img/abertura-2-desktop.webp)",
+      "Bash(cwebp -q 78 -mt /Users/lenilu/Projetos/jogador-caro/.playwright-mcp/Gemini-Generated-Image-hdma64hdma64hdma.png -o /Users/lenilu/Projetos/jogador-caro/frontend/public/historia-img/abertura-3-desktop.webp)",
+      "Bash(cwebp -q 78 -mt /Users/lenilu/Projetos/jogador-caro/.playwright-mcp/Gemini-Generated-Image-emlwkhemlwkhemlw.png -o /Users/lenilu/Projetos/jogador-caro/frontend/public/historia-img/abertura-4-desktop.webp)"
     ]
   }
 }
