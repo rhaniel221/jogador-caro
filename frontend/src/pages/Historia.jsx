@@ -11,6 +11,7 @@ const FASES = {
     subtitulo: 'Capítulo Um',
     cor: '#1a7dff',
     img: '/historia-img/fase-sonho.png',
+    aberturaImg: '/historia-img/abertura-sonho.png',
     fallbackIcone: '💭',
     abertura: {
       linhas: [
@@ -214,6 +215,20 @@ function AberturaFase({ fase, onContinuar }) {
   return (
     <div className="abertura-overlay" style={{ '--fase-cor': fase.cor }}>
       <div className="abertura-bg" />
+
+      {/* Hero portrait pintado — entra com fade + zoom suave, idle breathing */}
+      {fase.aberturaImg && (
+        <img
+          src={fase.aberturaImg}
+          alt=""
+          className="abertura-portrait"
+          onError={e => { e.currentTarget.style.display = 'none' }}
+        />
+      )}
+
+      {/* Vignette pra texto destacar */}
+      <div className="abertura-vinheta" />
+
       <div className="abertura-conteudo">
         <div className="abertura-cap">{fase.subtitulo}</div>
         <h1 className="abertura-titulo">{fase.titulo}</h1>

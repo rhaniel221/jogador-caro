@@ -6792,343 +6792,88 @@ input.game-input::placeholder { color: #475569; }
 /* ================================================================
    LOADING SCREEN
 ================================================================ */
-/* ================================================================
-   LOADING SCREEN CINEMATOGRÁFICO
-================================================================ */
 .jc-loading-screen {
   position: fixed;
   inset: 0;
   z-index: 99999;
-  overflow: hidden;
-  background: #050a14;
-  opacity: 1;
-  transition: opacity 0.6s ease;
-}
-.jc-loading-screen.is-fading { opacity: 0; pointer-events: none; }
-
-/* Fundo do estádio borrado + escurecido */
-.jc-load-bg {
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(ellipse at 50% 40%, rgba(214,168,79,0.18) 0%, transparent 55%),
-    radial-gradient(ellipse at 20% 80%, rgba(30,111,255,0.18) 0%, transparent 50%),
-    linear-gradient(180deg, #0a1628 0%, #050a14 70%, #02050a 100%);
-}
-.jc-load-bg::after {
-  content: '';
-  position: absolute;
-  inset: 0;
+  background: #06111f;
   background-image: url('/background.png');
   background-size: cover;
   background-position: center;
-  opacity: 0.18;
-  filter: blur(8px) brightness(0.7);
-}
-.jc-load-vignette {
-  position: absolute; inset: 0;
-  background: radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.85) 100%);
-  pointer-events: none;
-  animation: jc-load-vignette-pulse 3s ease-in-out infinite;
-}
-@keyframes jc-load-vignette-pulse {
-  0%,100% { opacity: 0.85; }
-  50% { opacity: 0.7; }
-}
-/* Grid sutil de estádio */
-.jc-load-grid {
-  position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(rgba(214,168,79,0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(214,168,79,0.04) 1px, transparent 1px);
-  background-size: 60px 60px;
-  mask-image: radial-gradient(ellipse at center, black 0%, transparent 70%);
-  -webkit-mask-image: radial-gradient(ellipse at center, black 0%, transparent 70%);
-  pointer-events: none;
-}
-
-/* Halo dourado pulsando atrás do jogador */
-.jc-load-halo {
-  position: absolute;
-  top: 50%; left: 60%;
-  width: 70vh; height: 70vh;
-  max-width: 90vw; max-height: 90vw;
-  transform: translate(-50%, -50%);
-  background: radial-gradient(circle, rgba(214,168,79,0.45) 0%, rgba(255,140,30,0.18) 30%, transparent 60%);
-  filter: blur(20px);
-  animation: jc-load-halo-pulse 2.4s ease-in-out infinite;
-  pointer-events: none;
-}
-@keyframes jc-load-halo-pulse {
-  0%,100% { transform: translate(-50%, -50%) scale(1); opacity: 0.85; }
-  50% { transform: translate(-50%, -50%) scale(1.15); opacity: 1; }
-}
-
-/* Streaks horizontais (linhas de velocidade) */
-.jc-load-streaks {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  overflow: hidden;
-}
-.jc-load-streak {
-  position: absolute;
-  left: -200px;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, rgba(214,168,79,0.9), transparent);
-  border-radius: 2px;
-  filter: blur(0.5px);
-  animation: jc-load-streak-fly linear infinite;
-  box-shadow: 0 0 8px rgba(214,168,79,0.6);
-}
-@keyframes jc-load-streak-fly {
-  0%   { transform: translateX(0); opacity: 0; }
-  10%  { opacity: 1; }
-  90%  { opacity: 1; }
-  100% { transform: translateX(120vw); opacity: 0; }
-}
-
-/* Flash inicial (luz de câmera) */
-.jc-load-flash {
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(circle at 30% 50%, rgba(255,255,255,0.95), transparent 40%);
-  pointer-events: none;
-  animation: jc-load-flash-once 1.4s ease-out forwards;
-  opacity: 0;
-}
-@keyframes jc-load-flash-once {
-  0% { opacity: 0; }
-  15% { opacity: 1; }
-  35% { opacity: 0.5; }
-  100% { opacity: 0; }
-}
-
-/* HERO: jogador correndo, slide-in épico */
-.jc-load-hero-wrap {
-  position: absolute;
-  top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-  width: 70vh;
-  height: 90vh;
-  max-width: 95vw;
-  max-height: 90vh;
   display: grid;
   place-items: center;
-  pointer-events: none;
+  transition: opacity 0.4s ease;
 }
-.jc-load-hero {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  /* Imagem tem fundo preto solido — usa screen pra fazer preto sumir */
-  mix-blend-mode: screen;
-  filter:
-    drop-shadow(0 20px 40px rgba(214,168,79,0.45))
-    drop-shadow(0 0 80px rgba(214,168,79,0.35));
-  animation: jc-load-hero-enter 1.8s cubic-bezier(0.2, 0.7, 0.2, 1) forwards,
-             jc-load-hero-breathe 3.2s ease-in-out 1.8s infinite;
-  opacity: 0;
-}
-@keyframes jc-load-hero-enter {
-  0% {
-    opacity: 0;
-    transform: translateX(-120%) scale(1.05) skewX(-8deg);
-    filter:
-      drop-shadow(0 0 60px rgba(214,168,79,0.7))
-      drop-shadow(0 0 120px rgba(255,140,30,0.5))
-      blur(6px);
-  }
-  40% {
-    opacity: 1;
-    transform: translateX(20%) scale(1.02) skewX(-3deg);
-    filter:
-      drop-shadow(0 0 40px rgba(214,168,79,0.6))
-      drop-shadow(0 0 80px rgba(255,140,30,0.4))
-      blur(2px);
-  }
-  70% {
-    opacity: 1;
-    transform: translateX(-3%) scale(1) skewX(0deg);
-    filter:
-      drop-shadow(0 20px 40px rgba(214,168,79,0.5))
-      drop-shadow(0 0 80px rgba(214,168,79,0.4))
-      blur(0);
-  }
-  100% {
-    opacity: 1;
-    transform: translateX(0) scale(1) skewX(0deg);
-    filter:
-      drop-shadow(0 20px 40px rgba(214,168,79,0.45))
-      drop-shadow(0 0 80px rgba(214,168,79,0.35));
-  }
-}
-@keyframes jc-load-hero-breathe {
-  0%,100% { transform: translateX(0) scale(1); }
-  50%     { transform: translateX(0) scale(1.012); }
-}
-
-/* Sombra no chão */
-.jc-load-shadow {
-  position: absolute;
-  bottom: 6%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 28%;
-  height: 18px;
-  background: radial-gradient(ellipse, rgba(0,0,0,0.65) 0%, transparent 70%);
-  filter: blur(6px);
-  animation: jc-load-shadow-pulse 3.2s ease-in-out 1.8s infinite;
-  opacity: 0;
-}
-@keyframes jc-load-shadow-pulse {
-  0%   { opacity: 0; }
-  20%  { opacity: 0.7; }
-  50%  { opacity: 0.55; transform: translateX(-50%) scaleX(0.95); }
-  100% { opacity: 0.7; transform: translateX(-50%) scaleX(1); }
-}
-
-/* Faíscas douradas voando */
-.jc-load-particles {
+.jc-loading-screen::before {
+  content: '';
   position: absolute;
   inset: 0;
-  pointer-events: none;
+  background: linear-gradient(180deg, rgba(6,17,31,0.6) 0%, rgba(6,17,31,0.85) 100%);
 }
-.jc-load-particle {
-  position: absolute;
-  border-radius: 50%;
-  background: radial-gradient(circle, #fff 0%, #ffd66b 30%, #D6A84F 70%, transparent 100%);
-  box-shadow: 0 0 10px #D6A84F, 0 0 20px #ff8c1e;
-  animation: jc-load-particle-float linear infinite;
-  opacity: 0;
-}
-@keyframes jc-load-particle-float {
-  0%   { transform: translate(0, 20px) scale(0.4); opacity: 0; }
-  20%  { opacity: 1; }
-  80%  { opacity: 0.8; }
-  100% { transform: translate(var(--drift, 0), -120px) scale(1.2); opacity: 0; }
-}
-
-/* Conteúdo (texto + barra) */
-.jc-load-content {
-  position: absolute;
-  left: 0; right: 0; bottom: 8vh;
-  text-align: center;
-  z-index: 10;
-  padding: 0 24px;
-  animation: jc-load-content-enter 1.2s cubic-bezier(0.2, 0.7, 0.2, 1) 1.2s backwards;
-}
-@keyframes jc-load-content-enter {
-  from { opacity: 0; transform: translateY(40px); filter: blur(8px); }
-  to   { opacity: 1; transform: translateY(0);    filter: blur(0); }
-}
-.jc-load-title-wrap {
+.jc-loading-content {
   position: relative;
-  display: inline-block;
-  margin-bottom: 6px;
-}
-.jc-load-title, .jc-load-title-glow {
-  font-family: 'Teko', 'Bebas Neue', sans-serif;
-  font-size: clamp(36px, 7vw, 64px);
-  font-weight: 900;
-  letter-spacing: clamp(4px, 1.2vw, 10px);
-  text-transform: uppercase;
-  line-height: 1;
-  margin: 0;
-}
-.jc-load-title {
-  position: relative;
-  background: linear-gradient(180deg, #fff 0%, #ffe9b8 50%, #D6A84F 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  text-shadow: 0 2px 0 rgba(0,0,0,0.4);
-  z-index: 2;
-}
-.jc-load-title-glow {
-  position: absolute;
-  inset: 0;
-  color: #D6A84F;
-  filter: blur(14px);
-  opacity: 0.7;
   z-index: 1;
-  animation: jc-load-title-pulse 2.4s ease-in-out infinite;
+  text-align: center;
+  padding: 20px;
+  animation: jc-loading-fade 0.6s ease;
 }
-@keyframes jc-load-title-pulse {
-  0%,100% { opacity: 0.5; }
-  50%     { opacity: 0.9; }
+@keyframes jc-loading-fade {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
-.jc-load-sub {
-  color: #ffd66b;
-  font-size: clamp(11px, 1.8vw, 14px);
-  font-weight: 800;
-  letter-spacing: 2px;
+.jc-loading-logo {
+  width: 180px;
+  max-width: 50vw;
+  margin-bottom: 16px;
+  filter: drop-shadow(0 4px 20px rgba(0,0,0,0.5));
+}
+.jc-loading-title {
+  font-family: 'Teko', sans-serif;
+  font-size: 42px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 6px;
   text-transform: uppercase;
-  margin-bottom: 22px;
-  opacity: 0.85;
+  text-shadow: 0 2px 20px rgba(0,0,0,0.5);
+  margin-bottom: 4px;
 }
-
-.jc-load-bar-wrap {
-  width: min(360px, 80vw);
+.jc-loading-sub {
+  color: #94a3b8;
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 24px;
+}
+.jc-loading-bar-wrap {
+  width: 280px;
+  max-width: 80vw;
   margin: 0 auto;
 }
-.jc-load-bar {
-  position: relative;
-  height: 8px;
-  background: rgba(255,255,255,0.06);
-  border-radius: 8px;
+.jc-loading-bar {
+  height: 6px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 6px;
   overflow: hidden;
-  border: 1px solid rgba(214,168,79,0.25);
-  box-shadow: inset 0 1px 4px rgba(0,0,0,0.6);
+  margin-bottom: 8px;
 }
-.jc-load-fill {
+.jc-loading-fill {
   height: 100%;
-  border-radius: 8px;
-  background: linear-gradient(90deg, #ff8c1e 0%, #ffd66b 50%, #D6A84F 100%);
-  transition: width 0.2s linear;
-  box-shadow:
-    0 0 14px rgba(214,168,79,0.7),
-    0 0 28px rgba(255,140,30,0.4),
-    inset 0 1px 1px rgba(255,255,255,0.5);
+  border-radius: 6px;
+  background: linear-gradient(90deg, #1e6fff, #D6A84F);
+  transition: width 0.1s linear;
+  box-shadow: 0 0 12px rgba(30,111,255,0.3);
 }
-.jc-load-bar-shine {
-  position: absolute;
-  top: -2px; bottom: -2px;
-  width: 60px;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.9), transparent);
-  filter: blur(3px);
-  pointer-events: none;
-  transition: left 0.2s linear;
-  mix-blend-mode: screen;
-}
-.jc-load-meta {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 10px;
+.jc-loading-pct {
   font-family: 'Teko', sans-serif;
-  font-size: 14px;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-}
-.jc-load-pct {
-  color: #D6A84F;
-  font-weight: 800;
   font-size: 18px;
-  text-shadow: 0 0 8px rgba(214,168,79,0.6);
-}
-.jc-load-tip {
-  color: #94a3b8;
+  color: #D6A84F;
   font-weight: 600;
-  font-size: 11px;
 }
-
-/* Mobile tweaks */
-@media (max-width: 480px) {
-  .jc-load-hero-wrap { width: 95vw; height: 75vh; }
-  .jc-load-content { bottom: 5vh; }
-  .jc-load-halo { width: 110vw; height: 110vw; }
+.jc-loading-tips {
+  margin-top: 16px;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 600;
+  min-height: 18px;
 }
 
 /* ================================================================
@@ -8385,10 +8130,84 @@ input.game-input::placeholder { color: #475569; }
 }
 .abertura-skip:hover { color: #cbd5e1; }
 
+/* ================ HERO PORTRAIT ESTILO NPC DIALOGANDO ================ */
+.abertura-overlay { overflow: hidden; }
+
+/* Hero portrait painted — fade-in + zoom suave + idle breathing */
+.abertura-portrait {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 30%;
+  z-index: 0;
+  pointer-events: none;
+  animation: abertura-portrait-enter 1.6s cubic-bezier(0.2, 0.7, 0.2, 1) forwards,
+             abertura-portrait-breathe 5s ease-in-out 1.6s infinite;
+  opacity: 0;
+  filter: brightness(0.85) saturate(1.1);
+}
+@keyframes abertura-portrait-enter {
+  0%   { opacity: 0;    transform: translate(-50%, -50%) scale(1.15); filter: brightness(0.4) saturate(0.7) blur(10px); }
+  60%  { opacity: 0.95; transform: translate(-50%, -50%) scale(1.04); filter: brightness(0.9) saturate(1.1) blur(0); }
+  100% { opacity: 1;    transform: translate(-50%, -50%) scale(1);    filter: brightness(0.85) saturate(1.1) blur(0); }
+}
+@keyframes abertura-portrait-breathe {
+  0%,100% { transform: translate(-50%, -50%) scale(1);     }
+  50%     { transform: translate(-50%, -50%) scale(1.018); }
+}
+
+/* Vignette pra texto se destacar do retrato */
+.abertura-vinheta {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at center, transparent 20%, rgba(0,0,0,0.55) 70%, rgba(0,0,0,0.85) 100%),
+    linear-gradient(180deg, rgba(0,0,0,0.35) 0%, transparent 30%, transparent 55%, rgba(0,0,0,0.85) 100%);
+  animation: abertura-vinheta-in 1.2s ease both;
+}
+@keyframes abertura-vinheta-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* Conteudo acima do retrato — desce do bottom estilo dialogo */
+.abertura-conteudo {
+  position: relative;
+  z-index: 3;
+  align-self: flex-end;
+  margin-bottom: 6vh;
+  padding: 26px 32px;
+  background: linear-gradient(180deg,
+    rgba(5,10,20,0.65) 0%,
+    rgba(5,10,20,0.88) 100%);
+  backdrop-filter: blur(8px);
+  border-radius: 18px;
+  border: 1px solid rgba(214,168,79,0.22);
+  box-shadow: 0 18px 50px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.06);
+  animation: abertura-conteudo-up 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) 0.6s backwards;
+}
+@keyframes abertura-conteudo-up {
+  from { opacity: 0; transform: translateY(60px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.abertura-overlay {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
 @media (max-width: 600px) {
   .abertura-titulo { font-size: 42px; }
   .abertura-linha { font-size: 15px; }
   .abertura-btn { font-size: 14px; padding: 12px 28px; }
+  .abertura-conteudo { padding: 20px; margin-bottom: 4vh; }
 }
 
 /* Section header com img */
