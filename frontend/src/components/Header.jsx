@@ -53,12 +53,13 @@ export default function Header() {
 
   const xpPct = Math.min(100, Math.round((jogador.xp / jogador.xp_proximo) * 100))
   const regenE = Math.max(1, Math.floor(jogador.energia_max / 15))
+  const historiaLock = jogador.nivel < 4
 
   return (
     <header className="top-bar">
-      <div className="logo">
+      <Link to="/" className="logo" style={{ textDecoration: 'none' }}>
         <img src="/logo-novo.png" alt="Joga Craque" className="logo-img" />
-      </div>
+      </Link>
 
       <div className="stats-panel">
         <div className="stat" data-tutorial="stat-energia">
@@ -86,13 +87,22 @@ export default function Header() {
           </div>
         </div>
 
-        {/* Inventário shortcut */}
-        <Link to="/inventario" className="stat stat-inv" data-tutorial="header-inventario">
-          <span className="stat-icon-big">🎒</span>
-          <div className="stat-info">
-            <span className="stat-label">Inventário</span>
-          </div>
-        </Link>
+        {/* Inventário shortcut — bloqueado ate completar a historia */}
+        {historiaLock ? (
+          <span className="stat stat-inv stat-locked" data-tutorial="header-inventario">
+            <span className="stat-icon-big">🎒</span>
+            <div className="stat-info">
+              <span className="stat-label">Inventário 🔒</span>
+            </div>
+          </span>
+        ) : (
+          <Link to="/inventario" className="stat stat-inv" data-tutorial="header-inventario">
+            <span className="stat-icon-big">🎒</span>
+            <div className="stat-info">
+              <span className="stat-label">Inventário</span>
+            </div>
+          </Link>
+        )}
       </div>
 
       <div className="profile-panel">
@@ -114,7 +124,9 @@ export default function Header() {
         <div className="money-info" data-tutorial="stat-dinheiro">
           <span className="money-main">R$ {fmt(jogador.dinheiro_mao)}</span>
           <span className="money-coins">🪙 {jogador.moedas || 0}</span>
-          <Link to="/banco" className="bank-link">🏦 Banco</Link>
+          {historiaLock
+            ? <span className="bank-link bank-locked">🏦 Banco 🔒</span>
+            : <Link to="/banco" className="bank-link">🏦 Banco</Link>}
         </div>
       </div>
     </header>

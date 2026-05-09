@@ -143,6 +143,8 @@ body::before {
 }
 .stat-inv { background: rgba(13,27,47,0.5); cursor: pointer; }
 .stat-inv:hover { background: rgba(15,95,214,0.15); }
+.stat-locked { opacity: 0.45; cursor: not-allowed; pointer-events: none; }
+.bank-locked { opacity: 0.45; cursor: not-allowed; pointer-events: none; }
 
 .stat-icon-big { font-size: 22px; }
 .stat-icon-img { width: 26px; height: 26px; object-fit: contain; display: inline-block; vertical-align: middle; }
