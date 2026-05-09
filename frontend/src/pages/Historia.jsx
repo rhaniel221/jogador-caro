@@ -12,7 +12,12 @@ const FASES = {
     subtitulo: 'Capítulo Um',
     cor: '#1a7dff',
     img: '/historia-img/fase-sonho.png',
-    aberturaImg: '/historia-img/abertura-sonho.png',
+    aberturaImgs: [
+      '/historia-img/abertura-1.png',
+      '/historia-img/abertura-2.png',
+      '/historia-img/abertura-3.png',
+      '/historia-img/abertura-4.png',
+    ],
     fallbackIcone: '💭',
     abertura: {
       linhas: [
@@ -200,61 +205,102 @@ function MissaoCard({ missao, onExecutar, onPular, loading, indice, faseCor }) {
 // ================================================================
 // ABERTURA CINEMATOGRAFICA DA FASE
 // ================================================================
+// Tempos da abertura
+const SLIDE_DURATION = 1700  // ms cada slide fica visível
+const FLASH_DURATION = 320   // ms do flash de transição
+
 function AberturaFase({ fase, onContinuar }) {
+  const imgs = fase.aberturaImgs || []
+  const totalSlides = imgs.length
+  const [slideIndex, setSlideIndex] = useState(0)
+  const [phase, setPhase] = useState(totalSlides > 0 ? 'slideshow' : 'text')
+  const [flashing, setFlashing] = useState(false)
   const [linhaAtiva, setLinhaAtiva] = useState(0)
   const [pronto, setPronto] = useState(false)
   const { setPaused } = useTutorial()
 
-  // Pausa o tutorial enquanto a abertura ta no ar — só libera no "Começar →"
+  // Pausa o tutorial enquanto a abertura ta no ar — so libera no "Começar →"
   useEffect(() => {
     setPaused(true)
     return () => setPaused(false)
   }, [setPaused])
 
+  // Avanco do slideshow: cada slide fica SLIDE_DURATION, depois flash, depois proximo (ou texto)
   useEffect(() => {
+    if (phase !== 'slideshow') return
+    const lastSlide = slideIndex >= totalSlides - 1
+    const holdTimer = setTimeout(() => {
+      setFlashing(true)
+      const flashTimer = setTimeout(() => {
+        setFlashing(false)
+        if (lastSlide) {
+          setPhase('text')
+        } else {
+          setSlideIndex(i => i + 1)
+        }
+      }, FLASH_DURATION)
+      return () => clearTimeout(flashTimer)
+    }, SLIDE_DURATION)
+    return () => clearTimeout(holdTimer)
+  }, [slideIndex, phase, totalSlides])
+
+  // Reveal das linhas — so depois que o slideshow termina
+  useEffect(() => {
+    if (phase !== 'text') return
     if (linhaAtiva >= fase.abertura.linhas.length) {
       setPronto(true)
       return
     }
-    const timer = setTimeout(() => setLinhaAtiva(i => i + 1), 1800)
+    const timer = setTimeout(() => setLinhaAtiva(i => i + 1), 1500)
     return () => clearTimeout(timer)
-  }, [linhaAtiva, fase.abertura.linhas.length])
+  }, [phase, linhaAtiva, fase.abertura.linhas.length])
 
   return (
     <div className="abertura-overlay" style={{ '--fase-cor': fase.cor }}>
       <div className="abertura-bg" />
 
-      {/* Hero portrait pintado — entra com fade + zoom suave, idle breathing */}
-      {fase.aberturaImg && (
-        <img
-          src={fase.aberturaImg}
-          alt=""
-          className="abertura-portrait"
-          onError={e => { e.currentTarget.style.display = 'none' }}
-        />
-      )}
+      {/* Slideshow: 4 imagens, alternando direcao (top↓, bottom↑) */}
+      {phase === 'slideshow' && imgs.map((src, i) => {
+        const isActive = i === slideIndex
+        const dir = i % 2 === 0 ? 'down' : 'up'
+        return (
+          <img
+            key={i}
+            src={src}
+            alt=""
+            className={`abertura-slide dir-${dir}${isActive ? ' is-active' : ''}`}
+            onError={e => { e.currentTarget.style.display = 'none' }}
+          />
+        )
+      })}
 
-      {/* Vignette pra texto destacar */}
-      <div className="abertura-vinheta" />
+      {/* Camera flash entre transicoes */}
+      <div className={`abertura-flash${flashing ? ' is-flashing' : ''}`} />
 
-      <div className="abertura-conteudo">
-        <div className="abertura-cap">{fase.subtitulo}</div>
-        <h1 className="abertura-titulo">{fase.titulo}</h1>
+      {/* Vignette pra texto destacar (so na fase texto) */}
+      {phase === 'text' && <div className="abertura-vinheta" />}
 
-        <div className="abertura-linhas">
-          {fase.abertura.linhas.slice(0, linhaAtiva + 1).map((linha, i) => (
-            <p key={i} className="abertura-linha" style={{ animationDelay: `${i * 0.1}s` }}>
-              {linha}
-            </p>
-          ))}
+      {/* Texto centralizado — so depois das 4 imagens */}
+      {phase === 'text' && (
+        <div className="abertura-conteudo">
+          <div className="abertura-cap">{fase.subtitulo}</div>
+          <h1 className="abertura-titulo">{fase.titulo}</h1>
+
+          <div className="abertura-linhas">
+            {fase.abertura.linhas.slice(0, linhaAtiva + 1).map((linha, i) => (
+              <p key={i} className="abertura-linha" style={{ animationDelay: `${i * 0.1}s` }}>
+                {linha}
+              </p>
+            ))}
+          </div>
+
+          {pronto && (
+            <button className="abertura-btn" onClick={onContinuar}>
+              Começar →
+            </button>
+          )}
         </div>
-
-        {pronto && (
-          <button className="abertura-btn" onClick={onContinuar}>
-            Começar →
-          </button>
-        )}
-      </div>
+      )}
     </div>
   )
 }

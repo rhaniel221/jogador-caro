@@ -8130,84 +8130,99 @@ input.game-input::placeholder { color: #475569; }
 }
 .abertura-skip:hover { color: #cbd5e1; }
 
-/* ================ HERO PORTRAIT ESTILO NPC DIALOGANDO ================ */
+/* ================ ABERTURA: SLIDESHOW + FLASH + TEXTO ================ */
 .abertura-overlay { overflow: hidden; }
 
-/* Hero portrait painted — fade-in + zoom suave + idle breathing */
-.abertura-portrait {
+/* Slides: cada um cobre a tela inteira, alternando entrada por cima/baixo.
+   Slide nao ativo fica fora da tela; ativo desliza pra dentro. */
+.abertura-slide {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: center 30%;
   z-index: 0;
   pointer-events: none;
-  animation: abertura-portrait-enter 1.6s cubic-bezier(0.2, 0.7, 0.2, 1) forwards,
-             abertura-portrait-breathe 5s ease-in-out 1.6s infinite;
   opacity: 0;
-  filter: brightness(0.85) saturate(1.1);
+  transition: transform 0.55s cubic-bezier(0.2, 0.7, 0.2, 1),
+              opacity  0.35s ease-out;
 }
-@keyframes abertura-portrait-enter {
-  0%   { opacity: 0;    transform: translate(-50%, -50%) scale(1.15); filter: brightness(0.4) saturate(0.7) blur(10px); }
-  60%  { opacity: 0.95; transform: translate(-50%, -50%) scale(1.04); filter: brightness(0.9) saturate(1.1) blur(0); }
-  100% { opacity: 1;    transform: translate(-50%, -50%) scale(1);    filter: brightness(0.85) saturate(1.1) blur(0); }
+.abertura-slide.dir-down  { transform: translateY(-100%); }
+.abertura-slide.dir-up    { transform: translateY( 100%); }
+.abertura-slide.is-active {
+  opacity: 1;
+  transform: translateY(0);
+  animation: abertura-slide-zoom 1.7s ease-out forwards;
 }
-@keyframes abertura-portrait-breathe {
-  0%,100% { transform: translate(-50%, -50%) scale(1);     }
-  50%     { transform: translate(-50%, -50%) scale(1.018); }
+/* Ken Burns sutil enquanto o slide ta ativo */
+@keyframes abertura-slide-zoom {
+  from { transform: translateY(0) scale(1); }
+  to   { transform: translateY(0) scale(1.05); }
 }
 
-/* Vignette pra texto se destacar do retrato */
+/* Flash branco rapido entre transicoes (efeito de foto) */
+.abertura-flash {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  background: #fff;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.08s linear;
+}
+.abertura-flash.is-flashing {
+  opacity: 0.85;
+  animation: abertura-flash-blink 0.32s ease-out forwards;
+}
+@keyframes abertura-flash-blink {
+  0%   { opacity: 0; }
+  20%  { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* Vignette suave atras do texto */
 .abertura-vinheta {
   position: absolute;
   inset: 0;
   z-index: 1;
   pointer-events: none;
   background:
-    radial-gradient(ellipse at center, transparent 20%, rgba(0,0,0,0.55) 70%, rgba(0,0,0,0.85) 100%),
-    linear-gradient(180deg, rgba(0,0,0,0.35) 0%, transparent 30%, transparent 55%, rgba(0,0,0,0.85) 100%);
-  animation: abertura-vinheta-in 1.2s ease both;
+    radial-gradient(ellipse at center, rgba(5,10,20,0.55) 0%, rgba(0,0,0,0.92) 100%);
+  animation: abertura-vinheta-in 0.8s ease both;
 }
 @keyframes abertura-vinheta-in {
   from { opacity: 0; }
   to   { opacity: 1; }
 }
 
-/* Conteudo acima do retrato — desce do bottom estilo dialogo */
+/* Conteudo (texto + botao) — centralizado, aparece apos o slideshow */
 .abertura-conteudo {
   position: relative;
   z-index: 3;
-  align-self: flex-end;
-  margin-bottom: 6vh;
-  padding: 26px 32px;
+  margin: auto;
+  padding: 32px 36px;
+  text-align: center;
   background: linear-gradient(180deg,
-    rgba(5,10,20,0.65) 0%,
-    rgba(5,10,20,0.88) 100%);
-  backdrop-filter: blur(8px);
-  border-radius: 18px;
+    rgba(5,10,20,0.55) 0%,
+    rgba(5,10,20,0.78) 100%);
+  backdrop-filter: blur(6px);
+  border-radius: 20px;
   border: 1px solid rgba(214,168,79,0.22);
   box-shadow: 0 18px 50px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.06);
-  animation: abertura-conteudo-up 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) 0.6s backwards;
+  animation: abertura-conteudo-in 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
+  max-width: 600px;
 }
-@keyframes abertura-conteudo-up {
-  from { opacity: 0; transform: translateY(60px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-.abertura-overlay {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
+@keyframes abertura-conteudo-in {
+  from { opacity: 0; transform: translateY(40px) scale(0.96); filter: blur(6px); }
+  to   { opacity: 1; transform: translateY(0)    scale(1);    filter: blur(0); }
 }
 
 @media (max-width: 600px) {
   .abertura-titulo { font-size: 42px; }
   .abertura-linha { font-size: 15px; }
   .abertura-btn { font-size: 14px; padding: 12px 28px; }
-  .abertura-conteudo { padding: 20px; margin-bottom: 4vh; }
+  .abertura-conteudo { padding: 22px; }
 }
 
 /* Section header com img */
