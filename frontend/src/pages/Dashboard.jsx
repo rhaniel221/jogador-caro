@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react'
-import { Link, Navigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { useGame } from '../context/GameContext'
 import API from '../api'
 import { fmt } from '../utils'
@@ -112,9 +112,6 @@ export default function Dashboard() {
 
   useEffect(() => { carregar() }, [carregar])
   if (!jogador) return null
-
-  // Jogadores novos (nivel < 4) vao direto pra Historia
-  if (jogador.nivel < 4) return <Navigate to="/historia" replace />
 
   const moral = jogador.moral ?? 70
   const moralInfo = getMoralInfo(moral)
