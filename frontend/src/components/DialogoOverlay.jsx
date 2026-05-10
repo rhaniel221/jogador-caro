@@ -1,7 +1,26 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useGame } from '../context/GameContext'
 import { fmt, gerarDescricaoItem } from '../utils'
+
+// Tenta extrair "Nome: 'fala' — narração" ou variações com aspas " "
+function parseDialogo(texto) {
+  if (!texto) return { fala: null, narracao: [] }
+  const match = texto.match(/^([A-ZÀ-ÚÇ][^:]{0,24}):\s*['"“”‘’](.+?)['"“”‘’](?:\s*[—–-]\s*(.*))?$/u)
+  if (match) {
+    const [, nome, fala, resto] = match
+    return { fala: { nome: nome.trim(), texto: fala.trim() }, narracao: splitNarracao(resto || '') }
+  }
+  return { fala: null, narracao: splitNarracao(texto) }
+}
+
+function splitNarracao(text) {
+  const t = (text || '').trim()
+  if (!t) return []
+  if (/\s[—–]\s/.test(t)) return t.split(/\s[—–]\s/).map(s => s.trim()).filter(Boolean)
+  const partes = t.split(/(?<=[.!?])\s+(?=[A-ZÀ-Ú0-9"“])/u).map(s => s.trim()).filter(Boolean)
+  return partes.length ? partes : [t]
+}
 
 export default function DialogoOverlay() {
   const { activeDialog, fecharDialogo } = useGame()
@@ -62,18 +81,79 @@ export default function DialogoOverlay() {
     )
   }
 
-  // Tipo: dialogo generico
+  // Tipo: dialogo generico — cutscene cinematográfica
   if (activeDialog.tipo === 'dialogo') {
-    return (
-      <div className="jc-overlay" onClick={fecharDialogo}>
-        <div className="jc-dialog-card" onClick={e => e.stopPropagation()}>
-          <div className="jc-dialog-icon">{activeDialog.icone || '💬'}</div>
-          <p className="jc-dialog-text">{activeDialog.texto}</p>
-          <button className="jc-btn jc-btn-primary" style={{ width: '100%', minHeight: 42 }} onClick={fecharDialogo}>Entendi</button>
-        </div>
-      </div>
-    )
+    return <DialogoCutscene dialog={activeDialog} onClose={fecharDialogo} />
   }
 
   return null
+}
+
+function DialogoCutscene({ dialog, onClose }) {
+  const { fala, narracao } = parseDialogo(dialog.texto)
+  const blocos = []
+  if (fala) blocos.push({ tipo: 'fala', ...fala })
+  narracao.forEach(t => blocos.push({ tipo: 'narracao', texto: t }))
+
+  const [revelados, setRevelados] = useState(1)
+  const pronto = revelados >= blocos.length
+
+  useEffect(() => {
+    if (pronto) return
+    const t = setTimeout(() => setRevelados(n => n + 1), 850)
+    return () => clearTimeout(t)
+  }, [revelados, pronto])
+
+  function handleClose(e) {
+    e?.stopPropagation?.()
+    if (!pronto) {
+      // Primeiro toque revela tudo de uma vez (skip)
+      setRevelados(blocos.length)
+      return
+    }
+    onClose()
+  }
+
+  return (
+    <div className="jc-overlay" onClick={handleClose}>
+      <div className="jc-cutscene-card" onClick={e => e.stopPropagation()}>
+        <div className="jc-cutscene-glow" />
+        <div className="jc-cutscene-corner jc-cutscene-corner--tl" />
+        <div className="jc-cutscene-corner jc-cutscene-corner--tr" />
+        <div className="jc-cutscene-corner jc-cutscene-corner--bl" />
+        <div className="jc-cutscene-corner jc-cutscene-corner--br" />
+
+        <div className="jc-cutscene-orb">
+          <div className="jc-cutscene-orb-ring" />
+          <div className="jc-cutscene-orb-ring jc-cutscene-orb-ring--2" />
+          <span className="jc-cutscene-icon">{dialog.icone || '💬'}</span>
+        </div>
+
+        <div className="jc-cutscene-body">
+          {blocos.slice(0, revelados).map((b, i) => (
+            b.tipo === 'fala' ? (
+              <div key={i} className="jc-cutscene-fala">
+                <div className="jc-cutscene-speaker">{b.nome}</div>
+                <div className="jc-cutscene-quote">
+                  <span className="jc-cutscene-quote-mark">“</span>
+                  {b.texto}
+                  <span className="jc-cutscene-quote-mark jc-cutscene-quote-mark--end">”</span>
+                </div>
+              </div>
+            ) : (
+              <p key={i} className="jc-cutscene-narracao">{b.texto}</p>
+            )
+          ))}
+        </div>
+
+        {pronto ? (
+          <button className="jc-cutscene-btn" onClick={handleClose}>
+            Continuar <span className="jc-cutscene-btn-arrow">→</span>
+          </button>
+        ) : (
+          <div className="jc-cutscene-skip" onClick={handleClose}>toque para avançar</div>
+        )}
+      </div>
+    </div>
+  )
 }

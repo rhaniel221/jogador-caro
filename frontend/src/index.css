@@ -6751,6 +6751,129 @@ input.game-input::placeholder { color: #475569; }
 .jc-dialog-title { font-family: var(--font-titulo); font-size: 22px; font-weight: 700; color: #fff; letter-spacing: 1px; margin-bottom: 8px; }
 .jc-dialog-text { color: #94a3b8; font-size: 14px; font-weight: 600; line-height: 1.6; margin-bottom: 18px; }
 
+/* ============== DIALOGO CUTSCENE — versão cinematográfica ============== */
+.jc-cutscene-card {
+    position: relative;
+    background:
+      radial-gradient(120% 80% at 50% 0%, rgba(214,168,79,0.12) 0%, transparent 55%),
+      linear-gradient(180deg, rgba(13,30,54,0.96), rgba(6,17,31,0.99));
+    border: 1px solid rgba(214,168,79,0.28);
+    padding: 30px 26px 22px; text-align: center;
+    border-radius: 22px; max-width: 420px; width: 92vw; z-index: 10001;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.03) inset;
+    animation: jc-card-pop 0.45s cubic-bezier(0.34,1.56,0.64,1);
+    overflow: hidden;
+}
+.jc-cutscene-glow {
+    position: absolute; top: -90px; left: 50%; transform: translateX(-50%);
+    width: 320px; height: 220px; pointer-events: none;
+    background: radial-gradient(closest-side, rgba(214,168,79,0.22) 0%, rgba(214,168,79,0.08) 40%, transparent 70%);
+    filter: blur(2px);
+}
+.jc-cutscene-corner {
+    position: absolute; width: 22px; height: 22px; pointer-events: none;
+    border-color: rgba(214,168,79,0.55); border-style: solid; border-width: 0;
+}
+.jc-cutscene-corner--tl { top: 10px; left: 10px;  border-top-width: 2px; border-left-width: 2px;  border-top-left-radius: 6px; }
+.jc-cutscene-corner--tr { top: 10px; right: 10px; border-top-width: 2px; border-right-width: 2px; border-top-right-radius: 6px; }
+.jc-cutscene-corner--bl { bottom: 10px; left: 10px;  border-bottom-width: 2px; border-left-width: 2px;  border-bottom-left-radius: 6px; }
+.jc-cutscene-corner--br { bottom: 10px; right: 10px; border-bottom-width: 2px; border-right-width: 2px; border-bottom-right-radius: 6px; }
+
+.jc-cutscene-orb {
+    position: relative; width: 92px; height: 92px; margin: 4px auto 16px;
+    display: grid; place-items: center;
+}
+.jc-cutscene-orb-ring {
+    position: absolute; inset: 0; border-radius: 50%;
+    background: radial-gradient(circle at 50% 40%, rgba(255,224,156,0.35) 0%, rgba(214,168,79,0.18) 45%, transparent 72%);
+    animation: jc-orb-pulse 2.4s ease-in-out infinite;
+}
+.jc-cutscene-orb-ring--2 {
+    inset: 8px; border: 1px solid rgba(214,168,79,0.45); background: rgba(13,30,54,0.6);
+    animation: jc-orb-rotate 6s linear infinite;
+    box-shadow: 0 0 24px rgba(214,168,79,0.25), 0 0 0 1px rgba(255,255,255,0.04) inset;
+}
+.jc-cutscene-icon {
+    position: relative; font-size: 46px; line-height: 1; z-index: 2;
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5));
+    animation: jc-icon-pulse 0.6s ease;
+}
+@keyframes jc-orb-pulse {
+    0%, 100% { transform: scale(1); opacity: 0.85; }
+    50%      { transform: scale(1.08); opacity: 1; }
+}
+@keyframes jc-orb-rotate {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+}
+
+.jc-cutscene-body {
+    min-height: 60px; margin-bottom: 18px;
+    display: flex; flex-direction: column; gap: 12px; align-items: center;
+}
+.jc-cutscene-fala, .jc-cutscene-narracao {
+    width: 100%;
+    animation: jc-line-in 0.45s cubic-bezier(0.22,1,0.36,1) both;
+}
+@keyframes jc-line-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+.jc-cutscene-speaker {
+    font-family: var(--font-titulo); font-size: 11px; font-weight: 700;
+    letter-spacing: 3px; text-transform: uppercase;
+    color: #D6A84F; margin-bottom: 6px;
+}
+.jc-cutscene-quote {
+    position: relative;
+    font-family: var(--font-titulo); font-size: 18px; font-weight: 700;
+    color: #fff; line-height: 1.35; padding: 0 6px;
+    text-shadow: 0 2px 12px rgba(214,168,79,0.18);
+}
+.jc-cutscene-quote-mark {
+    color: rgba(214,168,79,0.7); font-size: 26px; vertical-align: -4px; margin: 0 4px;
+}
+.jc-cutscene-quote-mark--end { vertical-align: -10px; }
+.jc-cutscene-narracao {
+    color: #cbd5e1; font-size: 14.5px; font-weight: 600; line-height: 1.55;
+    font-style: italic;
+}
+.jc-cutscene-narracao:first-child:last-child {
+    color: #f1f5f9; font-size: 16px; font-style: normal; font-weight: 700;
+}
+
+.jc-cutscene-btn {
+    width: 100%; min-height: 46px;
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    font-family: var(--font-titulo); font-size: 13px; font-weight: 700; letter-spacing: 3px;
+    color: #06111f; text-transform: uppercase; cursor: pointer;
+    background: linear-gradient(180deg, #f4ce7c 0%, #D6A84F 100%);
+    border: 0; border-radius: 12px;
+    box-shadow: 0 8px 22px rgba(214,168,79,0.35), 0 0 0 1px rgba(255,255,255,0.15) inset;
+    transition: transform 0.15s ease, box-shadow 0.2s ease, filter 0.2s ease;
+    animation: jc-line-in 0.4s cubic-bezier(0.22,1,0.36,1) both;
+}
+.jc-cutscene-btn:hover  { transform: translateY(-1px); filter: brightness(1.05); box-shadow: 0 12px 28px rgba(214,168,79,0.45), 0 0 0 1px rgba(255,255,255,0.2) inset; }
+.jc-cutscene-btn:active { transform: translateY(0); filter: brightness(0.96); }
+.jc-cutscene-btn-arrow { font-size: 18px; transition: transform 0.2s ease; }
+.jc-cutscene-btn:hover .jc-cutscene-btn-arrow { transform: translateX(3px); }
+
+.jc-cutscene-skip {
+    font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+    color: rgba(148,163,184,0.6); padding: 12px 0 4px; cursor: pointer;
+    animation: jc-skip-blink 1.6s ease-in-out infinite;
+}
+.jc-cutscene-skip:hover { color: rgba(214,168,79,0.9); }
+@keyframes jc-skip-blink { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+
+@media (max-width: 480px) {
+    .jc-cutscene-card { padding: 26px 20px 18px; border-radius: 18px; }
+    .jc-cutscene-orb  { width: 80px; height: 80px; margin-bottom: 12px; }
+    .jc-cutscene-icon { font-size: 40px; }
+    .jc-cutscene-quote    { font-size: 16px; }
+    .jc-cutscene-narracao { font-size: 13.5px; }
+}
+
 .jc-capitulo-card {
     position: relative; background: linear-gradient(180deg, rgba(13,30,54,0.95), rgba(6,17,31,0.98));
     border: 1px solid rgba(214,168,79,0.2); padding: 32px 28px; text-align: center;
