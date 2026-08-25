@@ -41,7 +41,16 @@
       "Bash(git add:*)",
       "Bash(git commit:*)",
       "Bash(git push:*)",
-      "Bash(find C:/Projetos/jogador-caro -path */node_modules -prune -o -type f -name *.ts -print)"
+      "Bash(find C:/Projetos/jogador-caro -path */node_modules -prune -o -type f -name *.ts -print)",
+      "WebFetch(domain:muzilla-nextjs.vercel.app)",
+      "WebFetch(domain:template.hasthemes.com)",
+      "Bash(sed -i \"s/color: ''#333''/color: ''#F8FAFC''/g\" MeuJogador.jsx MinhaVida.jsx)",
+      "Bash(sed -i \"s/color: ''#666''/color: ''#94A3B8''/g\" MeuJogador.jsx MinhaVida.jsx)",
+      "Bash(sed -i \"s/color: ''#556''/color: ''#94A3B8''/g\" MeuJogador.jsx MinhaVida.jsx)",
+      "Bash(sed -i \"s/color: ''#888''/color: ''#64748b''/g\" /c/Projetos/jogador-caro/frontend/src/pages/Missoes.jsx)",
+      "Bash(sed -i \"s/color: ''#555''/color: ''#94a3b8''/g\" /c/Projetos/jogador-caro/frontend/src/pages/Missoes.jsx)",
+      "Bash(sed -i 's/border-bottom: 8px solid #fff/border-bottom: 8px solid #0d1e36/g' /c/Projetos/jogador-caro/frontend/src/index.css)",
+      "Bash(sed -i 's/border-top: 8px solid #fff/border-top: 8px solid #0d1e36/g' /c/Projetos/jogador-caro/frontend/src/index.css)"
     ]
   }
 }
